@@ -44,14 +44,16 @@ Agency rules, for every client, overriding anything below that conflicts:
 - One video, one topic. No jumping between events or subjects in one reel.
 - Every video stands alone. No "part 1" or cliffhangers unless the user asks
   for a series.
-- Script format depends on the video. Experts shoot with a teleprompter, 5-10
-  videos in one 1-2 hour session. Methodology and educational videos get a
-  full teleprompter script: spoken, conversational Azerbaijani in short lines,
-  no bookish phrasing, no blanks (ask the user for any fact you need before
-  writing). Personal-story videos (who I am, why I chose this path) get
-  directions instead: talking points, an example sentence, blanks the expert
-  fills in their own words. Every video also gets a separate montage plan
-  (what footage goes where, on-screen cards).
+- Always write the full spoken text of every video: conversational
+  Azerbaijani in short lines, no bookish phrasing. Do not label scripts
+  "prompter" or "directions"; the team decides on set whether to read it from
+  the teleprompter, say it from memory or speak freely. Experts shoot 5-10
+  videos in one 1-2 hour session. Facts only the expert knows (their story,
+  program details, their own methods) go in as [square-bracket blanks]; never
+  invent them. Methodology advice is phrased as advice ("do X"), not as the
+  expert's personal habit, unless the expert has confirmed it. Documents sent
+  to the expert hold only what they say; montage plans go to the team
+  separately.
 - Follow the positioning section of the client's voice profile above all.
 
 1. Work out which client this is for. If the user has not named one and the
