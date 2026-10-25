@@ -20,6 +20,13 @@ the client's folder name (lowercase, hyphens). These paths are relative to
 the project root, so when a script in this folder takes an output path, pass
 it the absolute one.
 
+Client folders are private and are NOT committed to this repo (it is a public
+fork; see `.gitignore`). The copy that persists is the `instagram-clients`
+folder in the user's Google Drive, one subfolder per client. If
+`instagram-clients/<client>/` is missing locally, download it from Drive
+first. After you create or change a client file, upload it back to the same
+Drive subfolder, updating the existing file rather than adding a duplicate.
+
 1. Work out which client this is for. If the user has not named one and the
    conversation has not already settled it, list the folders in
    `instagram-clients/` and ask. Never guess, and never carry one client's

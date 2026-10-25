@@ -36,8 +36,11 @@ həftəni planla". Ad çəkilməsə, Claude soruşacaq.
 Bir söhbətdə bir neçə müştəri ilə işləmək olar, amma böyük iş (həftəlik plan,
 bir neçə reel) üçün hər müştəriyə ayrıca söhbət açmaq daha etibarlıdır.
 
-## Gizlilik
+## Gizlilik və saxlanma
 
-Bu qovluq git repozitoriyasındadır. Müştərilərin şəxsi məlumatlarını, parollarını
-və ya ictimai olmayan rəqəmlərini buraya yazmazdan əvvəl repoya kimlərin baxa
-bildiyini yoxlayın.
+Bu repo ictimaidir, ona görə müştəri qovluqları buraya commit olunmur
+(`.gitignore`). Burada yalnız bu `README.md` və `_template/` saxlanılır.
+
+Müştəri qovluqlarının əsas nüsxəsi Google Drive-dadır: `instagram-clients`
+qovluğu, hər müştəri üçün bir alt qovluq. Claude yeni sessiyada müştərinin
+qovluğunu Drive-dan götürür, dəyişiklikdən sonra Drive-a geri yükləyir.
