@@ -37,7 +37,7 @@ if (!slidesPath || !brandPath || !outDir) {
 const spec = JSON.parse(fs.readFileSync(slidesPath, 'utf8'));
 // Visual theme for the whole carousel, so consecutive carousels can look
 // different while keeping the brand colours: classic | editorial | night | cards
-const THEMES = ['classic', 'editorial', 'night', 'cards'];
+const THEMES = ['classic', 'editorial', 'night', 'cards', 'accent'];
 const theme = spec.theme || 'classic';
 if (!THEMES.includes(theme)) throw new Error(`unknown theme: ${theme} (have: ${THEMES.join(', ')})`);
 const brand = JSON.parse(fs.readFileSync(brandPath, 'utf8'));
@@ -69,6 +69,10 @@ const ICONS = {
   chat: '<path d="M12 20h76v46H40L22 82V66H12z"/><path d="M28 38h44M28 50h30"/>',
   bulb: '<path d="M50 10a26 26 0 0 0-15 47c3 3 5 7 5 11h20c0-4 2-8 5-11A26 26 0 0 0 50 10z"/><path d="M40 78h20M43 88h14"/>',
   check: '<rect x="14" y="14" width="72" height="72" rx="12"/><path d="M30 50l14 14 26-28"/>',
+  house: '<path d="M14 46L50 16l36 30"/><path d="M24 40v44h52V40"/><path d="M42 84V62h16v22"/>',
+  people: '<circle cx="36" cy="36" r="12"/><circle cx="66" cy="40" r="10"/><path d="M14 84c0-16 10-26 22-26s22 10 22 26M56 84c2-12 6-20 12-20 8 0 16 8 18 20"/>',
+  blocks: '<rect x="14" y="50" width="34" height="34" rx="4"/><rect x="52" y="50" width="34" height="34" rx="4"/><rect x="33" y="14" width="34" height="34" rx="4"/>',
+  ruler: '<rect x="10" y="36" width="80" height="28" rx="4"/><path d="M24 36v12M38 36v8M52 36v12M66 36v8M80 36v12"/>',
 };
 function icon(name, cls = 'icon') {
   if (!name) return '';
@@ -82,6 +86,11 @@ function artBlock(names, dark) {
   return `<div class="art">${names.map((n, k) => art(n, pal, k === 0 ? 330 : 220)).join('')}</div>`;
 }
 
+// A vertical chain of icon circles joined by a thin gold line (cover decor).
+function chain(names) {
+  return `<div class="chain">${names.map((n) => `<div class="ring">${icon(n, 'ring-icon')}</div>`).join('')}</div>`;
+}
+
 function frame(inner, i, total, dark = false, extra = '', artNames = null) {
   dark = dark || theme === 'night';
   return `<section class="slide${dark ? ' dark' : ''}${extra}">
@@ -89,7 +98,9 @@ function frame(inner, i, total, dark = false, extra = '', artNames = null) {
     <div class="num">${i}/${total}</div>
     ${inner}
     ${artBlock(artNames, dark)}
-    <div class="foot"><span>${esc(brand.name_line)}</span><span>${esc(brand.handle)}</span></div>
+    ${brand.signature
+      ? `<div class="foot"><div class="sig"><b>${esc(brand.signature.name)}</b><i></i><span>${esc(brand.signature.sub)}</span></div><span>${esc(brand.handle)}</span></div>`
+      : `<div class="foot"><span>${esc(brand.name_line)}</span><span>${esc(brand.handle)}</span></div>`}
   </section>`;
 }
 
@@ -109,11 +120,13 @@ function slideHtml(s, i, total) {
         ${s.art ? '' : icon(s.icon, 'icon split-icon')}`, i, total, false, ' split', s.art);
       }
       return frame(`
-        ${s.art ? '' : icon(s.icon)}
+        ${s.art || s.chain ? '' : icon(s.icon)}
+        ${s.chain ? chain(s.chain) : ''}
         <div class="label"><span>${esc(s.label)}</span><i></i></div>
         <h1 class="cover-h">${headlineHtml(s.headline, s.highlight)}</h1>
         <div class="gold"></div>
         ${s.sub ? `<p class="sub"${s.photo ? ' style="max-width:400px"' : ''}>${esc(s.sub)}</p>` : ''}
+        ${s.pill ? `<div class="pill"><span>${esc(s.pill)}</span><b>→</b></div>` : ''}
         ${s.photo ? `<img class="photo" src="file://${path.resolve(path.dirname(slidesPath), s.photo)}">` : ''}`,
         i, total, s.variant === 'dark', '', s.art);
     case 'level':
@@ -245,6 +258,25 @@ body{background:#ccc}
   background:${c.gold}}
 .art{position:absolute;right:150px;bottom:150px;display:flex;align-items:flex-end;z-index:1}
 .art .art-item+.art-item{margin-left:-40px}
+.chain{position:absolute;right:110px;top:250px;bottom:300px;display:flex;flex-direction:column;
+  justify-content:space-between;align-items:center;z-index:1}
+.chain::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:3px;background:${c.gold};opacity:.7}
+.ring{position:relative;width:118px;height:118px;border-radius:50%;border:3px solid ${c.gold};
+  background:${c.cream};display:flex;align-items:center;justify-content:center}
+.ring-icon{width:62px;height:62px;color:${c.navy}}
+.chain ~ .label{max-width:640px}
+.chain ~ .cover-h{max-width:680px;font-size:100px}
+.chain ~ .sub{max-width:640px}
+.pill{position:relative;z-index:1;display:inline-flex;align-items:center;gap:40px;margin-top:40px;
+  background:${c.navy};color:${c.cream};border-radius:60px;padding:14px 14px 14px 48px;font-size:38px;font-weight:500}
+.pill b{display:flex;align-items:center;justify-content:center;width:78px;height:78px;border-radius:50%;
+  background:${c.gold};color:${c.navy};font-size:40px}
+.sig{display:flex;flex-direction:column;gap:6px}
+.sig b{font-size:24px;font-weight:700;letter-spacing:.28em;text-transform:uppercase}
+.sig i{display:none}
+.sig span{font-size:24px;font-weight:500}
+.theme-accent .hl{background:none;color:${c.gold};padding:0}
+.theme-accent .circle{opacity:.35}
 .foot{position:absolute;z-index:2;left:120px;right:120px;bottom:70px;display:flex;
   justify-content:space-between;font-size:26px;font-weight:500;opacity:.75;white-space:nowrap}
 

@@ -156,6 +156,23 @@ const ART = {
     <path d="M128 128l44 44" stroke-width="14"/>
     <path d="M62 76a26 26 0 0 1 22-20" stroke="${G}"/>`,
 
+  house: ({ N, W, G, B }) => `
+    <path d="M24 92L100 30l76 62" />
+    <path d="M42 80v92h116V80" fill="${W}"/>
+    <path d="M24 92L100 30l76 62" stroke-width="7"/>
+    <rect x="86" y="118" width="28" height="54" rx="4" fill="${G}"/>
+    <rect x="54" y="104" width="24" height="24" rx="3" fill="${B}"/>
+    <rect x="122" y="104" width="24" height="24" rx="3" fill="${B}"/>
+    <path d="M140 52V30h16v35"/>`,
+
+  team: ({ N, W, G, B }) => `
+    <circle cx="100" cy="62" r="24" fill="${G}"/>
+    <path d="M60 150c0-26 18-44 40-44s40 18 40 44z" fill="${G}"/>
+    <circle cx="48" cy="84" r="18" fill="${B}"/>
+    <path d="M16 160c0-20 14-34 32-34 10 0 18 4 24 10" fill="${B}"/>
+    <circle cx="152" cy="84" r="18" fill="${B}"/>
+    <path d="M184 160c0-20-14-34-32-34-10 0-18 4-24 10" fill="${B}"/>`,
+
   headphones: ({ N, G, C }) => `
     <path d="M36 120V100a64 64 0 0 1 128 0v20"/>
     <rect x="24" y="112" width="34" height="58" rx="12" fill="${G}"/>
