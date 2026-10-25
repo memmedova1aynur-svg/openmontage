@@ -24,6 +24,12 @@ folder in the user's Google Drive, one subfolder per client. If
 `instagram-clients/<client>/` is missing locally, download it from Drive
 first. After you create or change a client file, upload it back to the same
 Drive subfolder, updating the existing file rather than adding a duplicate.
+On Drive each file is a Google Doc, written in Azerbaijani so the agency can
+read it, and named in Azerbaijani: `voice.md` is "Səs profili", `audit.md` is
+"Analiz", `profile-rewrite.md` is "Profil yenidən yazılışı". Upload markdown
+with conversion on (not raw `.md`, which Drive cannot preview), and replace
+emoji outside the Basic Multilingual Plane (e.g. U+1F447) with plain symbols
+or words: the converter corrupts them.
 
 1. Work out which client this is for. If the user has not named one and the
    conversation has not already settled it, list the folders in
