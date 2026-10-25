@@ -33,6 +33,10 @@ with conversion on (not raw `.md`, which Drive cannot preview), and replace
 emoji outside the Basic Multilingual Plane (e.g. U+1F447) with plain symbols
 or words: the converter corrupts them.
 
+Draft in the chat first. Scripts, captions, plans and other drafts are
+discussed and revised in the conversation; only what the user approves is saved
+to the client's Drive folder. Never upload a draft the user has not approved.
+
 1. Work out which client this is for. If the user has not named one and the
    conversation has not already settled it, list the folders in
    `instagram-clients/` and ask. Never guess, and never carry one client's
