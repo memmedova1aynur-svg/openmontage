@@ -78,6 +78,9 @@ offer is spread evenly instead of piled into one week.
 
 ## The mix (per month, adjust to the client)
 
+If the voice profile defines content pillars and a weekly rhythm, use those
+instead of the default mix below, and give every week every pillar.
+
 - ~60% expertise: methodology, practical how-to, one useful idea per video.
 - ~20% conversion without selling: the program from the inside, a lesson
   moment, a graduate's professional result.
