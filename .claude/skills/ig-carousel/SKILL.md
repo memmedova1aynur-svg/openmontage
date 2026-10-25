@@ -128,7 +128,10 @@ Instagram) and Azerbaijani letters always come out right.
   { "type": "statement", "text": "..." },
   { "type": "point", "n": "01", "headline": "...", "body": "up to 25 words" },
   { "type": "recap", "headline": "Xülasə", "items": ["...", "..."] },
-  { "type": "cta", "headline": "Saxlayın", "body": "..." }
+  { "type": "cta", "headline": "Saxlayın", "body": "..." },
+  { "type": "photo", "photo": "img.jpg", "hint": "...", "headline": "...", "body": "..." },
+  { "type": "overlay", "photo": "img.jpg", "hint": "...", "headline": "...", "body": "..." },
+  { "type": "compare", "label_bad": "Belə yox", "bad": "...", "label_good": "Belə", "good": "...", "note": "..." }
 ] }
 ```
 
@@ -140,6 +143,11 @@ node .claude/skills/ig-carousel/render.js \
   instagram-clients/<client>/brand.json \
   instagram-clients/<client>/carousels/<dir>/
 ```
+
+Photos: the expert's own shots or frames from their videos come first; free
+stock (Unsplash, Pexels) only if the user supplies the files. Avoid AI-generated
+images: Instagram may label them. Without `photo`, a placeholder showing `hint`
+is drawn so the layout can be approved first.
 
 It writes `01.png`, `02.png`, ... at 1080x1350 and exits non-zero if any text
 runs into the footer; shorten the copy and render again. Look at the cover and

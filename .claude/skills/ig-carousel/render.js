@@ -11,6 +11,11 @@
 //   point     { n, headline, body }
 //   recap     { headline, items: [..] }
 //   cta       { headline, body? }
+//   photo     { photo?, hint?, headline, body? }   photo on top, text below
+//   overlay   { photo?, hint?, headline, body? }   full-bleed photo, text on navy fade
+//   compare   { label_bad?, bad, label_good?, good, note? }  "say this, not that"
+// photo paths are relative to slides.json; with no photo a labelled
+// placeholder (hint) is drawn so a layout can be approved before photos exist.
 // brand.json: { colors: {navy, blue, cream, gold}, name_line, handle }
 
 const fs = require('fs');
@@ -35,6 +40,13 @@ function headlineHtml(text, highlight) {
   const t = esc(text);
   if (!highlight || !text.includes(highlight)) return t;
   return t.replace(esc(highlight), `<span class="hl">${esc(highlight)}</span>`);
+}
+
+function img(s, cls) {
+  if (s.photo) {
+    return `<img class="${cls}" src="file://${path.resolve(path.dirname(slidesPath), s.photo)}">`;
+  }
+  return `<div class="${cls} ph-empty"><span>FOTO${s.hint ? ': ' + esc(s.hint) : ''}</span></div>`;
 }
 
 function frame(inner, i, total, dark = false) {
@@ -75,6 +87,29 @@ function slideHtml(s, i, total) {
         <h2 class="cta-h">${esc(s.headline)}</h2>
         <div class="gold"></div>
         ${s.body ? `<p class="body">${esc(s.body)}</p>` : ''}`, i, total, true);
+    case 'photo':
+      return frame(`
+        ${img(s, 'ph-top')}
+        <div class="ph-text">
+          <h2 class="point-h sm">${esc(s.headline)}</h2>
+          ${s.body ? `<p class="body sm">${esc(s.body)}</p>` : ''}
+        </div>`, i, total);
+    case 'overlay':
+      return frame(`
+        ${img(s, 'ph-full')}
+        <div class="ph-fade"></div>
+        <div class="ov-text">
+          <h2 class="point-h">${esc(s.headline)}</h2>
+          <div class="gold"></div>
+          ${s.body ? `<p class="body">${esc(s.body)}</p>` : ''}
+        </div>`, i, total, true);
+    case 'compare':
+      return frame(`
+        <div class="cmp bad"><div class="cmp-l">${esc(s.label_bad || 'Belə yox')}</div>
+          <p>${esc(s.bad)}</p></div>
+        <div class="cmp good"><div class="cmp-l">${esc(s.label_good || 'Belə')}</div>
+          <p>${esc(s.good)}</p></div>
+        ${s.note ? `<p class="body sm">${esc(s.note)}</p>` : ''}`, i, total);
     default:
       throw new Error(`unknown slide type: ${s.type}`);
   }
@@ -94,7 +129,7 @@ body{background:#ccc}
 .circle{position:absolute;width:900px;height:900px;border-radius:50%;
   right:-420px;bottom:-380px;background:${c.blue};opacity:.55}
 .dark .circle{opacity:.12}
-.num{position:absolute;top:70px;right:120px;font-size:30px;font-weight:500;opacity:.6}
+.num{position:absolute;z-index:2;top:70px;right:120px;font-size:30px;font-weight:500;opacity:.6}
 .label{display:flex;align-items:center;gap:22px;margin-bottom:56px;
   font-size:26px;font-weight:700;letter-spacing:.32em}
 .label i{display:block;flex:1;height:2px;background:currentColor;position:relative}
@@ -115,7 +150,24 @@ body{background:#ccc}
   padding:26px 0;border-bottom:2px solid ${c.blue}}
 .recap b{font-weight:800;color:${c.gold};font-size:40px;min-width:62px}
 .cta-h{font-size:104px;font-weight:800;line-height:1.05;margin-top:200px;max-width:860px}
-.foot{position:absolute;left:120px;right:120px;bottom:70px;display:flex;
+.ph-top{position:absolute;left:0;top:0;width:1080px;height:720px;object-fit:cover}
+.ph-full{position:absolute;inset:0;width:1080px;height:1350px;object-fit:cover}
+.ph-empty{display:flex;align-items:center;justify-content:center;background:${c.blue};
+  color:${c.navy};font-size:32px;font-weight:600;letter-spacing:.04em;text-align:center;padding:60px}
+.ph-fade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,30,58,0) 30%,${c.navy} 78%)}
+.ph-text{position:absolute;left:120px;right:120px;top:790px}
+.ov-text{position:absolute;left:120px;right:120px;bottom:170px}
+.ov-text .gold{margin:36px 0 30px}
+.point-h.sm{font-size:64px}
+.body.sm{font-size:38px;margin-top:26px}
+.cmp{border-radius:28px;padding:44px 50px;margin-bottom:34px}
+.cmp-l{font-size:26px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;margin-bottom:18px}
+.cmp p{font-size:50px;font-weight:700;line-height:1.25}
+.cmp.bad{background:rgba(14,30,58,.06);color:rgba(14,30,58,.55)}
+.cmp.bad p{text-decoration:line-through;text-decoration-thickness:4px}
+.cmp.good{background:${c.navy};color:${c.cream}}
+.cmp.good .cmp-l{color:${c.gold}}
+.foot{position:absolute;z-index:2;left:120px;right:120px;bottom:70px;display:flex;
   justify-content:space-between;font-size:26px;font-weight:500;opacity:.75;white-space:nowrap}
 `;
 
