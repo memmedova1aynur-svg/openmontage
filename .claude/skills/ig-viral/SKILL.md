@@ -56,6 +56,9 @@ Agency rules, for every client, overriding anything below that conflicts:
   to the expert hold only what they say; montage plans go to the team
   separately.
 - Follow the positioning section of the client's voice profile above all.
+- Carousels are 5-6 slides at most. Vary the cover between consecutive
+  carousels (renderer variants light / dark / split, different icons) while
+  staying inside the client's brand colours and fonts.
 
 1. Work out which client this is for. If the user has not named one and the
    conversation has not already settled it, list the folders in

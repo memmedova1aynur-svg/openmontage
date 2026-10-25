@@ -6,11 +6,13 @@
 //   node render.js slides.json brand.json out_dir/
 //
 // slides.json: { "slides": [ {type, ...}, ... ] }
-//   cover     { label, headline, highlight?, sub?, photo? }  photo: local image path
+//   cover     { label, headline, highlight?, sub?, photo?, variant?, icon? }
+//             variant: light (default) | dark | split; icon: one of ICONS
 //   statement { text }
 //   point     { n, headline, body }
 //   recap     { headline, items: [..] }
 //   cta       { headline, body? }
+//   level     { badge, items: [..], note? }   a level card, e.g. A1-A2 + questions
 //   photo     { photo?, hint?, headline, body? }   photo on top, text below
 //   overlay   { photo?, hint?, headline, body? }   full-bleed photo, text on navy fade
 //   compare   { label_bad?, bad, label_good?, good, note? }  "say this, not that"
@@ -49,8 +51,24 @@ function img(s, cls) {
   return `<div class="${cls} ph-empty"><span>FOTO${s.hint ? ': ' + esc(s.hint) : ''}</span></div>`;
 }
 
-function frame(inner, i, total, dark = false) {
-  return `<section class="slide${dark ? ' dark' : ''}">
+// Simple line icons, drawn in the brand gold. Keep them few and generic.
+const ICONS = {
+  question: '<circle cx="50" cy="50" r="42"/><path d="M37 38a13 13 0 1 1 18 12c-4 2-5 5-5 9"/><circle cx="50" cy="72" r="1.5"/>',
+  levels: '<path d="M10 85h20V65h20V45h20V25h20"/><path d="M10 85h80"/>',
+  game: '<rect x="8" y="30" width="84" height="44" rx="22"/><path d="M28 44v16M20 52h16"/><circle cx="66" cy="48" r="3"/><circle cx="76" cy="56" r="3"/>',
+  star: '<path d="M50 10l12 26 28 3-21 19 6 28-25-14-25 14 6-28-21-19 28-3z"/>',
+  chat: '<path d="M12 20h76v46H40L22 82V66H12z"/><path d="M28 38h44M28 50h30"/>',
+  bulb: '<path d="M50 10a26 26 0 0 0-15 47c3 3 5 7 5 11h20c0-4 2-8 5-11A26 26 0 0 0 50 10z"/><path d="M40 78h20M43 88h14"/>',
+  check: '<rect x="14" y="14" width="72" height="72" rx="12"/><path d="M30 50l14 14 26-28"/>',
+};
+function icon(name, cls = 'icon') {
+  if (!name) return '';
+  if (!ICONS[name]) throw new Error(`unknown icon: ${name} (have: ${Object.keys(ICONS).join(', ')})`);
+  return `<svg class="${cls}" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]}</svg>`;
+}
+
+function frame(inner, i, total, dark = false, extra = '') {
+  return `<section class="slide${dark ? ' dark' : ''}${extra}">
     <div class="circle"></div>
     <div class="num">${i}/${total}</div>
     ${inner}
@@ -61,12 +79,32 @@ function frame(inner, i, total, dark = false) {
 function slideHtml(s, i, total) {
   switch (s.type) {
     case 'cover':
+      if (s.variant === 'split') {
+        return frame(`
+        <div class="split-top">
+          <div class="label"><span>${esc(s.label)}</span><i></i></div>
+          <h1 class="cover-h split-h">${headlineHtml(s.headline, s.highlight)}</h1>
+        </div>
+        <div class="split-bottom">
+          <div class="gold"></div>
+          ${s.sub ? `<p class="sub">${esc(s.sub)}</p>` : ''}
+        </div>
+        ${icon(s.icon, 'icon split-icon')}`, i, total, false, ' split');
+      }
       return frame(`
+        ${icon(s.icon)}
         <div class="label"><span>${esc(s.label)}</span><i></i></div>
         <h1 class="cover-h">${headlineHtml(s.headline, s.highlight)}</h1>
         <div class="gold"></div>
         ${s.sub ? `<p class="sub"${s.photo ? ' style="max-width:400px"' : ''}>${esc(s.sub)}</p>` : ''}
-        ${s.photo ? `<img class="photo" src="file://${path.resolve(path.dirname(slidesPath), s.photo)}">` : ''}`, i, total);
+        ${s.photo ? `<img class="photo" src="file://${path.resolve(path.dirname(slidesPath), s.photo)}">` : ''}`,
+        i, total, s.variant === 'dark');
+    case 'level':
+      return frame(`
+        <div class="badge">${esc(s.badge)}</div>
+        <ul class="qs">${s.items.map((q) => `<li>${esc(q)}</li>`).join('')}</ul>
+        ${s.note ? `<div class="gold"></div><p class="body sm"><b>Nəyə baxın:</b> ${esc(s.note)}</p>` : ''}`,
+        i, total);
     case 'statement':
       return frame(`<p class="statement">${esc(s.text)}</p><div class="gold"></div>`, i, total);
     case 'point':
@@ -167,6 +205,25 @@ body{background:#ccc}
 .cmp.bad p{text-decoration:line-through;text-decoration-thickness:4px}
 .cmp.good{background:${c.navy};color:${c.cream}}
 .cmp.good .cmp-l{color:${c.gold}}
+.slide{isolation:isolate}
+.circle{z-index:0}
+.label,.cover-h,.gold,.sub,.statement,.pn,.point-h,.body,.recap,.cta-h,.badge,.qs,.cmp{position:relative;z-index:1}
+.icon{position:absolute;right:120px;top:880px;width:230px;height:230px;color:${c.gold};z-index:1}
+.dark .hl{background:${c.gold};color:${c.navy}}
+.split .split-top{position:absolute;left:0;right:0;top:0;height:760px;background:${c.navy};
+  color:${c.cream};padding:150px 120px 0 120px}
+.split .num{color:${c.cream}}
+.split .split-h{margin-top:40px;font-size:104px}
+.split .hl{background:${c.gold};color:${c.navy}}
+.split .split-bottom{position:absolute;left:120px;right:120px;top:780px}
+.split .split-icon{top:auto;bottom:170px;right:120px;width:200px;height:200px}
+.badge{display:inline-block;background:${c.navy};color:${c.cream};font-size:64px;font-weight:800;
+  padding:18px 40px;border-radius:20px;margin-top:40px;margin-bottom:56px}
+.qs{list-style:none}
+.qs li{font-size:46px;font-weight:600;line-height:1.3;padding:24px 0 24px 44px;position:relative;
+  border-bottom:2px solid ${c.blue}}
+.qs li::before{content:"";position:absolute;left:0;top:44px;width:16px;height:16px;border-radius:50%;
+  background:${c.gold}}
 .foot{position:absolute;z-index:2;left:120px;right:120px;bottom:70px;display:flex;
   justify-content:space-between;font-size:26px;font-weight:500;opacity:.75;white-space:nowrap}
 `;

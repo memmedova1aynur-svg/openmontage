@@ -53,6 +53,9 @@ Agency rules, for every client, overriding anything below that conflicts:
   to the expert hold only what they say; montage plans go to the team
   separately.
 - Follow the positioning section of the client's voice profile above all.
+- Carousels are 5-6 slides at most. Vary the cover between consecutive
+  carousels (renderer variants light / dark / split, different icons) while
+  staying inside the client's brand colours and fonts.
 
 1. Work out which client this is for. If the user has not named one and the
    conversation has not already settled it, list the folders in
@@ -124,7 +127,9 @@ Instagram) and Azerbaijani letters always come out right.
 
 ```json
 { "slides": [
-  { "type": "cover", "label": "SPEAKING SKILLS", "headline": "...",
+  { "type": "cover", "variant": "light | dark | split",
+    "icon": "question | levels | game | star | chat | bulb | check",
+    "label": "SPEAKING SKILLS", "headline": "...",
     "highlight": "words inside the headline to mark", "sub": "...",
     "photo": "optional image path, relative to slides.json" },
   { "type": "statement", "text": "..." },
@@ -133,6 +138,7 @@ Instagram) and Azerbaijani letters always come out right.
   { "type": "cta", "headline": "Saxlayın", "body": "..." },
   { "type": "photo", "photo": "img.jpg", "hint": "...", "headline": "...", "body": "..." },
   { "type": "overlay", "photo": "img.jpg", "hint": "...", "headline": "...", "body": "..." },
+  { "type": "level", "badge": "B1", "items": ["question", "..."], "note": "..." },
   { "type": "compare", "label_bad": "Belə yox", "bad": "...", "label_good": "Belə", "good": "...", "note": "..." }
 ] }
 ```
