@@ -9,12 +9,29 @@ description: >-
 
 # ig-plan
 
+## Which client
+
+This project runs several clients' Instagram accounts. Every per-account file
+lives in `instagram-clients/<client>/` at the project root, where `<client>` is
+the client's folder name (lowercase, hyphens). These paths are relative to
+the project root, so when a script in this folder takes an output path, pass
+it the absolute one.
+
+1. Work out which client this is for. If the user has not named one and the
+   conversation has not already settled it, list the folders in
+   `instagram-clients/` and ask. Never guess, and never carry one client's
+   voice, numbers or plans into another client's work.
+2. If the client has no folder yet, copy `instagram-clients/_template/` to
+   `instagram-clients/<client>/` and fill in what you know.
+3. Read `instagram-clients/<client>/voice.md` before writing anything, and
+   write in the content language it names.
+
 The control room. Everything else in this pack executes; this decides what gets
 executed. Run it once a week, on the same day.
 
 ## Input
 
-If `~/.claude/instagram/voice.md`, `swipe.md` and `log.md` exist, read them.
+If `instagram-clients/<client>/voice.md`, `swipe.md` and `log.md` exist, read them.
 The swipe file is the user's own evidence from `/ig-viral` about which formulas
 are landing in their niche right now, and it outranks anything in this file.
 The log stops the plan repeating a theme from the last fortnight.
@@ -95,6 +112,6 @@ ENGAGE  (5 reach / 3 peers / 2 buyers)
 Say "write Tuesday" and I will draft it.
 ```
 
-Write the plan to `~/.claude/instagram/plan.md` so the other skills can read
+Write the plan to `instagram-clients/<client>/plan.md` so the other skills can read
 it. Nothing is scheduled or posted anywhere. This is a plan and the user runs
 it.

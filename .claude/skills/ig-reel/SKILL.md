@@ -11,6 +11,23 @@ description: >-
 
 # ig-reel
 
+## Which client
+
+This project runs several clients' Instagram accounts. Every per-account file
+lives in `instagram-clients/<client>/` at the project root, where `<client>` is
+the client's folder name (lowercase, hyphens). These paths are relative to
+the project root, so when a script in this folder takes an output path, pass
+it the absolute one.
+
+1. Work out which client this is for. If the user has not named one and the
+   conversation has not already settled it, list the folders in
+   `instagram-clients/` and ask. Never guess, and never carry one client's
+   voice, numbers or plans into another client's work.
+2. If the client has no folder yet, copy `instagram-clients/_template/` to
+   `instagram-clients/<client>/` and fill in what you know.
+3. Read `instagram-clients/<client>/voice.md` before writing anything, and
+   write in the content language it names.
+
 Turns one raw idea into a Reel that somebody finishes.
 
 Two tools live in this folder and they both actually run. Use them. Do not
@@ -24,7 +41,7 @@ python3 beats.py script.txt --target 30     # timed beat sheet before you shoot
 
 ## Before you write
 
-1. Read `~/.claude/instagram/voice.md` if it exists. That is the user's voice
+1. Read `instagram-clients/<client>/voice.md` if it exists. That is the user's voice
    profile: how they talk on camera, what they never say, who they are talking
    to. If it does not exist, ask for **three of their own reels**, transcribe or
    read them, infer the voice, and write the file. A script in the wrong voice
@@ -36,7 +53,7 @@ python3 beats.py script.txt --target 30     # timed beat sheet before you shoot
 3. If the idea is thin, do not pad it. Ask one batched question: what happened,
    to whom, and what did it cost or return. A Reel needs one specific true
    thing. Get it before writing.
-4. If `~/.claude/instagram/swipe.md` exists, read it. `/ig-viral` writes that
+4. If `instagram-clients/<client>/swipe.md` exists, read it. `/ig-viral` writes that
    file, and it is the user's own evidence about which formulas are working in
    their niche right now. It beats the defaults in this file.
 
@@ -93,7 +110,7 @@ Reply "yes" to log it, or tell me what to change.
 ```
 
 **7. Never publish.** This skill produces a script. The user shoots it and
-posts it. On "yes", append to `~/.claude/instagram/log.md` with the date, the
+posts it. On "yes", append to `instagram-clients/<client>/log.md` with the date, the
 hook formula used and the first line, so `/ig-audit` has a history later.
 
 ## On-screen text is a separate script

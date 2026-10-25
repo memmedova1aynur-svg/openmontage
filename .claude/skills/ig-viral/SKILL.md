@@ -12,13 +12,30 @@ description: >-
 
 # ig-viral
 
+## Which client
+
+This project runs several clients' Instagram accounts. Every per-account file
+lives in `instagram-clients/<client>/` at the project root, where `<client>` is
+the client's folder name (lowercase, hyphens). These paths are relative to
+the project root, so when a script in this folder takes an output path, pass
+it the absolute one.
+
+1. Work out which client this is for. If the user has not named one and the
+   conversation has not already settled it, list the folders in
+   `instagram-clients/` and ask. Never guess, and never carry one client's
+   voice, numbers or plans into another client's work.
+2. If the client has no folder yet, copy `instagram-clients/_template/` to
+   `instagram-clients/<client>/` and fill in what you know.
+3. Read `instagram-clients/<client>/voice.md` before writing anything, and
+   write in the content language it names.
+
 The research skill. Everything else in this pack writes; this one goes and
 looks. Run it monthly, not daily. Formulas last a season.
 
 One tool lives in this folder and it runs:
 
 ```bash
-python3 swipe.py captured.tsv --out ~/.claude/instagram/swipe.md
+python3 swipe.py captured.tsv --out instagram-clients/<client>/swipe.md
 ```
 
 ## The one idea that makes this worth doing
@@ -112,7 +129,7 @@ account	followers	median	views	hook
 ```
 
 ```bash
-python3 swipe.py captured.tsv --out ~/.claude/instagram/swipe.md
+python3 swipe.py captured.tsv --out instagram-clients/<client>/swipe.md
 ```
 
 It computes the outlier multiple, names the hook formula using the same 26
@@ -171,7 +188,7 @@ YOUR VERSION
   ...
 ```
 
-Write the swipe file to `~/.claude/instagram/swipe.md`. `/ig-reel` and
+Write the swipe file to `instagram-clients/<client>/swipe.md`. `/ig-reel` and
 `/ig-plan` both read it, which is the point: after this runs once, the rest of
 the pack is working from the user's own evidence instead of from defaults.
 

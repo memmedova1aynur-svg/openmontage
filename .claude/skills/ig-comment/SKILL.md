@@ -9,6 +9,23 @@ description: >-
 
 # ig-comment
 
+## Which client
+
+This project runs several clients' Instagram accounts. Every per-account file
+lives in `instagram-clients/<client>/` at the project root, where `<client>` is
+the client's folder name (lowercase, hyphens). These paths are relative to
+the project root, so when a script in this folder takes an output path, pass
+it the absolute one.
+
+1. Work out which client this is for. If the user has not named one and the
+   conversation has not already settled it, list the folders in
+   `instagram-clients/` and ask. Never guess, and never carry one client's
+   voice, numbers or plans into another client's work.
+2. If the client has no folder yet, copy `instagram-clients/_template/` to
+   `instagram-clients/<client>/` and fill in what you know.
+3. Read `instagram-clients/<client>/voice.md` before writing anything, and
+   write in the content language it names.
+
 Commenting is the highest-leverage twenty minutes on Instagram and the easiest
 to do badly. A comment near the top of a reel with 40,000 views is seen by more
 people than most accounts' own posts, and it is the one place where a stranger
@@ -82,7 +99,7 @@ Post the first. It concedes something and it has a number in it.
 
 For an engagement round, ask for the 5 to 10 posts as pasted text in one
 message, return one comment each in a single block, and keep a running note in
-`~/.claude/instagram/log.md` of who has been commented on this week.
+`instagram-clients/<client>/log.md` of who has been commented on this week.
 Commenting on the same three accounts every day is visible and it looks like
 exactly what it is.
 

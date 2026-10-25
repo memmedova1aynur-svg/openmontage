@@ -10,6 +10,23 @@ description: >-
 
 # ig-repurpose
 
+## Which client
+
+This project runs several clients' Instagram accounts. Every per-account file
+lives in `instagram-clients/<client>/` at the project root, where `<client>` is
+the client's folder name (lowercase, hyphens). These paths are relative to
+the project root, so when a script in this folder takes an output path, pass
+it the absolute one.
+
+1. Work out which client this is for. If the user has not named one and the
+   conversation has not already settled it, list the folders in
+   `instagram-clients/` and ask. Never guess, and never carry one client's
+   voice, numbers or plans into another client's work.
+2. If the client has no folder yet, copy `instagram-clients/_template/` to
+   `instagram-clients/<client>/` and fill in what you know.
+3. Read `instagram-clients/<client>/voice.md` before writing anything, and
+   write in the content language it names.
+
 One good long asset contains four to six posts. Most people extract one and
 throw the rest away.
 
