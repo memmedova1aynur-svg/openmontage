@@ -11,7 +11,7 @@
 //   statement { text }
 //   point     { n, headline, body }
 //   recap     { headline, items: [..] }
-//   cta       { headline, body? }
+//   cta       { headline, body?, light? }  dark by default; light: true keeps the page background
 //   level     { badge, items: [..], note? }   a level card, e.g. A1-A2 + questions
 // Any slide may add art: ["hourglass", "dice"] to draw brand illustrations
 // (see illustrations.js) in the lower part of the slide. On a cover, art
@@ -155,7 +155,7 @@ function slideHtml(s, i, total) {
       return frame(`
         <h2 class="cta-h">${esc(s.headline)}</h2>
         <div class="gold"></div>
-        ${s.body ? `<p class="body">${esc(s.body)}</p>` : ''}`, i, total, true, '', s.art);
+        ${s.body ? `<p class="body">${esc(s.body)}</p>` : ''}`, i, total, !s.light, '', s.art);
     case 'photo':
       return frame(`
         ${img(s, 'ph-top')}
