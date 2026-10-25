@@ -42,9 +42,14 @@ Agency rules, for every client, overriding anything below that conflicts:
 - One video, one topic. No jumping between events or subjects in one reel.
 - Every video stands alone. No "part 1" or cliffhangers unless the user asks
   for a series.
-- Scripts are directions, not lines to memorise: talking points per section,
-  an example sentence, blanks the expert fills in their own words, and a
-  separate montage plan (what footage goes where, on-screen cards).
+- Script format depends on the video. Experts shoot with a teleprompter, 5-10
+  videos in one 1-2 hour session. Methodology and educational videos get a
+  full teleprompter script: spoken, conversational Azerbaijani in short lines,
+  no bookish phrasing, no blanks (ask the user for any fact you need before
+  writing). Personal-story videos (who I am, why I chose this path) get
+  directions instead: talking points, an example sentence, blanks the expert
+  fills in their own words. Every video also gets a separate montage plan
+  (what footage goes where, on-screen cards).
 - Follow the positioning section of the client's voice profile above all.
 
 1. Work out which client this is for. If the user has not named one and the
@@ -109,18 +114,42 @@ LAST      CTA       one action. Save, comment a keyword, or follow. One.
 
 ## Building the files
 
-Instagram wants 1080x1350 (4:5), JPEG or PNG, up to 20 items. Build it as HTML
-and print each slide:
+Use the renderer in this folder. It typesets every slide from JSON with the
+client's brand, so there is no generative AI involved (no AI-content label on
+Instagram) and Azerbaijani letters always come out right.
 
-```bash
-# one <section> per slide, 1080x1350, page-break-after: always
-# then Chrome headless --print-to-pdf, or any HTML-to-image you already use
+1. Write `instagram-clients/<client>/carousels/<yyyy-mm>-<slug>/slides.json`:
+
+```json
+{ "slides": [
+  { "type": "cover", "label": "SPEAKING SKILLS", "headline": "...",
+    "highlight": "words inside the headline to mark", "sub": "...",
+    "photo": "optional image path, relative to slides.json" },
+  { "type": "statement", "text": "..." },
+  { "type": "point", "n": "01", "headline": "...", "body": "up to 25 words" },
+  { "type": "recap", "headline": "Xülasə", "items": ["...", "..."] },
+  { "type": "cta", "headline": "Saxlayın", "body": "..." }
+] }
 ```
 
-Write the HTML with `width:1080px; height:1350px`, a single accent colour, and
-type no smaller than 32px, because this is read on a phone at a third of its
-real size. If the project has a brand skill or a design system, use it and do
-not invent a palette.
+2. Render, from the project root:
+
+```bash
+node .claude/skills/ig-carousel/render.js \
+  instagram-clients/<client>/carousels/<dir>/slides.json \
+  instagram-clients/<client>/brand.json \
+  instagram-clients/<client>/carousels/<dir>/
+```
+
+It writes `01.png`, `02.png`, ... at 1080x1350 and exits non-zero if any text
+runs into the footer; shorten the copy and render again. Look at the cover and
+at least one body slide before showing them. The client's colours, name line
+and handle live in `instagram-clients/<client>/brand.json` (copy it from
+`_template/` for a new client). Fonts are bundled in `fonts/` (Montserrat,
+SIL Open Font License).
+
+3. Show the PNGs to the user. Upload them to the client's Drive folder only
+   after approval.
 
 ## Output
 
