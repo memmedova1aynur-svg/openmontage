@@ -152,6 +152,15 @@ node .claude/skills/ig-carousel/render.js \
   instagram-clients/<client>/carousels/<dir>/
 ```
 
+Illustrations: add `"art": ["hourglass", "dice"]` to any slide to draw flat
+line illustrations in the brand palette in the lower part of the slide (first
+item large, the rest smaller). Pick drawings that match the slide's idea; give
+most body slides one or two. Available: hourglass, dice, target, cards, chat,
+pawn, notepad, pencil, stopwatch, book, music, blocks, star, bulb, laptop,
+board, puzzle, trophy, magnifier, headphones (see `illustrations.js`; add new
+ones there in the same style rather than using AI images). The renderer fails
+if text runs into the illustration; shorten the text.
+
 Photos: the expert's own shots or frames from their videos come first; free
 stock (Unsplash, Pexels) only if the user supplies the files. Avoid AI-generated
 images: Instagram may label them. Without `photo`, a placeholder showing `hint`

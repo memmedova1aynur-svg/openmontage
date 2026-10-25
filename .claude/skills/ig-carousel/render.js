@@ -13,6 +13,9 @@
 //   recap     { headline, items: [..] }
 //   cta       { headline, body? }
 //   level     { badge, items: [..], note? }   a level card, e.g. A1-A2 + questions
+// Any slide may add art: ["hourglass", "dice"] to draw brand illustrations
+// (see illustrations.js) in the lower part of the slide. On a cover, art
+// replaces the icon.
 //   photo     { photo?, hint?, headline, body? }   photo on top, text below
 //   overlay   { photo?, hint?, headline, body? }   full-bleed photo, text on navy fade
 //   compare   { label_bad?, bad, label_good?, good, note? }  "say this, not that"
@@ -23,6 +26,7 @@
 const fs = require('fs');
 const path = require('path');
 const { chromium } = require('playwright');
+const { art } = require('./illustrations');
 
 const [slidesPath, brandPath, outDir] = process.argv.slice(2);
 if (!slidesPath || !brandPath || !outDir) {
@@ -67,11 +71,18 @@ function icon(name, cls = 'icon') {
   return `<svg class="${cls}" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]}</svg>`;
 }
 
-function frame(inner, i, total, dark = false, extra = '') {
+function artBlock(names, dark) {
+  if (!names || !names.length) return '';
+  const pal = { N: dark ? c.cream : c.navy, B: c.blue, G: c.gold, W: '#FFFDF8', C: '#EADFCB' };
+  return `<div class="art">${names.map((n, k) => art(n, pal, k === 0 ? 330 : 220)).join('')}</div>`;
+}
+
+function frame(inner, i, total, dark = false, extra = '', artNames = null) {
   return `<section class="slide${dark ? ' dark' : ''}${extra}">
     <div class="circle"></div>
     <div class="num">${i}/${total}</div>
     ${inner}
+    ${artBlock(artNames, dark)}
     <div class="foot"><span>${esc(brand.name_line)}</span><span>${esc(brand.handle)}</span></div>
   </section>`;
 }
@@ -89,49 +100,49 @@ function slideHtml(s, i, total) {
           <div class="gold"></div>
           ${s.sub ? `<p class="sub">${esc(s.sub)}</p>` : ''}
         </div>
-        ${icon(s.icon, 'icon split-icon')}`, i, total, false, ' split');
+        ${s.art ? '' : icon(s.icon, 'icon split-icon')}`, i, total, false, ' split', s.art);
       }
       return frame(`
-        ${icon(s.icon)}
+        ${s.art ? '' : icon(s.icon)}
         <div class="label"><span>${esc(s.label)}</span><i></i></div>
         <h1 class="cover-h">${headlineHtml(s.headline, s.highlight)}</h1>
         <div class="gold"></div>
         ${s.sub ? `<p class="sub"${s.photo ? ' style="max-width:400px"' : ''}>${esc(s.sub)}</p>` : ''}
         ${s.photo ? `<img class="photo" src="file://${path.resolve(path.dirname(slidesPath), s.photo)}">` : ''}`,
-        i, total, s.variant === 'dark');
+        i, total, s.variant === 'dark', '', s.art);
     case 'level':
       return frame(`
         <div class="badge">${esc(s.badge)}</div>
         <ul class="qs">${s.items.map((q) => `<li>${esc(q)}</li>`).join('')}</ul>
         ${s.note ? `<div class="gold"></div><p class="body sm"><b>Nəyə baxın:</b> ${esc(s.note)}</p>` : ''}`,
-        i, total);
+        i, total, false, '', s.art);
     case 'statement':
-      return frame(`<p class="statement">${esc(s.text)}</p><div class="gold"></div>`, i, total);
+      return frame(`<p class="statement">${esc(s.text)}</p><div class="gold"></div>`, i, total, false, '', s.art);
     case 'point':
       return frame(`
         <div class="pn">${esc(s.n)}</div>
         <h2 class="point-h">${esc(s.headline)}</h2>
         <div class="gold"></div>
-        <p class="body">${esc(s.body)}</p>`, i, total);
+        <p class="body">${esc(s.body)}</p>`, i, total, false, '', s.art);
     case 'recap':
       return frame(`
         <h2 class="point-h">${esc(s.headline)}</h2>
         <div class="gold"></div>
         <ol class="recap">${s.items.map((it, k) =>
           `<li><b>${String(k + 1).padStart(2, '0')}</b><span>${esc(it)}</span></li>`).join('')}</ol>`,
-        i, total);
+        i, total, false, '', s.art);
     case 'cta':
       return frame(`
         <h2 class="cta-h">${esc(s.headline)}</h2>
         <div class="gold"></div>
-        ${s.body ? `<p class="body">${esc(s.body)}</p>` : ''}`, i, total, true);
+        ${s.body ? `<p class="body">${esc(s.body)}</p>` : ''}`, i, total, true, '', s.art);
     case 'photo':
       return frame(`
         ${img(s, 'ph-top')}
         <div class="ph-text">
           <h2 class="point-h sm">${esc(s.headline)}</h2>
           ${s.body ? `<p class="body sm">${esc(s.body)}</p>` : ''}
-        </div>`, i, total);
+        </div>`, i, total, false, '', s.art);
     case 'overlay':
       return frame(`
         ${img(s, 'ph-full')}
@@ -140,14 +151,14 @@ function slideHtml(s, i, total) {
           <h2 class="point-h">${esc(s.headline)}</h2>
           <div class="gold"></div>
           ${s.body ? `<p class="body">${esc(s.body)}</p>` : ''}
-        </div>`, i, total, true);
+        </div>`, i, total, true, '', s.art);
     case 'compare':
       return frame(`
         <div class="cmp bad"><div class="cmp-l">${esc(s.label_bad || 'Belə yox')}</div>
           <p>${esc(s.bad)}</p></div>
         <div class="cmp good"><div class="cmp-l">${esc(s.label_good || 'Belə')}</div>
           <p>${esc(s.good)}</p></div>
-        ${s.note ? `<p class="body sm">${esc(s.note)}</p>` : ''}`, i, total);
+        ${s.note ? `<p class="body sm">${esc(s.note)}</p>` : ''}`, i, total, false, '', s.art);
     default:
       throw new Error(`unknown slide type: ${s.type}`);
   }
@@ -224,6 +235,8 @@ body{background:#ccc}
   border-bottom:2px solid ${c.blue}}
 .qs li::before{content:"";position:absolute;left:0;top:44px;width:16px;height:16px;border-radius:50%;
   background:${c.gold}}
+.art{position:absolute;right:150px;bottom:150px;display:flex;align-items:flex-end;z-index:1}
+.art .art-item+.art-item{margin-left:-40px}
 .foot{position:absolute;z-index:2;left:120px;right:120px;bottom:70px;display:flex;
   justify-content:space-between;font-size:26px;font-weight:500;opacity:.75;white-space:nowrap}
 `;
@@ -249,7 +262,11 @@ body{background:#ccc}
   // Fail loudly if any text overflows the slide instead of shipping a cut-off.
   const overflow = await page.$$eval('section.slide', (els) => els
     .map((el, k) => [...el.querySelectorAll('h1,h2,p,ol')]
-      .some((n) => n.getBoundingClientRect().bottom > el.getBoundingClientRect().bottom - 120)
+      .some((n) => {
+        const art = el.querySelector('.art');
+        const limit = art ? art.getBoundingClientRect().top - 30 : el.getBoundingClientRect().bottom - 120;
+        return n.getBoundingClientRect().bottom > limit;
+      })
       ? k + 1 : 0)
     .filter(Boolean));
   await browser.close();
