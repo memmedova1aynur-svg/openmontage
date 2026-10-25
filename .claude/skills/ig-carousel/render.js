@@ -261,7 +261,7 @@ body{background:#ccc}
   }
   // Fail loudly if any text overflows the slide instead of shipping a cut-off.
   const overflow = await page.$$eval('section.slide', (els) => els
-    .map((el, k) => [...el.querySelectorAll('h1,h2,p,ol')]
+    .map((el, k) => [...el.querySelectorAll('h1,h2,p,ol,ul')]
       .some((n) => {
         const art = el.querySelector('.art');
         const limit = art ? art.getBoundingClientRect().top - 30 : el.getBoundingClientRect().bottom - 120;
