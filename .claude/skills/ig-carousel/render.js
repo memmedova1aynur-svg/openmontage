@@ -69,6 +69,7 @@ const ICONS = {
   chat: '<path d="M12 20h76v46H40L22 82V66H12z"/><path d="M28 38h44M28 50h30"/>',
   bulb: '<path d="M50 10a26 26 0 0 0-15 47c3 3 5 7 5 11h20c0-4 2-8 5-11A26 26 0 0 0 50 10z"/><path d="M40 78h20M43 88h14"/>',
   check: '<rect x="14" y="14" width="72" height="72" rx="12"/><path d="M30 50l14 14 26-28"/>',
+  eye: '<path d="M8 50c12-20 26-30 42-30s30 10 42 30c-12 20-26 30-42 30S20 70 8 50z"/><circle cx="50" cy="50" r="13"/>',
   house: '<path d="M14 46L50 16l36 30"/><path d="M24 40v44h52V40"/><path d="M42 84V62h16v22"/>',
   people: '<circle cx="36" cy="36" r="12"/><circle cx="66" cy="40" r="10"/><path d="M14 84c0-16 10-26 22-26s22 10 22 26M56 84c2-12 6-20 12-20 8 0 16 8 18 20"/>',
   blocks: '<rect x="14" y="50" width="34" height="34" rx="4"/><rect x="52" y="50" width="34" height="34" rx="4"/><rect x="33" y="14" width="34" height="34" rx="4"/>',
@@ -271,6 +272,8 @@ body{background:#ccc}
   background:${c.navy};color:${c.cream};border-radius:60px;padding:14px 14px 14px 48px;font-size:38px;font-weight:500}
 .pill b{display:flex;align-items:center;justify-content:center;width:78px;height:78px;border-radius:50%;
   background:${c.gold};color:${c.navy};font-size:40px}
+.dark .pill{background:${c.cream};color:${c.navy}}
+body.hl-text .slide .hl{background:none;color:${c.gold};padding:0}
 .sig{display:flex;flex-direction:column;gap:6px}
 .sig b{font-size:24px;font-weight:700;letter-spacing:.28em;text-transform:uppercase}
 .sig i{display:none}
@@ -308,7 +311,7 @@ body{background:#ccc}
 (async () => {
   const total = spec.slides.length;
   const html = `<!doctype html><html><head><meta charset="utf-8"><style>${css}</style></head>
-    <body class="theme-${theme}">${spec.slides.map((s, k) => slideHtml(s, k + 1, total)).join('')}</body></html>`;
+    <body class="theme-${theme}${spec.highlight_text ? ' hl-text' : ''}">${spec.slides.map((s, k) => slideHtml(s, k + 1, total)).join('')}</body></html>`;
   fs.mkdirSync(outDir, { recursive: true });
   const htmlPath = path.join(outDir, 'carousel.html');
   fs.writeFileSync(htmlPath, html);

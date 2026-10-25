@@ -157,7 +157,8 @@ Themes: set `"theme"` at the top of slides.json to `classic` (default),
 slide navy) or `cards` (content on a paper card over the soft blue). Rotate
 themes so consecutive carousels on the grid do not look alike.
 
-The `accent` theme marks highlighted words in gold text instead of a box.
+Any theme takes `"highlight_text": true` at the top of slides.json to mark
+highlighted words in gold text instead of a box. The `accent` theme marks highlighted words in gold text instead of a box.
 Covers also take `"chain": [icon, ...]` (a vertical row of icon circles joined
 by a gold line) and `"pill": "Ətraflı bax"` (a call-to-action pill). A brand
 with `"signature": {"name", "sub"}` gets a two-line signature in the footer.
