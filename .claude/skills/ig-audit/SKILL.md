@@ -34,6 +34,8 @@ or words: the converter corrupts them.
 Draft in the chat first. Scripts, captions, plans and other drafts are
 discussed and revised in the conversation; only what the user approves is saved
 to the client's Drive folder. Never upload a draft the user has not approved.
+This includes the voice profile: keep it updated locally as facts change, but
+upload it to Drive only when the user explicitly says to.
 
 Agency rules, for every client, overriding anything below that conflicts:
 - No agitation. Never show the expert's struggles, fears or private life.
