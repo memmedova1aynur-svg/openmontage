@@ -152,6 +152,11 @@ node .claude/skills/ig-carousel/render.js \
   instagram-clients/<client>/carousels/<dir>/
 ```
 
+Themes: set `"theme"` at the top of slides.json to `classic` (default),
+`editorial` (serif headlines, italic gold accents, hairlines), `night` (every
+slide navy) or `cards` (content on a paper card over the soft blue). Rotate
+themes so consecutive carousels on the grid do not look alike.
+
 Illustrations: add `"art": ["hourglass", "dice"]` to any slide to draw flat
 line illustrations in the brand palette in the lower part of the slide (first
 item large, the rest smaller). Pick drawings that match the slide's idea; give

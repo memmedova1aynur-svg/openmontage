@@ -35,6 +35,11 @@ if (!slidesPath || !brandPath || !outDir) {
 }
 
 const spec = JSON.parse(fs.readFileSync(slidesPath, 'utf8'));
+// Visual theme for the whole carousel, so consecutive carousels can look
+// different while keeping the brand colours: classic | editorial | night | cards
+const THEMES = ['classic', 'editorial', 'night', 'cards'];
+const theme = spec.theme || 'classic';
+if (!THEMES.includes(theme)) throw new Error(`unknown theme: ${theme} (have: ${THEMES.join(', ')})`);
 const brand = JSON.parse(fs.readFileSync(brandPath, 'utf8'));
 const c = brand.colors;
 const fontDir = path.join(__dirname, 'fonts');
@@ -78,6 +83,7 @@ function artBlock(names, dark) {
 }
 
 function frame(inner, i, total, dark = false, extra = '', artNames = null) {
+  dark = dark || theme === 'night';
   return `<section class="slide${dark ? ' dark' : ''}${extra}">
     <div class="circle"></div>
     <div class="num">${i}/${total}</div>
@@ -169,6 +175,8 @@ const css = `
 @font-face{font-family:M;src:url("file://${fontDir}/Montserrat-500.ttf");font-weight:500}
 @font-face{font-family:M;src:url("file://${fontDir}/Montserrat-700.ttf");font-weight:700}
 @font-face{font-family:M;src:url("file://${fontDir}/Montserrat-800.ttf");font-weight:800}
+@font-face{font-family:P;src:url("file://${fontDir}/PlayfairDisplay-700.ttf");font-weight:700}
+@font-face{font-family:P;src:url("file://${fontDir}/PlayfairDisplay-500italic.ttf");font-weight:500;font-style:italic}
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#ccc}
 .slide{position:relative;width:1080px;height:1350px;overflow:hidden;
@@ -239,12 +247,36 @@ body{background:#ccc}
 .art .art-item+.art-item{margin-left:-40px}
 .foot{position:absolute;z-index:2;left:120px;right:120px;bottom:70px;display:flex;
   justify-content:space-between;font-size:26px;font-weight:500;opacity:.75;white-space:nowrap}
+
+/* editorial: serif headlines, italic gold accents, hairlines, no circle */
+.theme-editorial .circle{display:none}
+.theme-editorial .slide::before{content:"";position:absolute;left:120px;right:120px;top:120px;height:2px;background:${c.navy};opacity:.15}
+.theme-editorial .cover-h,.theme-editorial .point-h,.theme-editorial .statement,.theme-editorial .cta-h,.theme-editorial .split-h{
+  font-family:P,serif;font-weight:700;letter-spacing:0}
+.theme-editorial .cover-h{font-size:112px;line-height:1.08}
+.theme-editorial .hl{background:none;color:${c.gold};font-style:italic;font-weight:500;padding:0}
+.theme-editorial .pn{font-family:P,serif;font-style:italic;font-weight:500;font-size:170px}
+.theme-editorial .gold{width:90px;height:3px}
+.theme-editorial .badge{background:none;color:${c.gold};border:3px solid ${c.gold};font-family:P,serif}
+/* night: every slide navy */
+.theme-night .badge{background:${c.cream};color:${c.navy}}
+.theme-night .qs li,.theme-night .recap li{border-color:rgba(255,255,255,.15)}
+.theme-night .hl{background:${c.gold};color:${c.navy}}
+/* cards: content on a paper card over the soft blue background */
+.theme-cards .slide,.theme-cards .slide.dark{background:${c.blue}}
+.theme-cards .slide::before{content:"";position:absolute;inset:60px;border-radius:44px;background:${c.cream};
+  box-shadow:0 18px 40px rgba(14,30,58,.12);z-index:0}
+.theme-cards .slide.dark::before{background:${c.navy}}
+.theme-cards .circle{display:none}
+.theme-cards .num{top:100px}
+.theme-cards .foot{bottom:100px}
+.theme-cards .art{bottom:180px}
 `;
 
 (async () => {
   const total = spec.slides.length;
   const html = `<!doctype html><html><head><meta charset="utf-8"><style>${css}</style></head>
-    <body>${spec.slides.map((s, k) => slideHtml(s, k + 1, total)).join('')}</body></html>`;
+    <body class="theme-${theme}">${spec.slides.map((s, k) => slideHtml(s, k + 1, total)).join('')}</body></html>`;
   fs.mkdirSync(outDir, { recursive: true });
   const htmlPath = path.join(outDir, 'carousel.html');
   fs.writeFileSync(htmlPath, html);
