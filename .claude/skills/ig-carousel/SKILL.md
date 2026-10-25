@@ -34,6 +34,17 @@ Draft in the chat first. Scripts, captions, plans and other drafts are
 discussed and revised in the conversation; only what the user approves is saved
 to the client's Drive folder. Never upload a draft the user has not approved.
 
+Agency rules, for every client, overriding anything below that conflicts:
+- No agitation. Never show the expert's struggles, fears or private life.
+  Present them professionally: decisions, knowledge, growth.
+- One video, one topic. No jumping between events or subjects in one reel.
+- Every video stands alone. No "part 1" or cliffhangers unless the user asks
+  for a series.
+- Scripts are directions, not lines to memorise: talking points per section,
+  an example sentence, blanks the expert fills in their own words, and a
+  separate montage plan (what footage goes where, on-screen cards).
+- Follow the positioning section of the client's voice profile above all.
+
 1. Work out which client this is for. If the user has not named one and the
    conversation has not already settled it, list the folders in
    `instagram-clients/` and ask. Never guess, and never carry one client's
