@@ -145,6 +145,10 @@ def main() -> None:
     cutaways = spec.get("cutaways", [])
     overlays = []
     for o in spec.get("overlays", []):
+        if o.get("kind") == "pop" and o.get("pos") in ("l", "r") and len("".join(t for t, _ in o["parts"])) > 24:
+            # a long side pop wraps to 3-4 lines and crowds the speaker; long phrases go on top
+            print(f"NOTE: pop {o['id']} is long for a side position - moved to top")
+            o = {**o, "pos": "t"}
         clash = next((c for c in cutaways if o["in"] < c["out"] and c["in"] < o["out"]), None)
         if clash:  # a pill on top of a cutaway reads as clutter; the cutaway wins
             print(f"WARN: pill {o['id']} overlaps cutaway {clash['id']} - dropped")

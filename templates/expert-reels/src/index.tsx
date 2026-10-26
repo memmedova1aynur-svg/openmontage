@@ -126,13 +126,15 @@ const POP_POS: Record<string, { box: React.CSSProperties; rot: number }> = {
   t: { box: { top: 330, left: 0, right: 0, display: "flex", justifyContent: "center" }, rot: -2 },
   tl: { box: { top: 400, left: 50 }, rot: -5 },
   tr: { box: { top: 400, right: 50 }, rot: 5 },
-  l: { box: { top: 1130, left: 40 }, rot: -3 },
-  r: { box: { top: 1130, right: 40 }, rot: 3 },
+  // side pops are anchored by their bottom edge so a long one grows upward, never into the captions (box top ~y 1375)
+  l: { box: { bottom: 600, left: 40 }, rot: -3 },
+  r: { box: { bottom: 600, right: 40 }, rot: 3 },
 };
 
 const KeywordPop: React.FC<{ o: Pill }> = ({ o }) => {
   const frame = useCurrentFrame();
   const lightPop = E.style.pops === "light";
+  const popChars = o.parts.map(([txt]) => txt).join("").length;
   const { fps } = useVideoConfig();
   const dur = (o.out - o.in) * fps;
   const pos = POP_POS[o.pos ?? "t"];
@@ -146,7 +148,7 @@ const KeywordPop: React.FC<{ o: Pill }> = ({ o }) => {
       <div style={{ position: "absolute", ...pos.box }}>
         <div
           style={{
-            maxWidth: o.pos === "t" ? 900 : 440,
+            maxWidth: o.pos === "t" ? 900 : 500,
             padding: "16px 28px 20px",
             borderRadius: 26,
             background: lightPop ? "rgba(255,255,255,0.96)" : rgba(T.primary, 0.92),
@@ -154,7 +156,7 @@ const KeywordPop: React.FC<{ o: Pill }> = ({ o }) => {
             borderBottom: `8px solid ${lightPop ? T.primary : T.accent}`,
             fontFamily: FONT,
             fontWeight: 900,
-            fontSize: 60,
+            fontSize: popChars > 16 ? 50 : 60,
             lineHeight: 1.08,
             color: T.text,
             textAlign: o.pos === "r" || o.pos === "tr" ? "right" : o.pos === "t" ? "center" : "left",
