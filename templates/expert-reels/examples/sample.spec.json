@@ -1,0 +1,37 @@
+{
+  "_comment": "Per-video spec. Times are seconds in the source footage, taken from the aligned word timings. Text in **double stars** is drawn in the accent colour.",
+  "expert": "_example",
+  "words": "../artifacts/corrected_word_segments.json",
+  "duration": 56.4,
+  "captions": { "max_words": 3, "max_chars": 20 },
+  "style": { "backdrop": "dots" },
+  "pip": { "focus": [560, 895], "radius": 210, "scale": 0.69 },
+  "zoom": [
+    [0, 1.0, "cut"], [1.6, 1.07, "push"], [3.1, 1.0, "cut"], [10.4, 1.17, "punch"],
+    [12.8, 1.0, "cut"], [16.1, 1.07, "push"], [18.4, 1.0, "cut"], [42.1, 1.19, "punch"],
+    [44.3, 1.04, "cut"], [51.1, 1.1, "push"], [54.8, 1.2, "punch"]
+  ],
+  "overlays": [
+    { "id": "hook", "kind": "hook", "label": null, "parts": [["Sual mətni ", 0], ["vurğu?", 1]], "in": 5.7, "out": 9.2 },
+    { "id": "point1", "kind": "pill", "label": "1 · BAŞLIQ", "parts": [["Açar ", 0], ["fikir", 1]], "in": 16.1, "out": 19.4 }
+  ],
+  "cutaways": [
+    {
+      "id": "plan", "kind": "pip", "in": 25.0, "out": 33.65,
+      "panels": [
+        { "kind": "timeline", "at": 25.0, "props": {
+          "label": "2 · PLAN", "title": "6 aylıq **karyera**\nxəritəsi",
+          "steps": ["AY|1", "AY|2", "AY|3", "AY|4", "AY|5", "AY|6"],
+          "times": [25.6, 26.15, 26.7, 27.25, 27.8, 28.35],
+          "footer": "🎯 Hər ay — **konkret hədəf**", "footerAt": 28.4 } },
+        { "kind": "phone", "at": 30.6, "props": {
+          "label": "3 · KONTENT", "title": "Instagram",
+          "checks": ["Səhifənin qurulması", "Kontent strategiyası"], "times": [31.6, 32.5] } }
+      ]
+    },
+    {
+      "id": "cta", "kind": "comment", "in": 52.4, "out": 56.45,
+      "props": { "hint": "Şərhlərdə **yaz** 👇", "keyword": "AÇAR SÖZ", "type_start": 54.9, "type_end": 55.8, "send": 55.95 }
+    }
+  ]
+}
