@@ -1,0 +1,116 @@
+{
+  "version": "1.0",
+  "style_playbook": "flat-motion-graphics",
+  "scenes": [
+    {
+      "id": "sc1",
+      "type": "animation",
+      "description": "Moon surface, blazing sun, pitch-black starry sky; text slams in",
+      "start_seconds": 0,
+      "end_seconds": 6,
+      "script_section_id": "s1",
+      "narrative_role": "establish_context",
+      "overlay_notes": "Ayda gündüz də göy QARADIR.",
+      "transition_in": "crossfade",
+      "required_assets": []
+    },
+    {
+      "id": "sc2",
+      "type": "animation",
+      "description": "Pan to Mars: rust ground, butterscotch dusty sky, drifting dust particles",
+      "start_seconds": 6,
+      "end_seconds": 12,
+      "script_section_id": "s2",
+      "narrative_role": "comparison",
+      "overlay_notes": "Marsda isə göy SARIMTIL-QƏHVƏYİDİR.",
+      "transition_in": "crossfade",
+      "required_assets": []
+    },
+    {
+      "id": "sc3",
+      "type": "text_card",
+      "description": "Earth horizon with blue sky; big question mark pulses",
+      "start_seconds": 12,
+      "end_seconds": 17,
+      "script_section_id": "s3",
+      "narrative_role": "build_tension",
+      "overlay_notes": "Bəs Yerdə niyə MAVİDİR?",
+      "transition_in": "crossfade",
+      "required_assets": []
+    },
+    {
+      "id": "sc4",
+      "type": "diagram",
+      "description": "White beam enters a prism-like split into spectrum bars (violet→red)",
+      "start_seconds": 17,
+      "end_seconds": 23,
+      "script_section_id": "s4",
+      "narrative_role": "introduce_subject",
+      "overlay_notes": "Günəş işığı ağ görünür… amma içində bütün rənglər var.",
+      "transition_in": "crossfade",
+      "required_assets": []
+    },
+    {
+      "id": "sc5",
+      "type": "animation",
+      "description": "Tiny N₂/O₂ dots; blue waves bounce in all directions, red waves pass straight; stat card '×4'",
+      "start_seconds": 23,
+      "end_seconds": 31,
+      "script_section_id": "s5",
+      "narrative_role": "deliver_payload",
+      "overlay_notes": "Havanın kiçik molekulları mavi işığı hər tərəfə səpir. Qırmızıdan ~4 dəfə çox!",
+      "transition_in": "crossfade",
+      "required_assets": []
+    },
+    {
+      "id": "sc6",
+      "type": "diagram",
+      "description": "Three columns: Moon (no air → black), Mars (dust → tan), Earth (air → blue)",
+      "start_seconds": 31,
+      "end_seconds": 38,
+      "script_section_id": "s6",
+      "narrative_role": "comparison",
+      "overlay_notes": "Ayda hava yoxdur — səpiləcək heç nə yoxdur. Marsda isə toz mavini udur.",
+      "transition_in": "crossfade",
+      "required_assets": []
+    },
+    {
+      "id": "sc7",
+      "type": "animation",
+      "description": "Mars sunset: small sun with blue halo over dark ridge",
+      "start_seconds": 38,
+      "end_seconds": 43,
+      "script_section_id": "s7",
+      "narrative_role": "emotional_beat",
+      "overlay_notes": "Ən maraqlısı: Marsda qürub MAVİDİR!",
+      "transition_in": "crossfade",
+      "required_assets": []
+    },
+    {
+      "id": "sc8",
+      "type": "text_card",
+      "description": "Three planet circles line up; tagline + 'Dostuna göndər'",
+      "start_seconds": 43,
+      "end_seconds": 46,
+      "script_section_id": "s8",
+      "narrative_role": "call_to_action",
+      "overlay_notes": "Göyün rəngi — atmosferin imzasıdır. 🌍",
+      "transition_in": "crossfade",
+      "required_assets": []
+    }
+  ],
+  "metadata": {
+    "canvas": "1080x1920",
+    "fps": 30,
+    "palette": {
+      "space": "#05060f",
+      "moon": "#bfc3cc",
+      "mars_sky": "#c9a46b",
+      "mars_ground": "#9c4a2b",
+      "earth_sky": "#4aa3ff",
+      "accent": "#ffd166"
+    },
+    "fonts": "Montserrat 800 (headlines) / Inter 500",
+    "music": "pixabay ambient space bed, -18 LUFS"
+  }
+}

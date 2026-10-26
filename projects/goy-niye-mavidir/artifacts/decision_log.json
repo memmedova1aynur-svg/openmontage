@@ -1,0 +1,159 @@
+{
+  "version": "1.0",
+  "project_id": "goy-niye-mavidir",
+  "decisions": [
+    {
+      "decision_id": "d-001",
+      "stage": "proposal",
+      "category": "concept_selection",
+      "subject": "Concept",
+      "options_considered": [
+        {
+          "option_id": "c1",
+          "label": "Bənövşəyi göy",
+          "score": 0.9,
+          "reason": "surprising hook",
+          "rejected_because": "user preferred c3"
+        },
+        {
+          "option_id": "c2",
+          "label": "Şüanın səyahəti",
+          "score": 0.75,
+          "reason": "story",
+          "rejected_because": "user preferred c3"
+        },
+        {
+          "option_id": "c3",
+          "label": "Ay/Mars/Yer",
+          "score": 0.85,
+          "reason": "visual contrast"
+        }
+      ],
+      "selected": "c3",
+      "reason": "User selection",
+      "user_visible": true,
+      "user_approved": true
+    },
+    {
+      "decision_id": "d-002",
+      "stage": "proposal",
+      "category": "voice_selection",
+      "subject": "Narration",
+      "options_considered": [
+        {
+          "option_id": "silent",
+          "label": "Silent kinetic text",
+          "score": 0.85,
+          "reason": "free, native Azerbaijani text"
+        },
+        {
+          "option_id": "azure",
+          "label": "Azure az-AZ TTS",
+          "score": 0.8,
+          "reason": "natural voice",
+          "rejected_because": "needs API key; user declined"
+        },
+        {
+          "option_id": "piper_en",
+          "label": "Piper English + AZ subs",
+          "score": 0.5,
+          "reason": "free",
+          "rejected_because": "language mismatch"
+        },
+        {
+          "option_id": "piper_tr",
+          "label": "Piper Turkish voice",
+          "score": 0.2,
+          "reason": "free",
+          "rejected_because": "would mispronounce Azerbaijani"
+        }
+      ],
+      "selected": "silent",
+      "reason": "User selection; no free Azerbaijani TTS",
+      "user_visible": true,
+      "user_approved": true
+    },
+    {
+      "decision_id": "d-003",
+      "stage": "proposal",
+      "category": "render_runtime_selection",
+      "subject": "Render runtime",
+      "options_considered": [
+        {
+          "option_id": "hyperframes",
+          "label": "HyperFrames",
+          "score": 0.9,
+          "reason": "kinetic typography + GSAP, available"
+        },
+        {
+          "option_id": "remotion",
+          "label": "Remotion",
+          "score": 0.6,
+          "reason": "React scene stack",
+          "rejected_because": "needs npm install; word-level captions not needed"
+        },
+        {
+          "option_id": "ffmpeg",
+          "label": "FFmpeg",
+          "score": 0.2,
+          "reason": "concat only",
+          "rejected_because": "no motion graphics"
+        }
+      ],
+      "selected": "hyperframes",
+      "reason": "Best fit for kinetic text; user approved",
+      "user_visible": true,
+      "user_approved": true
+    },
+    {
+      "decision_id": "d-004",
+      "stage": "proposal",
+      "category": "composition_mode",
+      "subject": "Composition mode",
+      "options_considered": [
+        {
+          "option_id": "atelier",
+          "label": "Hand-authored composition",
+          "score": 0.9,
+          "reason": "custom cosmic visuals"
+        },
+        {
+          "option_id": "templated",
+          "label": "Stock scene templates",
+          "score": 0.5,
+          "reason": "faster",
+          "rejected_because": "less distinctive"
+        }
+      ],
+      "selected": "atelier",
+      "reason": "Three-world comparison needs custom visuals",
+      "user_visible": true,
+      "user_approved": false
+    },
+    {
+      "decision_id": "d-005",
+      "stage": "assets",
+      "category": "fallback_decision",
+      "subject": "Music source",
+      "options_considered": [
+        {
+          "option_id": "pixabay",
+          "label": "Pixabay music",
+          "score": 0.8,
+          "reason": "approved plan",
+          "rejected_because": "proxy blocked (403)"
+        },
+        {
+          "option_id": "synth",
+          "label": "Locally synthesized ambient pad (ffmpeg)",
+          "score": 0.6,
+          "reason": "approved fallback in proposal"
+        }
+      ],
+      "selected": "synth",
+      "reason": "Pixabay unreachable; used fallback listed in proposal",
+      "user_visible": true,
+      "user_approved": false
+    }
+  ]
+}

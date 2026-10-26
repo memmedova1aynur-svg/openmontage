@@ -1,0 +1,141 @@
+{
+  "version": "1.0",
+  "concept_options": [
+    {
+      "id": "c1",
+      "title": "Göy əslində bənövşəyi olmalı idi",
+      "hook": "Fizikaya görə göy bənövşəyi olmalıdır. Bəs niyə mavi görürük?",
+      "narrative_structure": "myth_busting",
+      "visual_approach": "Kinetic typography + wavelength diagrams",
+      "suggested_playbook": "flat-motion-graphics",
+      "target_audience": "Azerbaijani-speaking general audience",
+      "target_platform": "tiktok",
+      "target_duration_seconds": 45,
+      "tone": "educational, playful-cosmic",
+      "grounded_in": [
+        "data_points[1]",
+        "data_points[2]"
+      ],
+      "why_this_works": "Most surprising hook; fills the 'why not violet' gap"
+    },
+    {
+      "id": "c2",
+      "title": "Bir günəş şüasının səyahəti",
+      "hook": "Günəş işığı bizə 8 dəqiqəyə çatır, rəngini isə son anda itirir.",
+      "narrative_structure": "journey",
+      "visual_approach": "Animated light ray traveling through atmosphere",
+      "suggested_playbook": "flat-motion-graphics",
+      "target_audience": "Azerbaijani-speaking general audience",
+      "target_platform": "tiktok",
+      "target_duration_seconds": 45,
+      "tone": "educational, playful-cosmic",
+      "grounded_in": [
+        "data_points[0]",
+        "data_points[6]"
+      ],
+      "why_this_works": "Explains blue sky and red sunset in one story"
+    },
+    {
+      "id": "c3",
+      "title": "Ayda göy qaradır, Marsda sarı, Yerdə mavi",
+      "hook": "Ayda gündüz də göy qaradır. Bəs bizimki niyə mavidir?",
+      "narrative_structure": "comparison",
+      "visual_approach": "Three worlds side by side, atmosphere-driven colour shifts, kinetic Azerbaijani text",
+      "suggested_playbook": "flat-motion-graphics",
+      "target_audience": "Azerbaijani-speaking general audience",
+      "target_platform": "tiktok",
+      "target_duration_seconds": 45,
+      "tone": "educational, playful-cosmic",
+      "grounded_in": [
+        "data_points[4]",
+        "data_points[5]",
+        "data_points[0]"
+      ],
+      "why_this_works": "Contrast across worlds makes the role of the atmosphere obvious; visually striking"
+    }
+  ],
+  "selected_concept": {
+    "concept_id": "c3",
+    "rationale": "User selected C3 (comparison across Moon/Mars/Earth)",
+    "modifications": [
+      "Silent: on-screen Azerbaijani kinetic text instead of narration",
+      "9:16 vertical"
+    ]
+  },
+  "production_plan": {
+    "pipeline": "animated-explainer",
+    "playbook": "flat-motion-graphics",
+    "renderer_family": "explainer-teacher",
+    "render_runtime": "hyperframes",
+    "composition_mode": "atelier",
+    "delivery_promise": {
+      "promise_type": "teacher_explainer",
+      "motion_required": true,
+      "source_required": false,
+      "tone_mode": "educational",
+      "quality_floor": "presentable",
+      "approved_fallback": null
+    },
+    "stages": [
+      {
+        "stage": "assets",
+        "tools": [
+          {
+            "tool_name": "pixabay_music",
+            "role": "music bed",
+            "available": true,
+            "estimated_cost_usd": 0
+          }
+        ],
+        "approach": "Code-drawn vector visuals (CSS/SVG) — no image generation; ambient music bed from Pixabay",
+        "fallback_if_unavailable": "Silent video or locally synthesized ambient pad"
+      },
+      {
+        "stage": "compose",
+        "tools": [
+          {
+            "tool_name": "hyperframes_compose",
+            "role": "render",
+            "available": true,
+            "estimated_cost_usd": 0
+          }
+        ],
+        "approach": "Hand-authored HTML/GSAP composition, 1080x1920, 45s",
+        "fallback_if_unavailable": "none"
+      }
+    ],
+    "music_source": {
+      "source_type": "user_library",
+      "provider": "pixabay_music",
+      "mood_direction": "calm, wondrous ambient / space",
+      "estimated_cost_usd": 0
+    },
+    "voice_selection": {
+      "provider": "none",
+      "rationale": "No Azerbaijani voice in free Piper; user chose silent kinetic text",
+      "estimated_cost_usd": 0
+    }
+  },
+  "cost_estimate": {
+    "total_estimated_usd": 0,
+    "budget_cap_usd": 2.0,
+    "budget_verdict": "within_budget",
+    "line_items": [
+      {
+        "tool": "pixabay_music",
+        "operation": "music search/download",
+        "estimated_usd": 0
+      },
+      {
+        "tool": "hyperframes_compose",
+        "operation": "local render",
+        "estimated_usd": 0
+      }
+    ]
+  },
+  "approval": {
+    "status": "approved_with_changes",
+    "user_notes": "K3, səssiz kinetik mətn, HyperFrames, 9:16",
+    "approved_budget_usd": 0
+  }
+}

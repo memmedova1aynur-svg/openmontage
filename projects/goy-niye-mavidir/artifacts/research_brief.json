@@ -1,0 +1,194 @@
+{
+  "version": "1.0",
+  "topic": "Göy niyə mavidir (Why is the sky blue)",
+  "research_date": "2026-10-25",
+  "research_summary": "The well-known answer (Rayleigh scattering) is only half the story: air scatters violet even more than blue (~9.4x vs red at 400 vs 700 nm), yet we see blue because the Sun emits less violet, some is absorbed high up, and our eye cones respond to the violet+blue mix like 'blue plus white'. No Azerbaijani-language animated explainer was found — a clear gap.",
+  "landscape": {
+    "existing_content": [
+      {
+        "title": "SciShow — World's Most Asked Questions: Why is the Sky Blue?",
+        "source": "YouTube / SciShow (2014)",
+        "angle": "Rayleigh scattering + perception",
+        "what_it_covers": "10-min explanation incl. eye sensitivity",
+        "what_it_misses": "Long; English only"
+      },
+      {
+        "title": "MinutePhysics — sky blue in ten seconds",
+        "source": "YouTube / MinutePhysics",
+        "angle": "ultra-short",
+        "what_it_covers": "Scattering only",
+        "what_it_misses": "Skips the violet question"
+      },
+      {
+        "title": "Neil deGrasse Tyson — why is the sky blue",
+        "source": "YouTube",
+        "angle": "composition + sunsets",
+        "what_it_covers": "13-min talk",
+        "what_it_misses": "Long, not animated"
+      },
+      {
+        "title": "Gökyüzü neden mavidir (KURE, Tamindir, TÜBİTAK)",
+        "source": "Turkish web articles",
+        "angle": "kids/basic",
+        "what_it_covers": "Text explanations",
+        "what_it_misses": "No Azerbaijani animated video found"
+      }
+    ],
+    "saturated_angles": [
+      "Plain 'Rayleigh scattering' textbook answer",
+      "Long-form lecture explanations"
+    ],
+    "underserved_gaps": [
+      "Azerbaijani-language short animated explainer",
+      "Why not violet? covered in under a minute",
+      "Sky on Moon/Mars as contrast"
+    ]
+  },
+  "trending": {
+    "timeliness_window": "evergreen"
+  },
+  "data_points": [
+    {
+      "claim": "Rayleigh scattering is proportional to 1/wavelength^4; blue (450 nm) scatters ~4.3x more than red (650 nm)",
+      "source_url": "https://theconversation.com/explainer-why-is-the-sky-blue-10821",
+      "credibility": "secondary_source",
+      "usable_as": "stat_card"
+    },
+    {
+      "claim": "Violet (400 nm) scatters ~9.4x more than red (700 nm) — yet the sky isn't violet",
+      "source_url": "https://en.wikipedia.org/wiki/Rayleigh_scattering",
+      "credibility": "secondary_source",
+      "usable_as": "hook"
+    },
+    {
+      "claim": "Skylight spectrum is about equal parts violet and blue; eyes perceive it as blue plus white (Glenn Smith, American Journal of Physics)",
+      "source_url": "https://www.nbcnews.com/id/wbna8631798",
+      "credibility": "secondary_source",
+      "usable_as": "script_anchor"
+    },
+    {
+      "claim": "Tyndall (1859) observed blue scattering; Rayleigh quantified it in 1871; Einstein settled molecular scattering in 1911",
+      "source_url": "https://math.ucr.edu/home/baez/physics/General/BlueSky/blue_sky.html",
+      "credibility": "primary_source",
+      "usable_as": "script_anchor"
+    },
+    {
+      "claim": "Moon's sky is black — no atmosphere to scatter light",
+      "source_url": "https://www.astronomy.com/magazine/ask-astro/2015/02/black-sky",
+      "credibility": "secondary_source",
+      "usable_as": "closing_punch"
+    },
+    {
+      "claim": "Mars: butterscotch daytime sky, blue sunsets (Curiosity, April 2015)",
+      "source_url": "https://www.ksl.com/article/34598844/1st-color-photo-of-mars-sunset-shows-blue-sky",
+      "credibility": "secondary_source",
+      "usable_as": "closing_punch"
+    },
+    {
+      "claim": "Red sunsets: sunlight crosses much thicker air at low sun angles, blue is scattered out",
+      "source_url": "https://metoffice.gov.uk/learning/optics/why-is-the-sunset-red",
+      "credibility": "primary_source",
+      "usable_as": "script_anchor"
+    }
+  ],
+  "audience_insights": {
+    "common_questions": [
+      "Why is the sky blue?",
+      "Why isn't it violet if violet scatters more?",
+      "Why are sunsets red?",
+      "Is the sky blue because it reflects the ocean?"
+    ],
+    "misconceptions": [
+      {
+        "myth": "The sky is blue because it reflects the ocean",
+        "reality": "Sky blue comes from scattering by N2/O2 molecules; the ocean is blue mainly because water absorbs red",
+        "source": "https://van.physics.illinois.edu/ask/listing/22358"
+      },
+      {
+        "myth": "Air scatters only blue light",
+        "reality": "Violet scatters even more; our eyes and the solar spectrum make it look blue",
+        "source": "https://bigthink.com/starts-with-a-bang/why-the-sky-is-blue-according-to-science/"
+      }
+    ],
+    "knowledge_level": "General Azerbaijani-speaking audience; many have heard 'light scattering' but not why it's not violet"
+  },
+  "angles_discovered": [
+    {
+      "name": "Göy əslində bənövşəyi olmalı idi",
+      "hook": "Fizikaya görə göy bənövşəyi olmalıdır. Bəs niyə mavi görürük?",
+      "type": "contrarian",
+      "why_now": "Violet scatters ~9.4x more than red, yet skies look blue — gap rarely covered in short form",
+      "grounded_in": [
+        "data_points[1]",
+        "data_points[2]"
+      ]
+    },
+    {
+      "name": "Bir günəş şüasının səyahəti",
+      "hook": "Günəş işığı 8 dəqiqə yol gəlir — son 0.0001 saniyədə rəngini itirir.",
+      "type": "narrative",
+      "why_now": "Evergreen; journey structure explains blue sky and red sunset together",
+      "grounded_in": [
+        "data_points[0]",
+        "data_points[6]"
+      ]
+    },
+    {
+      "name": "Ay qara, Mars sarı, Yer mavi",
+      "hook": "Ayda göy qaradır, Marsda sarı. Yer niyə mavidir?",
+      "type": "evergreen",
+      "why_now": "Contrast across worlds makes atmosphere's role visible",
+      "grounded_in": [
+        "data_points[4]",
+        "data_points[5]"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Rayleigh_scattering",
+      "title": "Rayleigh scattering",
+      "used_for": "data_points"
+    },
+    {
+      "url": "https://theconversation.com/explainer-why-is-the-sky-blue-10821",
+      "title": "Explainer: why is the sky blue",
+      "used_for": "data_points"
+    },
+    {
+      "url": "https://bigthink.com/starts-with-a-bang/why-the-sky-is-blue-according-to-science/",
+      "title": "Why the sky is blue, according to science",
+      "used_for": "misconceptions"
+    },
+    {
+      "url": "https://www.nbcnews.com/id/wbna8631798",
+      "title": "Why skies are blue instead of purple",
+      "used_for": "data_points"
+    },
+    {
+      "url": "https://math.ucr.edu/home/baez/physics/General/BlueSky/blue_sky.html",
+      "title": "Physics FAQ: Why is the sky blue",
+      "used_for": "history"
+    },
+    {
+      "url": "https://metoffice.gov.uk/learning/optics/why-is-the-sunset-red",
+      "title": "Why is the sunset red?",
+      "used_for": "data_points"
+    },
+    {
+      "url": "https://www.astronomy.com/magazine/ask-astro/2015/02/black-sky",
+      "title": "Ask Astro: black sky",
+      "used_for": "angles"
+    },
+    {
+      "url": "https://www.ksl.com/article/34598844/1st-color-photo-of-mars-sunset-shows-blue-sky",
+      "title": "1st color photo of Mars sunset",
+      "used_for": "angles"
+    },
+    {
+      "url": "https://van.physics.illinois.edu/ask/listing/22358",
+      "title": "Why the Ocean is Blue",
+      "used_for": "misconceptions"
+    }
+  ]
+}

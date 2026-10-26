@@ -1,0 +1,130 @@
+{
+  "version": "1.0",
+  "title": "Ayda göy qaradır, Marsda sarı, Yerdə mavi",
+  "total_duration_seconds": 46,
+  "voice_performance": {
+    "performance_intent": "Silent video — on-screen kinetic text only, no TTS",
+    "pacing_profile": "conversational",
+    "provider_notes": {
+      "none": "No narration (decision d-002). Text readable: >= 0.4s per word on screen."
+    }
+  },
+  "sections": [
+    {
+      "id": "s1",
+      "label": "Hook — Ay",
+      "text": "Ayda gündüz də göy QARADIR.",
+      "start_seconds": 0,
+      "end_seconds": 6,
+      "enhancement_cues": [
+        {
+          "type": "animation",
+          "description": "Moon surface, blazing sun, pitch-black starry sky; text slams in",
+          "timestamp_seconds": 0
+        }
+      ]
+    },
+    {
+      "id": "s2",
+      "label": "Mars",
+      "text": "Marsda isə göy SARIMTIL-QƏHVƏYİDİR.",
+      "start_seconds": 6,
+      "end_seconds": 12,
+      "enhancement_cues": [
+        {
+          "type": "animation",
+          "description": "Pan to Mars: rust ground, butterscotch dusty sky, drifting dust particles",
+          "timestamp_seconds": 6
+        }
+      ]
+    },
+    {
+      "id": "s3",
+      "label": "Sual — Yer",
+      "text": "Bəs Yerdə niyə MAVİDİR?",
+      "start_seconds": 12,
+      "end_seconds": 17,
+      "enhancement_cues": [
+        {
+          "type": "animation",
+          "description": "Earth horizon with blue sky; big question mark pulses",
+          "timestamp_seconds": 12
+        }
+      ]
+    },
+    {
+      "id": "s4",
+      "label": "Ağ işıq",
+      "text": "Günəş işığı ağ görünür… amma içində bütün rənglər var.",
+      "start_seconds": 17,
+      "end_seconds": 23,
+      "enhancement_cues": [
+        {
+          "type": "diagram",
+          "description": "White beam enters a prism-like split into spectrum bars (violet→red)",
+          "timestamp_seconds": 17
+        }
+      ]
+    },
+    {
+      "id": "s5",
+      "label": "Səpilmə",
+      "text": "Havanın kiçik molekulları mavi işığı hər tərəfə səpir. Qırmızıdan ~4 dəfə çox!",
+      "start_seconds": 23,
+      "end_seconds": 31,
+      "enhancement_cues": [
+        {
+          "type": "animation",
+          "description": "Tiny N₂/O₂ dots; blue waves bounce in all directions, red waves pass straight; stat card '×4'",
+          "timestamp_seconds": 23
+        }
+      ]
+    },
+    {
+      "id": "s6",
+      "label": "Müqayisə",
+      "text": "Ayda hava yoxdur — səpiləcək heç nə yoxdur. Marsda isə toz mavini udur.",
+      "start_seconds": 31,
+      "end_seconds": 38,
+      "enhancement_cues": [
+        {
+          "type": "diagram",
+          "description": "Three columns: Moon (no air → black), Mars (dust → tan), Earth (air → blue)",
+          "timestamp_seconds": 31
+        }
+      ]
+    },
+    {
+      "id": "s7",
+      "label": "Bonus",
+      "text": "Ən maraqlısı: Marsda qürub MAVİDİR!",
+      "start_seconds": 38,
+      "end_seconds": 43,
+      "enhancement_cues": [
+        {
+          "type": "animation",
+          "description": "Mars sunset: small sun with blue halo over dark ridge",
+          "timestamp_seconds": 38
+        }
+      ]
+    },
+    {
+      "id": "s8",
+      "label": "Final",
+      "text": "Göyün rəngi — atmosferin imzasıdır. 🌍",
+      "start_seconds": 43,
+      "end_seconds": 46,
+      "enhancement_cues": [
+        {
+          "type": "animation",
+          "description": "Three planet circles line up; tagline + 'Dostuna göndər'",
+          "timestamp_seconds": 43
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "language": "az",
+    "delivery": "on_screen_text"
+  }
+}
