@@ -18,3 +18,7 @@
 {"ts": "2026-10-26T04:03:29.368587+00:00", "tool": "google_imagen", "event": "finish", "output_path": "projects/goy-niye-mavidir/assets/images/real/moon.png", "success": false, "cost_usd": 0.0, "duration_s": 0.6}
 {"ts": "2026-10-26T04:03:41.605991+00:00", "tool": "google_imagen", "event": "start", "output_path": "projects/goy-niye-mavidir/assets/images/real/moon.png"}
 {"ts": "2026-10-26T04:03:42.721189+00:00", "tool": "google_imagen", "event": "finish", "output_path": "projects/goy-niye-mavidir/assets/images/real/moon.png", "success": false, "cost_usd": 0.0, "duration_s": 1.11}
+{"ts": "2026-10-26T05:20:06.145768+00:00", "tool": "delivery_qc", "event": "start"}
+{"ts": "2026-10-26T05:20:14.200352+00:00", "tool": "delivery_qc", "event": "finish", "success": true, "cost_usd": 0.0, "duration_s": 8.05}
+{"ts": "2026-10-26T05:21:18.365728+00:00", "tool": "delivery_qc", "event": "start"}
+{"ts": "2026-10-26T05:21:26.376174+00:00", "tool": "delivery_qc", "event": "finish", "success": true, "cost_usd": 0.0, "duration_s": 8.01}

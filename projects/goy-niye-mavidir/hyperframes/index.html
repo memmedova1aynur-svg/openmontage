@@ -252,18 +252,22 @@
   // Slow camera move across each plate (within the 10% overscan)
   const PUSH = (sel, t, dur, from, to) => tl.fromTo(sel, from, Object.assign({ duration: dur, ease: "none" }, to), t);
 
-  // Scene fades
-  [["#s1",0],["#s2",6],["#s3",12],["#s4",17],["#s5",23],["#s6",31],["#s7",38],["#s8",43]].forEach(([s, t]) => {
-    tl.fromTo(s, { opacity: 0 }, { opacity: 1, duration: 0.45, ease: "power1.out" }, t);
-  });
+  // Scenes change on straight cuts (each enters mid-motion, whoosh in the mix).
+  // Punch-in cuts inside long shots: hard re-frame on the same plate, then keep moving.
+  const PUNCH = (sel, t, origin, from, to, dur) => {
+    tl.set(sel, { transformOrigin: origin, scale: from, x: 0, y: 0 }, t);
+    tl.to(sel, { scale: to, duration: dur, ease: "none" }, t);
+  };
 
   // S1 Moon — slow push toward the horizon
-  PUSH("#s1-plate", 0, 6, { scale: 1.0, y: 0 }, { scale: 1.07, y: -20 });
+  PUSH("#s1-plate", 0, 3.3, { scale: 1.0, y: 0 }, { scale: 1.05, y: -14 });
+  PUNCH("#s1-plate", 3.3, "62% 56%", 1.32, 1.4, 2.7);
   IN("#s1-a", 0.6);
   IN("#s1-b", 1.3, { scale: 1.3, y: 0, duration: 0.5, ease: "back.out(2)" });
 
   // S2 Mars — lateral drift, wind-blown dust
-  PUSH("#s2-plate", 6, 6, { scale: 1.02, x: 30 }, { scale: 1.06, x: -30 });
+  PUSH("#s2-plate", 6, 3.3, { scale: 1.02, x: 30 }, { scale: 1.05, x: -10 });
+  PUNCH("#s2-plate", 9.3, "72% 78%", 1.3, 1.37, 2.7);
   tl.to("#s2-dust", { x: 140, y: -30, duration: 6, ease: "none" }, 6);
   IN("#s2-a", 6.5);
   IN("#s2-b", 7.2, { x: -80, y: 0 });
@@ -313,7 +317,8 @@
   tl.to("#c-earth", { scale: 1.05, duration: 0.5, ease: "sine.inOut", yoyo: true, repeat: 1 }, 35.8);
 
   // S7 Blue Mars sunset — slow settle toward the sun
-  PUSH("#s7-plate", 38, 5, { scale: 1.0, y: -30 }, { scale: 1.08, y: 10 });
+  PUSH("#s7-plate", 38, 2.8, { scale: 1.0, y: -30 }, { scale: 1.05, y: -6 });
+  PUNCH("#s7-plate", 40.8, "50% 47%", 1.45, 1.55, 2.2);
   IN("#s7-a", 38.4);
   IN("#s7-b", 39.1);
   IN("#s7-c", 39.7, { scale: 1.4, y: 0, ease: "back.out(2)" });
