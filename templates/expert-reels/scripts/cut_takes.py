@@ -13,8 +13,11 @@ between words (use the word timings, padded ~0.08 s).
 from __future__ import annotations
 
 import json
+import os
+import shutil
 import subprocess
 import sys
+import tempfile
 
 src, words_path, keep_path, out_video, out_words = sys.argv[1:6]
 keep = json.load(open(keep_path, encoding="utf-8"))
@@ -24,22 +27,26 @@ if isinstance(segs, dict):  # raw transcriber output
 else:  # aligned segments ([{words: [...]}]) or a flat word list
     words = [w for s in segs for w in s["words"]] if segs and "words" in segs[0] else segs
 
-# video: trim + concat with tiny audio fades at every join
-parts, labels = [], []
-for i, (a, b) in enumerate(keep):
-    d = b - a
-    parts.append(
-        f"[0:v]trim={a}:{b},setpts=PTS-STARTPTS[v{i}];"
-        f"[0:a]atrim={a}:{b},asetpts=PTS-STARTPTS,afade=t=in:d=0.04,afade=t=out:st={max(0, d - 0.04):.3f}:d=0.04[a{i}]"
-    )
-    labels.append(f"[v{i}][a{i}]")
-fc = ";".join(parts) + ";" + "".join(labels) + f"concat=n={len(keep)}:v=1:a=1[v][a]"
-subprocess.run(
-    ["ffmpeg", "-v", "error", "-y", "-i", src, "-filter_complex", fc, "-map", "[v]", "-map", "[a]",
-     "-c:v", "libx264", "-preset", "fast", "-crf", "16", "-pix_fmt", "yuv420p", "-r", "30",
-     "-c:a", "aac", "-b:a", "256k", out_video],
-    check=True,
-)
+# video: encode each kept range on its own (accurate seek, tiny audio fades so joins
+# don't click), then join with the concat demuxer. One filter graph with many trim
+# branches buffers every decoded frame and gets OOM-killed on long phone footage.
+tmp = tempfile.mkdtemp(prefix="cut_takes_")
+listfile = os.path.join(tmp, "list.txt")
+with open(listfile, "w") as lf:
+    for i, (a, b) in enumerate(keep):
+        d = b - a
+        piece = os.path.join(tmp, f"p{i:03d}.mp4")
+        subprocess.run(
+            ["ffmpeg", "-v", "error", "-y", "-ss", f"{a}", "-i", src, "-t", f"{d}",
+             "-af", f"afade=t=in:d=0.04,afade=t=out:st={max(0, d - 0.04):.3f}:d=0.04",
+             "-c:v", "libx264", "-preset", "fast", "-crf", "16", "-pix_fmt", "yuv420p", "-r", "30",
+             "-c:a", "aac", "-b:a", "256k", "-ar", "48000", piece],
+            check=True,
+        )
+        lf.write(f"file '{piece}'\n")
+subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", listfile, "-c", "copy",
+                "-movflags", "+faststart", out_video], check=True)
+shutil.rmtree(tmp)
 
 # words: keep those whose midpoint falls inside a kept range, shifted onto the new timeline
 out, offset = [], 0.0
