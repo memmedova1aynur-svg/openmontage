@@ -6,6 +6,7 @@
 - hər həftə ən azı 1 karusel 50+ save toplasın;
 - açar sözlü DM müraciətləri sayılsın (indiki baza məlum deyil, noyabr ilk ölçü olacaq).
 
+**Status:** ✅ = ssenari təsdiqlənib. #1 çıxarılıb (27.10).
 **Ritm:** həftədə 4 post (3 reels və 1 karusel), hər gün 3–5 story.
 **Vaxt:** reels üçün 20:30, karusel üçün şənbə və ya bazar 11:00. Rəhbərlər iş saatından sonra baxır. Saat hook qədər vacib deyil, əsas fikir hook-dadır.
 **Çəkiliş:** 12 reels bir çəkiliş günündə (təxminən 4 saat, 29–31 oktyabr). İki geyim və iki məkan: rəf fonu və studiya.
@@ -14,10 +15,9 @@ Hook nömrələri `.claude/skills/ig-reel/hooks.json` faylındakı formulalara u
 
 | # | Tarix | Format | Sütun | Hook (ilk cümlə) | Ekran yazısı | Əsas fikir | CTA |
 |---|---|---|---|---|---|---|---|
-| 1 | B 01.11 | Reels | C | "Valideyn övladını bağçanızdan götürürsə, səbəb adətən bu üç şeydən biridir." | Valideyn niyə gedir? | Ünsiyyət boşluğu, adaptasiyada diqqətsizlik, söz verilib yerinə yetirilməyən şey. Hər birinə bir cümlə həll. | Rəhbərsinizsə, yadda saxlayın |
-| 2 | Ç.a 03.11 | Reels | A | "Hər şeyi özünüz yoxlayırsınızsa, bu sistem deyil, yorğunluqdur." (#22) | Nəzarət ≠ sistem | Üç səviyyəli nəzarət: gündəlik (tərbiyəçi), həftəlik (metodist), aylıq (rəhbər). | "SİSTEM" yazın, sxemi göndərim |
+| 2 ✅ | Ç.a 03.11 | Reels | A | "Hər şeyi özünüz yoxlayırsınızsa, bu sistem deyil, yorğunluqdur." (#22) | Nəzarət ≠ sistem | Üç səviyyəli nəzarət: gündəlik (tərbiyəçi), həftəlik (metodist), aylıq (rəhbər). | "SİSTEM" yazın, sxemi göndərim |
 | 3 | C.a 05.11 | Karusel | A | "Bağça rəhbərinin həftəlik nəzarət cədvəli" (#9) | — | 7 slayd: hər gün üçün 1 yoxlama + son slaydda boş cədvəl. Save üçün hazırlanır. | Saxlayın; şablon üçün "CƏDVƏL" yazın |
-| 4 | Ş 07.11 | Reels | B | "Metodist olmaq üçün 15 il gözləmək lazım deyil. Bu dörd bacarıq lazımdır." (#20) | Metodist olmaq üçün 4 bacarıq | Planlaşdırma, müşahidə, müəllimə rəy vermək, sənədləşmə. | Müəllimsinizsə, izləyin |
+| 4 ✅ | Ş 07.11 | Reels | B | "Mənə tez-tez belə sual verirlər: metodist bağçada konkret nə iş görür?" (#16) | Metodist və tərbiyəçi: fərq nədir? | Tərbiyəçi uşaqla, metodist tərbiyəçi ilə işləyir. Metodistin vəzifələri. | Metodist olmaq istəyənlər üçün |
 | — | B 08.11 | Story | — | Zəfər Günü təbriki (yalnız story, lentə yox) | | | |
 | 5 | Ç.a 10.11 | Reels | D | "15 ildə ən çox gördüyüm səhv: yeni müəllimi ilk gün qrupa tək buraxmaq." (#8) | Yeni müəllimin ilk günü | İlk həftənin planı: müşahidə, cütlükdə iş, ilk rəy söhbəti. | Komandanıza göndərin |
 | 6 | C.a 12.11 | Reels | C | "'Uşağım bağçada yemək yemir.' Bunu hər həftə valideyndən eşidirəm." (#16) | "Uşağım yemək yemir" | Rəhbər və tərbiyəçi valideynə nə deməli və nə etməlidir, üç addım. | Tərbiyəçilərinizlə paylaşın |
@@ -44,7 +44,7 @@ Hook nömrələri `.claude/skills/ig-reel/hooks.json` faylındakı formulalara u
 
 Hər həftə bir video reklama qoyulur. Müraciətlər DM-ə və WhatsApp-a gəlir. Satış bizim işimiz deyil, biz reklama yararlı video hazırlayırıq.
 
-- **Həftə 1:** #1 (valideyn niyə gedir)
+- **Həftə 1:** #2 (nəzarəti bölüşdürmək), təsdiqlənsə
 - **Həftə 2:** #8 (təlim təklifi)
 - **Həftə 3:** #9 (valideyn şikayəti)
 - **Həftə 4:** #15 (metodist hazırlığı)
