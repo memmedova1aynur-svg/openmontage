@@ -112,6 +112,26 @@
         "pops"
       ],
       "notes": "New set (white shirt, grey wall). Two full takes; kept the second, cut a repeated sentence and a 4 s pause; 125 s -> 53 s. Stroke captions were unreadable over the white shirt, so box was used."
+    },
+    {
+      "date": "2026-10-26",
+      "title": "Öyrənməyi kim öyrədib? (öyrənmək bacarıqdır)",
+      "style": {
+        "captions": "chip",
+        "pops": "light"
+      },
+      "scenes": [],
+      "notes": "New set (light-blue shirt, abstract painting). Cut a retake of 'Yəqin ki, cavab xeyirdir' and the spoken aside to the editor, plus two pauses; 59 s -> 51.5 s. 13 pops, talking only."
+    },
+    {
+      "date": "2026-10-26",
+      "title": "Təhsildə satış təlimi - qeydiyyat (reklam)",
+      "style": {
+        "captions": "box",
+        "pops": "dark"
+      },
+      "scenes": [],
+      "notes": "Same set and outfit as the previous video, so captions and pops were switched. Ad: kept the second full take of the 'Əgər satışlarınızı...' sentence and of 'Instagram və WhatsApp...', dropped the CRM false starts and long pauses; 118 s -> 88.4 s. Objections pop in one after another; ends on the 'şərhlərdə SATIŞ yazın' CTA."
     }
   ]
 }
