@@ -123,6 +123,8 @@ The template is shared. The look must not repeat. For every new video:
    - `backdrop`: dots / grid / orbs / diagonal
    - `pipShape`: circle / rounded
    - `pipCorner`: br / bl
+   - `pops`: dark / light (keyword pop cards)
+   Same set and outfit as the previous video? Change `captions` and `pops` at least, or the two read as one video.
 3. **Vary the structure.** Don't open with the same device twice in a row (a
    pill hook, then a questions cutaway, then a stat). Move where the first
    cutaway lands.

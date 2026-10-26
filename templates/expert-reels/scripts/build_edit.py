@@ -25,6 +25,7 @@ DEFAULT_STYLE = {
     "backdrop": "dots",
     "pipShape": "circle",
     "pipCorner": "br",
+    "pops": "dark",
 }
 DEFAULT_PIP = {"focus": [560, 895], "radius": 210, "scale": 0.69}
 

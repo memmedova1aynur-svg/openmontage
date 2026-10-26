@@ -44,6 +44,7 @@ export type Style = {
   backdrop: "dots" | "grid" | "orbs" | "diagonal";
   pipShape: "circle" | "rounded";
   pipCorner: "br" | "bl";
+  pops?: "dark" | "light"; // keyword pop cards: brand-dark (default) or white with a marker on the emphasis
 };
 export type Pip = { focus: [number, number]; radius: number; scale: number };
 export type Edit = {

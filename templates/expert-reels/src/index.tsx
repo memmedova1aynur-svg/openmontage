@@ -132,6 +132,7 @@ const POP_POS: Record<string, { box: React.CSSProperties; rot: number }> = {
 
 const KeywordPop: React.FC<{ o: Pill }> = ({ o }) => {
   const frame = useCurrentFrame();
+  const lightPop = E.style.pops === "light";
   const { fps } = useVideoConfig();
   const dur = (o.out - o.in) * fps;
   const pos = POP_POS[o.pos ?? "t"];
@@ -148,9 +149,9 @@ const KeywordPop: React.FC<{ o: Pill }> = ({ o }) => {
             maxWidth: o.pos === "t" ? 900 : 440,
             padding: "16px 28px 20px",
             borderRadius: 26,
-            background: rgba(T.primary, 0.92),
+            background: lightPop ? "rgba(255,255,255,0.96)" : rgba(T.primary, 0.92),
             boxShadow: "0 16px 40px rgba(0,0,0,0.4)",
-            borderBottom: `8px solid ${T.accent}`,
+            borderBottom: `8px solid ${lightPop ? T.primary : T.accent}`,
             fontFamily: FONT,
             fontWeight: 900,
             fontSize: 60,
@@ -164,7 +165,16 @@ const KeywordPop: React.FC<{ o: Pill }> = ({ o }) => {
         >
           {/* one span per word so long phrases wrap inside the bubble instead of running off-screen */}
           {words.map(({ w, hl }, i) => (
-            <span key={i} style={{ display: "inline-block", whiteSpace: "pre", color: hl ? EMPH : T.text }}>
+            <span
+              key={i}
+              style={{
+                display: "inline-block",
+                whiteSpace: "pre",
+                color: lightPop ? T.primary : hl ? EMPH : T.text,
+                // on white cards the emphasis is a brand-colour marker stroke instead of coloured text
+                background: lightPop && hl ? `linear-gradient(transparent 55%, ${rgba(T.accent, 0.75)} 55%)` : undefined,
+              }}
+            >
               {w}
             </span>
           ))}
