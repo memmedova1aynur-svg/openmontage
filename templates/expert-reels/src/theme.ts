@@ -31,7 +31,7 @@ export type Pill = {
 export type Panel = { kind: string; at: number; props: Record<string, any> };
 export type Cutaway = {
   id: string;
-  kind: "pip" | "comment";
+  kind: "pip" | "full" | "comment";
   in: number;
   out: number;
   panels?: Panel[];

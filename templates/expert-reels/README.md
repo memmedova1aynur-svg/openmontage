@@ -75,6 +75,8 @@ accent colour.
 - `cutaways`:
   - `pip`: the speaker shrinks into the corner. `panels` play in order, each
     with `kind`, `at` and `props`.
+  - `full`: the scene replaces the speaker for a few seconds (voice continues). Keep these to 3-5 s and
+    2-3 per video when the user wants a calmer edit without the corner frame.
   - `comment`: the speaker stays full screen and an IG comment bar types
     `keyword`.
 - `pip`: `focus` is the head-and-shoulders point of the speaker in the

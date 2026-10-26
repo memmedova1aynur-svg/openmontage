@@ -55,7 +55,7 @@ def auto_sfx(spec: dict, cutaways: list[dict], overlays: list[dict]) -> list[dic
     sfx = [{"t": round(o["in"] - 0.12, 2), "src": "sfx/whoosh.wav", "vol": 0.45} for o in overlays]
     for c in cutaways:
         sfx.append({"t": round(c["in"] - 0.12, 2), "src": "sfx/whoosh.wav", "vol": 0.5})
-        if c["kind"] == "pip":
+        if c["kind"] in ("pip", "full"):
             sfx.append({"t": round(c["out"] - 0.15, 2), "src": "sfx/whoosh.wav", "vol": 0.45})
             for pn in c.get("panels", [])[1:]:
                 sfx.append({"t": round(pn["at"] - 0.1, 2), "src": "sfx/whoosh.wav", "vol": 0.3})
@@ -68,7 +68,7 @@ def auto_sfx(spec: dict, cutaways: list[dict], overlays: list[dict]) -> list[dic
             step = (pr["type_end"] - pr["type_start"]) / max(1, n)
             sfx += [{"t": round(pr["type_start"] + k * step, 3), "src": "sfx/tick.wav", "vol": 0.3} for k in range(n)]
             sfx.append({"t": pr["send"], "src": "sfx/ding.wav", "vol": 0.35})
-    busy = [c for c in cutaways if c["kind"] == "pip"]
+    busy = [c for c in cutaways if c["kind"] in ("pip", "full")]
     for t, _, k in spec["zoom"]:
         if k == "punch":
             sfx.append({"t": t, "src": "sfx/hit.wav", "vol": 0.55})

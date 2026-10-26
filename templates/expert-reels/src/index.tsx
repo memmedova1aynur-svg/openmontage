@@ -46,7 +46,7 @@ const punchShake = (t: number) => {
 };
 
 const pipAt = (t: number, fps: number) => {
-  const c = E.cutaways.find((c: Cutaway) => c.kind === "pip" && t >= c.in - 0.01 && t < c.out + 0.6);
+  const c = E.cutaways.find((c: Cutaway) => (c.kind === "pip" || c.kind === "full") && t >= c.in - 0.01 && t < c.out + 0.6);
   if (!c) return { p: 0, c: undefined };
   const cfg = { damping: 16, stiffness: 140, mass: 0.8 };
   const enter = spring({ frame: Math.round((t - c.in) * fps), fps, config: cfg });
@@ -242,12 +242,16 @@ const Reel: React.FC = () => {
   const t = frame / fps;
   const z = zoomAt(t, fps);
   const shake = punchShake(t);
-  const { p, c: pipCut } = pipAt(t, fps);
+  const { p: cutP, c: pipCut } = pipAt(t, fps);
+  // "full" cutaways replace the speaker entirely for a few seconds (voice continues);
+  // "pip" cutaways keep her in a corner frame.
+  const full = pipCut?.kind === "full";
+  const p = full ? 0 : cutP;
   const pc = Math.min(1, p);
   const [fx, fy] = E.pip.focus;
   const ox = FACE.x + (fx - FACE.x) * pc;
   const oy = FACE.y + (fy - FACE.y) * pc;
-  const sc = z * (1 - p) + E.pip.scale * p;
+  const sc = (z * (1 - p) + E.pip.scale * p) * (full ? 1 + 0.08 * Math.min(1, cutP) : 1);
   const dx = (PIP_CENTER.x - ox) * p;
   const dy = (PIP_CENTER.y - oy) * p;
   const r = E.pip.radius;
@@ -258,8 +262,8 @@ const Reel: React.FC = () => {
     : `circle(${rLocal}px at ${ox}px ${oy}px)`;
   return (
     <AbsoluteFill style={{ backgroundColor: "black" }}>
-      {p > 0.001 && <Backdrop p={p} />}
-      {pipCut && p > 0.001 && <PipPanels c={pipCut} p={p} />}
+      {!full && p > 0.001 && <Backdrop p={p} />}
+      {!full && pipCut && p > 0.001 && <PipPanels c={pipCut} p={p} />}
       <AbsoluteFill
         style={{
           transform: `translate(${shake + dx}px, ${shake * 0.4 + dy}px) scale(${sc})`,
@@ -283,6 +287,14 @@ const Reel: React.FC = () => {
             opacity: Math.max(0, (p - 0.75) / 0.25),
           }}
         />
+      )}
+      {full && pipCut && cutP > 0.001 && (
+        <AbsoluteFill style={{ transform: `scale(${1.06 - 0.06 * Math.min(1, cutP)})` }}>
+          <Backdrop p={cutP} />
+          <AbsoluteFill style={{ transform: "translateY(170px)" }}>
+            <PipPanels c={pipCut} p={cutP} />
+          </AbsoluteFill>
+        </AbsoluteFill>
       )}
       {E.cutaways
         .filter((c) => c.kind === "comment" && t >= c.in && t < c.out)
