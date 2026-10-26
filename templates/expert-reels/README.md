@@ -107,6 +107,7 @@ staggered defaults are only a fallback.
 
 The template is shared. The look must not repeat. For every new video:
 
+0. **Pacing.** Don't leave the speaker talking straight to camera for more than ~6 s without a change (insert, card or zoom). Long static stretches lose viewers.
 1. **Scenes come from the topic.** Read the approved script and pick 2-4
    cutaways whose content the speaker says out loud. Don't add a scene for
    decoration, and don't invent numbers or claims that aren't in the script.

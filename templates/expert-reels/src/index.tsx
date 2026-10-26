@@ -291,7 +291,8 @@ const Reel: React.FC = () => {
       {full && pipCut && cutP > 0.001 && (
         <AbsoluteFill style={{ transform: `scale(${1.06 - 0.06 * Math.min(1, cutP)})` }}>
           <Backdrop p={cutP} />
-          <AbsoluteFill style={{ transform: "translateY(170px)" }}>
+          {/* centre scenes vertically; the tall phone mock stays high so it clears the captions */}
+          <AbsoluteFill style={{ transform: `translateY(${(pipCut.panels ?? []).filter((pn) => t >= pn.at - 0.1).slice(-1)[0]?.kind === "phone" ? 20 : 170}px)` }}>
             <PipPanels c={pipCut} p={cutP} />
           </AbsoluteFill>
         </AbsoluteFill>

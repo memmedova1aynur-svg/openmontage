@@ -204,11 +204,13 @@ export const Phone: React.FC<SceneProps> = ({ f, p, startT }) => {
 const Check: React.FC<{ f: number; at: number; text: string; size?: number; gap?: number }> = ({ f, at, text, size = 32, gap = 22 }) => {
   const { fps } = useVideoConfig();
   const s = spring({ frame: f - at, fps, config: { damping: 13, stiffness: 200 } });
+  // a leading "!" marks a negative item: ✗ on a muted tile instead of ✓
+  const neg = text.startsWith("!");
   return (
     <div style={{ display: "flex", alignItems: "center", marginBottom: gap, opacity: s, transform: `translateX(${(1 - s) * 40}px)` }}>
-      <div style={{ width: size * 1.6, height: size * 1.6, borderRadius: 14, background: T.accent, color: T.onAccent, fontSize: size * 1.05, fontWeight: 900, fontFamily: FONT, display: "flex", alignItems: "center", justifyContent: "center", marginRight: 16, flexShrink: 0 }}>✓</div>
+      <div style={{ width: size * 1.6, height: size * 1.6, borderRadius: 14, background: neg ? "#E5484D" : T.accent, color: neg ? "#FFFFFF" : T.onAccent, fontSize: size * 1.05, fontWeight: 900, fontFamily: FONT, display: "flex", alignItems: "center", justifyContent: "center", marginRight: 16, flexShrink: 0, transform: `scale(${0.6 + 0.4 * Math.min(1.1, s)})` }}>{neg ? "✗" : "✓"}</div>
       <div style={{ fontFamily: FONT, fontWeight: 700, fontSize: size, color: T.text, lineHeight: 1.15 }}>
-        <Rich text={text} />
+        <Rich text={neg ? text.slice(1) : text} />
       </div>
     </div>
   );

@@ -68,10 +68,14 @@
       },
       "scenes": [
         "full:checklist",
+        "full:phone+checklist",
+        "full:questions",
         "full:chat",
-        "full:checklist"
+        "full:checklist",
+        "full:checklist",
+        "full:questions"
       ],
-      "notes": "User wants calm edits: 2-3 full-screen inserts of 3-5 s (speaker hidden, voice continues), no corner frame, no icy-blue backdrops. Delivered as 4K HEVC ~45 MB."
+      "notes": "User wants 3-5 s full-screen inserts (speaker hidden, voice continues), no corner frame, no icy-blue backdrops, and no talking-head stretch much longer than ~6 s - she found long straight-to-camera stretches lose attention."
     }
   ]
 }
