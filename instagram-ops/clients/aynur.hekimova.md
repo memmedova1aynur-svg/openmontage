@@ -12,7 +12,7 @@
 |---|---|---|
 | Bağça idarəçiliyi fərdi təlimi | 2 ay, fərdi format (aprel reels-indən) | qiymət, onlayn/oflayn, növbəti qəbul tarixi |
 | Metodist hazırlığı | bio-da var | format, müddət, qiymət |
-| Rus dilində idarəetmə proqramı | aprel reels-i (1.2K baxış) | hələ aktivdir? |
+| Rus dilində idarəetmə proqramı | aprel reels-i (1.2K baxış) | hazırda davam etmir |
 | Metodik dəstək / əməkdaşlıq | bio-da var | bağçalarla müqavilə formatı? |
 
 ## Auditoriya
@@ -44,7 +44,7 @@ Oktyabrda 9 reels paylaşılıb (təxminən həftədə 2). 17–24 oktyabr aras�
 1. **Hook yoxdur, mövzu adı var.** İlk cümlələr tərif kimi başlayır ("…yalnız … ilə məhdudlaşmır"). Bu dərs girişidir, hook deyil. İlk 2 saniyədə konkret problem və ya gözlənilməz fikir lazımdır.
 2. **Videolar uzundur (60–80 saniyə).** Hədəf 30–45 saniyədir. Bir reels-də bir fikir olmalıdır.
 3. **Auditoriyalar qarışır.** Bir gün rəhbərə, bir gün valideynə danışılır. Hər reels-in ilk cümləsi kimə müraciət etdiyini deməlidir.
-4. **Dublikat.** 07.10-da eyni video iki dəfə paylaşılıb (504 və 160 baxış). Zəif olanı arxivə köçürmək lazımdır.
+4. **Dublikat.** 07.10-da eyni video iki dəfə paylaşılıb (504 və 160 baxış). İkincisi qrid-dən gizlədilib, problem deyil.
 5. **Satış çağırışı (CTA) yoxdur.** Videolar dəyər verir, amma tamaşaçını DM-ə aparmır. Açar sözlü DM çağırışı əlavə edilməlidir ("TƏLİM" yazın və s.).
 6. **Ekran yazıları kiçikdir və aşağıdadır.** Bəzən caption zonasına düşür. Hook yazısı yuxarı üçdə birdə, iri şriftlə olmalıdır.
 
@@ -73,11 +73,17 @@ Oktyabrda 9 reels paylaşılıb (təxminən həftədə 2). 17–24 oktyabr aras�
 - **Ekran yazısı:** bir şrift, ağ fon üzərində tünd mətn (aprel üslubu). Kursiv yaşıl yazıdan imtina etmək lazımdır, oxunmur.
 - **Karusellər:** göy və ağ, iri başlıq, hər slaydda bir fikir.
 
-## Açıq suallar (müştəridən və ya sizdən)
+## Təsdiqlənmiş məlumatlar (26.10.2026)
 
-- [ ] 79K baxışlı reels reklamla dəstəklənib? Reklam büdcəsi və nəticələri (müraciət sayı)?
-- [ ] Təlimlərin qiyməti, formatı və növbəti qəbul tarixi?
-- [ ] Müraciətlər hara gəlir: DM, WhatsApp, yoxsa bio-dakı link?
-- [ ] Rus dilində kontent davam edəcək?
+- 79K baxışlı reels reklam videosudur. Demək olar ki, hər həftə bir video reklama qoyulur.
+- Like-lar gizlədilib, ona görə baxış, şərh və save-ə əsaslanırıq.
+- 07.10 tarixli ikinci nüsxə silinməyib, sadəcə qrid-dən gizlədilib. Əlavə iş lazım deyil.
+- Satış bizim işimiz deyil. Bizim işimiz istehsal və kreativdir. Qiymət reels-də deyilmir.
+- Müraciətlər reklamdan DM-ə və WhatsApp-a gəlir.
+- Rus dilində kontent hazırda yoxdur.
+- Rəqəmlə göstərilə bilən real hal yoxdur. "Əvvəl və sonra" tipli hal videoları çəkilmir.
+- Mətnlər klişesiz, təbii insan dilində olmalıdır, güclü hook-larla.
+
+## Açıq suallar
+
 - [ ] Ayda neçə çəkiliş günü mümkündür?
-- [ ] Paylaşıla bilən real hallar varmı (adsız): bağçada nə dəyişdi, rəqəmlərlə?

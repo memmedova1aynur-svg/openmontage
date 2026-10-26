@@ -22,12 +22,12 @@ Hook nömrələri `.claude/skills/ig-reel/hooks.json` faylındakı formulalara u
 | 5 | Ç.a 10.11 | Reels | D | "15 ildə ən çox gördüyüm səhv: yeni müəllimi ilk gün qrupa tək buraxmaq." (#8) | Yeni müəllimin ilk günü | İlk həftənin planı: müşahidə, cütlükdə iş, ilk rəy söhbəti. | Komandanıza göndərin |
 | 6 | C.a 12.11 | Reels | C | "'Uşağım bağçada yemək yemir.' Bunu hər həftə valideyndən eşidirəm." (#16) | "Uşağım yemək yemir" | Rəhbər və tərbiyəçi valideynə nə deməli və nə etməlidir, üç addım. | Tərbiyəçilərinizlə paylaşın |
 | 7 | Ş 14.11 | Karusel | B | "Metodistin bir günü: 7 iş, 1 cədvəl" | — | Səhərdən axşama metodistin real işləri. Karyera marağını oyadır. | Saxlayın |
-| 8 | B 15.11 | Reels | E | "İki ayda bağçanızda nə dəyişə bilər? Konkret danışıram." (#26) | 2 ay = sistemli bağça | Fərdi təlimin həftə-həftə proqramı. Kimin üçündür, kimin üçün deyil. Qiymət və ya "yerlər məhduddur" (təsdiqlə). | DM-də "TƏLİM" yazın |
+| 8 | B 15.11 | Reels | E | "İki ayda bağçanızda nə dəyişə bilər? Konkret danışıram." (#26) | 2 ay = sistemli bağça | Fərdi təlimin həftə-həftə proqramı. Kimin üçündür, kimin üçün deyil. Qiymət deyilmir. | DM-də "TƏLİM" yazın |
 | 9 | Ç.a 17.11 | Reels | A | "Valideyn şikayətinə dərhal cavab verməyin. Əvvəl bu iki sualı verin." (#2) | Şikayətə dərhal cavab vermə | "Nə baş verdi, dəqiq?" və "Sizin üçün düzgün nəticə nədir?" Sonra 24 saat qaydası. | "ŞİKAYƏT" yazın, cavab şablonunu göndərim |
 | 10 | C.a 19.11 | Reels | B | "Metodist olmaq istəyirsiniz? Müsahibədə ilk bu sualı verəcəklər." (#14) | Metodist müsahibəsinin 1-ci sualı | Sual, zəif cavab, güclü cavab. | Şərhdə öz cavabınızı yazın |
 | 11 | C 20.11 | Reels | C | "Uşaq hüquqları bağçada plakatla yox, bu üç gündəlik qaydayla qorunur." (#22) | Uşaq hüquqları = 3 qayda | Ümumdünya Uşaq Hüquqları Günü. Seçim imkanı, dinlənilmək, təhlükəsiz mühit. | Paylaşın |
 | 12 | B 22.11 | Karusel | A | "Bağçanın aylıq hesabatında olmalı olan 6 rəqəm. 5-ci rəqəmə heç kim baxmır." (#11) | — | Doluluq, kadr axını, davamiyyət, şikayət sayı, valideyn məmnuniyyəti, büdcə. | Saxlayın |
-| 13 | Ç.a 24.11 | Reels | D | "Bir bağçada {{real rəqəm}} ayda {{nə dəyişdi}}. Dəyişdiyimiz tək şey bu oldu." (#13) | {{əvvəl → sonra}} | **Real hal lazımdır.** Müştəridən adsız nümunə alınmalıdır. Yoxdursa, #14 ilə əvəz edin. | "TƏLİM" yazın |
+| 13 | Ç.a 24.11 | Reels | A | "Tərbiyəçi ərizəni son gün yazır. Getmək qərarını isə üç ay əvvəl verib." (#21) | Tərbiyəçi niyə gedir? | Gedəcəyini əvvəlcədən göstərən üç əlamət və rəhbərin bu dövrdə edə biləcəyi bir söhbət. | Saxlayın |
 | 14 | C.a 26.11 | Reels | A | "İclası səhv aparırsınız, və bu sizin günahınız deyil." (#7) | 15 dəqiqəlik iclas | Ayaq üstə, 3 sual, 1 qərar, protokol yox, cədvəl. | Saxlayın |
 | 15 | Ş 28.11 | Reels | B + E | "'Təcrübəm azdır, metodist ola bilmərəm.' Belə düşünürsünüzsə, bu video sizin üçündür." (#12) | "Təcrübəm azdır" | Etiraza cavab, sonra metodist hazırlığı təklifi. | DM-də "METODİST" yazın |
 | 16 | B 29.11 | Karusel | E | "Noyabrda bağça rəhbərləri ilə ən çox danışdığım 5 problem" | — | 5 problem, hər birinə qısa həll. Son slayd təklif və DM çağırışıdır. | "TƏLİM" yazın |
@@ -42,8 +42,12 @@ Hook nömrələri `.claude/skills/ig-reel/hooks.json` faylındakı formulalara u
 
 ## Reklam üçün (Meta)
 
-- **Satış:** #8 (təlim təklifi) və #15 (metodist hazırlığı). Hədəf: mesaj kampaniyası.
-- **Yayılma və auditoriya toplamaq:** #1 (valideyn niyə gedir). Ona baxanlardan sonra retargeting auditoriyası yığılır.
+Hər həftə bir video reklama qoyulur. Müraciətlər DM-ə və WhatsApp-a gəlir. Satış bizim işimiz deyil, biz reklama yararlı video hazırlayırıq.
+
+- **Həftə 1:** #1 (valideyn niyə gedir)
+- **Həftə 2:** #8 (təlim təklifi)
+- **Həftə 3:** #9 (valideyn şikayəti)
+- **Həftə 4:** #15 (metodist hazırlığı)
 
 ## Paylaşımdan əvvəl yoxlama
 
@@ -56,7 +60,11 @@ Hook nömrələri `.claude/skills/ig-reel/hooks.json` faylındakı formulalara u
 
 ## Edilməli işlər
 
-- [ ] 07.10 tarixli dublikat reels-i (DeLj_jqIPmI) arxivləşdirin
-- [ ] "CƏDVƏL", "SİSTEM", "ŞİKAYƏT" lead-magnet şablonlarını hazırlayın (PDF)
+- [ ] "CƏDVƏL", "SİSTEM", "ŞİKAYƏT" açar sözləri istifadə olunacaqsa, şablonlarını hazırlayın (PDF). Hazırlanmayacaqsa, CTA "saxlayın" olsun
 - [ ] Açar sözlər üçün DM avtocavab qurun (Meta Business Suite → avtomatik cavablar, pulsuz)
-- [ ] Bio-dakı CTA-nı yeniləyin: "Təlim üçün DM-ə 'TƏLİM' yazın ⬇️"
+
+## Mətn qaydaları
+
+- Klişe yoxdur: "vacibdir", "əhəmiyyətlidir", "bu videoda", "salam əziz izləyicilər" kimi ifadələr işlənmir.
+- Təbii danışıq dili: Aynur xanım kameraya baxıb həmkarına danışırmış kimi.
+- Uydurma rəqəm və uydurma hal yoxdur.
