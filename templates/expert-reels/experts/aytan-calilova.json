@@ -56,9 +56,9 @@
       ]
     },
     {
-      "video": "Ucuz təlimçi imici (sadə montaj)",
+      "video": "Ucuz təlimçi imici",
       "date": "2026-10-26",
-      "theme": "brand light; footage background blurred",
+      "theme": "dark navy + light brand blue; footage background blurred",
       "style": {
         "captions": "box",
         "pills": "top-card",
@@ -66,8 +66,12 @@
         "pipShape": "circle",
         "pipCorner": "br"
       },
-      "scenes": [],
-      "notes": "User asked for a simple edit: no cutaways/b-roll, 3 cards, minimal SFX, soft background blur."
+      "scenes": [
+        "full:checklist",
+        "full:chat",
+        "full:checklist"
+      ],
+      "notes": "User wants calm edits: 2-3 full-screen inserts of 3-5 s (speaker hidden, voice continues), no corner frame, no icy-blue backdrops. Delivered as 4K HEVC ~45 MB."
     }
   ]
 }
