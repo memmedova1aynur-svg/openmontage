@@ -3,12 +3,12 @@
 **Ayın məqsədi:** hesabı "təlim hazırlamaq və keçmək" mövzusu ətrafında toplamaq.
 **Hədəf:** reels baxışlarının medianı 283-dən (oktyabr) 600-ə çatsın. Hər karusel 20+ save toplasın.
 **Ritm:** həftədə 3 reels və 1 karusel, üstəlik story.
-**Status:** ✅ = ssenari təsdiqlənib.
+**Status:** ✅ = ssenari təsdiqlənib. Drive: https://docs.google.com/document/d/14XdirKjOy4A_XTmHq-BzY13ItKleNdhWIkfltK_3xd0/edit
 
 | # | Tarix | Format | Sütun | Mövzu | Ekran yazısı |
 |---|---|---|---|---|---|
-| 1 | Ç.a 03.11 | Reels | A | Təlimi slaydla yox, "iştirakçı nəyi bacarmalıdır?" sualı ilə başlamaq | Təlimi hazırlamağa haradan başlamalı? |
-| 2 | C.a 05.11 | Reels | C | İştirakçılar təlimdən sonra nəyi xatırlayır? | Təlimdən sonra nə yadda qalır? |
+| 1 ✅ | Ç.a 03.11 | Reels | A | Təlimi slaydla yox, "iştirakçı nəyi bacarmalıdır?" sualı ilə başlamaq | Təlimi hazırlamağa haradan başlamalı? |
+| 2 ✅ | C.a 05.11 | Reels | C | İştirakçılar təlimdən sonra nəyi xatırlayır? | Təlimdən sonra nə yadda qalır? |
 | 3 | Ş 07.11 | Reels | B | Təlimin ilk 5 dəqiqəsi | Təlimin ilk 5 dəqiqəsi |
 | 4 | B 08.11 | Karusel | A | Təlim planının 6 hissəsi | — |
 | 5 | Ç.a 10.11 | Reels | D | Mütəxəssis olmaq və təlimçi olmaq arasındakı fərq | Mütəxəssis və təlimçi: fərq nədir? |
