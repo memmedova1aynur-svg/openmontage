@@ -1,0 +1,97 @@
+import React from "react";
+import { continueRender, delayRender, staticFile } from "remotion";
+import edit from "../public/edit.json";
+
+// ---------------------------------------------------------------- edit spec
+// public/edit.json is produced by scripts/build_edit.py from a per-video spec.
+
+export type Theme = {
+  primary: string; // card / backdrop base (the expert's dark brand tone)
+  primaryDeep: string; // backdrop gradient end
+  accent: string; // highlight colour (active word, labels, bars)
+  accentSoft: string; // secondary tiles
+  text: string; // text on primary
+  onAccent: string; // text on accent
+  cardAlpha: number; // overlay card opacity
+};
+
+export type Word = { w: string; s: number; e: number };
+export type Page = { start: number; end: number; words: Word[] };
+export type ZoomKey = { t: number; s: number; k: "cut" | "push" | "punch" };
+export type Pill = {
+  id: string;
+  kind: "pill" | "hook" | "cta";
+  label: string | null;
+  parts: [string, number][];
+  in: number;
+  out: number;
+};
+export type Panel = { kind: string; at: number; props: Record<string, any> };
+export type Cutaway = {
+  id: string;
+  kind: "pip" | "comment";
+  in: number;
+  out: number;
+  panels?: Panel[];
+  props?: Record<string, any>;
+};
+export type Style = {
+  captions: "stroke" | "box" | "chip";
+  pills: "top-card" | "side-tag";
+  backdrop: "dots" | "grid" | "orbs" | "diagonal";
+  pipShape: "circle" | "rounded";
+  pipCorner: "br" | "bl";
+};
+export type Pip = { focus: [number, number]; radius: number; scale: number };
+export type Edit = {
+  duration: number;
+  theme: Theme;
+  style: Style;
+  pip: Pip;
+  pages: Page[];
+  zoom: ZoomKey[];
+  overlays: Pill[];
+  cutaways: Cutaway[];
+  sfx: { t: number; src: string; vol: number }[];
+};
+
+export const E = edit as unknown as Edit;
+export const T = E.theme;
+export const FPS = 30;
+export const FONT = "Montserrat";
+
+export const rgba = (hex: string, a: number) => {
+  const n = parseInt(hex.replace("#", ""), 16);
+  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
+};
+
+export const clamp01 = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
+
+// ---------------------------------------------------------------- fonts
+// Montserrat latin + latin-ext: latin-ext carries Azerbaijani ə, ğ, ş, ı, ç, ö, ü.
+const LATIN =
+  "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD";
+const LATIN_EXT =
+  "U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF";
+
+const makeFaces = () =>
+  [600, 700, 800, 900].flatMap((w) => [
+    new FontFace(FONT, `url(${staticFile(`fonts/montserrat-latin-${w}-normal.woff2`)})`, {
+      weight: String(w),
+      unicodeRange: LATIN,
+    }),
+    new FontFace(FONT, `url(${staticFile(`fonts/montserrat-latin-ext-${w}-normal.woff2`)})`, {
+      weight: String(w),
+      unicodeRange: LATIN_EXT,
+    }),
+  ]);
+
+export const useFonts = () => {
+  const [handle] = React.useState(() => delayRender("fonts", { timeoutInMilliseconds: 120000 }));
+  React.useEffect(() => {
+    Promise.all(makeFaces().map((f) => f.load()))
+      .then((loaded) => loaded.forEach((f) => document.fonts.add(f)))
+      .catch((e) => console.error(e))
+      .finally(() => continueRender(handle));
+  }, [handle]);
+};

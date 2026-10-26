@@ -172,6 +172,7 @@ Stage director skills teach the agent HOW to execute each pipeline stage. Each s
 | Edit Director | `pipelines/talking-head/edit-director.md` | `edit` | Cut assembly, subtitle config |
 | Compose Director | `pipelines/talking-head/compose-director.md` | `compose` | Enhancement chain, render |
 | Publish Director | `pipelines/talking-head/publish-director.md` | `publish` | Metadata, export packaging |
+| Expert Reels Director | `pipelines/talking-head/expert-reels-director.md` | `scene_plan`–`compose` | Expert Instagram Reels via `templates/expert-reels/`: brand themes, topic cutaways, no-repeat styling |
 
 ### Screen Demo Pipeline (`pipelines/screen-demo/`) — v2.0
 

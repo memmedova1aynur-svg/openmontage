@@ -1,0 +1,29 @@
+{
+  "name": "Example expert (navy + gold)",
+  "instagram": "",
+  "notes": "Copy this file to experts/<expert-id>.json. Take the colours from the expert's Instagram grid/highlights/logo, not from the footage. accent must stay readable on primary (contrast >= 4.5:1) and onAccent readable on accent.",
+  "theme": {
+    "primary": "#14213D",
+    "primaryDeep": "#0B1426",
+    "accent": "#F2C230",
+    "accentSoft": "#F6D978",
+    "text": "#FFFFFF",
+    "onAccent": "#14213D",
+    "cardAlpha": 0.94
+  },
+  "style": {
+    "captions": "stroke",
+    "pills": "top-card",
+    "backdrop": "dots",
+    "pipShape": "circle",
+    "pipCorner": "br"
+  },
+  "history": [
+    {
+      "video": "coaching-consultation (reference build)",
+      "date": "2026-10-26",
+      "style": { "captions": "stroke", "pills": "top-card", "backdrop": "dots", "pipShape": "circle", "pipCorner": "br" },
+      "scenes": ["timeline", "phone", "comment"]
+    }
+  ]
+}
