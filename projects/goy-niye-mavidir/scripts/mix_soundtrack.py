@@ -26,29 +26,31 @@ OUT = ROOT / "hyperframes" / "assets" / "soundtrack.wav"
 # narration cue (s) per scene s1..s8
 VO_CUES = [0.5, 6.4, 12.4, 17.4, 23.4, 31.4, 38.4, 43.6]
 
-# (time s, sfx name, gain dB). Whooshes start ~0.38 s early so their peak lands on the cut.
+# (time s, sfx name, gain dB). el_* are ElevenLabs one-shots (assets/sfx/el_*.wav, peak-normalised);
+# start times are offset so each sound's peak lands on its cue: whoosh peak +0.15 s, riser peak +1.8 s.
 SFX = [
-    (1.30, "pop", -8),                                         # QARADIR slam
-    (3.10, "whoosh_short", -12),                               # punch-in to Earth
-    (5.62, "whoosh", -9),                                      # -> Mars
-    (7.20, "pop", -10), (7.50, "pop_low", -10),                # SARIMTIL / QƏHVƏYİDİR
-    (9.10, "whoosh_short", -13),                               # punch-in on rocks
-    (11.62, "whoosh", -9),                                     # -> Earth
-    (13.00, "pop", -9), (13.50, "hit", -11),                   # MAVİDİR? + question mark
-    (16.62, "whoosh", -9),                                     # -> light
-    (17.30, "riser", -16), (18.40, "shimmer", -9),             # beam, spectrum fans out
-    (22.62, "whoosh", -9),                                     # -> scattering
+    (2.40, "el_pop", -9),                                          # QARADIR (word at 2.46)
+    (3.15, "el_whoosh", -16),                                      # punch-in 3.3
+    (5.85, "el_whoosh", -8),                                       # cut -> Mars 6.0
+    (8.21, "el_pop", -10), (8.79, "el_pop", -11),                  # SARIMTIL / QƏHVƏYİDİR
+    (9.15, "el_whoosh", -16),                                      # punch-in 9.3
+    (11.85, "el_whoosh", -8),                                      # cut -> Earth 12.0
+    (13.50, "el_pop", -9), (14.02, "el_hit", -13),                 # MAVİDİR? + question mark
+    (16.85, "el_whoosh", -8),                                      # cut -> light 17.0
+    (17.30, "whoosh_short", -15),                                  # beam enters
+    (20.00, "el_shimmer", -8),                                     # prism split on "amma içində"
+    (22.85, "el_whoosh", -8),                                      # cut -> scattering 23.0
     (23.30, "tick", -14), (23.55, "tick", -15), (23.80, "tick", -14), (24.05, "tick", -16),
-    (24.20, "whoosh_short", -15),                              # red ray passes straight through
-    (27.40, "hit", -9),                                        # ×4
-    (30.62, "whoosh", -9),                                     # -> comparison
-    (32.40, "pop_low", -11), (33.60, "pop_low", -11), (35.00, "pop", -9),
-    (37.62, "whoosh", -9),                                     # -> Mars sunset
-    (38.20, "riser", -13), (39.70, "hit", -8),                 # ... MAVİDİR!
-    (40.60, "whoosh_short", -14),                              # punch-in on the blue halo
-    (42.62, "whoosh", -9),                                     # -> outro
-    (43.90, "shimmer", -11),
-    (44.40, "pop", -13), (44.55, "pop", -13), (44.70, "pop", -12),
+    (25.20, "el_shimmer", -16),                                    # blue scatters on "mavi işığı"
+    (27.15, "whoosh_short", -14),                                  # red ray on "qırmızıdan"
+    (28.42, "el_hit", -8),                                         # ×4 on "dörd"
+    (30.85, "el_whoosh", -8),                                      # cut -> comparison 31.0
+    (31.70, "pop_low", -11), (34.65, "pop_low", -11), (36.60, "el_pop", -9),
+    (37.85, "el_whoosh", -8),                                      # cut -> Mars sunset 38.0
+    (39.20, "el_riser", -10), (40.92, "el_hit", -6),               # riser peaks into MAVİDİR! + punch-in
+    (42.85, "el_whoosh", -8),                                      # cut -> outro 43.0
+    (44.88, "el_shimmer", -11),                                    # "atmosferin"
+    (45.95, "el_pop", -14), (46.10, "el_pop", -14), (46.25, "el_pop", -13),
 ]
 
 # (start, end, ambience, gain dB)
@@ -95,7 +97,7 @@ def main() -> None:
                  f"aformat=channel_layouts=stereo,asplit[vo][key]")
     graph.append(f"{''.join(fx)}amix=inputs={len(fx)}:normalize=0,apad=whole_dur={DUR},aformat=channel_layouts=stereo[fx]")
     graph.append("[mus][key]sidechaincompress=threshold=0.03:ratio=8:attack=25:release=420[duck]")
-    graph.append(f"[duck][fx][vo]amix=inputs=3:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=9,"
+    graph.append(f"[duck][fx][vo]amix=inputs=3:normalize=0,loudnorm=I=-13.2:TP=-1.0:LRA=9,"
                  f"aresample=48000,alimiter=limit=0.84:level=0,atrim=0:{DUR}[out]")
 
     cmd = ["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", *inputs,
