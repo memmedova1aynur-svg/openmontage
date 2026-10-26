@@ -1,12 +1,14 @@
 # Aynur Həkimova — Noyabr 2026 ssenariləri
 
-Status: ✅ təsdiqlənib · ✏️ müzakirədədir
+Status: ✅ təsdiqlənib · Drive: https://docs.google.com/document/d/1RU2g8Vg8PMEr6kFh1BERIc3vCSXmF4tlaG2KUQ9bnX8/edit
 
-## #2 · Çərşənbə axşamı, 3 noyabr · Reels · ~45 san · ✅ mətn (hook seçilir)
+## #2 · Çərşənbə axşamı, 3 noyabr · Reels · ~45 san · ✅ · həftənin reklam videosu
 
-**Ekran yazısı:** seçilir
+**Ekran yazısı:** Siz olmayanda bağça necə işləyir?
 
 ```
+Bir həftə bağçada olmasanız, işlər öz qaydasında gedəcəkmi?
+
 Bağçada hər məsələ sizin masanıza gəlirsə,
 deməli nəzarət hələ bölüşdürülməyib.
 
