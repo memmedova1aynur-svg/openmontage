@@ -223,7 +223,7 @@ export const Checklist: React.FC<SceneProps> = ({ f, p, startT }) => {
       <Header f={f} label={p.label} title={p.title} />
       <div style={{ position: "absolute", left: 90, top: 530, width: 900 }}>
         {(p.items as string[]).map((it, i) => (
-          <Check key={i} f={f} at={appearFrame(p, i, startT, fps, 14, 14)} text={it} size={36} gap={16} />
+          <Check key={i} f={f} at={appearFrame(p, i, startT, fps, 14, 14)} text={it} size={p.items.length <= 3 ? 46 : 36} gap={p.items.length <= 3 ? 28 : 16} />
         ))}
       </div>
     </AbsoluteFill>

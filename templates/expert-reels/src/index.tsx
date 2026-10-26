@@ -63,7 +63,8 @@ const Captions: React.FC = () => {
   if (!page) return null;
   const enter = spring({ frame: Math.round((t - page.start) * fps), fps, config: { damping: 14, stiffness: 220, mass: 0.6 } });
   const style = E.style.captions;
-  const onPale = !!T.light && pipAt(t, fps).p > 0.5;
+  // box captions keep their own dark backing, so only bare captions switch colour over pale cutaways
+  const onPale = !!T.light && style !== "box" && pipAt(t, fps).p > 0.5;
   return (
     <AbsoluteFill style={{ justifyContent: "flex-end", alignItems: "center", paddingBottom: 430 }}>
       <div
