@@ -81,6 +81,10 @@ accent colour.
   1080x1920 frame. Measure it on a gridded frame so the circle holds head and
   shoulders with no empty background. `radius` is about 210 and `scale` = radius / local radius.
 - `style`: per-video overrides (see Variety).
+- `video`: footage file in `public/` (default `base.mp4`). For a softly blurred background run
+  `python templates/expert-reels/scripts/blur_background.py public/base.mp4 public/base_blur.mp4`
+  (MODNet portrait matting, Apache-2.0) and set `"video": "base_blur.mp4"`.
+- `sfx_level`: `"minimal"` for calm edits. Use it when the user asks for something simple; it drops zoom pops and softens the rest.
 
 ### Scene library (`src/scenes/index.tsx`)
 

@@ -73,7 +73,7 @@ const Captions: React.FC = () => {
           lineHeight: 1.12,
           padding: style === "box" ? "14px 26px 18px" : 0,
           borderRadius: 26,
-          background: style === "box" ? rgba(T.primary, 0.82) : "transparent",
+          background: style === "box" ? (T.light ? rgba(T.accent, 0.9) : rgba(T.primary, 0.82)) : "transparent",
           transform: `translateY(${(1 - enter) * 26}px) scale(${0.86 + 0.14 * enter})`,
           opacity: Math.min(1, enter * 1.6),
         }}
@@ -97,7 +97,7 @@ const Captions: React.FC = () => {
                 fontWeight: 900,
                 fontSize: 74,
                 letterSpacing: -0.5,
-                color: chip ? T.onAccent : active ? T.accent : onPale ? T.text : "#FFFFFF",
+                color: chip ? T.onAccent : active ? (style === "box" && T.light ? T.accentSoft : T.accent) : onPale ? T.text : "#FFFFFF",
                 opacity: spoken ? 1 : 0.55,
                 transform: `scale(${scale})`,
                 WebkitTextStroke: style === "box" || chip || onPale ? undefined : "3px rgba(0,0,0,0.85)",
@@ -230,7 +230,7 @@ const Reel: React.FC = () => {
           clipPath: p > 0.001 ? clip : undefined,
         }}
       >
-        <OffthreadVideo src={staticFile("base.mp4")} />
+        <OffthreadVideo src={staticFile(E.video ?? "base.mp4")} />
       </AbsoluteFill>
       {p > 0.02 && (
         <div

@@ -74,10 +74,13 @@ def auto_sfx(spec: dict, cutaways: list[dict], overlays: list[dict]) -> list[dic
             sfx.append({"t": t, "src": "sfx/hit.wav", "vol": 0.55})
         elif (
             k == "push"
+            and spec.get("sfx_level") != "minimal"
             and not any(abs(t - o["in"]) < 0.8 for o in overlays)
             and not any(c["in"] - 0.2 <= t <= c["out"] for c in busy)
         ):
             sfx.append({"t": t, "src": "sfx/pop.wav", "vol": 0.35})
+    if spec.get("sfx_level") == "minimal":  # calmer edits: quieter, fewer cues
+        sfx = [{**s, "vol": round(s["vol"] * 0.7, 2)} for s in sfx]
     sfx += spec.get("extra_sfx", [])
     return sorted(sfx, key=lambda s: s["t"])
 
@@ -143,6 +146,7 @@ def main() -> None:
             overlays.append(o)
     edit = {
         "duration": spec["duration"],
+        "video": spec.get("video", "base.mp4"),
         "theme": expert["theme"],
         "style": {**DEFAULT_STYLE, **expert.get("style", {}), **spec.get("style", {})},
         "pip": {**DEFAULT_PIP, **spec.get("pip", {})},

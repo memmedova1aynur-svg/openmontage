@@ -47,6 +47,7 @@ export type Style = {
 export type Pip = { focus: [number, number]; radius: number; scale: number };
 export type Edit = {
   duration: number;
+  video?: string; // footage file in public/, default base.mp4 (e.g. base_blur.mp4)
   theme: Theme;
   style: Style;
   pip: Pip;
