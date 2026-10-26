@@ -56,6 +56,10 @@ context line and trim, or generate 3 takes.
    intonation), unnatural breaths, clipped first syllable.
 4. Pick per line, not per batch. Record the choice and why in the decision
    log.
+5. Keep TTS input text plain. Ellipses ("Bəs... Yerdə") and bracketed
+   delivery tags on short lines made ElevenLabs v4 repeat the first word
+   ("Bəs, bəs") — direct the read through voice/style settings instead, and
+   re-transcribe any take generated with tags.
 
 ## 4. Edit the voice
 

@@ -211,6 +211,38 @@
       "reason": "User asked for more realistic graphics; only viable path",
       "user_visible": true,
       "user_approved": true
+    },
+    {
+      "decision_id": "d-008",
+      "stage": "assets",
+      "category": "voice_selection",
+      "subject": "Narration (supersedes d-006)",
+      "options_considered": [
+        {
+          "option_id": "el_abbas",
+          "label": "ElevenLabs eleven_v4, voice Abbas (az, professional male)",
+          "score": 0.9,
+          "reason": "all 8 lines transcribe close to script; line 3 fixed"
+        },
+        {
+          "option_id": "gemini_kore",
+          "label": "Gemini TTS Kore",
+          "score": 0.6,
+          "reason": "natural",
+          "rejected_because": "line 3 unclear, short lines drift toward Turkish"
+        },
+        {
+          "option_id": "el_aynur_clone",
+          "label": "User's cloned Azerbaijani voice",
+          "score": 0.0,
+          "reason": "own voice",
+          "rejected_because": "instant clones not available on current ElevenLabs plan"
+        }
+      ],
+      "selected": "el_abbas",
+      "reason": "User choice after comparing line-3 samples",
+      "user_visible": true,
+      "user_approved": true
     }
   ]
 }

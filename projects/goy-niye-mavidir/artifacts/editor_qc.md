@@ -19,3 +19,10 @@
   (faster-whisper medium, artifacts/vo_word_timestamps.json).
 - Rubric: hook 4, story 4, rhythm 4, picture 4, typography 5, voice 3, sound 5, finishing 5
 - Open: s3 narration line; ambience beds still synthesised (ElevenLabs returned 1–2 s clips, too short to loop cleanly).
+
+## Editor QC — v5
+
+- Narration re-recorded with ElevenLabs eleven_v4 "Abbas"; takes chosen by faster-whisper transcription match; edit and SFX re-cued to the new word timestamps.
+- delivery_qc: pass_with_warnings — -14.3 LUFS, -1.0 dBTP, 16.5 Mbps, no black/frozen frames, no dead air (rhythm warning as before, justified).
+- Rubric: hook 4, story 4, rhythm 4, picture 4, typography 5, voice 4, sound 5, finishing 5
+- Listen-check: line 2 "göy" transcribes as "gök"; line 6 "işığı udur" transcribes as "işığıdır".

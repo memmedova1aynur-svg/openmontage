@@ -1,313 +1,308 @@
 {
  "s1": [
   {
-   "word": "Ayda,",
+   "word": "ayda,",
    "start": 0.0,
-   "end": 1.02
+   "end": 0.62
   },
   {
-   "word": "gündüzdə",
-   "start": 1.28,
-   "end": 1.78
+   "word": "gündüzdə,",
+   "start": 0.82,
+   "end": 1.32
   },
   {
-   "word": "göğü",
-   "start": 1.78,
+   "word": "göy",
+   "start": 1.44,
+   "end": 1.56
+  },
+  {
+   "word": "qaradır.",
+   "start": 1.56,
    "end": 1.96
-  },
-  {
-   "word": "qaradı.",
-   "start": 1.96,
-   "end": 2.38
   }
  ],
  "s2": [
   {
    "word": "Marsda",
    "start": 0.0,
-   "end": 0.9
+   "end": 0.58
   },
   {
    "word": "isə",
-   "start": 0.9,
-   "end": 1.4
+   "start": 0.58,
+   "end": 1.0
   },
   {
-   "word": "köy",
-   "start": 1.4,
-   "end": 1.88
+   "word": "gök",
+   "start": 1.0,
+   "end": 1.5
   },
   {
-   "word": "sarımtıl",
-   "start": 1.88,
-   "end": 2.46
+   "word": "sarıntıl",
+   "start": 1.5,
+   "end": 2.04
   },
   {
    "word": "qəhvə",
-   "start": 2.46,
-   "end": 2.88
+   "start": 2.04,
+   "end": 2.44
   },
   {
-   "word": "idi.",
-   "start": 2.88,
-   "end": 3.0
+   "word": "edir.",
+   "start": 2.44,
+   "end": 2.64
   }
  ],
  "s3": [
   {
-   "word": "Bəs",
+   "word": "Bəs,",
    "start": 0.0,
-   "end": 0.56
+   "end": 0.58
   },
   {
    "word": "yerdə",
-   "start": 0.56,
-   "end": 0.94
+   "start": 0.72,
+   "end": 1.02
   },
   {
    "word": "niyə",
-   "start": 0.94,
-   "end": 1.18
+   "start": 1.02,
+   "end": 1.26
   },
   {
-   "word": "mavidə?",
-   "start": 1.18,
-   "end": 1.56
+   "word": "mavidir?",
+   "start": 1.26,
+   "end": 1.7
   }
  ],
  "s4": [
   {
    "word": "Günəş",
    "start": 0.0,
-   "end": 0.78
+   "end": 0.48
   },
   {
    "word": "ışığı",
-   "start": 0.78,
-   "end": 1.22
+   "start": 0.48,
+   "end": 0.8
   },
   {
    "word": "ağ",
-   "start": 1.22,
-   "end": 1.54
+   "start": 0.8,
+   "end": 1.1
   },
   {
    "word": "görünür,",
-   "start": 1.54,
-   "end": 2.26
+   "start": 1.1,
+   "end": 1.7
   },
   {
    "word": "amma",
-   "start": 2.54,
-   "end": 2.94
+   "start": 2.08,
+   "end": 2.4
   },
   {
    "word": "içində",
-   "start": 2.94,
-   "end": 3.64
+   "start": 2.4,
+   "end": 2.98
   },
   {
    "word": "bütün",
-   "start": 3.64,
-   "end": 3.94
+   "start": 2.98,
+   "end": 3.28
   },
   {
    "word": "rənglər",
-   "start": 3.94,
-   "end": 4.44
+   "start": 3.28,
+   "end": 3.78
   },
   {
    "word": "var.",
-   "start": 4.44,
-   "end": 4.6
+   "start": 3.78,
+   "end": 3.94
   }
  ],
  "s5": [
   {
    "word": "Havanın",
    "start": 0.0,
-   "end": 0.68
+   "end": 0.52
   },
   {
-   "word": "kiçiyi",
-   "start": 0.68,
-   "end": 0.98
+   "word": "kiçik",
+   "start": 0.52,
+   "end": 0.84
   },
   {
    "word": "molekulları",
-   "start": 0.98,
-   "end": 1.72
+   "start": 0.84,
+   "end": 1.62
   },
   {
    "word": "mavi",
-   "start": 1.72,
-   "end": 2.2
+   "start": 1.62,
+   "end": 2.16
   },
   {
-   "word": "şıxı",
-   "start": 2.2,
-   "end": 2.62
+   "word": "işığı",
+   "start": 2.16,
+   "end": 2.48
   },
   {
    "word": "hər",
-   "start": 2.62,
-   "end": 2.92
+   "start": 2.48,
+   "end": 2.82
   },
   {
    "word": "tərəfə",
-   "start": 2.92,
-   "end": 3.24
+   "start": 2.82,
+   "end": 3.12
   },
   {
-   "word": "səpir,",
-   "start": 3.24,
-   "end": 3.7
+   "word": "səpir.",
+   "start": 3.12,
+   "end": 3.66
   },
   {
-   "word": "qırmızıdan",
+   "word": "Qırmızıdan",
    "start": 3.9,
-   "end": 4.44
+   "end": 4.46
   },
   {
    "word": "təxminən",
-   "start": 4.44,
+   "start": 4.46,
    "end": 5.14
   },
   {
    "word": "4",
    "start": 5.14,
-   "end": 5.4
+   "end": 5.42
   },
   {
    "word": "dəfə",
-   "start": 5.4,
-   "end": 5.62
+   "start": 5.42,
+   "end": 5.66
   },
   {
    "word": "çox.",
-   "start": 5.62,
-   "end": 5.84
+   "start": 5.66,
+   "end": 5.94
   }
  ],
  "s6": [
   {
    "word": "Ayda",
    "start": 0.0,
-   "end": 0.62
+   "end": 0.4
   },
   {
    "word": "hava",
-   "start": 0.62,
-   "end": 0.88
+   "start": 0.4,
+   "end": 0.66
   },
   {
    "word": "yoxdur,",
-   "start": 0.88,
-   "end": 1.38
+   "start": 0.66,
+   "end": 1.26
   },
   {
-   "word": "səbləsi",
-   "start": 1.58,
-   "end": 2.0
+   "word": "səpiləcək",
+   "start": 1.44,
+   "end": 2.08
   },
   {
    "word": "heç",
-   "start": 2.0,
-   "end": 2.26
+   "start": 2.08,
+   "end": 2.4
   },
   {
    "word": "nə",
-   "start": 2.26,
-   "end": 2.42
+   "start": 2.4,
+   "end": 2.54
   },
   {
-   "word": "yoxdur,",
-   "start": 2.42,
-   "end": 3.02
+   "word": "yoxdur.",
+   "start": 2.54,
+   "end": 3.16
   },
   {
    "word": "Marsda",
-   "start": 3.24,
-   "end": 3.58
+   "start": 3.42,
+   "end": 3.74
   },
   {
    "word": "isə",
-   "start": 3.58,
-   "end": 4.0
+   "start": 3.74,
+   "end": 4.14
   },
   {
    "word": "toz",
-   "start": 4.0,
-   "end": 4.4
+   "start": 4.14,
+   "end": 4.58
   },
   {
    "word": "mavi",
-   "start": 4.4,
-   "end": 4.8
+   "start": 4.58,
+   "end": 5.0
   },
   {
-   "word": "şığı",
-   "start": 4.8,
-   "end": 5.16
-  },
-  {
-   "word": "udur.",
-   "start": 5.16,
-   "end": 5.38
+   "word": "ışığıdır.",
+   "start": 5.0,
+   "end": 5.52
   }
  ],
  "s7": [
   {
    "word": "Ən",
    "start": 0.0,
-   "end": 0.62
+   "end": 0.36
   },
   {
    "word": "maraqlısı",
-   "start": 0.62,
-   "end": 1.28
+   "start": 0.36,
+   "end": 0.96
   },
   {
    "word": "isə",
-   "start": 1.28,
-   "end": 1.82
+   "start": 0.96,
+   "end": 1.7
   },
   {
    "word": "Marsda",
-   "start": 1.82,
-   "end": 2.3
+   "start": 1.7,
+   "end": 2.24
   },
   {
-   "word": "görüb",
-   "start": 2.3,
-   "end": 2.62
+   "word": "qürüb",
+   "start": 2.24,
+   "end": 2.66
   },
   {
    "word": "mavidir.",
-   "start": 2.62,
-   "end": 3.08
+   "start": 2.66,
+   "end": 3.26
   }
  ],
  "s8": [
   {
-   "word": "Köyün",
+   "word": "Göyün",
    "start": 0.0,
-   "end": 0.76
+   "end": 0.48
   },
   {
    "word": "rəngi",
-   "start": 0.76,
-   "end": 1.32
+   "start": 0.48,
+   "end": 1.1
   },
   {
    "word": "atmosferin",
-   "start": 1.32,
-   "end": 2.3
+   "start": 1.1,
+   "end": 1.94
   },
   {
    "word": "imzasıdır.",
-   "start": 2.3,
-   "end": 3.0
+   "start": 1.94,
+   "end": 2.56
   }
  ]
 }
