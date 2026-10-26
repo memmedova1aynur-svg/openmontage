@@ -30,6 +30,15 @@ npx remotion render src/index.tsx Reel "$P/renders/$NAME.mp4" --scale=2 --codec=
   --x264-preset=slow --jpeg-quality=95 --audio-bitrate=320k --concurrency=4 "${BROWSER[@]}" --log=error
 ffprobe -v error -show_entries stream=width,height:format=duration,size -of default=nw=1 "$P/renders/$NAME.mp4"
 
+# Delivery copy: same 4K picture as HEVC (hvc1, plays natively on iPhone) sized to ~44 MB,
+# because phones fail to download the 200-300 MB master from chat.
+DUR="$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$P/renders/$NAME.mp4")"
+HB="$(python3 -c "print(int(44*8*1000/$DUR) - 200)")"
+ffmpeg -v error -y -i "$P/renders/$NAME.mp4" -c:v libx265 -preset fast -tag:v hvc1 -pix_fmt yuv420p \
+  -x265-params "crf=20:vbv-maxrate=$HB:vbv-bufsize=$((HB * 2)):log-level=error" \
+  -c:a aac -b:a 192k -movflags +faststart "$P/renders/${NAME}_ig.mp4"
+ffprobe -v error -show_entries format=size -of default=nw=1 "$P/renders/${NAME}_ig.mp4"
+
 # Optional small 1080p copy for chat previews (Claude uploads are capped at 30 MB).
 if [ -n "${PREVIEW:-}" ]; then
   DUR="$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$P/renders/$NAME.mp4")"

@@ -119,6 +119,60 @@ const Captions: React.FC = () => {
   );
 };
 
+// ---------------------------------------------------------------- keyword pops
+// Short emphasised words that bounce in around the speaker (top / left / right),
+// for talking-only videos where cards and cutaways would be too much.
+const POP_POS: Record<string, { box: React.CSSProperties; rot: number }> = {
+  t: { box: { top: 330, left: 0, right: 0, display: "flex", justifyContent: "center" }, rot: -2 },
+  tl: { box: { top: 400, left: 50 }, rot: -5 },
+  tr: { box: { top: 400, right: 50 }, rot: 5 },
+  l: { box: { top: 1130, left: 40 }, rot: -3 },
+  r: { box: { top: 1130, right: 40 }, rot: 3 },
+};
+
+const KeywordPop: React.FC<{ o: Pill }> = ({ o }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const dur = (o.out - o.in) * fps;
+  const pos = POP_POS[o.pos ?? "t"];
+  const enter = spring({ frame, fps, config: { damping: 9, stiffness: 220, mass: 0.6 } });
+  const exit = interpolate(frame, [dur - 7, dur], [1, 0], clamp01);
+  const float = Math.sin(frame / 16) * 6 * Math.min(1, frame / 15);
+  const wobble = Math.sin(frame / 9) * 1.2 * Math.max(0, 1 - frame / 30);
+  const words = o.parts.flatMap(([txt, hl]) => txt.split(/(?<= )/).map((w) => ({ w, hl })));
+  return (
+    <AbsoluteFill>
+      <div style={{ position: "absolute", ...pos.box }}>
+        <div
+          style={{
+            maxWidth: o.pos === "t" ? 900 : 440,
+            padding: "16px 28px 20px",
+            borderRadius: 26,
+            background: rgba(T.primary, 0.92),
+            boxShadow: "0 16px 40px rgba(0,0,0,0.4)",
+            borderBottom: `8px solid ${T.accent}`,
+            fontFamily: FONT,
+            fontWeight: 900,
+            fontSize: 60,
+            lineHeight: 1.08,
+            color: T.text,
+            textAlign: o.pos === "r" || o.pos === "tr" ? "right" : o.pos === "t" ? "center" : "left",
+            transform: `translateY(${float}px) scale(${enter * (0.85 + 0.15 * exit)}) rotate(${pos.rot * enter + wobble}deg)`,
+            transformOrigin: o.pos === "r" || o.pos === "tr" ? "100% 50%" : o.pos === "t" ? "50% 50%" : "0% 50%",
+            opacity: Math.min(1, enter * 2) * exit,
+          }}
+        >
+          {words.map(({ w, hl }, i) => (
+            <span key={i} style={{ whiteSpace: "pre", color: hl ? EMPH : T.text }}>
+              {w}
+            </span>
+          ))}
+        </div>
+      </div>
+    </AbsoluteFill>
+  );
+};
+
 // ---------------------------------------------------------------- keyword pills
 const PillCard: React.FC<{ o: Pill }> = ({ o }) => {
   const frame = useCurrentFrame();
@@ -304,7 +358,7 @@ const Reel: React.FC = () => {
         ))}
       {E.overlays.map((o) => (
         <Sequence key={o.id} from={Math.round(o.in * FPS)} durationInFrames={Math.round((o.out - o.in) * FPS)}>
-          <PillCard o={o} />
+          {o.kind === "pop" ? <KeywordPop o={o} /> : <PillCard o={o} />}
         </Sequence>
       ))}
       <Captions />

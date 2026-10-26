@@ -22,8 +22,9 @@ export type Page = { start: number; end: number; words: Word[] };
 export type ZoomKey = { t: number; s: number; k: "cut" | "push" | "punch" };
 export type Pill = {
   id: string;
-  kind: "pill" | "hook" | "cta";
+  kind: "pill" | "hook" | "cta" | "pop";
   label: string | null;
+  pos?: "t" | "tl" | "tr" | "l" | "r"; // "pop" keyword position around the speaker
   parts: [string, number][];
   in: number;
   out: number;

@@ -30,6 +30,9 @@ The `expert-reels-director` skill says how this template plugs into it.
 1. Get the footage (> 30 MB: Google Drive link shared as "Anyone with the link").
 2. Transcribe:  transcriber tool, model_size=large-v3, language=az
 3. Correct the transcript by hand, show it to the user, get approval.
+3b. Retakes: when a sentence was said more than once, keep the best complete take:
+                python templates/expert-reels/scripts/cut_takes.py <src> <words.json> keep.json base.mp4 words_cut.json
+                (keep.json = [[start, end], ...] in source seconds, cut in the pauses)
 4. Align:       python templates/expert-reels/scripts/align_words.py \
                   projects/<id>/artifacts/<x>_transcript.json corrected.txt \
                   projects/<id>/artifacts/corrected_word_segments.json
@@ -71,6 +74,8 @@ accent colour.
   fast with a shake and a hit SFX. Put cuts and pushes on sentence and clause
   starts. Save punches for 2-3 key lines.
 - `overlays`: keyword pills (`hook` | `pill` | `cta`). `parts` = `[[text, highlight]]`.
+  `pop` + `pos` (`t` | `tl` | `tr` | `l` | `r`) is a short emphasised word that bounces in around the
+  speaker. Use it for talking-only videos (no cutaways): 1-3 words, 1.2-2.5 s, varied sides.
   Pills that overlap a cutaway are dropped automatically.
 - `cutaways`:
   - `pip`: the speaker shrinks into the corner. `panels` play in order, each
