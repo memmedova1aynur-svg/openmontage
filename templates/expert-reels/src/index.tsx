@@ -74,7 +74,7 @@ const Captions: React.FC = () => {
           padding: style === "box" ? "14px 26px 18px" : 0,
           borderRadius: 26,
           background: style === "box" ? (T.light ? rgba(T.accent, 0.9) : rgba(T.primary, 0.82)) : "transparent",
-          transform: `translateY(${(1 - enter) * 26}px) scale(${0.86 + 0.14 * enter})`,
+          transform: `translateY(${(1 - enter) * 26}px) scale(${0.86 + 0.14 * enter}) rotate(${(1 - enter) * -2.5}deg)`,
           opacity: Math.min(1, enter * 1.6),
         }}
       >
@@ -103,6 +103,10 @@ const Captions: React.FC = () => {
                 WebkitTextStroke: style === "box" || chip || onPale ? undefined : "3px rgba(0,0,0,0.85)",
                 paintOrder: "stroke fill",
                 textShadow: onPale ? "none" : "0 6px 18px rgba(0,0,0,0.55)",
+                backgroundImage: style === "box" && active ? `linear-gradient(${T.accentSoft}, ${T.accentSoft})` : undefined,
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "0 100%",
+                backgroundSize: style === "box" && active ? `${100 * Math.min(1, pop * 1.2)}% 6px` : undefined,
               }}
             >
               {w.w}
@@ -125,6 +129,12 @@ const PillCard: React.FC<{ o: Pill }> = ({ o }) => {
   const big = o.kind !== "pill";
   const side = E.style.pills === "side-tag" && !big;
   const words = o.parts.flatMap(([txt, hl]) => txt.split(/(?<= )/).map((w) => ({ w, hl })));
+  // once in, the card keeps breathing so it never sits dead still
+  const settle = Math.min(1, frame / 20);
+  const float = Math.sin(frame / 20) * 5 * settle;
+  const tilt = side ? 0 : Math.sin(frame / 31) * 0.6 * settle;
+  const shine = interpolate(frame, [14, 34], [-40, 140], clamp01);
+  const firstHl = words.findIndex((x) => x.hl);
   return (
     <AbsoluteFill style={{ alignItems: side ? "flex-start" : "center" }}>
       <div
@@ -141,8 +151,8 @@ const PillCard: React.FC<{ o: Pill }> = ({ o }) => {
           maxWidth: 960,
           boxShadow: "0 18px 50px rgba(0,0,0,0.35)",
           transform: side
-            ? `translateX(${(1 - enter) * -500}px)`
-            : `translateY(${(1 - enter) * -70}px) scale(${(0.7 + 0.3 * enter) * (0.92 + 0.08 * exit)}) rotate(${(1 - enter) * -4}deg)`,
+            ? `translateX(${(1 - enter) * -500}px) translateY(${float}px)`
+            : `translateY(${(1 - enter) * -70 + float}px) scale(${(0.7 + 0.3 * enter) * (0.92 + 0.08 * exit)}) rotate(${(1 - enter) * -4 + tilt}deg)`,
           opacity: Math.min(1, enter * 1.5) * exit,
         }}
       >
@@ -155,13 +165,39 @@ const PillCard: React.FC<{ o: Pill }> = ({ o }) => {
           {words.map(({ w, hl }, i) => {
             const ws = spring({ frame: frame - 4 - i * 3, fps, config: { damping: 14, stiffness: 200, mass: 0.5 } });
             return (
-              <span key={i} style={{ display: "inline-block", whiteSpace: "pre", color: hl ? EMPH : T.text, opacity: ws, transform: `translateY(${(1 - ws) * 22}px)` }}>
+              <span
+                key={i}
+                style={{
+                  display: "inline-block",
+                  whiteSpace: "pre",
+                  color: hl ? EMPH : T.text,
+                  opacity: ws,
+                  transform: `translateY(${(1 - ws) * 22}px)`,
+                  // highlighted words get a marker stroke that sweeps in behind them
+                  backgroundImage: hl ? `linear-gradient(${rgba(T.light ? T.accentSoft : T.accent, T.light ? 0.38 : 0.28)}, ${rgba(T.light ? T.accentSoft : T.accent, T.light ? 0.38 : 0.28)})` : undefined,
+                  backgroundRepeat: "no-repeat",
+                  backgroundPosition: "0 82%",
+                  backgroundSize: hl ? `${interpolate(frame, [12 + (i - firstHl) * 3, 26 + (i - firstHl) * 3], [0, 100], clamp01)}% 34%` : undefined,
+                }}
+              >
                 {w}
               </span>
             );
           })}
         </div>
         {!side && <div style={{ position: "absolute", left: 0, bottom: 0, height: 9, width: `${bar * 100}%`, background: T.accent }} />}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            bottom: 0,
+            left: `${shine}%`,
+            width: "28%",
+            transform: "skewX(-20deg)",
+            background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent)",
+            pointerEvents: "none",
+          }}
+        />
       </div>
     </AbsoluteFill>
   );

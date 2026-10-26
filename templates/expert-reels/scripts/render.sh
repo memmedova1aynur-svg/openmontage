@@ -23,15 +23,17 @@ if [ -n "${STILL:-}" ]; then
 fi
 
 mkdir -p "$P/assets/video" "$P/renders"
-RAW="$P/assets/video/${NAME}_raw.mp4"
-npx remotion render src/index.tsx Reel "$RAW" --codec=h264 --crf=17 --concurrency=4 "${BROWSER[@]}" --log=error
+# Master: rendered at 2x (2160x3840) so captions and graphics are drawn natively in 4K,
+# JPEG frames at quality 95 (Remotion's default 80 softens detail), x264 CRF 14 slow.
+# This file goes to Instagram as-is: no second lossy pass.
+npx remotion render src/index.tsx Reel "$P/renders/$NAME.mp4" --scale=2 --codec=h264 --crf=14 \
+  --x264-preset=slow --jpeg-quality=95 --audio-bitrate=320k --concurrency=4 "${BROWSER[@]}" --log=error
+ffprobe -v error -show_entries stream=width,height:format=duration,size -of default=nw=1 "$P/renders/$NAME.mp4"
 
-# Two-pass encode sized to land near 27 MB whatever the length (Claude's upload limit
-# is 30 MB): video bitrate = 27 MB over the duration minus 160k audio, capped at 3.6 Mbps.
-DUR="$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$RAW")"
-VB="$(python3 -c "print(min(3600, int(27*8*1000/$DUR) - 170))")k"
-LOG="$(mktemp -d)/x264"
-ffmpeg -v error -y -i "$RAW" -c:v libx264 -preset slow -b:v "$VB" -maxrate 5000k -bufsize 8000k -pass 1 -passlogfile "$LOG" -an -f mp4 /dev/null
-ffmpeg -v error -y -i "$RAW" -c:v libx264 -preset slow -b:v "$VB" -maxrate 5000k -bufsize 8000k -pass 2 -passlogfile "$LOG" \
-  -pix_fmt yuv420p -c:a aac -b:a 160k -movflags +faststart "$P/renders/$NAME.mp4"
-ffprobe -v error -show_entries format=duration,size -of default=nw=1 "$P/renders/$NAME.mp4"
+# Optional small 1080p copy for chat previews (Claude uploads are capped at 30 MB).
+if [ -n "${PREVIEW:-}" ]; then
+  DUR="$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$P/renders/$NAME.mp4")"
+  VB="$(python3 -c "print(min(3600, int(27*8*1000/$DUR) - 170))")k"
+  ffmpeg -v error -y -i "$P/renders/$NAME.mp4" -vf scale=1080:1920:flags=lanczos -c:v libx264 -preset slow -b:v "$VB" \
+    -maxrate 5000k -bufsize 8000k -pix_fmt yuv420p -c:a aac -b:a 160k -movflags +faststart "$P/renders/${NAME}_preview.mp4"
+fi
