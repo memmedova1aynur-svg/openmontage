@@ -87,3 +87,12 @@ Oktyabrda 9 reels paylaşılıb (təxminən həftədə 2). 17–24 oktyabr aras�
 ## Açıq suallar
 
 - [ ] Ayda neçə çəkiliş günü mümkündür?
+
+## Ssenari yazma qaydaları (27.10.2026, ilk rəydən sonra)
+
+- Aynur xanım birinci şəxsdə, öz təcrübəsindən danışır: "görmüşəm", "məsləhət görürəm".
+- Cümlələr tam və axıcıdır. Bir-iki sözlük qırıq cümlələr və "siyahı oxuyurmuş kimi" ritm yoxdur.
+- Şüar və aforizm yoxdur ("X deyil, Y-dir" tipli parlaq cümlələr).
+- Hook şok effekti üçün deyil, auditoriyanın real sualı və ya real vəziyyəti üzərində qurulur.
+- Mövzu konkret və peşəkardır: vəzifələr, fərqlər, proseslər. Ümumi motivasiya yoxdur.
+- Ekran yazısı mövzunu adlandırır, oyun sözü olmur.
