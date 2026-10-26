@@ -11,6 +11,7 @@ templates/expert-reels/README.md for the format.
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
 import wave
 from pathlib import Path
@@ -154,8 +155,16 @@ def main() -> None:
             print(f"WARN: pill {o['id']} overlaps cutaway {clash['id']} - dropped")
         else:
             overlays.append(o)
+    # the footage decides the length; spec["duration"] is only a fallback
+    footage = ws / "public" / spec.get("video", "base.mp4")
+    duration = spec["duration"]
+    if footage.exists():
+        probe = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", str(footage)],
+                               capture_output=True, text=True)
+        if probe.returncode == 0 and probe.stdout.strip():
+            duration = round(float(probe.stdout.strip()) - 0.05, 2)
     edit = {
-        "duration": spec["duration"],
+        "duration": duration,
         "video": spec.get("video", "base.mp4"),
         "pillTop": spec.get("pill_top", 300),
         "theme": expert["theme"],

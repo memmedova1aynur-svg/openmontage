@@ -21,6 +21,11 @@ import tempfile
 
 src, words_path, keep_path, out_video, out_words = sys.argv[1:6]
 keep = json.load(open(keep_path, encoding="utf-8"))
+# Hold 1 s after the last word: the final sentence's tail and the expert's closing
+# expression must not be clipped (capped at the end of the source).
+src_dur = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", src],
+                               capture_output=True, text=True, check=True).stdout.strip())
+keep[-1][1] = min(src_dur, keep[-1][1] + 1.0)
 segs = json.load(open(words_path, encoding="utf-8"))
 if isinstance(segs, dict):  # raw transcriber output
     words = segs["word_timestamps"]

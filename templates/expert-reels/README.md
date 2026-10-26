@@ -33,6 +33,8 @@ The `expert-reels-director` skill says how this template plugs into it.
 3b. Retakes: when a sentence was said more than once, keep the best complete take:
                 python templates/expert-reels/scripts/cut_takes.py <src> <words.json> keep.json base.mp4 words_cut.json
                 (keep.json = [[start, end], ...] in source seconds, cut in the pauses)
+                (the last range is held 1 s past its end so the final sentence is never clipped;
+                 build_edit.py reads the video length from the footage)
 4. Align:       python templates/expert-reels/scripts/align_words.py \
                   projects/<id>/artifacts/<x>_transcript.json corrected.txt \
                   projects/<id>/artifacts/corrected_word_segments.json
