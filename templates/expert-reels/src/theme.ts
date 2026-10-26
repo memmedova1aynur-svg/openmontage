@@ -13,6 +13,8 @@ export type Theme = {
   text: string; // text on primary
   onAccent: string; // text on accent
   cardAlpha: number; // overlay card opacity
+  emphasis?: string; // **highlighted** words; defaults to accent (set it when accent is close to text)
+  light?: boolean; // pale backdrops: captions over cutaways turn dark instead of white + stroke
 };
 
 export type Word = { w: string; s: number; e: number };
@@ -57,6 +59,7 @@ export type Edit = {
 
 export const E = edit as unknown as Edit;
 export const T = E.theme;
+export const EMPH = T.emphasis ?? T.accent;
 export const FPS = 30;
 export const FONT = "Montserrat";
 

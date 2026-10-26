@@ -3,7 +3,7 @@
   "expert": "_example",
   "words": "../artifacts/corrected_word_segments.json",
   "duration": 56.4,
-  "captions": { "max_words": 3, "max_chars": 20 },
+  "captions": { "max_words": 3, "max_chars": 17 },
   "style": { "backdrop": "dots" },
   "pip": { "focus": [560, 895], "radius": 210, "scale": 0.69 },
   "zoom": [

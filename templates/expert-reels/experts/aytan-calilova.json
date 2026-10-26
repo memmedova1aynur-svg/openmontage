@@ -1,0 +1,60 @@
+{
+  "name": "Aytan Calilova | Mentor | Karyera",
+  "instagram": "aytan.calilova",
+  "notes": "Brand taken from the Instagram grid: light powder-blue/white carousels, deep navy headlines, navy/white rounded title ribbons on Reels covers, steel-blue secondary. Light theme: cards and backdrops are pale blue with navy type; the active caption word sits on a navy chip like her cover ribbons.",
+  "theme": {
+    "primary": "#EEF3FA",
+    "primaryDeep": "#C6D7EE",
+    "accent": "#1C3463",
+    "accentSoft": "#8FAAD3",
+    "text": "#13213F",
+    "onAccent": "#FFFFFF",
+    "cardAlpha": 0.95,
+    "emphasis": "#3A68B0",
+    "light": true
+  },
+  "style": {
+    "captions": "chip",
+    "pills": "side-tag",
+    "backdrop": "orbs",
+    "pipShape": "rounded",
+    "pipCorner": "bl"
+  },
+  "history": [
+    {
+      "video": "Təlimçi konsultasiyası (6 aylıq karyera xəritəsi)",
+      "date": "2026-10-26",
+      "theme": "footage-derived navy + gold (before brand profile)",
+      "style": {
+        "captions": "stroke",
+        "pills": "top-card",
+        "backdrop": "dots",
+        "pipShape": "circle",
+        "pipCorner": "br"
+      },
+      "scenes": [
+        "timeline",
+        "phone",
+        "comment"
+      ]
+    },
+    {
+      "video": "«Öyrənməyi öyrən» təlimi",
+      "date": "2026-10-26",
+      "theme": "brand light (powder blue + navy)",
+      "style": {
+        "captions": "chip",
+        "pills": "side-tag",
+        "backdrop": "orbs",
+        "pipShape": "rounded",
+        "pipCorner": "bl"
+      },
+      "scenes": [
+        "questions",
+        "stat",
+        "checklist",
+        "cta-pill"
+      ]
+    }
+  ]
+}

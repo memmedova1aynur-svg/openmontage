@@ -13,7 +13,7 @@ import {
   useVideoConfig,
 } from "remotion";
 import { Backdrop, CommentCTA, PIP_SIDE, SCENES } from "./scenes";
-import { Cutaway, E, FONT, FPS, Page, Pill, T, ZoomKey, clamp01, rgba, useFonts } from "./theme";
+import { Cutaway, E, EMPH, FONT, FPS, Page, Pill, T, ZoomKey, clamp01, rgba, useFonts } from "./theme";
 
 // Point of the speaker the full-frame zoom pushes toward (x, y in 1080x1920).
 const FACE = { x: 540, y: 0.36 * 1920 };
@@ -45,6 +45,15 @@ const punchShake = (t: number) => {
   return Math.sin(local * Math.PI * 6) * (1 - local) * 6;
 };
 
+const pipAt = (t: number, fps: number) => {
+  const c = E.cutaways.find((c: Cutaway) => c.kind === "pip" && t >= c.in - 0.01 && t < c.out + 0.6);
+  if (!c) return { p: 0, c: undefined };
+  const cfg = { damping: 16, stiffness: 140, mass: 0.8 };
+  const enter = spring({ frame: Math.round((t - c.in) * fps), fps, config: cfg });
+  const exit = t >= c.out ? spring({ frame: Math.round((t - c.out) * fps), fps, config: cfg }) : 0;
+  return { p: Math.max(0, Math.min(1.04, enter - exit)), c };
+};
+
 // ---------------------------------------------------------------- captions
 const Captions: React.FC = () => {
   const frame = useCurrentFrame();
@@ -54,6 +63,7 @@ const Captions: React.FC = () => {
   if (!page) return null;
   const enter = spring({ frame: Math.round((t - page.start) * fps), fps, config: { damping: 14, stiffness: 220, mass: 0.6 } });
   const style = E.style.captions;
+  const onPale = !!T.light && pipAt(t, fps).p > 0.5;
   return (
     <AbsoluteFill style={{ justifyContent: "flex-end", alignItems: "center", paddingBottom: 430 }}>
       <div
@@ -87,12 +97,12 @@ const Captions: React.FC = () => {
                 fontWeight: 900,
                 fontSize: 74,
                 letterSpacing: -0.5,
-                color: chip ? T.onAccent : active ? T.accent : "#FFFFFF",
+                color: chip ? T.onAccent : active ? T.accent : onPale ? T.text : "#FFFFFF",
                 opacity: spoken ? 1 : 0.55,
                 transform: `scale(${scale})`,
-                WebkitTextStroke: style === "box" || chip ? undefined : "3px rgba(0,0,0,0.85)",
+                WebkitTextStroke: style === "box" || chip || onPale ? undefined : "3px rgba(0,0,0,0.85)",
                 paintOrder: "stroke fill",
-                textShadow: "0 6px 18px rgba(0,0,0,0.55)",
+                textShadow: onPale ? "none" : "0 6px 18px rgba(0,0,0,0.55)",
               }}
             >
               {w.w}
@@ -145,7 +155,7 @@ const PillCard: React.FC<{ o: Pill }> = ({ o }) => {
           {words.map(({ w, hl }, i) => {
             const ws = spring({ frame: frame - 4 - i * 3, fps, config: { damping: 14, stiffness: 200, mass: 0.5 } });
             return (
-              <span key={i} style={{ display: "inline-block", whiteSpace: "pre", color: hl ? T.accent : T.text, opacity: ws, transform: `translateY(${(1 - ws) * 22}px)` }}>
+              <span key={i} style={{ display: "inline-block", whiteSpace: "pre", color: hl ? EMPH : T.text, opacity: ws, transform: `translateY(${(1 - ws) * 22}px)` }}>
                 {w}
               </span>
             );
@@ -160,14 +170,6 @@ const PillCard: React.FC<{ o: Pill }> = ({ o }) => {
 // ---------------------------------------------------------------- speaker-in-corner cutaways
 const PIP_CENTER = { x: PIP_SIDE === "right" ? 840 : 240, y: 1125 };
 
-const pipAt = (t: number, fps: number) => {
-  const c = E.cutaways.find((c: Cutaway) => c.kind === "pip" && t >= c.in - 0.01 && t < c.out + 0.6);
-  if (!c) return { p: 0, c: undefined };
-  const cfg = { damping: 16, stiffness: 140, mass: 0.8 };
-  const enter = spring({ frame: Math.round((t - c.in) * fps), fps, config: cfg });
-  const exit = t >= c.out ? spring({ frame: Math.round((t - c.out) * fps), fps, config: cfg }) : 0;
-  return { p: Math.max(0, Math.min(1.04, enter - exit)), c };
-};
 
 const PipPanels: React.FC<{ c: Cutaway; p: number }> = ({ c, p }) => {
   const frame = useCurrentFrame();

@@ -1,6 +1,6 @@
 import React from "react";
 import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { E, FONT, T, clamp01, rgba } from "../theme";
+import { E, EMPH, FONT, T, clamp01, rgba } from "../theme";
 
 // Every cutaway scene leaves the corner held by the speaker circle free:
 // content lives in y 300..880 across the full width, plus the lower area on
@@ -16,7 +16,7 @@ export const Rich: React.FC<{ text: string; onAccent?: boolean }> = ({ text, onA
   <>
     {text.split(/(\*\*[^*]+\*\*)/).map((chunk, i) =>
       chunk.startsWith("**") ? (
-        <span key={i} style={onAccent ? { textDecoration: "underline", textDecorationThickness: 5, textUnderlineOffset: 6 } : { color: T.accent }}>
+        <span key={i} style={onAccent ? { textDecoration: "underline", textDecorationThickness: 5, textUnderlineOffset: 6 } : { color: EMPH }}>
           {chunk.slice(2, -2)}
         </span>
       ) : (
@@ -201,12 +201,12 @@ export const Phone: React.FC<SceneProps> = ({ f, p, startT }) => {
   );
 };
 
-const Check: React.FC<{ f: number; at: number; text: string; size?: number }> = ({ f, at, text, size = 32 }) => {
+const Check: React.FC<{ f: number; at: number; text: string; size?: number; gap?: number }> = ({ f, at, text, size = 32, gap = 22 }) => {
   const { fps } = useVideoConfig();
   const s = spring({ frame: f - at, fps, config: { damping: 13, stiffness: 200 } });
   return (
-    <div style={{ display: "flex", alignItems: "center", marginBottom: 22, opacity: s, transform: `translateX(${(1 - s) * 40}px)` }}>
-      <div style={{ width: size * 1.6, height: size * 1.6, borderRadius: 14, background: T.accent, color: T.onAccent, fontSize: size * 1.05, fontWeight: 900, display: "flex", alignItems: "center", justifyContent: "center", marginRight: 16, flexShrink: 0 }}>✓</div>
+    <div style={{ display: "flex", alignItems: "center", marginBottom: gap, opacity: s, transform: `translateX(${(1 - s) * 40}px)` }}>
+      <div style={{ width: size * 1.6, height: size * 1.6, borderRadius: 14, background: T.accent, color: T.onAccent, fontSize: size * 1.05, fontWeight: 900, fontFamily: FONT, display: "flex", alignItems: "center", justifyContent: "center", marginRight: 16, flexShrink: 0 }}>✓</div>
       <div style={{ fontFamily: FONT, fontWeight: 700, fontSize: size, color: T.text, lineHeight: 1.15 }}>
         <Rich text={text} />
       </div>
@@ -221,9 +221,9 @@ export const Checklist: React.FC<SceneProps> = ({ f, p, startT }) => {
   return (
     <AbsoluteFill>
       <Header f={f} label={p.label} title={p.title} />
-      <div style={{ position: "absolute", left: 90, top: 560, width: 900 }}>
+      <div style={{ position: "absolute", left: 90, top: 530, width: 900 }}>
         {(p.items as string[]).map((it, i) => (
-          <Check key={i} f={f} at={appearFrame(p, i, startT, fps, 14, 14)} text={it} size={40} />
+          <Check key={i} f={f} at={appearFrame(p, i, startT, fps, 14, 14)} text={it} size={36} gap={16} />
         ))}
       </div>
     </AbsoluteFill>

@@ -146,7 +146,7 @@ def main() -> None:
         "theme": expert["theme"],
         "style": {**DEFAULT_STYLE, **expert.get("style", {}), **spec.get("style", {})},
         "pip": {**DEFAULT_PIP, **spec.get("pip", {})},
-        "pages": caption_pages(words, cap.get("max_words", 3), cap.get("max_chars", 20)),
+        "pages": caption_pages(words, cap.get("max_words", 3), cap.get("max_chars", 17)),
         "zoom": [{"t": t, "s": s, "k": k} for t, s, k in spec["zoom"]],
         "overlays": overlays,
         "cutaways": cutaways,

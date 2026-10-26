@@ -52,6 +52,8 @@ a screenshot of the profile if no brand colours are given.
 | `primary`, `primaryDeep` | card and backdrop tones (the expert's dark brand colour) |
 | `accent`, `accentSoft` | active caption word, labels, bars, tiles |
 | `text`, `onAccent` | text on `primary` / on `accent` |
+| `emphasis` (optional) | colour of `**highlighted**` words; set it when `accent` is close to `text` |
+| `light` (optional) | pale theme: captions over cutaways turn dark instead of white + stroke |
 | `style` | the expert's default style picks (overridable per video) |
 | `history` | the style + scenes of every delivered video, newest last |
 
