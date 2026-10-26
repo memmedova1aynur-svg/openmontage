@@ -1,0 +1,20 @@
+{"ts": "2026-10-26T03:58:27.553163+00:00", "tool": "gemini_tts", "event": "start", "output_path": "/home/user/openmontage/projects/goy-niye-mavidir/assets/audio/gemini/vo_s2.wav"}
+{"ts": "2026-10-26T03:58:27.553487+00:00", "tool": "gemini_tts", "event": "start", "output_path": "/home/user/openmontage/projects/goy-niye-mavidir/assets/audio/gemini/vo_s3.wav"}
+{"ts": "2026-10-26T03:58:27.554025+00:00", "tool": "gemini_tts", "event": "start", "output_path": "/home/user/openmontage/projects/goy-niye-mavidir/assets/audio/gemini/vo_s1.wav"}
+{"ts": "2026-10-26T03:58:27.554459+00:00", "tool": "gemini_tts", "event": "start", "output_path": "/home/user/openmontage/projects/goy-niye-mavidir/assets/audio/gemini/vo_s4.wav"}
+{"ts": "2026-10-26T03:58:32.056709+00:00", "tool": "gemini_tts", "event": "finish", "output_path": "/home/user/openmontage/projects/goy-niye-mavidir/assets/audio/gemini/vo_s2.wav", "success": true, "duration_s": 4.5}
+{"ts": "2026-10-26T03:58:32.057101+00:00", "tool": "gemini_tts", "event": "start", "output_path": "/home/user/openmontage/projects/goy-niye-mavidir/assets/audio/gemini/vo_s5.wav"}
+{"ts": "2026-10-26T03:58:32.372647+00:00", "tool": "gemini_tts", "event": "finish", "output_path": "/home/user/openmontage/projects/goy-niye-mavidir/assets/audio/gemini/vo_s1.wav", "success": true, "duration_s": 4.82}
+{"ts": "2026-10-26T03:58:32.373455+00:00", "tool": "gemini_tts", "event": "start", "output_path": "/home/user/openmontage/projects/goy-niye-mavidir/assets/audio/gemini/vo_s6.wav"}
+{"ts": "2026-10-26T03:58:32.480652+00:00", "tool": "gemini_tts", "event": "finish", "output_path": "/home/user/openmontage/projects/goy-niye-mavidir/assets/audio/gemini/vo_s3.wav", "success": true, "duration_s": 4.92}
+{"ts": "2026-10-26T03:58:32.481224+00:00", "tool": "gemini_tts", "event": "start", "output_path": "/home/user/openmontage/projects/goy-niye-mavidir/assets/audio/gemini/vo_s7.wav"}
+{"ts": "2026-10-26T03:58:32.706792+00:00", "tool": "gemini_tts", "event": "finish", "output_path": "/home/user/openmontage/projects/goy-niye-mavidir/assets/audio/gemini/vo_s4.wav", "success": true, "duration_s": 5.15}
+{"ts": "2026-10-26T03:58:32.707452+00:00", "tool": "gemini_tts", "event": "start", "output_path": "/home/user/openmontage/projects/goy-niye-mavidir/assets/audio/gemini/vo_s8.wav"}
+{"ts": "2026-10-26T03:58:36.361727+00:00", "tool": "gemini_tts", "event": "finish", "output_path": "/home/user/openmontage/projects/goy-niye-mavidir/assets/audio/gemini/vo_s7.wav", "success": true, "duration_s": 3.88}
+{"ts": "2026-10-26T03:58:37.646332+00:00", "tool": "gemini_tts", "event": "finish", "output_path": "/home/user/openmontage/projects/goy-niye-mavidir/assets/audio/gemini/vo_s6.wav", "success": true, "duration_s": 5.27}
+{"ts": "2026-10-26T03:59:33.106836+00:00", "tool": "gemini_tts", "event": "finish", "output_path": "/home/user/openmontage/projects/goy-niye-mavidir/assets/audio/gemini/vo_s8.wav", "success": true, "duration_s": 60.4}
+{"ts": "2026-10-26T04:00:03.322480+00:00", "tool": "gemini_tts", "event": "finish", "output_path": "/home/user/openmontage/projects/goy-niye-mavidir/assets/audio/gemini/vo_s5.wav", "success": true, "duration_s": 91.27}
+{"ts": "2026-10-26T04:03:28.764789+00:00", "tool": "google_imagen", "event": "start", "output_path": "projects/goy-niye-mavidir/assets/images/real/moon.png"}
+{"ts": "2026-10-26T04:03:29.368587+00:00", "tool": "google_imagen", "event": "finish", "output_path": "projects/goy-niye-mavidir/assets/images/real/moon.png", "success": false, "cost_usd": 0.0, "duration_s": 0.6}
+{"ts": "2026-10-26T04:03:41.605991+00:00", "tool": "google_imagen", "event": "start", "output_path": "projects/goy-niye-mavidir/assets/images/real/moon.png"}
+{"ts": "2026-10-26T04:03:42.721189+00:00", "tool": "google_imagen", "event": "finish", "output_path": "projects/goy-niye-mavidir/assets/images/real/moon.png", "success": false, "cost_usd": 0.0, "duration_s": 1.11}

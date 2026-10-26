@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "historyId": "d5a2a5b0-5ba3-4b3c-97f6-356a40f96d08",
+  "currentRevision": null,
+  "pendingChanges": false,
+  "files": {
+    "assets/fonts/Inter-Black.otf": {
+      "hash": "1dc81aa64047bfb4246ece435105ec85944f575744d6d850ab7a287fe6b640e7",
+      "content": "/root/.cache/hyperframes/history/d5a2a5b0-5ba3-4b3c-97f6-356a40f96d08/blobs/1d/1dc81aa64047bfb4246ece435105ec85944f575744d6d850ab7a287fe6b640e7"
+    },
+    "assets/fonts/Inter-Bold.otf": {
+      "hash": "00fd6f4691ee8884a33b46bf45851b341927c37c30064f558e1befb242971c49",
+      "content": "/root/.cache/hyperframes/history/d5a2a5b0-5ba3-4b3c-97f6-356a40f96d08/blobs/00/00fd6f4691ee8884a33b46bf45851b341927c37c30064f558e1befb242971c49"
+    },
+    "assets/fonts/Inter-ExtraBold.otf": {
+      "hash": "2012ceaf1470372c415f95c00495a1ad1ebdcd1cd6a6225808f011d459a9b12a",
+      "content": "/root/.cache/hyperframes/history/d5a2a5b0-5ba3-4b3c-97f6-356a40f96d08/blobs/20/2012ceaf1470372c415f95c00495a1ad1ebdcd1cd6a6225808f011d459a9b12a"
+    },
+    "assets/fonts/Inter-SemiBold.otf": {
+      "hash": "bd68706b7bf8b3c580ae57685a2116bb1704b3a9998309ccfec7cd486f8a593e",
+      "content": "/root/.cache/hyperframes/history/d5a2a5b0-5ba3-4b3c-97f6-356a40f96d08/blobs/bd/bd68706b7bf8b3c580ae57685a2116bb1704b3a9998309ccfec7cd486f8a593e"
+    },
+    "assets/img/earth_day.jpg": {
+      "hash": "0817470074e5ed52eae04db92d5c9b5d2b88e06a45df31e7f2a2b0f7a6c9d202",
+      "content": "/root/.cache/hyperframes/history/d5a2a5b0-5ba3-4b3c-97f6-356a40f96d08/blobs/08/0817470074e5ed52eae04db92d5c9b5d2b88e06a45df31e7f2a2b0f7a6c9d202"
+    },
+    "assets/img/earth_limb.jpg": {
+      "hash": "6330cfaf84209e69631f3ccd08565d70d9e2d7e19d20b8a5180982c905daa4a3",
+      "content": "/root/.cache/hyperframes/history/d5a2a5b0-5ba3-4b3c-97f6-356a40f96d08/blobs/63/6330cfaf84209e69631f3ccd08565d70d9e2d7e19d20b8a5180982c905daa4a3"
+    },
+    "assets/img/mars_day.jpg": {
+      "hash": "7e20564081629949b5eca1c5fb41d2aac4a913410b1ea1dd0292fc0e457e56ac",
+      "content": "/root/.cache/hyperframes/history/d5a2a5b0-5ba3-4b3c-97f6-356a40f96d08/blobs/7e/7e20564081629949b5eca1c5fb41d2aac4a913410b1ea1dd0292fc0e457e56ac"
+    },
+    "assets/img/mars_sunset.jpg": {
+      "hash": "e427f4316a8db1488cd265df1d484c06ab57706e81a714969100af2f0d704419",
+      "content": "/root/.cache/hyperframes/history/d5a2a5b0-5ba3-4b3c-97f6-356a40f96d08/blobs/e4/e427f4316a8db1488cd265df1d484c06ab57706e81a714969100af2f0d704419"
+    },
+    "assets/img/moon_surface.jpg": {
+      "hash": "4b0144b2b6c6d81ff13f937c9967273e29033b7b64616bfc9a65f38ad0fc0d99",
+      "content": "/root/.cache/hyperframes/history/d5a2a5b0-5ba3-4b3c-97f6-356a40f96d08/blobs/4b/4b0144b2b6c6d81ff13f937c9967273e29033b7b64616bfc9a65f38ad0fc0d99"
+    },
+    "gsap.min.js": {
+      "hash": "92bb9a96476f983d212a2bc4f54c889039c1696dd4461d40a736860938570fbb",
+      "content": "/root/.cache/hyperframes/history/d5a2a5b0-5ba3-4b3c-97f6-356a40f96d08/blobs/92/92bb9a96476f983d212a2bc4f54c889039c1696dd4461d40a736860938570fbb"
+    },
+    "index.html": {
+      "hash": "5caf406210d28565799a7c2cd2a6932d17be19eaf6812561f76cbf3950e9a883",
+      "content": "/root/.cache/hyperframes/history/d5a2a5b0-5ba3-4b3c-97f6-356a40f96d08/blobs/5c/5caf406210d28565799a7c2cd2a6932d17be19eaf6812561f76cbf3950e9a883"
+    },
+    "assets/soundtrack.wav": {
+      "hash": "df5a6495e4866f9b1d7355a4d1c39cb2456db38c252c57830b0612ce25a0b003",
+      "content": "/root/.cache/hyperframes/history/d5a2a5b0-5ba3-4b3c-97f6-356a40f96d08/blobs/df/df5a6495e4866f9b1d7355a4d1c39cb2456db38c252c57830b0612ce25a0b003"
+    }
+  },
+  "revisions": {},
+  "checks": {
+    "latest": null,
+    "revisions": {},
+    "unversioned": []
+  },
+  "snapshots": {
+    "latest": null,
+    "revisions": {},
+    "unversioned": []
+  },
+  "renders": {
+    "latest": {
+      "id": "ae32b0a6-97f4-408c-8d60-fd0636f47dcf",
+      "completedAt": 1792990182512,
+      "output": "/home/user/openmontage/projects/goy-niye-mavidir/renders/goy-niye-mavidir-v2.mp4",
+      "status": "completed",
+      "revision": null
+    },
+    "retainedRevisions": []
+  },
+  "pendingArtifactCleanup": []
+}

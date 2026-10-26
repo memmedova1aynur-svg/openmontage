@@ -154,6 +154,63 @@
       "reason": "Pixabay unreachable; used fallback listed in proposal",
       "user_visible": true,
       "user_approved": false
+    },
+    {
+      "decision_id": "d-006",
+      "stage": "assets",
+      "category": "voice_selection",
+      "subject": "Narration (supersedes d-002)",
+      "options_considered": [
+        {
+          "option_id": "gemini_tts",
+          "label": "Gemini TTS gemini-3.8-flash-tts, voice Kore, az",
+          "score": 0.9,
+          "reason": "user request; GEMINI_API_KEY available"
+        },
+        {
+          "option_id": "silent",
+          "label": "Silent kinetic text",
+          "score": 0.4,
+          "reason": "previous choice",
+          "rejected_because": "user asked for Azerbaijani narration"
+        }
+      ],
+      "selected": "gemini_tts",
+      "reason": "User request; lines verified by Gemini transcription, s1/s2 retaken for clearer Azerbaijani pronunciation",
+      "user_visible": true,
+      "user_approved": true
+    },
+    {
+      "decision_id": "d-007",
+      "stage": "assets",
+      "category": "visual_treatment",
+      "subject": "Backgrounds",
+      "options_considered": [
+        {
+          "option_id": "procedural_pbr",
+          "label": "Physically based procedural plates (render_worlds.py v3)",
+          "score": 0.85,
+          "reason": "free, offline, physics matches the explanation"
+        },
+        {
+          "option_id": "gemini_image",
+          "label": "Gemini/Imagen generated plates",
+          "score": 0.8,
+          "reason": "photoreal",
+          "rejected_because": "Imagen 404 and image models have zero free-tier quota on this key"
+        },
+        {
+          "option_id": "nasa_photos",
+          "label": "NASA public-domain photos",
+          "score": 0.9,
+          "reason": "real",
+          "rejected_because": "network blocked in this environment"
+        }
+      ],
+      "selected": "procedural_pbr",
+      "reason": "User asked for more realistic graphics; only viable path",
+      "user_visible": true,
+      "user_approved": true
     }
   ]
 }

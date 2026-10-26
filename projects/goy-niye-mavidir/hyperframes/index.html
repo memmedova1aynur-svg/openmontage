@@ -12,14 +12,8 @@
   @font-face { font-family: "Inter"; font-weight: 900; src: url("assets/fonts/Inter-Black.otf") format("opentype"); }
   :root {
     --space: #05060f;
-    --moon: #bfc3cc;
-    --mars-sky-top: #5a3a22;
-    --mars-sky: #c9a46b;
-    --mars-ground: #9c4a2b;
-    --earth-top: #0b3d91;
-    --earth-sky: #4aa3ff;
     --accent: #ffd166;
-    --blue: #5ab0ff;
+    --blue: #6cbcff;
     --red: #ff5a4e;
     --fg: #ffffff;
   }
@@ -27,55 +21,42 @@
   body { font-family: "Inter", sans-serif; color: var(--fg); }
   #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; }
   .fill { position: absolute; inset: 0; }
-  .scene { position: absolute; inset: 0; width: 1080px; height: 1920px; overflow: hidden; }
-  .bg { position: absolute; inset: 0; }
+  .scene { position: absolute; inset: 0; width: 1080px; height: 1920px; overflow: hidden; background: var(--space); }
+  /* Physically rendered plates (scripts/render_worlds.py): 1188x2112 = 10% overscan for camera moves */
+  .plate { position: absolute; left: -54px; top: -96px; width: 1188px; height: 2112px; }
+  .scrim { position: absolute; left: 0; right: 0; top: 0; height: 1100px;
+           background: linear-gradient(180deg, rgba(3,4,10,0.62) 0%, rgba(3,4,10,0.38) 38%, rgba(3,4,10,0) 100%); }
   .txt { position: absolute; left: 80px; right: 80px; top: 300px; }
   .line { display: block; font-weight: 800; letter-spacing: -0.01em; line-height: 1.08;
-          text-shadow: 0 4px 24px rgba(0,0,0,0.55); }
+          text-shadow: 0 4px 28px rgba(0,0,0,0.7), 0 1px 3px rgba(0,0,0,0.6); }
   .sm { font-size: 64px; font-weight: 600; }
   .lg { font-size: 112px; font-weight: 900; }
   .md { font-size: 74px; }
   .accent { color: var(--accent); }
   .blue { color: var(--blue); }
-  .star { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: #fff; }
-  .panel { background: rgba(5,6,15,0.62); border-radius: 36px; padding: 40px 48px; }
+  .panel { background: rgba(5,6,15,0.6); border: 1px solid rgba(255,255,255,0.12); border-radius: 36px; padding: 40px 48px; }
 
-  /* Scene 1 — Moon */
-  #s1 .bg { background: var(--space); }
-  #s1-sun { position: absolute; width: 180px; height: 180px; border-radius: 50%; right: 140px; top: 820px;
-            background: radial-gradient(circle, #fffbe6 0%, #ffe9a8 45%, rgba(255,233,168,0) 72%); }
-  #s1-ground { position: absolute; left: -200px; width: 1480px; height: 900px; top: 1380px; border-radius: 50%;
-               background: radial-gradient(ellipse at 50% 20%, #d6d9e0 0%, #9ea3ad 55%, #6d717b 100%); }
-  .crater { position: absolute; border-radius: 50%; background: rgba(80,84,94,0.55);
-            box-shadow: inset 6px 6px 12px rgba(0,0,0,0.35); }
-
-  /* Scene 2 — Mars */
-  #s2 .bg { background: linear-gradient(180deg, var(--mars-sky-top) 0%, #8c6338 35%, var(--mars-sky) 75%, #d9b98a 100%); }
-  .hill { position: absolute; border-radius: 50%; }
-  #s2-h1 { left: -300px; width: 1100px; height: 700px; top: 1450px; background: #7d3a22; }
-  #s2-h2 { left: 300px; width: 1200px; height: 760px; top: 1520px; background: var(--mars-ground); }
-  .dust { position: absolute; border-radius: 50%; background: rgba(255,226,180,0.55); }
+  /* Scene 2 — Mars dust motes (lit by the sun, out of focus) */
+  .dust { position: absolute; border-radius: 50%; background: rgba(255,214,170,0.55); filter: blur(1.5px); }
 
   /* Scene 3 — Earth */
-  #s3 .bg { background: linear-gradient(180deg, var(--earth-top) 0%, #1f6fd1 40%, var(--earth-sky) 75%, #bfe3ff 100%); }
-  #s3-ground { position: absolute; left: -200px; width: 1480px; height: 800px; top: 1560px; border-radius: 50%;
-               background: linear-gradient(180deg, #3e9b57 0%, #2a6e3d 100%); }
-  .cloud { position: absolute; height: 70px; border-radius: 40px; background: rgba(255,255,255,0.9); }
-  #s3-q { position: absolute; left: 0; right: 0; top: 860px; text-align: center; font-size: 380px; font-weight: 900;
-          color: rgba(255,255,255,0.92); text-shadow: 0 10px 40px rgba(0,30,90,0.5); }
+  #s3-q { position: absolute; left: 0; right: 0; top: 820px; text-align: center; font-size: 380px; font-weight: 900;
+          color: rgba(255,255,255,0.94); text-shadow: 0 10px 50px rgba(0,30,90,0.55); }
 
   /* Scene 4 — white light splits */
-  #s4 .bg { background: radial-gradient(ellipse at 50% 55%, #141a33 0%, var(--space) 70%); }
-  #s4-beam { position: absolute; left: 0; top: 1046px; width: 540px; height: 28px; border-radius: 14px;
-             background: linear-gradient(90deg, rgba(255,255,255,0), #ffffff 30%); box-shadow: 0 0 40px #fff; transform-origin: left center; }
-  #s4-prism { position: absolute; left: 470px; top: 960px; width: 0; height: 0;
-              border-left: 100px solid transparent; border-right: 100px solid transparent; border-bottom: 180px solid rgba(200,220,255,0.35); }
-  .ray { position: absolute; left: 560px; top: 1050px; width: 560px; height: 22px; border-radius: 11px; transform-origin: left center; }
+  #s4 .plate { filter: brightness(0.42) saturate(1.1); }
+  #s4-beam { position: absolute; left: 0; top: 1062px; width: 560px; height: 26px; border-radius: 13px;
+             background: linear-gradient(90deg, rgba(255,255,255,0), #ffffff 30%);
+             box-shadow: 0 0 30px #fff, 0 0 80px rgba(255,255,255,0.6); transform-origin: left center; }
+  #s4-prism { position: absolute; left: 440px; top: 960px; width: 240px; height: 210px; overflow: visible; }
+  .ray { position: absolute; left: 560px; top: 1066px; width: 600px; height: 20px; border-radius: 10px; transform-origin: left center;
+         filter: blur(1px); mix-blend-mode: screen; }
 
   /* Scene 5 — scattering */
-  #s5 .bg { background: radial-gradient(ellipse at 50% 60%, #0e1630 0%, var(--space) 75%); }
+  #s5 .plate { filter: blur(10px) brightness(0.42) saturate(1.15); }
   .mol { position: absolute; width: 34px; height: 34px; border-radius: 50%;
-         background: radial-gradient(circle at 35% 35%, #e8eefc, #8a97b8); }
+         background: radial-gradient(circle at 35% 35%, #f2f6ff, #8a97b8);
+         box-shadow: 0 0 18px rgba(170,200,255,0.55); }
   .sc { position: absolute; width: 90px; height: 8px; border-radius: 4px; background: var(--blue);
         box-shadow: 0 0 14px var(--blue); transform-origin: left center; }
   #s5-red { position: absolute; left: -700px; top: 1130px; width: 640px; height: 14px; border-radius: 7px;
@@ -83,50 +64,38 @@
   #s5-stat { position: absolute; left: 80px; right: 80px; top: 1440px; text-align: center; }
   #s5-x4 { display: block; font-size: 220px; font-weight: 900; color: var(--blue); line-height: 1; }
 
-  /* Scene 6 — comparison */
-  #s6 .bg { background: var(--space); }
+  /* Scene 6 — comparison: each column is a window onto the rendered sky of that world */
+  #s6 .plate { filter: blur(14px) brightness(0.3); }
   .cols { position: absolute; left: 60px; right: 60px; top: 900px; height: 760px; display: flex; gap: 30px; }
-  .col { flex: 1; border-radius: 36px; overflow: hidden; position: relative; background: #12162a; }
-  .col .sky { position: absolute; left: 0; right: 0; top: 0; height: 470px; }
+  .col { flex: 1; border-radius: 36px; overflow: hidden; position: relative; background: #0d1020;
+         border: 1px solid rgba(255,255,255,0.14); box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+  .col .sky { position: absolute; left: 0; right: 0; top: 0; height: 470px; background-repeat: no-repeat; background-size: 330% auto; }
   .col .lbl { position: absolute; left: 0; right: 0; top: 500px; text-align: center; }
   .col .name { display: block; font-size: 64px; font-weight: 900; }
   .col .why { display: block; font-size: 38px; font-weight: 600; color: #cfd6ea; margin-top: 18px; padding: 0 16px; }
-  #c-moon .sky { background: #000; }
-  #c-mars .sky { background: linear-gradient(180deg, #8c6338, var(--mars-sky)); }
-  #c-earth .sky { background: linear-gradient(180deg, #1f6fd1, var(--earth-sky)); }
+  #c-moon .sky { background-image: url("assets/img/moon_surface.jpg"); background-position: 16% 34%; }
+  #c-mars .sky { background-image: url("assets/img/mars_day.jpg"); background-position: 50% 42%; }
+  #c-earth .sky { background-image: url("assets/img/earth_day.jpg"); background-position: 52% 52%; }
 
-  /* Scene 7 — blue Mars sunset */
-  #s7 .bg { background: linear-gradient(180deg, #120d14 0%, #2d1f1f 45%, #6a4a3a 80%, #8a6448 100%); }
-  #s7-halo { position: absolute; left: 290px; top: 1080px; width: 500px; height: 500px; border-radius: 50%;
-             background: radial-gradient(circle, rgba(170,215,255,0.95) 0%, rgba(110,170,255,0.55) 25%, rgba(80,130,230,0.18) 55%, rgba(80,130,230,0) 72%); }
-  #s7-sun { position: absolute; left: 505px; top: 1295px; width: 70px; height: 70px; border-radius: 50%; background: #f4fbff; box-shadow: 0 0 30px #dff1ff; }
-  #s7-ridge { position: absolute; left: -200px; width: 1480px; height: 900px; top: 1460px; border-radius: 45%; background: #1c120e; }
-
-  /* Scene 8 — outro */
-  #s8 .bg { background: radial-gradient(ellipse at 50% 50%, #10152b 0%, var(--space) 75%); }
-  .planets { position: absolute; left: 0; right: 0; top: 1000px; display: flex; justify-content: center; gap: 60px; }
-  .planet { width: 230px; height: 230px; border-radius: 50%; }
-  #p-moon { background: radial-gradient(circle at 35% 35%, #e6e8ee, #8b909b 70%, #5a5e68); }
-  #p-mars { background: radial-gradient(circle at 35% 35%, #e88a5c, #b24f2c 65%, #6d2a14); }
-  #p-earth { background: radial-gradient(circle at 35% 35%, #9fd4ff, #2a7de1 55%, #0b3d91); box-shadow: 0 0 60px rgba(90,176,255,0.6); }
-  #s8-cta { position: absolute; left: 0; right: 0; top: 1360px; text-align: center; font-size: 52px; font-weight: 700; color: var(--accent); }
+  /* Scene 8 — outro over the thin blue line of Earth's atmosphere */
+  .planets { position: absolute; left: 0; right: 0; top: 1010px; display: flex; justify-content: center; gap: 56px; }
+  .planet { width: 220px; height: 220px; border-radius: 50%; background-repeat: no-repeat; background-size: 520% auto;
+            border: 2px solid rgba(255,255,255,0.35); box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
+  #p-moon { background-image: url("assets/img/moon_surface.jpg"); background-position: 14% 33%; }
+  #p-mars { background-image: url("assets/img/mars_day.jpg"); background-position: 50% 44%; }
+  #p-earth { background-image: url("assets/img/earth_day.jpg"); background-position: 55% 56%; box-shadow: 0 0 60px rgba(108,188,255,0.55); }
+  #s8-cta { position: absolute; left: 0; right: 0; top: 1330px; text-align: center; font-size: 52px; font-weight: 700; color: var(--accent);
+            text-shadow: 0 4px 20px rgba(0,0,0,0.7); }
   #fadeout { position: absolute; inset: 0; background: #000; opacity: 0; }
 </style>
 </head>
 <body>
-<div id="root" data-composition-id="main" data-width="1080" data-height="1920" data-duration="46">
+<div id="root" data-composition-id="main" data-width="1080" data-height="1920" data-duration="48">
 
   <!-- Scene 1: Moon -->
   <section id="s1" class="scene clip" data-start="0" data-duration="6" data-track-index="1">
-    <div class="bg"></div>
-    <div id="s1-stars" class="fill"></div>
-    <div id="s1-sun"></div>
-    <div id="s1-ground" data-layout-allow-overflow>
-      <div class="crater" style="left:300px;top:70px;width:120px;height:44px"></div>
-      <div class="crater" style="left:760px;top:140px;width:200px;height:70px"></div>
-      <div class="crater" style="left:540px;top:40px;width:70px;height:26px"></div>
-      <div class="crater" style="left:1040px;top:60px;width:90px;height:34px"></div>
-    </div>
+    <img id="s1-plate" class="plate" src="assets/img/moon_surface.jpg" alt="" />
+    <div class="scrim"></div>
     <div class="txt">
       <span id="s1-a" class="line sm">Ayda gündüz də göy</span>
       <span id="s1-b" class="line lg">QARADIR.</span>
@@ -135,10 +104,9 @@
 
   <!-- Scene 2: Mars -->
   <section id="s2" class="scene clip" data-start="6" data-duration="6" data-track-index="1">
-    <div class="bg"></div>
+    <img id="s2-plate" class="plate" src="assets/img/mars_day.jpg" alt="" />
     <div id="s2-dust" class="fill"></div>
-    <div id="s2-h1" data-layout-allow-overflow class="hill"></div>
-    <div id="s2-h2" data-layout-allow-overflow class="hill"></div>
+    <div class="scrim"></div>
     <div class="txt">
       <span id="s2-a" class="line sm">Marsda isə göy</span>
       <span id="s2-b" class="line lg accent">SARIMTIL-</span>
@@ -148,10 +116,8 @@
 
   <!-- Scene 3: Earth question -->
   <section id="s3" class="scene clip" data-start="12" data-duration="5" data-track-index="1">
-    <div class="bg"></div>
-    <div class="cloud" id="s3-c1" style="left:120px;top:1260px;width:260px"></div>
-    <div class="cloud" id="s3-c2" style="left:640px;top:1360px;width:320px"></div>
-    <div id="s3-ground" data-layout-allow-overflow></div>
+    <img id="s3-plate" class="plate" src="assets/img/earth_day.jpg" alt="" />
+    <div class="scrim"></div>
     <div id="s3-q">?</div>
     <div class="txt">
       <span id="s3-a" class="line md">Bəs Yerdə niyə</span>
@@ -161,7 +127,7 @@
 
   <!-- Scene 4: white light contains all colours -->
   <section id="s4" class="scene clip" data-start="17" data-duration="6" data-track-index="1">
-    <div class="bg"></div>
+    <img id="s4-plate" class="plate" src="assets/img/earth_limb.jpg" alt="" />
     <div id="s4-beam" data-layout-allow-overflow></div>
     <div class="ray" id="r1" style="background:#8f5bff"></div>
     <div class="ray" id="r2" style="background:#4b6bff"></div>
@@ -170,7 +136,18 @@
     <div class="ray" id="r5" style="background:#ffe14d"></div>
     <div class="ray" id="r6" style="background:#ff9a3c"></div>
     <div class="ray" id="r7" style="background:#ff4b4b"></div>
-    <div id="s4-prism"></div>
+    <svg id="s4-prism" viewBox="0 0 240 210">
+      <defs>
+        <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#e8f3ff" stop-opacity="0.55" />
+          <stop offset="0.5" stop-color="#9fc4ff" stop-opacity="0.18" />
+          <stop offset="1" stop-color="#ffffff" stop-opacity="0.4" />
+        </linearGradient>
+      </defs>
+      <polygon points="120,4 236,206 4,206" fill="url(#glass)" stroke="rgba(230,242,255,0.9)" stroke-width="3" stroke-linejoin="round" />
+      <polyline points="120,4 150,206" stroke="rgba(255,255,255,0.35)" stroke-width="2" fill="none" />
+    </svg>
+    <div class="scrim"></div>
     <div class="txt">
       <span id="s4-a" class="line md">Günəş işığı ağ görünür…</span>
       <span id="s4-b" class="line md accent" style="margin-top:28px">amma içində bütün rənglər var.</span>
@@ -179,7 +156,7 @@
 
   <!-- Scene 5: scattering -->
   <section id="s5" class="scene clip" data-start="23" data-duration="8" data-track-index="1">
-    <div class="bg"></div>
+    <img id="s5-plate" class="plate" src="assets/img/earth_day.jpg" alt="" />
     <div id="s5-mols" class="fill"></div>
     <div id="s5-red" data-layout-allow-overflow></div>
     <div class="txt">
@@ -194,7 +171,7 @@
 
   <!-- Scene 6: comparison -->
   <section id="s6" class="scene clip" data-start="31" data-duration="7" data-track-index="1">
-    <div class="bg"></div>
+    <img id="s6-plate" class="plate" src="assets/img/earth_limb.jpg" alt="" />
     <div class="txt">
       <span id="s6-a" class="line md">Ayda hava yoxdur — səpiləcək heç nə yoxdur.</span>
       <span id="s6-b" class="line md accent" style="margin-top:28px">Marsda isə toz mavini udur.</span>
@@ -208,11 +185,8 @@
 
   <!-- Scene 7: blue Mars sunset -->
   <section id="s7" class="scene clip" data-start="38" data-duration="5" data-track-index="1">
-    <div class="bg"></div>
-    <div id="s7-stars" class="fill"></div>
-    <div id="s7-halo"></div>
-    <div id="s7-sun"></div>
-    <div id="s7-ridge" data-layout-allow-overflow></div>
+    <img id="s7-plate" class="plate" src="assets/img/mars_sunset.jpg" alt="" />
+    <div class="scrim"></div>
     <div class="txt">
       <span id="s7-a" class="line md">Ən maraqlısı:</span>
       <span id="s7-b" class="line lg">Marsda qürub</span>
@@ -221,8 +195,8 @@
   </section>
 
   <!-- Scene 8: outro -->
-  <section id="s8" class="scene clip" data-start="43" data-duration="3" data-track-index="1">
-    <div class="bg"></div>
+  <section id="s8" class="scene clip" data-start="43" data-duration="5" data-track-index="1">
+    <img id="s8-plate" class="plate" src="assets/img/earth_limb.jpg" alt="" />
     <div class="txt" style="text-align:center">
       <span id="s8-a" class="line md">Göyün rəngi —</span>
       <span id="s8-b" class="line lg accent">atmosferin imzasıdır.</span>
@@ -236,31 +210,20 @@
     <div id="fadeout"></div>
   </section>
 
-  <audio id="bgm" src="assets/bgm.mp3" data-start="0" data-duration="46" data-track-index="10" data-volume="0.8"></audio>
+  <!-- Gemini TTS narration + ducked music, premixed by scripts/mix_soundtrack.sh -->
+  <audio id="soundtrack" src="assets/soundtrack.wav" data-start="0" data-duration="48" data-track-index="10" data-volume="1"></audio>
 </div>
 
 <script>
   // Seeded PRNG (mulberry32) — deterministic decoration placement
   function rng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
-  function stars(id, n, seed, maxY) {
-    const r = rng(seed), host = document.getElementById(id);
-    for (let i = 0; i < n; i++) {
-      const s = document.createElement("div");
-      s.className = "star"; s.id = id + "-" + i;
-      const z = 2 + r() * 4;
-      s.style.cssText = `left:${r() * 1080}px;top:${r() * maxY}px;width:${z}px;height:${z}px;opacity:${0.3 + r() * 0.7}`;
-      host.appendChild(s);
-    }
-  }
-  stars("s1-stars", 120, 7, 1400);
-  stars("s7-stars", 50, 11, 900);
 
   (function () {
     const r = rng(23), host = document.getElementById("s2-dust");
-    for (let i = 0; i < 40; i++) {
-      const d = document.createElement("div"), z = 4 + r() * 10;
+    for (let i = 0; i < 46; i++) {
+      const d = document.createElement("div"), z = 3 + r() * 9;
       d.className = "dust"; d.id = "dust-" + i;
-      d.style.cssText = `left:${r() * 1080}px;top:${500 + r() * 1100}px;width:${z}px;height:${z}px`;
+      d.style.cssText = `left:${r() * 1080}px;top:${300 + r() * 1500}px;width:${z}px;height:${z}px;opacity:${0.25 + r() * 0.5}`;
       host.appendChild(d);
     }
   })();
@@ -278,7 +241,6 @@
         const s = document.createElement("div");
         s.className = "sc"; s.id = `sc-${i}-${k}`;
         s.style.left = p[0] + "px"; s.style.top = (p[1] - 4) + "px";
-        s.dataset.rot = k * 90 + i * 37;
         host.appendChild(s);
       }
     });
@@ -287,38 +249,37 @@
   window.__timelines = window.__timelines || {};
   const tl = gsap.timeline({ paused: true });
   const IN = (sel, t, extra) => tl.from(sel, Object.assign({ y: 60, opacity: 0, duration: 0.55, ease: "power3.out" }, extra || {}), t);
+  // Slow camera move across each plate (within the 10% overscan)
+  const PUSH = (sel, t, dur, from, to) => tl.fromTo(sel, from, Object.assign({ duration: dur, ease: "none" }, to), t);
 
   // Scene fades
   [["#s1",0],["#s2",6],["#s3",12],["#s4",17],["#s5",23],["#s6",31],["#s7",38],["#s8",43]].forEach(([s, t]) => {
     tl.fromTo(s, { opacity: 0 }, { opacity: 1, duration: 0.45, ease: "power1.out" }, t);
   });
 
-  // S1 Moon
-  tl.from("#s1-ground", { y: 300, duration: 1.4, ease: "power2.out" }, 0);
-  tl.from("#s1-sun", { scale: 0.4, opacity: 0, duration: 1.2, ease: "power2.out" }, 0.3);
-  tl.to("#s1-stars", { y: -40, duration: 6, ease: "none" }, 0);
+  // S1 Moon — slow push toward the horizon
+  PUSH("#s1-plate", 0, 6, { scale: 1.0, y: 0 }, { scale: 1.07, y: -20 });
   IN("#s1-a", 0.6);
   IN("#s1-b", 1.3, { scale: 1.3, y: 0, duration: 0.5, ease: "back.out(2)" });
 
-  // S2 Mars
-  tl.from(["#s2-h1", "#s2-h2"], { y: 300, duration: 1.3, ease: "power2.out", stagger: 0.15 }, 6);
-  tl.to("#s2-dust", { x: 120, y: -30, duration: 6, ease: "none" }, 6);
+  // S2 Mars — lateral drift, wind-blown dust
+  PUSH("#s2-plate", 6, 6, { scale: 1.02, x: 30 }, { scale: 1.06, x: -30 });
+  tl.to("#s2-dust", { x: 140, y: -30, duration: 6, ease: "none" }, 6);
   IN("#s2-a", 6.5);
   IN("#s2-b", 7.2, { x: -80, y: 0 });
   IN("#s2-c", 7.5, { x: 80, y: 0 });
 
-  // S3 Earth
-  tl.from("#s3-ground", { y: 300, duration: 1.2, ease: "power2.out" }, 12);
-  tl.to("#s3-c1", { x: 80, duration: 5, ease: "none" }, 12);
-  tl.to("#s3-c2", { x: -80, duration: 5, ease: "none" }, 12);
+  // S3 Earth — tilt up into the blue
+  PUSH("#s3-plate", 12, 5, { scale: 1.02, y: -40 }, { scale: 1.06, y: 40 });
   IN("#s3-a", 12.4);
   IN("#s3-b", 13.0, { scale: 1.4, y: 0, ease: "back.out(2)" });
   tl.from("#s3-q", { scale: 0.2, opacity: 0, duration: 0.6, ease: "back.out(2)" }, 13.5);
   tl.to("#s3-q", { scale: 1.08, duration: 0.6, ease: "sine.inOut", yoyo: true, repeat: 3 }, 14.1);
 
   // S4 Light split
+  PUSH("#s4-plate", 17, 6, { scale: 1.0 }, { scale: 1.05 });
   tl.from("#s4-beam", { scaleX: 0, duration: 1.0, ease: "power2.out" }, 17.3);
-  tl.from("#s4-prism", { opacity: 0, duration: 0.5 }, 17.6);
+  tl.from("#s4-prism", { opacity: 0, scale: 0.9, transformOrigin: "50% 60%", duration: 0.5 }, 17.6);
   ["#r1","#r2","#r3","#r4","#r5","#r6","#r7"].forEach((r, i) => {
     tl.fromTo(r, { scaleX: 0, rotation: 0 }, { scaleX: 1, rotation: -18 + i * 6, duration: 1.0, ease: "power2.out" }, 18.4 + i * 0.07);
   });
@@ -326,6 +287,7 @@
   IN("#s4-b", 19.4);
 
   // S5 Scattering
+  PUSH("#s5-plate", 23, 8, { scale: 1.0 }, { scale: 1.05 });
   tl.from(".mol", { scale: 0, opacity: 0, duration: 0.5, ease: "back.out(2)", stagger: 0.05 }, 23.3);
   tl.to("#s5-red", { x: 1900, duration: 2.2, ease: "none" }, 24.2);
   molPos.forEach((p, i) => {
@@ -350,20 +312,19 @@
   tl.from("#c-earth", { y: 200, opacity: 0, duration: 0.6, ease: "power3.out" }, 35.0);
   tl.to("#c-earth", { scale: 1.05, duration: 0.5, ease: "sine.inOut", yoyo: true, repeat: 1 }, 35.8);
 
-  // S7 Blue Mars sunset
-  tl.from("#s7-sun", { y: -260, duration: 4.5, ease: "power1.out" }, 38);
-  tl.from("#s7-halo", { y: -260, scale: 0.6, opacity: 0, duration: 4.5, ease: "power1.out" }, 38);
+  // S7 Blue Mars sunset — slow settle toward the sun
+  PUSH("#s7-plate", 38, 5, { scale: 1.0, y: -30 }, { scale: 1.08, y: 10 });
   IN("#s7-a", 38.4);
   IN("#s7-b", 39.1);
   IN("#s7-c", 39.7, { scale: 1.4, y: 0, ease: "back.out(2)" });
 
   // S8 Outro
-  IN("#s8-a", 43.2);
-  IN("#s8-b", 43.6);
-  tl.from(".planet", { scale: 0, opacity: 0, duration: 0.5, ease: "back.out(2)", stagger: 0.15 }, 43.5);
-  tl.from("#s8-cta", { opacity: 0, duration: 0.4 }, 44.4);
-  tl.to("#fadeout", { opacity: 1, duration: 0.6, ease: "power1.in" }, 45.4);
-  tl.to("#bgm", { volume: 0, duration: 1.2 }, 44.8);
+  PUSH("#s8-plate", 43, 5, { scale: 1.0 }, { scale: 1.06 });
+  IN("#s8-a", 43.4);
+  IN("#s8-b", 43.9);
+  tl.from(".planet", { scale: 0, opacity: 0, duration: 0.5, ease: "back.out(2)", stagger: 0.15 }, 44.4);
+  tl.from("#s8-cta", { opacity: 0, duration: 0.4 }, 45.4);
+  tl.to("#fadeout", { opacity: 1, duration: 0.7, ease: "power1.in" }, 47.3);
 
   window.__timelines["main"] = tl;
 </script>
