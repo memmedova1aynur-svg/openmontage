@@ -19,7 +19,10 @@ import sys
 src, words_path, keep_path, out_video, out_words = sys.argv[1:6]
 keep = json.load(open(keep_path, encoding="utf-8"))
 segs = json.load(open(words_path, encoding="utf-8"))
-words = [w for s in segs for w in s["words"]] if segs and "words" in segs[0] else segs
+if isinstance(segs, dict):  # raw transcriber output
+    words = segs["word_timestamps"]
+else:  # aligned segments ([{words: [...]}]) or a flat word list
+    words = [w for s in segs for w in s["words"]] if segs and "words" in segs[0] else segs
 
 # video: trim + concat with tiny audio fades at every join
 parts, labels = [], []
