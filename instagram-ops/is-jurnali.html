@@ -1,0 +1,534 @@
+<title>Studiya İş Jurnalı</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one working column — month header, summary row, breakdowns side by side, then log form + entries, then the AI review. */
+:root {
+  --bg: #f5f6fa;
+  --surface: #ffffff;
+  --line: #dfe2ec;
+  --fg: #15182a;
+  --muted: #5d6380;
+  --accent: #3341d6;
+  --accent-soft: #e6e8fd;
+  --good: #1f7a4d;
+  --bad: #b3261e;
+  --heat0: #eceef5;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #10121c; --surface: #181b29; --line: #2b2f44; --fg: #e8eaf4; --muted: #9aa0bd;
+    --accent: #8d97ff; --accent-soft: #252a52; --good: #5fd39a; --bad: #ff8a80; --heat0: #22263a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #10121c; --surface: #181b29; --line: #2b2f44; --fg: #e8eaf4; --muted: #9aa0bd;
+  --accent: #8d97ff; --accent-soft: #252a52; --good: #5fd39a; --bad: #ff8a80; --heat0: #22263a;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-block: 28px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 28px; }
+h1, h2, h3 { font-family: var(--display); margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(28px, 5vw, 40px); font-weight: 700; letter-spacing: -0.02em; }
+h2 { font-size: 20px; font-weight: 700; }
+.eyebrow { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 600; }
+.muted { color: var(--muted); }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+header.top { display: flex; flex-wrap: wrap; gap: 16px; align-items: end; justify-content: space-between; }
+.monthnav { display: flex; align-items: center; gap: 8px; }
+.monthnav .label { font-family: var(--display); font-size: 20px; font-weight: 700; min-width: 150px; text-align: center; }
+button, .btn { font: inherit; font-weight: 600; border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 8px; padding: 8px 14px; cursor: pointer; }
+button:hover { border-color: var(--accent); }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+button.icon { padding: 6px 10px; }
+button.ghost { border-color: transparent; background: transparent; color: var(--muted); padding: 4px 8px; }
+button.ghost:hover { color: var(--bad); }
+button:disabled { opacity: .5; cursor: not-allowed; }
+
+.status { font-size: 13px; color: var(--muted); }
+.status.warn { color: var(--bad); }
+
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.tile { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: grid; gap: 4px; }
+.tile .v { font-family: var(--display); font-size: 32px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.delta { font-size: 12px; font-family: var(--mono); }
+.delta.up { color: var(--good); } .delta.down { color: var(--bad); } .delta.same { color: var(--muted); }
+
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: grid; gap: 14px; align-content: start; min-width: 0; }
+.panel-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+
+.bars { display: grid; gap: 8px; }
+.bar { display: grid; grid-template-columns: minmax(110px, 38%) 1fr 40px; gap: 10px; align-items: center; font-size: 14px; }
+.bar .track { height: 10px; background: var(--heat0); border-radius: 5px; overflow: hidden; }
+.bar .fill { height: 100%; background: var(--accent); border-radius: 5px; }
+.bar .n { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+.heat { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.heat .dow { font-size: 11px; color: var(--muted); text-align: center; }
+.heat .d { aspect-ratio: 1; max-width: 100%; border-radius: 5px; background: var(--heat0); font-size: 11px; font-family: var(--mono); display: grid; place-items: center; color: var(--muted); }
+.heat .d.empty { background: transparent; }
+.heat .d.l1 { background: color-mix(in srgb, var(--accent) 30%, var(--heat0)); color: var(--fg); }
+.heat .d.l2 { background: color-mix(in srgb, var(--accent) 60%, var(--heat0)); color: var(--surface); }
+.heat .d.l3 { background: var(--accent); color: var(--surface); }
+.heat .d.today { outline: 2px solid var(--fg); outline-offset: -2px; }
+
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+td { padding: 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+td.r, th.r { text-align: right; }
+.scroll { overflow-x: auto; }
+
+form.entry { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+form.entry .wide { grid-column: 1 / -1; }
+label { display: grid; gap: 4px; font-size: 13px; font-weight: 600; color: var(--muted); }
+input, select, textarea { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; width: 100%; min-width: 0; }
+textarea { min-height: 64px; resize: vertical; }
+.form-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+.chip { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); white-space: nowrap; }
+.entries .note { color: var(--muted); font-size: 13px; }
+.metrics { font-family: var(--mono); font-size: 12px; color: var(--muted); white-space: nowrap; }
+
+.clients { display: flex; flex-wrap: wrap; gap: 8px; }
+.client-pill { display: inline-flex; gap: 6px; align-items: center; border: 1px solid var(--line); border-radius: 999px; padding: 4px 6px 4px 12px; font-size: 14px; background: var(--bg); }
+.client-pill small { color: var(--muted); }
+.addclient { display: flex; gap: 8px; flex-wrap: wrap; }
+.addclient input { flex: 1 1 160px; width: auto; }
+
+.empty-note { border: 1px dashed var(--line); border-radius: 10px; padding: 16px; color: var(--muted); font-size: 14px; }
+
+.review { font-size: 15px; max-width: 72ch; }
+.review h3 { font-size: 17px; margin-top: 18px; margin-bottom: 6px; }
+.review h3:first-child { margin-top: 0; }
+.review ul, .review ol { padding-left: 22px; margin: 6px 0; }
+.review p { margin: 6px 0; }
+.review-meta { font-size: 12px; color: var(--muted); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .bar .fill { transition: width .4s ease; }
+}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">Instagram studiyası · iş jurnalı</div>
+      <h1>Bu ay nə etdik?</h1>
+    </div>
+    <div class="monthnav">
+      <button class="icon" id="prevM" aria-label="Əvvəlki ay">‹</button>
+      <div class="label" id="monthLabel">—</div>
+      <button class="icon" id="nextM" aria-label="Növbəti ay">›</button>
+    </div>
+  </header>
+  <div class="status" id="status">Baza yüklənir…</div>
+
+  <section class="tiles" id="tiles" aria-label="Ayın xülasəsi"></section>
+
+  <section class="grid2">
+    <div class="panel">
+      <div class="panel-head"><h2>İş növləri</h2><span class="muted" id="typeTotal"></span></div>
+      <div class="bars" id="typeBars"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Aktivlik təqvimi</h2><span class="muted">gün üzrə iş sayı</span></div>
+      <div class="heat" id="heat"></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><h2>Müştərilər üzrə</h2><span class="muted" id="clientNote"></span></div>
+    <div class="scroll"><table id="clientTable"></table></div>
+  </section>
+
+  <section class="grid2">
+    <div class="panel">
+      <h2>Yeni iş əlavə et</h2>
+      <form class="entry" id="entryForm">
+        <label>Tarix<input type="date" id="fDate" required></label>
+        <label>Müştəri<select id="fClient" required></select></label>
+        <label>İş növü<select id="fType" required></select></label>
+        <label>Say<input type="number" id="fQty" min="1" value="1" required></label>
+        <label class="wide">Qeyd<textarea id="fNote" placeholder="Məs: Yeni təlim üçün 3 reels çəkildi, studiyada, işıq problemi oldu"></textarea></label>
+        <label>Baxış (istəyə görə)<input type="number" id="fViews" min="0" placeholder="0"></label>
+        <label>Save (istəyə görə)<input type="number" id="fSaves" min="0" placeholder="0"></label>
+        <label class="wide">Link (istəyə görə)<input type="url" id="fLink" placeholder="https://www.instagram.com/reel/…"></label>
+        <div class="form-actions wide">
+          <button class="primary" type="submit" id="fSubmit">Əlavə et</button>
+          <span class="status" id="formMsg"></span>
+        </div>
+      </form>
+    </div>
+    <div class="panel">
+      <h2>Müştərilər</h2>
+      <div class="clients" id="clientList"></div>
+      <form class="addclient" id="clientForm">
+        <input id="cName" placeholder="Ad (məs: Dr. Aynur — dermatoloq)" required aria-label="Müştərinin adı">
+        <input id="cNiche" placeholder="Sahə (məs: kosmetologiya)" aria-label="Sahə">
+        <button type="submit">Müştəri əlavə et</button>
+      </form>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><h2>Ayın bütün işləri</h2><span class="muted" id="entryCount"></span></div>
+    <div class="scroll"><table class="entries" id="entryTable"></table></div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <div><h2>Ayın analizi və istiqamət</h2><div class="muted">Claude bu ayın işlərini əvvəlki ayla müqayisə edir və növbəti addımları göstərir.</div></div>
+      <button class="primary" id="analyzeBtn">Analiz et</button>
+    </div>
+    <div class="review-meta" id="reviewMeta"></div>
+    <div class="review" id="review"></div>
+  </section>
+</div>
+
+<script>
+const TYPES = [
+  { k: "shoot", l: "Çəkiliş" },
+  { k: "edit", l: "Video montaj" },
+  { k: "reel", l: "Reels paylaşıldı" },
+  { k: "design", l: "Post / poster dizayn" },
+  { k: "carousel", l: "Karusel" },
+  { k: "story", l: "Story" },
+  { k: "script", l: "Ssenari / mətn" },
+  { k: "ads", l: "Reklam kampaniyası" },
+  { k: "plan", l: "Strategiya / plan" },
+  { k: "meeting", l: "Müştəri görüşü" },
+  { k: "other", l: "Digər" }
+];
+const TYPE_LABEL = Object.fromEntries(TYPES.map(t => [t.k, t.l]));
+const MONTHS = ["Yanvar","Fevral","Mart","Aprel","May","İyun","İyul","Avqust","Sentyabr","Oktyabr","Noyabr","Dekabr"];
+const $ = id => document.getElementById(id);
+
+let db = null, sample = null, canWrite = true;
+let clients = [], work = [], reviews = {};
+let month = ymOf(new Date());
+
+function pad(n) { return String(n).padStart(2, "0"); }
+function ymOf(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1); }
+function todayStr() { const d = new Date(); return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+function shiftMonth(ym, by) { const [y, m] = ym.split("-").map(Number); return ymOf(new Date(y, m - 1 + by, 1)); }
+function monthName(ym) { const [y, m] = ym.split("-").map(Number); return MONTHS[m - 1] + " " + y; }
+function el(tag, attrs, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (k === "class") e.className = v; else if (k === "text") e.textContent = v; else e.setAttribute(k, v);
+  }
+  for (const c of kids) if (c != null) e.append(c);
+  return e;
+}
+function clientName(id) { const c = clients.find(c => c.id === id); return c ? c.name : "Silinmiş müştəri"; }
+function inMonth(ym) { return work.filter(w => w.month === ym); }
+function qty(w) { return Number(w.qty) || 1; }
+
+function stats(ym) {
+  const rows = inMonth(ym);
+  const byType = {}, byClient = {};
+  let total = 0, views = 0, saves = 0;
+  for (const w of rows) {
+    const q = qty(w); total += q;
+    byType[w.type] = (byType[w.type] || 0) + q;
+    const bc = byClient[w.clientId] || (byClient[w.clientId] = { total: 0, shoot: 0, edit: 0, posts: 0, views: 0, saves: 0 });
+    bc.total += q;
+    if (w.type === "shoot") bc.shoot += q;
+    if (w.type === "edit") bc.edit += q;
+    if (["reel", "design", "carousel", "story"].includes(w.type)) bc.posts += q;
+    bc.views += Number(w.views) || 0; bc.saves += Number(w.saves) || 0;
+    views += Number(w.views) || 0; saves += Number(w.saves) || 0;
+  }
+  const posts = (byType.reel || 0) + (byType.design || 0) + (byType.carousel || 0) + (byType.story || 0);
+  return { rows, total, byType, byClient, posts, views, saves, clients: Object.keys(byClient).length };
+}
+
+function deltaEl(cur, prev) {
+  if (!prev && !cur) return el("span", { class: "delta same", text: "keçən ay da 0" });
+  if (!prev) return el("span", { class: "delta up", text: "keçən ay 0 idi" });
+  const p = Math.round((cur - prev) / prev * 100);
+  const cls = p > 0 ? "up" : p < 0 ? "down" : "same";
+  return el("span", { class: "delta " + cls, text: (p > 0 ? "+" : "") + p + "% keçən aya görə" });
+}
+
+function render() {
+  $("monthLabel").textContent = monthName(month);
+  const s = stats(month), p = stats(shiftMonth(month, -1));
+
+  const tiles = $("tiles"); tiles.replaceChildren();
+  const tileData = [
+    ["Ümumi iş", s.total, p.total],
+    ["Çəkiliş", s.byType.shoot || 0, p.byType.shoot || 0],
+    ["Montaj edilən video", s.byType.edit || 0, p.byType.edit || 0],
+    ["Paylaşılan kontent", s.posts, p.posts],
+    ["Aktiv müştəri", s.clients, p.clients]
+  ];
+  for (const [label, v, pv] of tileData) {
+    tiles.append(el("div", { class: "tile" }, el("div", { class: "eyebrow", text: label }), el("div", { class: "v", text: String(v) }), deltaEl(v, pv)));
+  }
+
+  const bars = $("typeBars"); bars.replaceChildren();
+  const max = Math.max(1, ...Object.values(s.byType));
+  const typeRows = TYPES.filter(t => s.byType[t.k]).sort((a, b) => s.byType[b.k] - s.byType[a.k]);
+  $("typeTotal").textContent = s.total ? s.total + " iş" : "";
+  if (!typeRows.length) bars.append(el("div", { class: "empty-note", text: "Bu ay hələ iş qeyd olunmayıb. Aşağıdakı formadan ilk işi əlavə edin: çəkiliş, montaj, paylaşım və s." }));
+  for (const t of typeRows) {
+    const fill = el("div", { class: "fill" }); fill.style.width = (s.byType[t.k] / max * 100) + "%";
+    bars.append(el("div", { class: "bar" }, el("span", { text: t.l }), el("div", { class: "track" }, fill), el("span", { class: "n", text: String(s.byType[t.k]) })));
+  }
+
+  renderHeat(s.rows);
+  renderClientTable(s);
+  renderEntries(s.rows);
+  renderClients();
+  renderReview();
+}
+
+function renderHeat(rows) {
+  const heat = $("heat"); heat.replaceChildren();
+  ["B.e", "Ç.a", "Ç", "C.a", "C", "Ş", "B"].forEach(d => heat.append(el("div", { class: "dow", text: d })));
+  const [y, m] = month.split("-").map(Number);
+  const days = new Date(y, m, 0).getDate();
+  const offset = (new Date(y, m - 1, 1).getDay() + 6) % 7;
+  const perDay = {};
+  for (const w of rows) { const d = Number(w.date.slice(8, 10)); perDay[d] = (perDay[d] || 0) + qty(w); }
+  const max = Math.max(1, ...Object.values(perDay));
+  for (let i = 0; i < offset; i++) heat.append(el("div", { class: "d empty" }));
+  const today = todayStr();
+  for (let d = 1; d <= days; d++) {
+    const n = perDay[d] || 0;
+    const lvl = n === 0 ? "" : n / max > 0.66 ? " l3" : n / max > 0.33 ? " l2" : " l1";
+    const isToday = (month + "-" + pad(d)) === today ? " today" : "";
+    heat.append(el("div", { class: "d" + lvl + isToday, title: d + " " + MONTHS[m - 1] + ": " + n + " iş", text: String(d) }));
+  }
+}
+
+function renderClientTable(s) {
+  const t = $("clientTable"); t.replaceChildren();
+  const ids = Object.keys(s.byClient).sort((a, b) => s.byClient[b].total - s.byClient[a].total);
+  const idle = clients.filter(c => !s.byClient[c.id]);
+  $("clientNote").textContent = idle.length ? idle.length + " müştəri üçün bu ay iş yoxdur" : "";
+  if (!ids.length && !clients.length) { t.append(el("tr", {}, el("td", { class: "muted", text: "Əvvəlcə sağdakı bölmədən müştərilərinizi əlavə edin." }))); return; }
+  t.append(el("tr", {}, ...["Müştəri", "Ümumi", "Çəkiliş", "Montaj", "Paylaşım", "Baxış", "Save"].map((h, i) => el("th", { class: i ? "r" : "", text: h }))));
+  for (const id of ids) {
+    const c = s.byClient[id];
+    t.append(el("tr", {}, el("td", { text: clientName(id) }), ...[c.total, c.shoot, c.edit, c.posts, c.views || "—", c.saves || "—"].map(v => el("td", { class: "r num", text: typeof v === "number" ? v.toLocaleString("az") : v }))));
+  }
+  for (const c of idle) {
+    t.append(el("tr", {}, el("td", { class: "muted", text: c.name }), el("td", { class: "r muted", text: "0" }), el("td", { class: "muted", colspan: "5", text: "bu ay iş qeyd olunmayıb" })));
+  }
+}
+
+function renderEntries(rows) {
+  const t = $("entryTable"); t.replaceChildren();
+  $("entryCount").textContent = rows.length ? rows.length + " qeyd" : "";
+  if (!rows.length) { t.append(el("tr", {}, el("td", { class: "muted", text: "Bu ay üçün qeyd yoxdur." }))); return; }
+  t.append(el("tr", {}, ...["Tarix", "Müştəri", "İş", "Say", "Qeyd", "Nəticə", ""].map(h => el("th", { text: h }))));
+  const sorted = [...rows].sort((a, b) => b.date.localeCompare(a.date) || (b.createdAt || 0) - (a.createdAt || 0));
+  for (const w of sorted) {
+    const del = el("button", { class: "ghost", type: "button", "aria-label": "Qeydi sil", text: "Sil" });
+    del.disabled = !canWrite;
+    del.addEventListener("click", () => removeEntry(w.id, del));
+    const note = el("td", { class: "note" }, w.note || "");
+    if (w.link) { note.append(w.note ? " " : "", el("a", { href: w.link, target: "_blank", rel: "noopener", text: "link" })); }
+    const m = [w.views ? Number(w.views).toLocaleString("az") + " baxış" : "", w.saves ? Number(w.saves).toLocaleString("az") + " save" : ""].filter(Boolean).join(" · ");
+    t.append(el("tr", {},
+      el("td", { class: "num", text: w.date.slice(8, 10) + "." + w.date.slice(5, 7) }),
+      el("td", { text: clientName(w.clientId) }),
+      el("td", {}, el("span", { class: "chip", text: TYPE_LABEL[w.type] || w.type })),
+      el("td", { class: "num r", text: String(qty(w)) }),
+      note,
+      el("td", { class: "metrics", text: m || "—" }),
+      el("td", {}, del)));
+  }
+}
+
+function renderClients() {
+  const list = $("clientList"); list.replaceChildren();
+  if (!clients.length) list.append(el("div", { class: "empty-note", text: "Hələ müştəri yoxdur. Hər müştərini adı və sahəsi ilə əlavə edin, sonra işləri ona bağlayın." }));
+  for (const c of [...clients].sort((a, b) => a.name.localeCompare(b.name, "az"))) {
+    const del = el("button", { class: "ghost", type: "button", "aria-label": c.name + " müştərisini sil", text: "×" });
+    del.disabled = !canWrite;
+    del.addEventListener("click", () => removeClient(c, del));
+    list.append(el("span", { class: "client-pill" }, el("span", { text: c.name }), c.niche ? el("small", { text: c.niche }) : null, del));
+  }
+  const sel = $("fClient"), keep = sel.value; sel.replaceChildren();
+  sel.append(el("option", { value: "", text: clients.length ? "Seçin…" : "Əvvəlcə müştəri əlavə edin" }));
+  for (const c of [...clients].sort((a, b) => a.name.localeCompare(b.name, "az"))) sel.append(el("option", { value: c.id, text: c.name }));
+  if (clients.some(c => c.id === keep)) sel.value = keep;
+}
+
+function renderReview() {
+  const r = reviews[month];
+  $("analyzeBtn").disabled = !sample || !stats(month).total;
+  $("analyzeBtn").textContent = r ? "Yenidən analiz et" : "Analiz et";
+  if (!sample) $("reviewMeta").textContent = "AI analizi bu baxışda əlçatan deyil. Analizi söhbətdə mənə də yazdıra bilərsiniz: \"bu ayın jurnalını analiz et\".";
+  else if (!stats(month).total) $("reviewMeta").textContent = "Analiz üçün əvvəlcə bu aya iş əlavə edin.";
+  else $("reviewMeta").textContent = r ? "Son analiz: " + new Date(r.createdAt).toLocaleString("az") : "Bu ay üçün hələ analiz yoxdur.";
+  if (r && !analyzing) renderMarkdown($("review"), r.text);
+  else if (!analyzing) $("review").replaceChildren();
+}
+
+function renderMarkdown(target, md) {
+  target.replaceChildren();
+  let list = null;
+  const inline = (text, parent) => {
+    text.split(/(\*\*[^*]+\*\*)/g).forEach(part => {
+      if (part.startsWith("**") && part.endsWith("**") && part.length > 4) parent.append(el("strong", { text: part.slice(2, -2) }));
+      else if (part) parent.append(part);
+    });
+    return parent;
+  };
+  for (const raw of md.split("\n")) {
+    const line = raw.trim();
+    if (!line) { list = null; continue; }
+    const h = line.match(/^#{1,4}\s+(.*)/);
+    const ul = line.match(/^[-*•]\s+(.*)/);
+    const ol = line.match(/^\d+[.)]\s+(.*)/);
+    if (h) { list = null; target.append(inline(h[1], el("h3"))); }
+    else if (ul || ol) {
+      const tag = ul ? "UL" : "OL";
+      if (!list || list.tagName !== tag) { list = el(tag.toLowerCase()); target.append(list); }
+      list.append(inline((ul || ol)[1], el("li")));
+    } else { list = null; target.append(inline(line, el("p"))); }
+  }
+}
+
+let analyzing = false;
+async function analyze() {
+  if (!sample || analyzing) return;
+  analyzing = true;
+  const btn = $("analyzeBtn"); btn.disabled = true; btn.textContent = "Analiz edilir…";
+  const out = $("review"); out.textContent = "Claude düşünür…";
+  const ym = month, s = stats(ym), p = stats(shiftMonth(ym, -1));
+  const summarize = st => ({
+    umumi_is: st.total, paylasim: st.posts, baxis: st.views, save: st.saves, aktiv_musteri: st.clients,
+    nov_uzre: Object.fromEntries(Object.entries(st.byType).map(([k, v]) => [TYPE_LABEL[k] || k, v])),
+    musteri_uzre: Object.fromEntries(Object.entries(st.byClient).map(([id, v]) => [clientName(id), v]))
+  });
+  const entries = s.rows.map(w => ({ tarix: w.date, musteri: clientName(w.clientId), is: TYPE_LABEL[w.type] || w.type, say: qty(w), qeyd: (w.note || "").slice(0, 200), baxis: w.views || null, save: w.saves || null }));
+  const prompt = [
+    "Sən Instagram kontent studiyasını idarə edən marketinq mütəxəssisinin şəxsi strateji məsləhətçisisən.",
+    "O, bir neçə mütəxəssis müştərinin (həkim, təlimçi, xidmət göstərənlər) Instagram səhifələrini idarə edir: strategiya, çəkiliş, montaj, ssenari, paylaşım, Meta reklamları.",
+    "Aşağıda onun " + monthName(ym) + " ayının iş jurnalı və əvvəlki ayın xülasəsi var. Yalnız verilən rəqəmlərə əsaslan, rəqəm uydurma. Məlumat çatışmırsa, bunu açıq de.",
+    "Cavabı Azərbaycan dilində, səmimi və konkret yaz. Markdown istifadə et (## başlıqlar, - siyahılar). Bölmələr:",
+    "## Ayın xülasəsi (2-3 cümlə, əsas rəqəmlərlə)",
+    "## Yaxşı gedənlər",
+    "## Diqqət tələb edənlər (məs: işi az olan və ya unudulan müştərilər, çəkiliş/paylaşım balansı, paylaşım ritmindəki boşluqlar, nəticə ölçülməyən işlər)",
+    "## Müştərilər üzrə qısa qeyd",
+    "## Növbəti ay üçün 5 konkret addım (ölçülə bilən hədəflərlə)",
+    "## Səviyyəni qaldırmaq üçün (iş prosesi, sistemləşdirmə, qiymətləndirmə, yeni xidmətlər; 3-4 fikir)",
+    "",
+    "BU AY XÜLASƏ: " + JSON.stringify(summarize(s)),
+    "ƏVVƏLKİ AY XÜLASƏ: " + JSON.stringify(summarize(p)),
+    "MÜŞTƏRİ SİYAHISI: " + JSON.stringify(clients.map(c => ({ ad: c.name, sahe: c.niche || "" }))),
+    "BU AYIN QEYDLƏRİ: " + JSON.stringify(entries)
+  ].join("\n");
+  try {
+    const { text } = await sample(prompt, { modelTier: "complex", cache: false, onText: ({ text }) => renderMarkdown(out, text) });
+    renderMarkdown(out, text);
+    if (db && canWrite) {
+      try { await db.collection("reviews").doc(ym).set({ text, createdAt: Date.now(), month: ym }); }
+      catch (e) { $("reviewMeta").textContent = "Analiz hazırdır, amma yadda saxlanmadı: " + e.message; }
+    }
+  } catch (e) {
+    out.textContent = e && e.code === "not_granted" ? "AI analizinə icazə verilmədi. Səhifənin icazələrindən aça bilərsiniz." :
+      e && e.code === "rate_limited" ? "Çox tez-tez sorğu göndərildi. Bir neçə dəqiqə sonra yenidən cəhd edin." :
+      "Analiz alınmadı: " + (e && e.message || "naməlum xəta");
+  } finally {
+    analyzing = false; renderReview();
+    if (!reviews[ym]) { /* keep the streamed text on screen even if not saved */ }
+  }
+}
+
+async function addEntry(ev) {
+  ev.preventDefault();
+  if (!db) return;
+  const date = $("fDate").value, clientId = $("fClient").value, type = $("fType").value;
+  if (!date || !clientId || !type) { $("formMsg").textContent = "Tarix, müştəri və iş növünü seçin."; return; }
+  const doc = { date, month: date.slice(0, 7), clientId, type, qty: Math.max(1, Number($("fQty").value) || 1), note: $("fNote").value.trim(), createdAt: Date.now() };
+  const v = $("fViews").value, s = $("fSaves").value, l = $("fLink").value.trim();
+  if (v !== "") doc.views = Number(v);
+  if (s !== "") doc.saves = Number(s);
+  if (l) doc.link = l;
+  $("fSubmit").disabled = true;
+  try {
+    await db.collection("work").add(doc);
+    $("formMsg").textContent = "Əlavə olundu: " + (TYPE_LABEL[type]) + " · " + clientName(clientId);
+    $("fNote").value = ""; $("fQty").value = "1"; $("fViews").value = ""; $("fSaves").value = ""; $("fLink").value = "";
+    if (doc.month !== month) { month = doc.month; render(); }
+  } catch (e) {
+    $("formMsg").textContent = e.code === "quota_exceeded" ? "Baza dolub. Köhnə qeydləri silin." : "Yadda saxlanmadı: " + e.message;
+  } finally { $("fSubmit").disabled = !canWrite; }
+}
+
+async function removeEntry(id, btn) {
+  if (btn.dataset.confirm !== "1") { btn.dataset.confirm = "1"; btn.textContent = "Əminsiniz?"; setTimeout(() => { btn.dataset.confirm = ""; btn.textContent = "Sil"; }, 3000); return; }
+  btn.disabled = true;
+  try { await db.collection("work").doc(id).delete(); } catch (e) { btn.disabled = false; $("status").textContent = "Silinmədi: " + e.message; }
+}
+
+async function removeClient(c, btn) {
+  const used = work.some(w => w.clientId === c.id);
+  if (btn.dataset.confirm !== "1") { btn.dataset.confirm = "1"; btn.textContent = used ? "İşləri var, yenə sil?" : "Sil?"; setTimeout(() => { btn.dataset.confirm = ""; btn.textContent = "×"; }, 3000); return; }
+  btn.disabled = true;
+  try { await db.collection("clients").doc(c.id).delete(); } catch (e) { btn.disabled = false; $("status").textContent = "Silinmədi: " + e.message; }
+}
+
+async function addClient(ev) {
+  ev.preventDefault();
+  if (!db) return;
+  const name = $("cName").value.trim(); if (!name) return;
+  try {
+    await db.collection("clients").add({ name, niche: $("cNiche").value.trim(), createdAt: Date.now() });
+    $("cName").value = ""; $("cNiche").value = "";
+  } catch (e) { $("status").textContent = "Müştəri əlavə olunmadı: " + e.message; }
+}
+
+function setWritable(on) {
+  canWrite = on;
+  for (const id of ["fSubmit", "fDate", "fClient", "fType", "fQty", "fNote", "fViews", "fSaves", "fLink", "cName", "cNiche"]) $(id).disabled = !on;
+  document.querySelector("#clientForm button").disabled = !on;
+}
+
+function init() {
+  const ft = $("fType");
+  for (const t of TYPES) ft.append(el("option", { value: t.k, text: t.l }));
+  $("fDate").value = todayStr();
+  $("prevM").addEventListener("click", () => { month = shiftMonth(month, -1); render(); });
+  $("nextM").addEventListener("click", () => { month = shiftMonth(month, 1); render(); });
+  $("entryForm").addEventListener("submit", addEntry);
+  $("clientForm").addEventListener("submit", addClient);
+  $("analyzeBtn").addEventListener("click", analyze);
+  setWritable(false);
+  render();
+  connect();
+}
+
+async function connect() {
+  const cl = window.claude;
+  if (!cl || !cl.use) { $("status").textContent = "Bu səhifə məlumatları yalnız claude.ai daxilində açıldıqda saxlayır."; $("status").classList.add("warn"); return; }
+  const [dbNs, userNs, sampleNs] = await Promise.all([cl.use("db"), cl.use("user"), cl.use("sample")]);
+  sample = sampleNs; db = dbNs;
+  if (!db) { $("status").textContent = "Baza bu baxışda əlçatan deyil. Daxil olduğunuzdan əmin olun."; $("status").classList.add("warn"); render(); return; }
+  let write = true;
+  try { const w = userNs ? await userNs.can("data.write") : null; if (w === false) write = false; } catch (e) {}
+  setWritable(write);
+  $("status").textContent = write ? "" : "Yalnız baxış rejimi: dəyişiklik etmək icazəniz yoxdur.";
+  const onErr = e => { $("status").textContent = "Bağlantı kəsildi. Səhifəni yeniləyin. (" + e.code + ")"; $("status").classList.add("warn"); };
+  db.collection("clients").onSnapshot(snap => { clients = snap.docs.map(d => ({ id: d.id, ...d.data() })); render(); }, onErr);
+  db.collection("work").orderBy("date", "desc").limit(1000).onSnapshot(snap => { work = snap.docs.map(d => ({ id: d.id, ...d.data() })); render(); }, onErr);
+  db.collection("reviews").onSnapshot(snap => { reviews = Object.fromEntries(snap.docs.map(d => [d.id, d.data()])); render(); }, onErr);
+}
+
+init();
+</script>
