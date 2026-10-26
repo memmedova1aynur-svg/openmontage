@@ -22,3 +22,11 @@
 {"ts": "2026-10-26T05:20:14.200352+00:00", "tool": "delivery_qc", "event": "finish", "success": true, "cost_usd": 0.0, "duration_s": 8.05}
 {"ts": "2026-10-26T05:21:18.365728+00:00", "tool": "delivery_qc", "event": "start"}
 {"ts": "2026-10-26T05:21:26.376174+00:00", "tool": "delivery_qc", "event": "finish", "success": true, "cost_usd": 0.0, "duration_s": 8.01}
+{"ts": "2026-10-26T05:33:47.637259+00:00", "tool": "transcriber", "event": "start"}
+{"ts": "2026-10-26T05:34:12.861075+00:00", "tool": "transcriber", "event": "error", "error": "open() got an unexpected keyword argument 'metadata_errors'", "duration_s": 25.22}
+{"ts": "2026-10-26T05:34:21.585099+00:00", "tool": "transcriber", "event": "start"}
+{"ts": "2026-10-26T05:34:30.454068+00:00", "tool": "transcriber", "event": "error", "error": "open() got an unexpected keyword argument 'metadata_errors'", "duration_s": 8.87}
+{"ts": "2026-10-26T05:40:58.127253+00:00", "tool": "delivery_qc", "event": "start"}
+{"ts": "2026-10-26T05:41:06.897487+00:00", "tool": "delivery_qc", "event": "finish", "success": true, "cost_usd": 0.0, "duration_s": 8.77}
+{"ts": "2026-10-26T05:45:24.636950+00:00", "tool": "delivery_qc", "event": "start"}
+{"ts": "2026-10-26T05:45:33.749911+00:00", "tool": "delivery_qc", "event": "finish", "success": true, "cost_usd": 0.0, "duration_s": 9.11}
