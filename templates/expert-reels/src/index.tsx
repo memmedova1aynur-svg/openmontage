@@ -162,8 +162,9 @@ const KeywordPop: React.FC<{ o: Pill }> = ({ o }) => {
             opacity: Math.min(1, enter * 2) * exit,
           }}
         >
+          {/* one span per word so long phrases wrap inside the bubble instead of running off-screen */}
           {words.map(({ w, hl }, i) => (
-            <span key={i} style={{ whiteSpace: "pre", color: hl ? EMPH : T.text }}>
+            <span key={i} style={{ display: "inline-block", whiteSpace: "pre", color: hl ? EMPH : T.text }}>
               {w}
             </span>
           ))}

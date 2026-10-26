@@ -52,7 +52,12 @@ def caption_pages(words: list[dict], max_words: int, max_chars: int) -> list[dic
 
 
 def auto_sfx(spec: dict, cutaways: list[dict], overlays: list[dict]) -> list[dict]:
-    sfx = [{"t": round(o["in"] - 0.12, 2), "src": "sfx/whoosh.wav", "vol": 0.45} for o in overlays]
+    # keyword pops get a light pop; cards get a whoosh
+    sfx = [
+        {"t": round(o["in"], 2), "src": "sfx/pop.wav", "vol": 0.3} if o["kind"] == "pop"
+        else {"t": round(o["in"] - 0.12, 2), "src": "sfx/whoosh.wav", "vol": 0.45}
+        for o in overlays
+    ]
     for c in cutaways:
         sfx.append({"t": round(c["in"] - 0.12, 2), "src": "sfx/whoosh.wav", "vol": 0.5})
         if c["kind"] in ("pip", "full"):
