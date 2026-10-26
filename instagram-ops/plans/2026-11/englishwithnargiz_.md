@@ -7,9 +7,9 @@
 
 | # | Tarix | Format | Sütun | Mövzu | Ekran yazısı |
 |---|---|---|---|---|---|
-| 1 | Ç.a 03.11 | Reels | A | Dərsdə müəllimin danışıq vaxtı | Dərsdə kim daha çox danışır? |
+| 1 ✅ | Ç.a 03.11 | Reels | A | Dərsdə müəllimin danışıq vaxtı | Dərsdə kim daha çox danışır? |
 | 2 | C.a 05.11 | Reels | D | "IELTS sertifikatı olmadan IELTS hazırlığı keçmək olar?" | IELTS hazırlığı üçün nə lazımdır? |
-| 3 | Ş 07.11 | Reels | A | Yeni sözü tərcüməsiz izah etmək | Yeni sözü necə izah etməli? |
+| 3 ✅ | Ş 07.11 | Reels | A | Yeni sözü tərcüməsiz izah etmək | Yeni sözü necə izah etməli? |
 | 4 | B 08.11 | Karusel | A | Dərsin ilk 5 dəqiqəsi üçün 5 isinmə tapşırığı | — |
 | 5 | Ç.a 10.11 | Reels | B | Dili bilmək və dili öyrətmək arasındakı fərq | Dili bilmək və öyrətmək: fərq nədir? |
 | 6 | C.a 12.11 | Reels | C | Sinifdə bir danışıq fəaliyyəti, səslə izahla | Bu tapşırıq tələbəni danışdırır |

@@ -67,9 +67,12 @@ Satış bizim işimiz deyil. Qiymət reels-də deyilmir.
 - Məkan: işıqlı otaq və ya sinif. Kafe fonu daha az işlənsin.
 - İmza: "Nargiz Mammadova · Teacher Trainer" yazısı hər örtükdə eyni yerdə olsun.
 
+## Təsdiqlənmiş məlumatlar (26.10.2026)
+
+- Hər həftə reklam verilir. Reklam üçün ayrıca mətn yazılmır, mövcud videolardan biri istifadə olunur.
+- Örtükləri süni intellektlə müştərinin özü hazırlayır. Vizual düzəlişləri də özü edəcək.
+- 1-ci həftənin iki ssenarisi təsdiqlənib: [Drive](https://docs.google.com/document/d/1RaBRmEJGxfFJrnr5akb7Oi3U28Pb07wFbJv3aGooZVg/edit)
+
 ## Açıq suallar
 
-- [ ] Reklam verilir? Hansı videolar?
-- [ ] Noyabrda hansı proqrama diqqət ayırmaq lazımdır?
-- [ ] Örtüklər süni intellektlə hazırlanıb?
 - [ ] Ayda neçə çəkiliş günü mümkündür? Sinifdə çəkiliş mümkündür?
