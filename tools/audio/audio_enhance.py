@@ -63,6 +63,21 @@ PRESETS = {
             "loudnorm=I=-24:LRA=7:TP=-2"
         ),
     },
+    "vo_master": {
+        "description": "Booth-style narration finish (human or TTS): HPF, mud cut, presence, air, de-ess, compression, -16 LUFS stem",
+        "af": (
+            "aresample=48000,"  # TTS is often 24 kHz: keep the air shelf below Nyquist
+            "highpass=f=80,"
+            "equalizer=f=250:t=q:w=1.2:g=-3,"
+            "equalizer=f=4000:t=q:w=1.0:g=2.5,"
+            "highshelf=f=11000:g=1.5,"
+            "deesser=i=0.4:m=0.5:f=0.5,"
+            "acompressor=threshold=-20dB:ratio=3:attack=8:release=120:makeup=2,"
+            "alimiter=limit=0.9:attack=2:release=40,"
+            "loudnorm=I=-16:LRA=7:TP=-1.5,"
+            "aresample=48000"  # loudnorm upsamples to 192 kHz internally
+        ),
+    },
     "voice_clarity": {
         "description": "Boost vocal presence with EQ and light compression",
         "af": (
@@ -158,7 +173,11 @@ class AudioEnhance(BaseTool):
         ]
         if is_video:
             cmd.extend(["-c:v", "copy"])
-        cmd.extend(["-c:a", audio_codec, "-b:a", audio_bitrate])
+        if output_path.suffix.lower() == ".wav" and "audio_codec" not in inputs:
+            # AAC inside a WAV container is unreadable by most consumers; keep PCM
+            cmd.extend(["-c:a", "pcm_s16le"])
+        else:
+            cmd.extend(["-c:a", audio_codec, "-b:a", audio_bitrate])
         cmd.append(str(output_path))
 
         try:
