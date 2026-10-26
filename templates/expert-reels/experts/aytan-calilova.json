@@ -55,6 +55,20 @@
         "checklist",
         "cta-pill"
       ]
+    },
+    {
+      "video": "Ucuz təlimçi imici (sadə montaj)",
+      "date": "2026-10-26",
+      "theme": "brand light; footage background blurred",
+      "style": {
+        "captions": "box",
+        "pills": "top-card",
+        "backdrop": "diagonal",
+        "pipShape": "circle",
+        "pipCorner": "br"
+      },
+      "scenes": [],
+      "notes": "User asked for a simple edit: no cutaways/b-roll, 3 cards, minimal SFX, soft background blur."
     }
   ]
 }

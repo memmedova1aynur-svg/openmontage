@@ -147,6 +147,7 @@ def main() -> None:
     edit = {
         "duration": spec["duration"],
         "video": spec.get("video", "base.mp4"),
+        "pillTop": spec.get("pill_top", 300),
         "theme": expert["theme"],
         "style": {**DEFAULT_STYLE, **expert.get("style", {}), **spec.get("style", {})},
         "pip": {**DEFAULT_PIP, **spec.get("pip", {})},

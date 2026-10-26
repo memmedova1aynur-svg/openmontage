@@ -129,7 +129,7 @@ const PillCard: React.FC<{ o: Pill }> = ({ o }) => {
     <AbsoluteFill style={{ alignItems: side ? "flex-start" : "center" }}>
       <div
         style={{
-          marginTop: big ? 300 : 320,
+          marginTop: (E.pillTop ?? 300) + (big ? 0 : 20),
           marginLeft: side ? 0 : undefined,
           padding: big ? "30px 46px 36px" : side ? "22px 40px 26px 34px" : "22px 40px 28px",
           background: rgba(T.primary, T.cardAlpha),
