@@ -54,6 +54,7 @@ export const EdCard: React.FC<{ o: Pill & { num?: string; big?: boolean } }> = (
                 <span key={i} style={{ color: hl ? GOLD_TXT : T.primary, fontWeight: hl ? 900 : undefined }}>{s}</span>
               ))}
             </div>
+            {o.sub && <div style={{ fontFamily: FONT, fontWeight: 600, fontSize: 38, color: T.primary, marginTop: 10 }}>{o.sub}</div>}
           </div>
         </div>
       </div>
