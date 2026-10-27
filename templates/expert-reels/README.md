@@ -21,7 +21,7 @@ into a finished Instagram Reel. The output has:
 
 Reference build: the "6 aylıq karyera xəritəsi" consultation Reel (Oct 2026).
 
-Before editing, classify the footage with [`VIDEO_TYPES.md`](VIDEO_TYPES.md) (14 video types; form, content and purpose kept apart).
+Before editing, classify the footage with [`VIDEO_TYPES.md`](VIDEO_TYPES.md) (14 video types, M01-M13 edit approaches and the type → approach map).
 
 ## Pipeline
 
@@ -115,6 +115,8 @@ staggered defaults are only a fallback.
 ## Variety: no two videos the same
 
 The template is shared. The look must not repeat. For every new video:
+
+Pick the edit approach from the type first ([`VIDEO_TYPES.md`](VIDEO_TYPES.md): M01-M13). Hooks, cutaways and B-roll are never automatic. The rules below apply to the M01/M02/M03/M04 talking edits this template renders.
 
 0. **Pacing.** Don't leave the speaker talking straight to camera for more than ~6 s without a change (insert, card or zoom). Long static stretches lose viewers.
 1. **Scenes come from the topic.** Read the approved script and pick 2-4

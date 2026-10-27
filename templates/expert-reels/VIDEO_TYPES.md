@@ -1,4 +1,4 @@
-# Video növlərinin təsnifatı
+# Video növləri və montaj yanaşmaları
 
 Gələcək işlər üçün istinad. Montaj resepti deyil. Hər yeni material gələndə əvvəl burada növü müəyyənləşdirilir, sonra işlənir.
 
@@ -61,3 +61,154 @@ Bu nümunələr işlənmiş materialdan götürülüb:
 
 - **Növ 1** (birbaşa kameraya danışıq, maarifləndirmə). Danışıq videoları: yaddaş/məlumatsızlıq, öyrənmək bacarıqdır və s.
 - **Növ 3** (hazır mətnli reklam). Təhsildə satış təlimi, qeydiyyat; video "şərhlərdə SATIŞ yazın" çağırışı ilə bitir. Əvvəlki iki reklam videosu da bu növə aiddir.
+
+---
+
+# Montaj yanaşmaları kitabxanası
+
+Video növü montaj seçimini istiqamətləndirir, amma heç bir növün tək şablonu yoxdur. Hər işdə **bir əsas yanaşma** seçilir, lazım olsa **bir əlavə yanaşma** ilə tamamlanır. Seçim layihə qeydinə yazılır: `yanaşma: M01 + M02`.
+
+### M01 — Təmiz ekspert montajı
+- Əsasda ekspertin danışığı və performansı dayanır.
+- Artıq başlanğıcları, texniki gözləmələri və mənasız təkrarları çıxar.
+- Mənalı pauzaları və fikrin vacib şərtlərini saxla.
+- Oxunaqlı altyazı, seçilmiş yaxınlaşdırma və az sayda vurğu istifadə et.
+- Hər cümləyə ayrıca effekt və ya yazı qutusu vermə.
+- **Uyğundur:** peşəkar fikir, həssas mövzu, şəxsi təcrübə, sakit izah.
+
+### M02 — Tipoqrafik vurğu
+- Ekspert görünür, seçilmiş söz və ifadələr vizual vurğu alır.
+- Altyazı ilə vurğu mətnini ayır.
+- Mətnin ölçüsünü və yerini fikrin əhəmiyyətinə görə seç.
+- Qutusuz mətn, qısa qeyd və iri ifadələrdən uyğun olanını istifadə et.
+- Bütün danışığı böyük hərəkətli yazıya çevirmə.
+- **Uyğundur:** aydın tezislər, əsas anlayışlar, seçilmiş reklam və motivasiya çıxışları.
+
+### M03 — Ekspert + qrafik izah
+- Mərhələ, rol, səbəb, seçim və əlaqələri kart, ox və sadə sxemlə aç.
+- Ekspertin və qrafikanın yerini birlikdə planla.
+- Məlumatı hissə-hissə göstər, eyni anda çox element yığma.
+- Qrafikada yalnız danışıqda olan və ya təsdiqlənmiş məlumatı istifadə et.
+- **Uyğundur:** mikrodərs, metod izahı, mərhələlər, xidmətin quruluşu.
+
+### M04 — Danışıq + tam ekran əlavə görüntü
+- Danışıq əsas xətt kimi davam edir.
+- Müəyyən hissələrdə uyğun görüntü ekspertin yerini tutur.
+- Görüntünü deyilən fikirlə əlaqələndir.
+- Təsadüfi stock görüntüsünü real fəaliyyətin və ya nəticənin sübutu kimi təqdim etmə.
+- Uyğun material yoxdursa, B-roll məcburi deyil.
+- **Uyğundur:** real nümunə, proses, fəaliyyət və xidmət haqqında danışıq.
+
+### M05 — Material əsasdır, ekspert kiçik pəncərədədir
+- Ekranın əsas sahəsini sənəd, fəaliyyət, ekran yazısı və ya nümunə tutur.
+- Ekspert dairə və ya düzbucaqlı pəncərədə görünür.
+- Pəncərənin forması və yeri əsas məlumatı örtməməlidir.
+- Ekspertin kiçik görünməsi fayda vermirsə, bu yanaşmanı seçmə.
+- **Uyğundur:** material təhlili, ekran izahı, fəaliyyətə ekspert şərhi.
+
+### M06 — Müqayisəli montaj
+- İki variantı ardıcıl və ya bölünmüş ekranda göstər.
+- Müqayisə meyarını aydınlaşdır.
+- Fərqi göstərmək üçün uyğun mətn və işarələrdən istifadə et.
+- Kontekstdən asılı məsələni avtomatik "doğru/səhv" kimi etiketləmə.
+- **Uyğundur:** iki yanaşma, iki izah, situasiyanın alternativ həlli.
+
+### M07 — Hekayə və çıxış montajı
+- Vəziyyət → çətinlik → qərar → nəticə əlaqəsini qoru.
+- Emosional pauza, baxış və reaksiyaları məqsədlə saxla.
+- Musiqini danışığın ifadəsinə uyğunlaşdır.
+- Motivasiya çıxışını mütləq sürətli kəsim və yüksək musiqi ilə işləmə.
+- Cümlələrin yerini dəyişəndə məna və səbəb əlaqəsini təhrif etmə.
+- **Uyğundur:** hadisə, şəxsi təcrübə, motivasiyaedici seminar çıxarışı.
+
+### M08 — Praktik nümayiş montajı
+- Hərəkətin vacib mərhələləri görünən qalmalıdır.
+- Detalı və nəticəni lazım olan anda göstər.
+- İzahı müvafiq hərəkətlə uyğunlaşdır.
+- Nağıl danışma nümayişində intonasiya, jest və pauzalar nümayişin hissəsidir.
+- Vacib addımları sürətləndirmə və ya kəsimlə gizlətmə.
+- **Uyğundur:** oyun, metodun tətbiqi, nağıl danışma nümayişi, materialla iş.
+
+### M09 — Tədbir və proses montajı
+- Görüntüləri sadəcə qarışdırma: açılış, inkişaf və tamamlanma qur.
+- Musiqi ilə yanaşı uyğun real səslər də istifadə edilə bilər.
+- Sertifikat, alqış və digər anları hadisədəki roluna görə yerləşdir.
+- Yavaşlatmanı yalnız materialın texniki imkanı və səhnənin məqsədi uyğun gəldikdə işlət.
+- Musiqinin hər döyüntüsündə kəsmək məcburi qayda deyil.
+- **Uyğundur:** seminar icmalı, kameraarxası və iş prosesi.
+
+### M10 — Yumorlu sual-cavab montajı
+- Təbii zarafatı, cavabdan əvvəlki pauzanı və üz ifadəsini tap.
+- Bunlardan seçərək istifadə et: yaxınlaşdırma, donmuş kadr, qısa təkrar, reaksiya yazısı, səs effekti.
+- Hər cavaba effekt əlavə etmə.
+- Eksperti alçaldan və ya demədiyi fikri deyirmiş kimi göstərən əlaqə yaratma.
+- İlkin seçim yüngül yumordur; daha intensiv yanaşma storyboardda təklif olunur.
+- **Uyğundur:** sürətli, spontan, əyləncəli sual-cavab.
+
+### M11 — Səsləndirməli vizual hekayə
+- Səsləndirmə ilə görüntü arasında məna əlaqəsi qur.
+- Görüntü deyilən sözü təkrarlamaq məcburiyyətində deyil, amma mövzudan yayınmamalıdır.
+- Reklamın, hekayənin və xüsusi gün mesajının fərqli quruluşunu nəzərə al.
+- Hazır və təsdiqlənmiş səsləndirməni özbaşına yenidən sıralama.
+- **Uyğundur:** fəaliyyətlərdən yığılmış reklam, peşəkar hekayə, mövzu videosu.
+
+### M12 — Nağıl və animasiya
+- Səhnələri səsləndirmənin ardıcıllığına uyğun qur.
+- Obrazların görünüşü, məkan və vizual üslub ardıcıl qalmalıdır.
+- Hərəkət və səslər nağılın ifadəsini dəstəkləsin.
+- Obraz və səhnə üslubu storyboard təsdiqinə daxil edilir.
+- Texniki imkan çatmırsa, yaradılmış kimi göstərmə; uyğun alternativi bildir.
+- **Uyğundur:** nağıl səsləndirməsi, animasiyalı hekayə.
+
+### M13 — Hərəkətli kartlar
+- Bir səhifədə bir əsas fikir göstər.
+- Mətnə oxuma vaxtı ver.
+- Keçidləri məlumatın məntiqinə uyğun qur.
+- Şəkil, sxem və hərəkəti izaha xidmət etdiyi qədər istifadə et.
+- **Uyğundur:** video-karusel, səssiz mikrodərs, qısa məlumat videosu.
+
+## Reklam üçün ayrıca qayda
+
+Reklam bu yanaşmalardan biri və ya bir neçəsi ilə hazırlana bilər.
+
+Hazır mətn təsdiqlənibsə:
+- Mətnin ardıcıllığını qoru.
+- Ayrıca hook çıxarıb əvvələ qoyma.
+- Təklifin vacib hissələrini uyğun vizual üsulla aç.
+- Qiymət, tarix, fayda, nəticə və çağırış uydurma.
+- Struktur dəyişikliyi lazımdırsa, onu təklif kimi göstər və təsdiq gözlə.
+
+## Təkrarın qarşısını almaq
+
+- Brendin şrift və rənglərinin sabit qalması normaldır.
+- Eyni girişi, yazı qutusunu, qrafik düzülüşü və effekt ardıcıllığını avtomatik təkrarlama.
+- Müxtəliflik üçün mənasız effekt əlavə etmə.
+- Son montaj seçimlərini qısa qeyd et (`experts/<id>.json` → `history`) və növbəti işdə nəzərə al.
+- Vizual profil yoxdursa, neytral və oxunaqlı üslubdan istifadə et.
+
+## Növ → yanaşma xəritəsi
+
+| Video növü | Əsas montaj seçimləri | Vacib məhdudiyyət |
+|---|---|---|
+| 1 Kameraya ekspert danışığı | M01; lazım olsa + M02 və ya M03 | Hook, B-roll və hər cümləyə effekt avtomatik deyil |
+| 2 Kadrarxası sual-cavab | M01; + M02 (sual ekranda mətn kimi) | Sual çıxarılırsa, cavab tək başına anlaşılmalıdır |
+| 3 Hazır mətnli reklam | M01 + M02; xidmətin quruluşu üçün M03 | Mətnin ardıcıllığı qorunur; hook çıxarılmır; qiymət, tarix, nəticə və çağırış uydurulmur |
+| 4 Seminardan çıxarış | Alt növə görə: izah → M03/M01; çıxış və hekayə → M07; auditoriya ilə sual-cavab → M01; nümayiş → M08 | Hissə kontekstsiz də anlaşılmalıdır; səbəb əlaqəsi təhrif olunmur |
+| 5 Seminar və tədbir icmalı | M09 | Açılış, inkişaf və tamamlanma olmalıdır; yavaşlatma yalnız material imkan verəndə |
+| 6 Fəaliyyət + ekspert səsi | M08; + M05 | Danışıq hərəkətlə üst-üstə düşür; vacib addım gizlədilmir |
+| 7 İş prosesi, kameraarxası | M09; səsləndirmə varsa + M11 | Real proses göstərilir, səhnələşdirilmiş nəticə kimi təqdim edilmir |
+| 8 Səsləndirməli hekayə və ya reklam | M11; + M04 | Təsdiqlənmiş səsləndirmə yenidən sıralanmır; stock görüntü sübut kimi təqdim edilmir |
+| 9 Nağıl, animasiya | M12 | Obrazlar ardıcıl qalır; üslub storyboardda təsdiqlənir; olmayan imkan iddia edilmir |
+| 10 Sürətli, əyləncəli sual-cavab | M10 | İlkin seçim yüngül yumordur; ekspert alçaldılmır, demədiyi fikir yaradılmır |
+| 11 İki ekspertin söhbəti | M01; fikirlər qarşılaşırsa + M06 | Hər iki danışanın konteksti və bir-birinə münasibəti qorunur |
+| 12 Hərəkətli kartlar | M13 | Bir səhifədə bir fikir; oxuma vaxtı verilir |
+| 13 Material və ekran üzərində izah | M05; + M03 | Pəncərə materialı örtmür |
+| 14 İştirakçı rəyi | M01 | Demədiyi nəticə montajla yaradılmır; rəyin konteksti qorunur |
+
+M06 (müqayisə) istənilən növdə iki variant göstərildikdə əlavə yanaşma kimi qoşula bilər.
+
+### Son seçimlər (Aytən Calilova)
+
+- Növ 1 danışıq videoları: **M01 + M02**. Altyazı, kənarda vurğular (pops), seçilmiş zoom; əlavə görüntü yoxdur.
+- Növ 3 satış təlimi reklamı: **M01 + M02**. Mətnin ardıcıllığı qorundu, hook əlavə edilmədi; etirazlar ardıcıl vurğu kimi verildi.
+- Eyni məkan və geyimdə çəkilən ardıcıl videolarda altyazı və vurğu üslubu dəyişdirilir.
