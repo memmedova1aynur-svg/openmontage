@@ -22,7 +22,7 @@ export type Page = { start: number; end: number; words: Word[] };
 export type ZoomKey = { t: number; s: number; k: "cut" | "push" | "punch" };
 export type Pill = {
   id: string;
-  kind: "pill" | "hook" | "cta" | "pop" | "icon" | "title" | "end" | "counter" | "strip" | "note" | "spark";
+  kind: "pill" | "hook" | "cta" | "pop" | "icon" | "title" | "end" | "counter" | "strip" | "note" | "spark" | "ticket" | "marker" | "callcard";
   label: string | null;
   pos?: "t" | "tl" | "tr" | "l" | "r"; // "pop" keyword position around the speaker
   top?: number; // pop: centred line at this y instead of pos (stack several pops as rows)
@@ -50,7 +50,7 @@ export type Cutaway = {
   props?: Record<string, any>;
 };
 export type Style = {
-  captions: "stroke" | "box" | "chip" | "plate" | "paper" | "frame"; // plate: fixed light panel (also hides burned-in text / a problem area)
+  captions: "stroke" | "box" | "chip" | "plate" | "paper" | "frame" | "lower" | "marker"; // plate: fixed light panel (also hides burned-in text / a problem area)
   pills: "top-card" | "side-tag";
   backdrop: "dots" | "grid" | "orbs" | "diagonal";
   pipShape: "circle" | "rounded";

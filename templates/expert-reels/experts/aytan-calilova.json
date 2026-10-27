@@ -1,167 +1,184 @@
 {
-  "name": "Aytən Cəlilova",
-  "instagram": "aytan.calilova",
-  "status": "active",
-  "activity": "Mentor, təlimçi, kurs rəhbəri və bağça biznesi konsultantı. Əsas təqdimat: mentorluq, təlimçilik, liderlik və peşəkar inkişaf.",
-  "identity": "Premium Mentorship × Modern Leadership Editorial",
-  "palette": {
-    "family": "mavi tonlar və ağ",
-    "approved_in_use": {
-      "navy": "#13213F",
-      "deep_navy": "#0A1428",
-      "light_blue": "#A9C8F2",
-      "steel_blue": "#6F93C9"
-    },
-    "note": "Kodlar Instagram profilindən götürülüb; istifadəçi tünd göy kartları və açıq mavi vurğunu videolarda təsdiqləyib (2026-10-26/27). Buz mavisi/solğun mavi fon rədd edilib."
+ "name": "Aytən Cəlilova",
+ "instagram": "aytan.calilova",
+ "status": "active",
+ "activity": "Mentor, təlimçi, kurs rəhbəri və bağça biznesi konsultantı. Əsas təqdimat: mentorluq, təlimçilik, liderlik və peşəkar inkişaf.",
+ "identity": "Premium Mentorship × Modern Leadership Editorial",
+ "palette": {
+  "family": "mavi tonlar və ağ",
+  "approved_in_use": {
+   "navy": "#13213F",
+   "deep_navy": "#0A1428",
+   "light_blue": "#A9C8F2",
+   "steel_blue": "#6F93C9"
   },
-  "fonts": "Montserrat (indiyə qədər istifadə edilən)",
-  "video_types": "ekspert danışığı, reklam, sual-cavab, seminar, mövzuya uyğun digər formatlar",
-  "cautions": [
-    "Buz mavisi / solğun mavi fon istifadə edilmir (istifadəçi rədd edib).",
-    "Arxa fon xahiş olmadan bulanıqlaşdırılmır.",
-    "Ağ/açıq köynəkdə yalnız-kontur altyazı oxunmur: qutu və ya chip.",
-    "Eyni məkan və geyimdə ardıcıl videolarda altyazı və vurğu üslubu dəyişdirilir.",
-    "Hər kart və animasiyaya uyğun səs effekti (zoom-larda yox), danışığın altında - storyboardda göstərilir."
-  ],
-  "theme_source": "approved in delivered videos",
-  "theme": {
-    "primary": "#13213F",
-    "primaryDeep": "#0A1428",
-    "accent": "#A9C8F2",
-    "accentSoft": "#6F93C9",
-    "text": "#FFFFFF",
-    "onAccent": "#13213F",
-    "cardAlpha": 0.94,
-    "emphasis": "#A9C8F2"
+  "note": "Kodlar Instagram profilindən götürülüb; istifadəçi tünd göy kartları və açıq mavi vurğunu videolarda təsdiqləyib (2026-10-26/27). Buz mavisi/solğun mavi fon rədd edilib."
+ },
+ "fonts": "Montserrat (indiyə qədər istifadə edilən)",
+ "video_types": "ekspert danışığı, reklam, sual-cavab, seminar, mövzuya uyğun digər formatlar",
+ "cautions": [
+  "Buz mavisi / solğun mavi fon istifadə edilmir (istifadəçi rədd edib).",
+  "Arxa fon xahiş olmadan bulanıqlaşdırılmır.",
+  "Ağ/açıq köynəkdə yalnız-kontur altyazı oxunmur: qutu və ya chip.",
+  "Eyni məkan və geyimdə ardıcıl videolarda altyazı və vurğu üslubu dəyişdirilir.",
+  "Hər kart və animasiyaya uyğun səs effekti (zoom-larda yox), danışığın altında - storyboardda göstərilir.",
+  "Aytənin telefonla (Edit) çəkdiyi videolar güzgü (mirror) ola bilər: əvvəl/sonra kadrı göstər, təsdiqdən sonra çevir."
+ ],
+ "theme_source": "approved in delivered videos",
+ "theme": {
+  "primary": "#13213F",
+  "primaryDeep": "#0A1428",
+  "accent": "#A9C8F2",
+  "accentSoft": "#6F93C9",
+  "text": "#FFFFFF",
+  "onAccent": "#13213F",
+  "cardAlpha": 0.94,
+  "emphasis": "#A9C8F2"
+ },
+ "style": {
+  "captions": "chip",
+  "pills": "side-tag",
+  "backdrop": "orbs",
+  "pipShape": "rounded",
+  "pipCorner": "bl"
+ },
+ "notes_legacy": "Brand taken from the Instagram grid: light powder-blue/white carousels, deep navy headlines, navy/white rounded title ribbons on Reels covers, steel-blue secondary. Light theme: cards and backdrops are pale blue with navy type; the active caption word sits on a navy chip like her cover ribbons. 2026-10-26: user rejected the pale/icy-blue backdrop; use dark navy backdrops and cards (like the first video) with her light brand blue as the accent. Do not blur the background unless asked. Talking-only videos: captions + keyword pops (top/left/right) + zooms, no cutaways; cut retakes keeping the best take. When consecutive videos share the same set and outfit, change the caption style and pop style between them. White/light clothing: use box or chip captions; stroke-only captions get lost over it. Never end on the last word: hold ~1 s after it so the sentence and her closing expression finish (cut_takes.py does this). SFX: the user wants a fitting sound on every card/animation (not on zooms), kept under the voice.",
+ "history": [
+  {
+   "video": "Təlimçi konsultasiyası (6 aylıq karyera xəritəsi)",
+   "date": "2026-10-26",
+   "theme": "footage-derived navy + gold (before brand profile)",
+   "style": {
+    "captions": "stroke",
+    "pills": "top-card",
+    "backdrop": "dots",
+    "pipShape": "circle",
+    "pipCorner": "br"
+   },
+   "scenes": [
+    "timeline",
+    "phone",
+    "comment"
+   ]
   },
-  "style": {
+  {
+   "video": "«Öyrənməyi öyrən» təlimi",
+   "date": "2026-10-26",
+   "theme": "brand light (powder blue + navy)",
+   "style": {
     "captions": "chip",
     "pills": "side-tag",
     "backdrop": "orbs",
     "pipShape": "rounded",
     "pipCorner": "bl"
+   },
+   "scenes": [
+    "questions",
+    "stat",
+    "checklist",
+    "cta-pill"
+   ]
   },
-  "notes_legacy": "Brand taken from the Instagram grid: light powder-blue/white carousels, deep navy headlines, navy/white rounded title ribbons on Reels covers, steel-blue secondary. Light theme: cards and backdrops are pale blue with navy type; the active caption word sits on a navy chip like her cover ribbons. 2026-10-26: user rejected the pale/icy-blue backdrop; use dark navy backdrops and cards (like the first video) with her light brand blue as the accent. Do not blur the background unless asked. Talking-only videos: captions + keyword pops (top/left/right) + zooms, no cutaways; cut retakes keeping the best take. When consecutive videos share the same set and outfit, change the caption style and pop style between them. White/light clothing: use box or chip captions; stroke-only captions get lost over it. Never end on the last word: hold ~1 s after it so the sentence and her closing expression finish (cut_takes.py does this). SFX: the user wants a fitting sound on every card/animation (not on zooms), kept under the voice.",
-  "history": [
-    {
-      "video": "Təlimçi konsultasiyası (6 aylıq karyera xəritəsi)",
-      "date": "2026-10-26",
-      "theme": "footage-derived navy + gold (before brand profile)",
-      "style": {
-        "captions": "stroke",
-        "pills": "top-card",
-        "backdrop": "dots",
-        "pipShape": "circle",
-        "pipCorner": "br"
-      },
-      "scenes": [
-        "timeline",
-        "phone",
-        "comment"
-      ]
-    },
-    {
-      "video": "«Öyrənməyi öyrən» təlimi",
-      "date": "2026-10-26",
-      "theme": "brand light (powder blue + navy)",
-      "style": {
-        "captions": "chip",
-        "pills": "side-tag",
-        "backdrop": "orbs",
-        "pipShape": "rounded",
-        "pipCorner": "bl"
-      },
-      "scenes": [
-        "questions",
-        "stat",
-        "checklist",
-        "cta-pill"
-      ]
-    },
-    {
-      "video": "Ucuz təlimçi imici",
-      "date": "2026-10-26",
-      "theme": "dark navy + light brand blue; footage background blurred",
-      "style": {
-        "captions": "box",
-        "pills": "top-card",
-        "backdrop": "diagonal",
-        "pipShape": "circle",
-        "pipCorner": "br"
-      },
-      "scenes": [
-        "full:checklist",
-        "full:phone+checklist",
-        "full:questions",
-        "full:chat",
-        "full:checklist",
-        "full:checklist",
-        "full:questions"
-      ],
-      "notes": "User wants 3-5 s full-screen inserts (speaker hidden, voice continues), no corner frame, no icy-blue backdrops, and no talking-head stretch much longer than ~6 s - she found long straight-to-camera stretches lose attention."
-    },
-    {
-      "video": "Motivasiya yox, sistem (talking-only)",
-      "date": "2026-10-26",
-      "style": {
-        "captions": "box",
-        "pops": "dark"
-      },
-      "scenes": [
-        "pops"
-      ],
-      "notes": "Office set, green shirt. 2 retakes cut."
-    },
-    {
-      "video": "Təlimçi olmaq istəyən müəllimlər (talking-only)",
-      "date": "2026-10-26",
-      "style": {
-        "captions": "chip",
-        "pops": "light"
-      },
-      "scenes": [
-        "pops"
-      ],
-      "notes": "Same set/outfit as the previous video, so caption and pop styles were switched to keep the two from looking identical. Raw 231 s with 7x retakes cut to 71 s."
-    },
-    {
-      "video": "Yaddaş problemi yox, məlumatsızlıq (talking-only)",
-      "date": "2026-10-26",
-      "style": {
-        "captions": "box",
-        "pops": "dark"
-      },
-      "scenes": [
-        "pops"
-      ],
-      "notes": "New set (white shirt, grey wall). Two full takes; kept the second, cut a repeated sentence and a 4 s pause; 125 s -> 53 s. Stroke captions were unreadable over the white shirt, so box was used."
-    },
-    {
-      "date": "2026-10-26",
-      "video": "Öyrənməyi kim öyrədib? (öyrənmək bacarıqdır)",
-      "style": {
-        "captions": "chip",
-        "pops": "light"
-      },
-      "scenes": [],
-      "notes": "New set (light-blue shirt, abstract painting). Cut a retake of 'Yəqin ki, cavab xeyirdir' and the spoken aside to the editor, plus two pauses; 59 s -> 51.5 s. 13 pops, talking only."
-    },
-    {
-      "date": "2026-10-26",
-      "video": "Təhsildə satış təlimi - qeydiyyat (reklam)",
-      "style": {
-        "captions": "box",
-        "pops": "dark"
-      },
-      "scenes": [],
-      "notes": "Same set and outfit as the previous video, so captions and pops were switched. Ad: kept the second full take of the 'Əgər satışlarınızı...' sentence and of 'Instagram və WhatsApp...', dropped the CRM false starts and long pauses; 118 s -> 88.4 s. Objections pop in one after another; ends on the 'şərhlərdə SATIŞ yazın' CTA."
-    },
-    {
-      "video": "Redo of the last three (2026-10-27): types and approaches applied",
-      "date": "2026-10-27",
-      "style": {},
-      "scenes": [],
-      "notes": "The previous edits of videos 6-8 all used the same recipe (13-19 pops, punches, SFX, upscaled to 4K). Redone per VIDEO_TYPES.md: 'Yaddaş problemi yox, məlumatsızlıq' = type 1, M01 (box captions, 6 card emphases incl. a 3-row list, no punches); 'Öyrənməyi kim öyrədib?' = type 1, M02 (stroke captions, boxless large type, labels crossed out at 'Halbuki'); sales-training ad = type 3, M01+M03 (approved order, audience row, numbered 'öyrənəcəksiniz 1/9' cards, 'Təlimin sonunda 1/4' cards, comment-box end screen 'SATIŞ'). All 1080x1920 like the source, no SFX, no music. Follow-up: user asked for SFX on every card/animation (approved): M01 soft pop per card + tick per list row; M02 light whoosh per type line, scratch on strike, soft thump on the key line; ad whoosh per card, tick per checkmark item, typing ticks + ding on the comment end screen. No SFX on zooms."
-    }
-  ]
+  {
+   "video": "Ucuz təlimçi imici",
+   "date": "2026-10-26",
+   "theme": "dark navy + light brand blue; footage background blurred",
+   "style": {
+    "captions": "box",
+    "pills": "top-card",
+    "backdrop": "diagonal",
+    "pipShape": "circle",
+    "pipCorner": "br"
+   },
+   "scenes": [
+    "full:checklist",
+    "full:phone+checklist",
+    "full:questions",
+    "full:chat",
+    "full:checklist",
+    "full:checklist",
+    "full:questions"
+   ],
+   "notes": "User wants 3-5 s full-screen inserts (speaker hidden, voice continues), no corner frame, no icy-blue backdrops, and no talking-head stretch much longer than ~6 s - she found long straight-to-camera stretches lose attention."
+  },
+  {
+   "video": "Motivasiya yox, sistem (talking-only)",
+   "date": "2026-10-26",
+   "style": {
+    "captions": "box",
+    "pops": "dark"
+   },
+   "scenes": [
+    "pops"
+   ],
+   "notes": "Office set, green shirt. 2 retakes cut."
+  },
+  {
+   "video": "Təlimçi olmaq istəyən müəllimlər (talking-only)",
+   "date": "2026-10-26",
+   "style": {
+    "captions": "chip",
+    "pops": "light"
+   },
+   "scenes": [
+    "pops"
+   ],
+   "notes": "Same set/outfit as the previous video, so caption and pop styles were switched to keep the two from looking identical. Raw 231 s with 7x retakes cut to 71 s."
+  },
+  {
+   "video": "Yaddaş problemi yox, məlumatsızlıq (talking-only)",
+   "date": "2026-10-26",
+   "style": {
+    "captions": "box",
+    "pops": "dark"
+   },
+   "scenes": [
+    "pops"
+   ],
+   "notes": "New set (white shirt, grey wall). Two full takes; kept the second, cut a repeated sentence and a 4 s pause; 125 s -> 53 s. Stroke captions were unreadable over the white shirt, so box was used."
+  },
+  {
+   "date": "2026-10-26",
+   "video": "Öyrənməyi kim öyrədib? (öyrənmək bacarıqdır)",
+   "style": {
+    "captions": "chip",
+    "pops": "light"
+   },
+   "scenes": [],
+   "notes": "New set (light-blue shirt, abstract painting). Cut a retake of 'Yəqin ki, cavab xeyirdir' and the spoken aside to the editor, plus two pauses; 59 s -> 51.5 s. 13 pops, talking only."
+  },
+  {
+   "date": "2026-10-26",
+   "video": "Təhsildə satış təlimi - qeydiyyat (reklam)",
+   "style": {
+    "captions": "box",
+    "pops": "dark"
+   },
+   "scenes": [],
+   "notes": "Same set and outfit as the previous video, so captions and pops were switched. Ad: kept the second full take of the 'Əgər satışlarınızı...' sentence and of 'Instagram və WhatsApp...', dropped the CRM false starts and long pauses; 118 s -> 88.4 s. Objections pop in one after another; ends on the 'şərhlərdə SATIŞ yazın' CTA."
+  },
+  {
+   "video": "Redo of the last three (2026-10-27): types and approaches applied",
+   "date": "2026-10-27",
+   "style": {},
+   "scenes": [],
+   "notes": "The previous edits of videos 6-8 all used the same recipe (13-19 pops, punches, SFX, upscaled to 4K). Redone per VIDEO_TYPES.md: 'Yaddaş problemi yox, məlumatsızlıq' = type 1, M01 (box captions, 6 card emphases incl. a 3-row list, no punches); 'Öyrənməyi kim öyrədib?' = type 1, M02 (stroke captions, boxless large type, labels crossed out at 'Halbuki'); sales-training ad = type 3, M01+M03 (approved order, audience row, numbered 'öyrənəcəksiniz 1/9' cards, 'Təlimin sonunda 1/4' cards, comment-box end screen 'SATIŞ'). All 1080x1920 like the source, no SFX, no music. Follow-up: user asked for SFX on every card/animation (approved): M01 soft pop per card + tick per list row; M02 light whoosh per type line, scratch on strike, soft thump on the key line; ad whoosh per card, tick per checkmark item, typing ticks + ding on the comment end screen. No SFX on zooms."
+  },
+  {
+   "date": "2026-10-27",
+   "video": "Problem bilikdə deyil (IMG_6206, talking, not an ad)",
+   "style": {
+    "captions": "frame",
+    "pops": "note (framed) + spark"
+   },
+   "scenes": [
+    "bp_battery",
+    "bp_compare",
+    "bp_build",
+    "bp_formula",
+    "bp_questions"
+   ],
+   "notes": "Type 1, M03. New 'blueprint' look (navy drafting grid, light-blue lines drawing on, corner brackets on every block) so it does not repeat her earlier box/chip/stroke + pop videos. Source was mirrored (front camera) - flipped after the user approved a before/after still. First 38 s were a test, cut; repeated intro kept the second take; a muddled 'necə çərçivələndirməyi' passage replaced by the last full take; pauses trimmed. 143 s -> 68.6 s. SFX on every card/scene element, none on zooms."
+  }
+ ]
 }
