@@ -207,6 +207,7 @@ def main() -> None:
         "duration": duration,
         "videoDur": video_dur,
         "split": spec.get("split"),
+        "retro": spec.get("retro"),
         "video": spec.get("video", "base.mp4"),
         "pillTop": spec.get("pill_top", 300),
         "plate": spec.get("plate"),

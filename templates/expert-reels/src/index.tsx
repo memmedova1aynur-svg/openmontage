@@ -16,6 +16,7 @@ import {
 import { EndCard, IconChip, PlateCard, TitleCard } from "./icons";
 import { CARTOON } from "./cartoon";
 import { CounterPop, SKETCH } from "./sketch";
+import { PAPER, Paper, RetroOverlay, Strip } from "./paper";
 import { ILLUSTRATED } from "./illustrations";
 import { Backdrop, CommentCTA, PIP_SIDE, SCENES } from "./scenes";
 import { Cutaway, E, EMPH, FONT, FONT_HAND, FPS, Page, Pill, T, ZoomKey, clamp01, rgba, useFonts } from "./theme";
@@ -160,6 +161,30 @@ const Captions: React.FC = () => {
   const page = E.pages.find((p: Page) => t >= p.start && t < p.end);
   if (E.style.captions === "plate") return <PlateCaptions />;
   if (!page) return null;
+  if (E.style.captions === "paper") {
+    const k = spring({ frame: Math.round((t - page.start) * fps), fps, config: { damping: 12, stiffness: 240, mass: 0.5 } });
+    const inScene = E.cutaways.some((c) => (c.kind === "split" || c.kind === "scene") && t >= c.in && t < c.out);
+    const idx = E.pages.indexOf(page);
+    return (
+      <AbsoluteFill style={{ justifyContent: "flex-end", alignItems: "center", paddingBottom: inScene ? 230 : 430 }}>
+        <div style={{ transform: `translateY(${(1 - k) * 30}px) scale(${0.9 + 0.1 * k})`, opacity: Math.min(1, k * 2) }}>
+          <Paper color="#FFFDF7" seed={idx + 3} rot={idx % 2 ? 1.5 : -1.5}>
+            <div style={{ textAlign: "center", lineHeight: 1.1, maxWidth: 900 }}>
+              {page.words.map((w, i) => {
+                const active = t >= w.s && t < Math.max(w.e, w.s + 0.12);
+                const spoken = t >= w.s;
+                return (
+                  <span key={i} style={{ display: "inline-block", margin: "0 10px", fontFamily: FONT, fontWeight: 900, fontSize: 64, color: spoken ? "#1F1B18" : "rgba(31,27,24,0.4)", backgroundImage: active ? "linear-gradient(transparent 60%, rgba(244,200,90,0.85) 60%)" : undefined }}>
+                    {w.w}
+                  </span>
+                );
+              })}
+            </div>
+          </Paper>
+        </div>
+      </AbsoluteFill>
+    );
+  }
   const enter = spring({ frame: Math.round((t - page.start) * fps), fps, config: { damping: 14, stiffness: 220, mass: 0.6 } });
   const style = E.style.captions;
   // box captions keep their own dark backing, so only bare captions switch colour over pale cutaways
@@ -435,7 +460,7 @@ const PipPanels: React.FC<{ c: Cutaway; p: number }> = ({ c, p }) => {
         const start = i === 0 ? c.in : pn.at;
         const end = i + 1 < panels.length ? panels[i + 1].at : c.out + 0.6;
         if (t < start - 0.1 || t >= end + 0.25) return null;
-        const Scene = SCENES[pn.kind] ?? CARTOON[pn.kind] ?? SKETCH[pn.kind] ?? ILLUSTRATED[pn.kind];
+        const Scene = SCENES[pn.kind] ?? CARTOON[pn.kind] ?? SKETCH[pn.kind] ?? PAPER[pn.kind] ?? ILLUSTRATED[pn.kind];
         if (!Scene) return null;
         // outgoing panel slides away, incoming slides in
         const out = i + 1 < panels.length ? interpolate(t, [end - 0.15, end + 0.2], [1, 0], clamp01) : 1;
@@ -492,6 +517,7 @@ const Reel: React.FC = () => {
   const splitClip = `inset(${sp * (SPLIT_TOP - SPLIT_SHIFT)}px ${30 * sp}px ${-shiftY}px ${30 * sp}px round ${44 * sp}px)`;
   // past the end of the footage (an end card's tail) the last picture is held
   const vFrames = Math.floor((E.videoDur ?? E.duration) * fps);
+  const retroP = E.retro ? interpolate(t, [E.retro.out - 0.15, E.retro.out + 0.25], [1, 0], clamp01) * (t >= E.retro.in ? 1 : 0) : 0;
   const video = <OffthreadVideo src={staticFile(E.video ?? "base.mp4")} />;
   return (
     <AbsoluteFill style={{ backgroundColor: "black" }}>
@@ -505,8 +531,11 @@ const Reel: React.FC = () => {
           clipPath: p > 0.001 ? clip : sp > 0.001 ? splitClip : undefined,
         }}
       >
-        {frame >= vFrames - 1 ? <Freeze frame={vFrames - 2}>{video}</Freeze> : video}
+        <AbsoluteFill style={{ filter: retroP > 0.001 ? `grayscale(${retroP}) contrast(${1 + 0.3 * retroP}) brightness(${1 - 0.08 * retroP})` : undefined }}>
+          {frame >= vFrames - 1 ? <Freeze frame={vFrames - 2}>{video}</Freeze> : video}
+        </AbsoluteFill>
       </AbsoluteFill>
+      {retroP > 0.001 && <RetroOverlay p={retroP} />}
       {splitCut && sp > 0.001 && (
         <AbsoluteFill style={{ height: SPLIT_TOP, overflow: "hidden", opacity: Math.min(1, sp * 1.4), transform: `translateY(${(1 - sp) * -60}px)` }}>
           <PipPanels c={splitCut} p={1} />
@@ -548,7 +577,7 @@ const Reel: React.FC = () => {
         ))}
       {E.overlays.filter((o) => !o.plate).map((o) => (
         <Sequence key={o.id} from={Math.round(o.in * FPS)} durationInFrames={Math.round((o.out - o.in) * FPS)}>
-          {o.kind === "counter" ? <CounterFrame o={o} /> : o.kind === "icon" ? <IconChip o={o} /> : o.kind === "title" ? <TitleCard o={o} /> : o.kind === "end" ? <EndCard o={o} /> : o.kind !== "pop" ? <PillCard o={o} /> : E.style.pops === "type" || o.hand || o.strike !== undefined ? <TypePop o={o} /> : <KeywordPop o={o} />}
+          {o.kind === "strip" ? <Strip o={o as any} /> : o.kind === "counter" ? <CounterFrame o={o} /> : o.kind === "icon" ? <IconChip o={o} /> : o.kind === "title" ? <TitleCard o={o} /> : o.kind === "end" ? <EndCard o={o} /> : o.kind !== "pop" ? <PillCard o={o} /> : E.style.pops === "type" || o.hand || o.strike !== undefined ? <TypePop o={o} /> : <KeywordPop o={o} />}
         </Sequence>
       ))}
       <Captions />
