@@ -9,10 +9,10 @@ into a finished Instagram Reel. The output has:
 - Keyword pills.
 - Animated cutaways with the speaker in a corner circle.
 - An Instagram comment-box CTA.
-- Synthesized SFX: whoosh, pop, hit, tick and ding.
+- Synthesized SFX (whoosh, pop, hit, tick, ding), only when the approved storyboard asks for them (`sfx_level`).
 - The original audio (including any music already in the footage), normalized
   to -16 LUFS.
-- Two-pass encode to about 26 MB for 60 s, under Claude's 30 MB upload limit.
+- Output at the source's size (1080x1920 stays 1080x1920, 4K stays 4K, never upscaled), plus an HEVC delivery copy capped at ~44 MB.
 
 > **AZ qısa:** Bu şablon mütəxəssis videolarını eyni peşəkar səviyyədə, amma hər
 > dəfə fərqli görünüşlə montaj etmək üçündür. Hər mütəxəssisin öz rəng
@@ -96,7 +96,7 @@ accent colour.
 - `video`: footage file in `public/` (default `base.mp4`). For a softly blurred background run
   `python templates/expert-reels/scripts/blur_background.py public/base.mp4 public/base_blur.mp4`
   (MODNet portrait matting, Apache-2.0) and set `"video": "base_blur.mp4"`.
-- `sfx_level`: `"minimal"` for calm edits. Use it when the user asks for something simple; it drops zoom pops and softens the rest.
+- `sfx_level`: `"none"` (default, no SFX), `"minimal"` for calm edits or `"full"`; set only when the storyboard approved SFX. Use it when the user asks for something simple; it drops zoom pops and softens the rest.
 
 ### Scene library (`src/scenes/index.tsx`)
 

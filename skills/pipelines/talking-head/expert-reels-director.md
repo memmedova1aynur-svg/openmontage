@@ -25,7 +25,7 @@ Hər link yeni montaj tapşırığıdır.
 
 - **Yükləmə.** `drive.usercontent.google.com/download?id=…&confirm=t` ilə faylı
   `projects/<id>/assets/source/` qovluğuna endir.
-- **Yoxlama.** ffprobe ilə müddəti, ölçünü, kodeki, fps-i və HDR-i yoxla.
+- **Yoxlama.** ffprobe ilə bunları yoxla: müddət, ölçü, istiqamət (fırlanma metadatası daxil), fps, kodek, HDR, səs (kanallar, tezlik). Çəkiliş tətbiqinin adına görə yox, faylın öz xüsusiyyətlərinə görə işlə. Orijinal fayl dəyişdirilmir.
 - **Transkripsiya.** Danışıq varsa, `transcriber` aləti ilə et
   (`large-v3`, `az`). Mənbə timecode-larını saxla.
 - **Əvvəlki təhlil.** `projects/<id>/artifacts/` qovluğunda transkripsiya və
@@ -50,7 +50,10 @@ Video növü: …
 Əsas fikir və ya məqsəd: …
 Seçilən montaj: M.. (+ M..)
 Təxmini yekun müddət: …
+Mənbə → çıxış: 1080×1920 30fps → 1080×1920 (və ya başqa format, səbəbi ilə)
 ```
+
+Səs effekti planlaşdırılırsa, storyboardda göstərilir; təsdiqlənməyən səs effekti işlədilmir.
 
 Sonra qısa storyboard gəlir. Sütunlar:
 mənbə aralığı → yekun hissə → görüntü qərarı → dəqiq mətn/qrafika → səs.
@@ -74,6 +77,7 @@ Video növünə görə storyboardda nə göstərilir:
 | Səsləndirməli video (8) | Hər səs hissəsinə uyğun görüntü bağlanır. |
 | Nağıl və animasiya (9) | Səhnələr, obraz və vizual üslub nümunəsi təsdiqə daxil edilir. |
 | Hərəkətli kartlar (12) | Hər səhifənin dəqiq mətni, ardıcıllığı və oxuma müddəti göstərilir. |
+| Modul təlim dərsi (15) | Aşağıdakı "Uzun təlim dərsi" bölməsinə bax. |
 
 Məqsəd aydın deyilsə və seçim nəticəni ciddi dəyişəcəksə, bir qısa sual ver.
 Adi montaj seçimlərini istifadəçiyə həvalə etmə.
@@ -101,6 +105,44 @@ Adi montaj seçimlərini istifadəçiyə həvalə etmə.
 - Yeni ödəniş, hesab bağlantısı və ya əlavə giriş avtomatik edilmir.
 - Planın əsas yaradıcı qərarı dəyişməli olsa, qısa bildir və təsdiq al.
 
+### Mənbə keyfiyyəti və ixrac
+
+- **Çıxış ölçüsü mənbədən asılıdır.**
+  - Şaquli 1080×1920 mənbə 1080×1920 kimi ixrac olunur.
+  - Şaquli 4K mənbə 2160×3840 kimi ixrac olunur.
+  - Aşağı ölçülü görüntü heç vaxt 4K-ya böyüdülmür.
+  - `setup_workspace.sh` ölçünü `public/render.json` faylına yazır, `render.sh` ona əməl edir.
+- **Ölçü və fps** səbəbsiz dəyişdirilmir. Mənbə 30 fps deyilsə, storyboardda qeyd edilir; şablon 30 fps ilə render edir.
+- **Üfüqi dərs** üfüqi qalır, avtomatik şaquli Reels-a çevrilmir.
+- **Yaxınlaşdırma və yenidən çərçivələmə** mənbənin ehtiyatına görə seçilir: 1080p mənbədə ~1.10-dan çox zoom kəskinliyi azaldır.
+- **İstiqamət.** Görüntü avtomatik güzgülənmir və çevrilmir. Fırlanma metadatasını ffmpeg özü tətbiq edir. İstiqamətdə şübhə varsa, storyboardda qeyd edilir.
+- **Təhvil faylı** (`*_ig.mp4`) mənbə ilə eyni ölçüdədir, HEVC kodekindədir və ~44 MB ilə məhdudlaşır. 1080p videoda bu, keyfiyyət itkisi demək deyil.
+- **Başqa format** yalnız istifadəçi istəsə və ya növ tələb etsə seçilir. Seçim storyboardda yazılır.
+
+### Musiqi və səs
+
+- **Fon musiqisi əlavə edilmir.** Lazım olsa, istifadəçi CapCut-da özü əlavə edir.
+- **Səs effekti** yalnız storyboardda göstərilib təsdiqlənsə işlədilir. `build_edit.py`-də standart `sfx_level` dəyəri "none"-dur.
+- **Əvvəlcədən kəsilmiş hissələr.** Faylda əvvəlcədən kəsilmiş hissələr ola bilər; birləşmə yerlərini yoxla.
+- **Danışıq səsi** aydın və təbii saxlanılır. Yalnız səs səviyyəsi bərabərləşdirilir (−16 LUFS). Güclü səs təmizləmə tətbiq edilmir.
+
+### Uzun təlim dərsi (növ 15, M14)
+
+**Storyboardda** qısa şəkildə bunlar olur:
+- dərsin əsas mövzusu və təxmini yekun müddəti;
+- çıxarılması təklif olunan hissələr, mənbə vaxtları ilə;
+- şübhəli və mənaya təsir edə biləcək kəsimlər (tibbi və texniki ifadələr təsdiqsiz seçilmir);
+- ad–peşə yazısının mətni (yalnız təsdiqlənmiş məlumat) və görünüşü;
+- altyazı: videoya yazılan və ya ayrıca SRT/VTT, ya da hər ikisi;
+- izahlı elementlərin dəqiq mətni və vizualı (varsa);
+- mənbə və çıxış ölçüsü (üfüqi qalır);
+- montaj və render üçün real müddət.
+
+**Qaydalar:**
+- Kursun bütün bölümləri eyni üslubdadır: ad yazısı, altyazı və elementlər. Seçilən üslub ekspert profilinə yazılır.
+- Hər bölüm ayrıca MP4 kimi təhvil verilir. SRT/VTT faylı varsa, onunla birlikdə verilir.
+- Reels üçün olan 10 dəqiqəlik hədəf burada tətbiq edilmir. Real müddət storyboardda bildirilir.
+
 ### 5. Vaxt hədəfləri (zəmanət deyil)
 
 - **Linkdən storyboarda:** ~5 dəqiqə.
@@ -115,6 +157,7 @@ Bu konteynerdə ölçülmüş müddətlər (4 CPU, GPU yoxdur):
 |---|---|
 | ~1 dəq. materialın transkripsiyası (`large-v3`) | 1-2 dəq. |
 | ~1 dəq. videonun 4K render + təhvil faylı | ~15-20 dəq. |
+| ~1 dəq. videonun 1080×1920 render + təhvil faylı | təxminən 4 dəfə tez (ölçülməyib) |
 
 ### 6. Yekun yoxlama və təhvil
 
@@ -128,8 +171,9 @@ Bu konteynerdə ölçülmüş müddətlər (4 CPU, GPU yoxdur):
 
 Baxılmayan və ya yoxlanmayan hissə yoxlanmış kimi göstərilmir.
 
-Təhvildə yalnız bunlar verilir: SendUserFile ilə hazır MP4 (`*_ig.mp4`, 4K HEVC
-~44 MB, telefona yüklənir), yekun müddət və varsa vacib məhdudiyyət.
+Təhvildə yalnız bunlar verilir: SendUserFile ilə hazır MP4 (`*_ig.mp4`, mənbə
+ölçüsündə HEVC, ≤ ~44 MB, telefona yüklənir), yekun müddət və varsa vacib məhdudiyyət.
+Dərslərdə SRT/VTT faylı varsa, o da verilir.
 
 Sonra yanaşma (M..) və əsas vizual qərarlar ekspert profilindəki `history`
 bölməsinə yazılır.
@@ -139,6 +183,6 @@ bölməsinə yazılır.
 - Altyazı Montserrat şrifti ilə yazılır. Mətn Instagram interfeysi zonasının
   üstündə qalır, vurğular altyazının üstünə düşmür.
 - Son sözdən sonra 1 saniyə saxlanılır (`cut_takes.py` bunu edir).
-- Görüntünün öz səsi və musiqisi saxlanılır. İstifadəçi musiqini CapCut-da özü
-  əlavə edir; xahiş olmadan musiqi əlavə edilmir.
+- Görüntünün öz səsi saxlanılır. Musiqi və təsdiqlənməmiş səs effekti əlavə
+  edilmir.
 - Arxa fon xahiş olmadan bulanıqlaşdırılmır.

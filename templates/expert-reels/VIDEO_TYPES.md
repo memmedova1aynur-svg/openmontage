@@ -2,6 +2,8 @@
 
 Gələcək işlər üçün istinad. Montaj resepti deyil. Hər yeni material gələndə əvvəl burada növü müəyyənləşdirilir, sonra işlənir.
 
+Növ çəkiliş tətbiqinin adına görə yox, faylın özünə və məzmununa görə təyin edilir.
+
 Material təxminən belə bölünür: 90% danışıq, 10% fəaliyyət və digər vizual görüntülər. Bu, müşahidədir, istehsal üçün məcburi nisbət deyil.
 
 ## Üç ayrı ox
@@ -34,6 +36,7 @@ Eyni material bir neçə növə çevrilə bilər. Məsələn, seminar görüntü
 | 12 | **Hərəkətli kartlar və video-karusel.** Mətn, şəkil, sxem, qrafika video səhifələrində. | Ekran | Ekspertin görünməsi şərt deyil. Oxuma müddəti və səhifələr arasındakı məntiq vacibdir. |
 | 13 | **Material və ekran üzərində izah.** Dərs planı, təqdimat, kart, sənəd, ekran yazısı. | Təhlil olunan material | Ekspert tam görünə, kiçik pəncərədə qala və ya yalnız səsi eşidilə bilər. |
 | 14 | **İştirakçı rəyi və təcrübəsi.** İnsan təlim və ya xidmət haqqında öz təcrübəsini danışır. | Real rəy və konteksti | Montajla insanın demədiyi nəticə yaradılmamalıdır. |
+| 15 | **Saytda yerləşdirilən modul təlim dərsi.** Adətən üfüqi, 5–10 dəq.; kursun bir neçə əlaqəli bölümündən biri; mütəxəssis kamera qarşısında mövzunu izah edir (teleprompterlə və ya sərbəst). | Dərsin aydınlığı və məntiqi ardıcıllığı | Hər bölüm ayrıca fayldır, amma kursun vizual dili bütün bölümlərdə eynidir. Hook yoxdur; Reels ritmi tətbiq edilmir. |
 
 ## Təsnifat qaydaları
 
@@ -167,6 +170,19 @@ Video növü montaj seçimini istiqamətləndirir, amma heç bir növün tək ş
 - Şəkil, sxem və hərəkəti izaha xidmət etdiyi qədər istifadə et.
 - **Uyğundur:** video-karusel, səssiz mikrodərs, qısa məlumat videosu.
 
+### M14 — Təlim dərsi montajı
+- Dərsin və təsdiqlənmiş danışığın məntiqi ardıcıllığını qoru; ayrıca hook yaratma.
+- Səhv başlanğıcları, aydın təkrarları, texniki fasilələri və qeydlərə baxmaq üçün olan lazımsız gözləmələri çıxar.
+- Ekspert cümləni yenidən deyib düzəldirsə, düzgün və tam variantı saxla.
+- Mənalı pauzaları, vacib izahları və şərtləri saxla.
+- Hansı ifadənin doğru olduğu aydın deyilsə (xüsusən tibbi və texniki mövzuda), özün seçmə: storyboardda göstər, təsdiq al.
+- Kəsimləri görüntü və səs baxımından yumşaq birləşdir. Mənbə imkan verirsə, kəsimi gizlətmək üçün ölçülü yaxınlaşdırma və ya yenidən çərçivələmə istifadə et.
+- Hər kəsimə animasiyalı keçid qoyma. B-roll, komedik effekt və sürətli Reels montajı yoxdur.
+- **Ad–peşə yazısı (lower third):** dərsin əvvəlində, ekranın aşağısında. Birinci sətirdə ad, ikinci sətirdə peşə və ya vəzifə; yalnız təsdiqlənmiş məlumat. Sadə və oxunaqlı olur, bir neçə saniyədən sonra çıxır, altyazını və üzü örtmür. Kursun bütün bölümlərində eyni üslubdadır.
+- **Altyazı:** Montserrat (Azərbaycan hərfləri ilə), əsasən ağ, lazım olsa incə kölgə və ya zəif fon. Cümlələr məna üzrə bölünür və səslə dəqiq uyğunlaşdırılır. Söz-söz sıçrayan və ya karaoke animasiya yoxdur. Adlar, terminlər, rəqəmlər və hərflər yoxlanılır. Mümkün olduqda ayrıca SRT/VTT faylı da verilir. Altyazının videoya yazılması və ya ayrıca fayl kimi verilməsi storyboardda göstərilir.
+- **İzahlı elementlər (mətn, siyahı, sxem, şəkil):** yalnız ehtiyac olan yerdə. Eksperti və altyazını örtmür. Fakt, təsnifat və şəkil uydurulmur. Dəqiq mətn və vizual storyboardda göstərilir.
+- **Uyğundur:** növ 15; həmçinin uzun izahlı dərs formatında olan digər materiallar.
+
 ## Reklam üçün ayrıca qayda
 
 Reklam bu yanaşmalardan biri və ya bir neçəsi ilə hazırlana bilər.
@@ -204,6 +220,7 @@ Hazır mətn təsdiqlənibsə:
 | 12 Hərəkətli kartlar | M13 | Bir səhifədə bir fikir; oxuma vaxtı verilir |
 | 13 Material və ekran üzərində izah | M05; + M03 | Pəncərə materialı örtmür |
 | 14 İştirakçı rəyi | M01 | Demədiyi nəticə montajla yaradılmır; rəyin konteksti qorunur |
+| 15 Modul təlim dərsi | M14; lazım olsa + M03 (izahlı element) | Dərsin ardıcıllığı qorunur; şübhəli ifadə təsdiqsiz seçilmir; üfüqi dərs şaquliyə çevrilmir |
 
 M06 (müqayisə) istənilən növdə iki variant göstərildikdə əlavə yanaşma kimi qoşula bilər.
 

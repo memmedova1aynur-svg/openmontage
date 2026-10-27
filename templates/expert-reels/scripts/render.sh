@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Render projects/<id>/remotion and encode an Instagram-ready MP4 (< 30 MB).
+# Render projects/<id>/remotion at the source's resolution (see setup_workspace.sh) and
+# encode a phone-downloadable delivery copy.
 #
 # Usage: templates/expert-reels/scripts/render.sh <project-id> [output-name]
 #        STILL=<frame> templates/expert-reels/scripts/render.sh <project-id>   # one preview frame
@@ -23,14 +24,14 @@ if [ -n "${STILL:-}" ]; then
 fi
 
 mkdir -p "$P/assets/video" "$P/renders"
-# Master: rendered at 2x (2160x3840) so captions and graphics are drawn natively in 4K,
-# JPEG frames at quality 95 (Remotion's default 80 softens detail), x264 CRF 14 slow.
-# This file goes to Instagram as-is: no second lossy pass.
-npx remotion render src/index.tsx Reel "$P/renders/$NAME.mp4" --scale=2 --codec=h264 --crf=14 \
+# Master: rendered at the source's scale (2 = 2160x3840 for 4K footage, 1 = 1080x1920; never
+# upscaled), JPEG frames at quality 95 (Remotion's default 80 softens detail), x264 CRF 14 slow.
+SCALE="$(python3 -c "import json;print(json.load(open('public/render.json'))['scale'])" 2>/dev/null || echo 1)"
+npx remotion render src/index.tsx Reel "$P/renders/$NAME.mp4" --scale="$SCALE" --codec=h264 --crf=14 \
   --x264-preset=slow --jpeg-quality=95 --audio-bitrate=320k --concurrency=4 "${BROWSER[@]}" --log=error
 ffprobe -v error -show_entries stream=width,height:format=duration,size -of default=nw=1 "$P/renders/$NAME.mp4"
 
-# Delivery copy: same 4K picture as HEVC (hvc1, plays natively on iPhone) sized to ~44 MB,
+# Delivery copy: same picture and size as HEVC (hvc1, plays natively on iPhone), capped at ~44 MB,
 # because phones fail to download the 200-300 MB master from chat.
 DUR="$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$P/renders/$NAME.mp4")"
 HB="$(python3 -c "print(int(44*8*1000/$DUR) - 200)")"

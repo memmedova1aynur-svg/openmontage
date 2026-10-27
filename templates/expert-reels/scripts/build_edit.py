@@ -54,6 +54,9 @@ def caption_pages(words: list[dict], max_words: int, max_chars: int) -> list[dic
 
 
 def auto_sfx(spec: dict, cutaways: list[dict], overlays: list[dict]) -> list[dict]:
+    # SFX only when the approved storyboard asked for them ("sfx_level": "minimal" | "full")
+    if spec.get("sfx_level", "none") == "none":
+        return list(spec.get("extra_sfx", []))
     # keyword pops get a light pop; cards get a whoosh
     sfx = [
         {"t": round(o["in"], 2), "src": "sfx/pop.wav", "vol": 0.3} if o["kind"] == "pop"
