@@ -138,6 +138,27 @@ def synth_sfx(out_dir: Path) -> None:
     # pen-stroke scratch for strike-throughs: short high band of noise with a quick swell
     t = np.arange(int(sr * 0.28)) / sr
     save("scratch", bandpass_sweep(0.28, 2600, 5200) * np.sin(np.pi * t / 0.28) ** 1.5)
+    # topic sounds (all synthesized): scissors snip, clock tick-tock, spoon clink, fabric swish,
+    # soft door knock, gentle chime
+    def env(n, k): return np.exp(-np.arange(n) / sr * k)
+    n = int(sr * 0.06)
+    click = rng.standard_normal(n) * env(n, 120) + np.sin(2 * np.pi * 3200 * np.arange(n) / sr) * env(n, 90) * 0.6
+    snip = np.zeros(int(sr * 0.32)); snip[:n] += click; snip[int(sr * 0.16):int(sr * 0.16) + n] += click * 0.9
+    save("snip", snip)
+    n = int(sr * 0.03)
+    tk = np.sin(2 * np.pi * 1900 * np.arange(n) / sr) * env(n, 220); tc = np.sin(2 * np.pi * 1400 * np.arange(n) / sr) * env(n, 220)
+    tt = np.zeros(int(sr * 0.75)); tt[:n] += tk; tt[int(sr * 0.38):int(sr * 0.38) + n] += tc
+    save("ticktock", tt)
+    t = np.arange(int(sr * 0.5)) / sr
+    save("clink", (np.sin(2 * np.pi * 2950 * t) + 0.5 * np.sin(2 * np.pi * 4420 * t) + 0.3 * np.sin(2 * np.pi * 6210 * t)) * np.exp(-t * 9))
+    t = np.arange(int(sr * 0.35)) / sr
+    save("swish", bandpass_sweep(0.35, 1800, 700) * np.sin(np.pi * t / 0.35) ** 2)
+    n = int(sr * 0.12)
+    knock1 = np.sin(2 * np.pi * np.cumsum(np.full(n, 180.0)) / sr) * env(n, 40) + rng.standard_normal(n) * env(n, 300) * 0.3
+    kk = np.zeros(int(sr * 0.4)); kk[:n] += knock1; kk[int(sr * 0.2):int(sr * 0.2) + n] += knock1 * 0.85
+    save("knock", kk)
+    t = np.arange(int(sr * 1.4)) / sr
+    save("chime", sum(a * np.sin(2 * np.pi * f * t) * np.exp(-t * d) for f, a, d in [(1046.5, 1, 3), (1568, 0.6, 3.5), (2093, 0.35, 4.5)]))
     # soft low thump for a closing key line (no click, no noise burst like "hit")
     t = np.arange(int(sr * 0.4)) / sr
     save("thump", np.sin(2 * np.pi * np.cumsum(110 * np.exp(-t * 6) + 55) / sr) * (1 - np.exp(-t * 300)) * np.exp(-t * 9))
@@ -185,6 +206,7 @@ def main() -> None:
         "video": spec.get("video", "base.mp4"),
         "pillTop": spec.get("pill_top", 300),
         "plate": spec.get("plate"),
+        "tabs": spec.get("tabs", []),
         "theme": expert["theme"],
         "style": {**DEFAULT_STYLE, **expert.get("style", {}), **spec.get("style", {})},
         "pip": {**DEFAULT_PIP, **spec.get("pip", {})},

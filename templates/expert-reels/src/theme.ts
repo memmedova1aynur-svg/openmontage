@@ -22,7 +22,7 @@ export type Page = { start: number; end: number; words: Word[] };
 export type ZoomKey = { t: number; s: number; k: "cut" | "push" | "punch" };
 export type Pill = {
   id: string;
-  kind: "pill" | "hook" | "cta" | "pop" | "icon";
+  kind: "pill" | "hook" | "cta" | "pop" | "icon" | "title";
   label: string | null;
   pos?: "t" | "tl" | "tr" | "l" | "r"; // "pop" keyword position around the speaker
   top?: number; // pop: centred line at this y instead of pos (stack several pops as rows)
@@ -58,7 +58,8 @@ export type Pip = { focus: [number, number]; radius: number; scale: number };
 export type Edit = {
   duration: number;
   video?: string; // footage file in public/, default base.mp4 (e.g. base_blur.mp4)
-  plate?: { y: number; h: number; x: number }; // "plate" captions: panel rect (y, height, side margin)
+  plate?: { y: number; h: number; x: number };
+  tabs?: { in: number; out: number; text: string; cta?: boolean }[]; // label tabs riding on the plate's top edge // "plate" captions: panel rect (y, height, side margin)
   pillTop?: number; // y of keyword cards; lower it when the speaker sits high in frame (Instagram top bar ends ~220)
   theme: Theme;
   style: Style;

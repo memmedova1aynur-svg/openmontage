@@ -79,3 +79,25 @@ export const IconChip: React.FC<{ o: Pill }> = ({ o }) => {
     </div>
   );
 };
+
+// Compact opening title: small tag, title, one-line subtitle. Kept small so it sits above the head.
+export const TitleCard: React.FC<{ o: Pill }> = ({ o }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const dur = (o.out - o.in) * fps;
+  const enter = spring({ frame, fps, config: { damping: 15, stiffness: 160, mass: 0.7 } });
+  const exit = interpolate(frame, [dur - 9, dur], [1, 0], clamp01);
+  const line = interpolate(frame, [8, 26], [0, 1], clamp01);
+  return (
+    <div style={{ position: "absolute", top: o.top ?? 130, left: 0, right: 0, display: "flex", justifyContent: "center", opacity: Math.min(1, enter * 1.5) * exit }}>
+      <div style={{ maxWidth: 780, padding: "16px 34px 20px", borderRadius: 28, background: "rgba(255,255,255,0.93)", boxShadow: `0 12px 34px ${rgba(T.primary, 0.18)}`, textAlign: "center", transform: `translateY(${(1 - enter) * -30}px)` }}>
+        {o.label && (
+          <div style={{ display: "inline-block", padding: "5px 16px", borderRadius: 20, background: T.accentSoft, fontFamily: FONT, fontWeight: 800, fontSize: 22, letterSpacing: 3, color: T.primary, marginBottom: 8 }}>{o.label}</div>
+        )}
+        <div style={{ fontFamily: FONT, fontWeight: 800, fontSize: 50, lineHeight: 1.08, color: T.primary }}>{o.parts.map(([t]) => t).join("")}</div>
+        <div style={{ height: 4, width: `${line * 46}%`, margin: "10px auto 8px", borderRadius: 2, background: T.accent }} />
+        {o.sub && <div style={{ fontFamily: FONT, fontWeight: 500, fontSize: 27, lineHeight: 1.25, color: rgba(T.primary, 0.9) }}>{o.sub}</div>}
+      </div>
+    </div>
+  );
+};

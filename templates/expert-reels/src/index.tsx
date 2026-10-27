@@ -12,7 +12,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import { IconChip } from "./icons";
+import { IconChip, TitleCard } from "./icons";
 import { Backdrop, CommentCTA, PIP_SIDE, SCENES } from "./scenes";
 import { Cutaway, E, EMPH, FONT, FONT_HAND, FPS, Page, Pill, T, ZoomKey, clamp01, rgba, useFonts } from "./theme";
 
@@ -86,6 +86,35 @@ const PlateCaptions: React.FC = () => {
           opacity: settle,
         }}
       >
+        {(E.tabs ?? [])
+          .filter((tb) => t >= tb.in && t < tb.out)
+          .map((tb) => {
+            const k = spring({ frame: Math.round((t - tb.in) * fps), fps, config: { damping: 14, stiffness: 180 } });
+            const out = interpolate(t, [tb.out - 0.25, tb.out], [1, 0], clamp01);
+            return (
+              <div
+                key={tb.in}
+                style={{
+                  position: "absolute",
+                  top: tb.cta ? -66 : -52,
+                  left: "50%",
+                  transform: `translateX(-50%) translateY(${(1 - k) * 24}px)`,
+                  opacity: Math.min(1, k * 1.5) * out,
+                  whiteSpace: "nowrap",
+                  padding: tb.cta ? "12px 30px" : "9px 24px",
+                  borderRadius: 30,
+                  background: T.primary,
+                  color: "#FFFFFF",
+                  fontFamily: FONT,
+                  fontWeight: tb.cta ? 800 : 600,
+                  fontSize: tb.cta ? 36 : 29,
+                  boxShadow: `0 8px 20px ${rgba(T.primary, 0.3)}`,
+                }}
+              >
+                {tb.text}
+              </div>
+            );
+          })}
         {page && (
           <div style={{ textAlign: "center", lineHeight: 1.18, transform: `translateY(${(1 - enter) * 14}px)`, opacity: Math.min(1, enter * 1.6) }}>
             {page.words.map((w, i) => {
@@ -485,7 +514,7 @@ const Reel: React.FC = () => {
         ))}
       {E.overlays.map((o) => (
         <Sequence key={o.id} from={Math.round(o.in * FPS)} durationInFrames={Math.round((o.out - o.in) * FPS)}>
-          {o.kind === "icon" ? <IconChip o={o} /> : o.kind !== "pop" ? <PillCard o={o} /> : E.style.pops === "type" || o.hand ? <TypePop o={o} /> : <KeywordPop o={o} />}
+          {o.kind === "icon" ? <IconChip o={o} /> : o.kind === "title" ? <TitleCard o={o} /> : o.kind !== "pop" ? <PillCard o={o} /> : E.style.pops === "type" || o.hand ? <TypePop o={o} /> : <KeywordPop o={o} />}
         </Sequence>
       ))}
       <Captions />
