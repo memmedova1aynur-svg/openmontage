@@ -3,7 +3,8 @@
   "status": "active",
   "activity": "Uşaq inkişafı və laktasiya mütəxəssisi.",
   "palette": {
-    "family": "yumşaq çəhrayı, gül qurusu, isti krem, ağ"
+    "family": "yumşaq çəhrayı, gül qurusu, isti krem, ağ",
+    "note": "Əsasən yumşaq çəhrayı; bəzən tünd çəhrayı da ola bilər."
   },
   "video_types": "ekspert danışığı, təlim dərsi, reklam, sual-cavab, digər uyğun materiallar",
   "cautions": [

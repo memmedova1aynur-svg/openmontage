@@ -68,6 +68,7 @@ export const T = E.theme;
 export const EMPH = T.emphasis ?? T.accent;
 export const FPS = 30;
 export const FONT = "Montserrat";
+export const FONT_HAND = "Caveat"; // handwritten accents; covers ə ğ ı ş ç ö ü (checked)
 
 export const rgba = (hex: string, a: number) => {
   const n = parseInt(hex.replace("#", ""), 16);
@@ -83,8 +84,8 @@ const LATIN =
 const LATIN_EXT =
   "U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF";
 
-const makeFaces = () =>
-  [600, 700, 800, 900].flatMap((w) => [
+const makeFaces = () => [
+  ...[300, 400, 500, 600, 700, 800, 900].flatMap((w) => [
     new FontFace(FONT, `url(${staticFile(`fonts/montserrat-latin-${w}-normal.woff2`)})`, {
       weight: String(w),
       unicodeRange: LATIN,
@@ -93,7 +94,12 @@ const makeFaces = () =>
       weight: String(w),
       unicodeRange: LATIN_EXT,
     }),
-  ]);
+  ]),
+  ...[400, 700].flatMap((w) => [
+    new FontFace(FONT_HAND, `url(${staticFile(`fonts/caveat-latin-${w}-normal.woff2`)})`, { weight: String(w), unicodeRange: LATIN }),
+    new FontFace(FONT_HAND, `url(${staticFile(`fonts/caveat-latin-ext-${w}-normal.woff2`)})`, { weight: String(w), unicodeRange: LATIN_EXT }),
+  ]),
+];
 
 export const useFonts = () => {
   const [handle] = React.useState(() => delayRender("fonts", { timeoutInMilliseconds: 120000 }));

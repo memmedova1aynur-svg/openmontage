@@ -10,9 +10,7 @@
     }
   },
   "video_types": "reklam, ekspert danışığı, sual-cavab, praktik fəaliyyət, seminar, digər uyğun formatlar",
-  "cautions": [
-    "Soyadı dəqiqləşməyib; ekranda və mətndə soyad yazılmır."
-  ],
+  "cautions": [],
   "theme_source": "accent = confirmed #DCEFE4; other tones derived from the colour family; NOT a client-confirmed code - say so in the storyboard",
   "theme": {
     "primary": "#1F5A45",

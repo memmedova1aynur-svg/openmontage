@@ -178,7 +178,7 @@ Video növü montaj seçimini istiqamətləndirir, amma heç bir növün tək ş
 - Hansı ifadənin doğru olduğu aydın deyilsə (xüsusən tibbi və texniki mövzuda), özün seçmə: storyboardda göstər, təsdiq al.
 - Kəsimləri görüntü və səs baxımından yumşaq birləşdir. Mənbə imkan verirsə, kəsimi gizlətmək üçün ölçülü yaxınlaşdırma və ya yenidən çərçivələmə istifadə et.
 - Hər kəsimə animasiyalı keçid qoyma. B-roll, komedik effekt və sürətli Reels montajı yoxdur.
-- **Ad–peşə yazısı (lower third):** dərsin əvvəlində, ekranın aşağısında. Birinci sətirdə ad, ikinci sətirdə peşə və ya vəzifə; yalnız təsdiqlənmiş məlumat. Sadə və oxunaqlı olur, bir neçə saniyədən sonra çıxır, altyazını və üzü örtmür. Kursun bütün bölümlərində eyni üslubdadır.
+- **Ad–peşə yazısı (lower third):** standart olaraq yoxdur. Videolarda müştəri adı yazılmır (istifadəçi qərarı, 2026-10-27). Yalnız istifadəçi xüsusi istəsə əlavə olunur.
 - **Altyazı:** Montserrat (Azərbaycan hərfləri ilə), əsasən ağ, lazım olsa incə kölgə və ya zəif fon. Cümlələr məna üzrə bölünür və səslə dəqiq uyğunlaşdırılır. Söz-söz sıçrayan və ya karaoke animasiya yoxdur. Adlar, terminlər, rəqəmlər və hərflər yoxlanılır. Mümkün olduqda ayrıca SRT/VTT faylı da verilir. Altyazının videoya yazılması və ya ayrıca fayl kimi verilməsi storyboardda göstərilir.
 - **İzahlı elementlər (mətn, siyahı, sxem, şəkil):** yalnız ehtiyac olan yerdə. Eksperti və altyazını örtmür. Fakt, təsnifat və şəkil uydurulmur. Dəqiq mətn və vizual storyboardda göstərilir.
 - **Uyğundur:** növ 15; həmçinin uzun izahlı dərs formatında olan digər materiallar.

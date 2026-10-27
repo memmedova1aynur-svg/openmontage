@@ -138,14 +138,13 @@ Adi montaj seçimlərini istifadəçiyə həvalə etmə.
 - dərsin əsas mövzusu və təxmini yekun müddəti;
 - çıxarılması təklif olunan hissələr, mənbə vaxtları ilə;
 - şübhəli və mənaya təsir edə biləcək kəsimlər (tibbi və texniki ifadələr təsdiqsiz seçilmir);
-- ad–peşə yazısının mətni (yalnız təsdiqlənmiş məlumat) və görünüşü;
 - altyazı: videoya yazılan və ya ayrıca SRT/VTT, ya da hər ikisi;
 - izahlı elementlərin dəqiq mətni və vizualı (varsa);
 - mənbə və çıxış ölçüsü (üfüqi qalır);
 - montaj və render üçün real müddət.
 
 **Qaydalar:**
-- Kursun bütün bölümləri eyni üslubdadır: ad yazısı, altyazı və elementlər. Seçilən üslub ekspert profilinə yazılır.
+- Kursun bütün bölümləri eyni üslubdadır: altyazı və elementlər. Seçilən üslub ekspert profilinə yazılır.
 - Hər bölüm ayrıca MP4 kimi təhvil verilir. SRT/VTT faylı varsa, onunla birlikdə verilir.
 - Reels üçün olan 10 dəqiqəlik hədəf burada tətbiq edilmir. Real müddət storyboardda bildirilir.
 
@@ -186,6 +185,11 @@ bölməsinə yazılır.
 
 ## Sabit texniki qaydalar
 
+- Videolarda müştərinin adı, loqosu və Instagram adı yazılmır (2026-10-27).
+- Şrift: hər müştəri üçün Montserrat (300–900; mövzuya görə nazik, medium və ya qalın).
+  Bəzən vurğu üçün əl yazısı şrifti Caveat (`FONT_HAND`) istifadə olunur; Azərbaycan
+  hərflərini dəstəkləyir. Başqa şrift yalnız ə, ğ, ı, ş, ç, ö, ü yoxlanandan sonra əlavə olunur.
+- Rəng kodu olmayan müştərilər üçün rəng ailəsindən çalar seçmək kifayətdir; dəqiq kod tələb olunmur.
 - Altyazı Montserrat şrifti ilə yazılır. Mətn Instagram interfeysi zonasının
   üstündə qalır, vurğular altyazının üstünə düşmür.
 - Son sözdən sonra 1 saniyə saxlanılır (`cut_takes.py` bunu edir).

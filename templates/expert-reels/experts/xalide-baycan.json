@@ -12,9 +12,19 @@
   },
   "video_types": "ekspert danışığı, reklam, fəaliyyət nümayişi, sual-cavab, seminar görüntüləri",
   "cautions": [
-    "Videonun hansı rəng sütununa (çəhrayı / firuzəyi / sarı) aid olduğu məlum deyilsə, təxmin edilmir: storyboardda soruşulur."
+    "Standart rəng sarıdır. Çəhrayı və ya firuzəyi yalnız istifadəçi həmin video üçün desə."
   ],
-  "theme_source": "no default theme: the colour column is chosen per video in the storyboard",
+  "theme_source": "standart: sarı #FFD21A (istifadəçi seçimi, 2026-10-27); tünd fon çaları bizim seçimimizdir",
   "style": {},
-  "history": []
+  "history": [],
+  "theme": {
+    "primary": "#2B2414",
+    "primaryDeep": "#1A1609",
+    "accent": "#FFD21A",
+    "accentSoft": "#FFE57A",
+    "text": "#FFFFFF",
+    "onAccent": "#2B2414",
+    "cardAlpha": 0.94,
+    "emphasis": "#FFD21A"
+  }
 }

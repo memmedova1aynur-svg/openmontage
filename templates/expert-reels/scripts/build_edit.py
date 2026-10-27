@@ -147,8 +147,8 @@ def main() -> None:
     spec_path, ws = Path(sys.argv[1]), Path(sys.argv[2])
     spec = json.loads(spec_path.read_text(encoding="utf-8"))
     expert = json.loads((TEMPLATE / "experts" / f"{spec['expert']}.json").read_text(encoding="utf-8"))
-    if expert.get("status") == "inactive":
-        sys.exit(f"{spec['expert']} is inactive: no edit tasks for this profile until the user activates it")
+    if expert.get("status") in ("inactive", "paused"):
+        sys.exit(f"{spec['expert']} is {expert['status']}: no edit tasks for this profile until the user activates it")
     # a per-video theme (e.g. the colour column chosen in the storyboard) overrides the profile's default
     if "theme" in spec:
         expert["theme"] = {**expert.get("theme", {}), **spec["theme"]}

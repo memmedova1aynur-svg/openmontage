@@ -155,8 +155,9 @@ Pick the edit approach from the type first ([`VIDEO_TYPES.md`](VIDEO_TYPES.md): 
 
 ## Notes
 
-- Fonts: Montserrat (SIL OFL, `public/fonts/Montserrat-OFL.txt`), latin and
-  latin-ext subsets. latin-ext covers ə ğ ı ş ç ö ü.
+- Fonts: Montserrat 300-900 (SIL OFL, `public/fonts/Montserrat-OFL.txt`) and the handwritten
+  Caveat 400/700 (`FONT_HAND`, OFL, `public/fonts/Caveat-OFL.txt`), latin and latin-ext subsets.
+  Both cover ə ğ ı ş ç ö ü (checked); Kalam and Patrick Hand lack ə.
 - Caption zone: the bottom of the caption block is at y=1490, above Instagram's
   username/caption UI. Pills and cutaway titles start at y>=300, below the top
   bar.
