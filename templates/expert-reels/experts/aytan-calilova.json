@@ -22,7 +22,8 @@
   "Ağ/açıq köynəkdə yalnız-kontur altyazı oxunmur: qutu və ya chip.",
   "Eyni məkan və geyimdə ardıcıl videolarda altyazı və vurğu üslubu dəyişdirilir.",
   "Hər kart və animasiyaya uyğun səs effekti (zoom-larda yox), danışığın altında - storyboardda göstərilir.",
-  "Aytənin telefonla (Edit) çəkdiyi videolar güzgü (mirror) ola bilər: əvvəl/sonra kadrı göstər, təsdiqdən sonra çevir."
+  "Aytənin telefonla (Edit) çəkdiyi videolar güzgü (mirror) ola bilər: əvvəl/sonra kadrı göstər, təsdiqdən sonra çevir.",
+  "Kafe/restoran məkanında çəkilişlər: arxa fon səsi (çəngəl-bıçaq, musiqi) denoise.sh (DeepFilterNet) ilə təmizlənir; pauzalar tighten.py ilə ~0.25 s-ə qədər qısaldılır (istifadəçi 2026-10-27 istədi)."
  ],
  "theme_source": "approved in delivered videos",
  "theme": {
@@ -221,6 +222,13 @@
     "fc_recipe"
    ],
    "notes": "Type 1/2, M03. Fourth video from the same set in one batch, so a fourth look: white index cards flipping in on a deep navy stage, one-big-word captions. Repeated 'Mövzunu oxudun' kept the second take, pauses trimmed; 63 s -> 57.3 s; flipped. Batch rule used: IMG_6206 blueprint / 6207 route+tickets / 6208 exam sheet+marker / 6210 flashcards - none share caption or card style."
+  },
+  {
+   "date": "2026-10-27",
+   "video": "IMG_6206/6207/6208/6210 revision",
+   "style": {},
+   "scenes": [],
+   "notes": "User asked to remove cafe noise (cutlery, music) and to tighten leftover pauses. All four: DeepFilterNet3 voice cleanup; pauses cut to ~0.24 s with spec/words re-timed. 68.5->65.1, 54.1->51.1, 56.4->54.4, 57.3->52.6 s. Video 2 end card got the phone number 050 368 85 83."
   }
  ]
 }

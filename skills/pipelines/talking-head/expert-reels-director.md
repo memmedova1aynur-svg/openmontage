@@ -110,6 +110,7 @@ Adi montaj seçimlərini istifadəçiyə həvalə etmə.
 - Transkripsiyanı, təhlili və işləyən komponentləri səbəbsiz yenidən yaratma.
 - Yeni ödəniş, hesab bağlantısı və ya əlavə giriş avtomatik edilmir.
 - Planın əsas yaradıcı qərarı dəyişməli olsa, qısa bildir və təsdiq al.
+- **Pauzalar.** Danışıqda qalan pauzalar ~0.25 s-ə qədər qısaldılır: `denoise.sh`-dan sonra `tighten.py projects/<id>` (spec və söz vaxtlarını özü yeni kəsimə köçürür), sonra `cut_takes.py`, `setup_workspace.sh`, `build_edit.py`, `render.sh`, `denoise.sh`. Sondakı 1 s saxlama toxunulmur.
 
 ### Mənbə keyfiyyəti və ixrac
 
@@ -122,6 +123,8 @@ Adi montaj seçimlərini istifadəçiyə həvalə etmə.
 - **Üfüqi dərs** üfüqi qalır, avtomatik şaquli Reels-a çevrilmir.
 - **Yaxınlaşdırma və yenidən çərçivələmə** mənbənin ehtiyatına görə seçilir: 1080p mənbədə ~1.10-dan çox zoom kəskinliyi azaldır.
 - **İstiqamət.** Görüntü avtomatik güzgülənmir və çevrilmir. Fırlanma metadatasını ffmpeg özü tətbiq edir. İstiqamətdə şübhə varsa, storyboardda qeyd edilir.
+- **Güzgü görüntü.** Ön kamera / Edit tətbiqi ilə çəkilmiş video tərs ola bilər. Əvvəl "indiki / çevrilmiş" yan-yana kadr göstərilir, təsdiqdən sonra `hflip` ilə çevrilir (`assets/source/flipped.mp4`).
+- **Test hissəsi.** İstifadəçi "X saniyəyə qədər test" deyirsə, o hissə tam çıxarılır; ən son tam variant saxlanılır.
 - **Təhvil faylı** (`*_ig.mp4`) mənbə ilə eyni ölçüdədir, HEVC kodekindədir və ~44 MB ilə məhdudlaşır. 1080p videoda bu, keyfiyyət itkisi demək deyil.
 - **Başqa format** yalnız istifadəçi istəsə və ya növ tələb etsə seçilir. Seçim storyboardda yazılır.
 
@@ -130,7 +133,8 @@ Adi montaj seçimlərini istifadəçiyə həvalə etmə.
 - **Fon musiqisi əlavə edilmir.** Lazım olsa, istifadəçi CapCut-da özü əlavə edir.
 - **Səs effekti** yalnız storyboardda göstərilib təsdiqlənsə işlədilir. `build_edit.py`-də standart `sfx_level` dəyəri "none"-dur.
 - **Əvvəlcədən kəsilmiş hissələr.** Faylda əvvəlcədən kəsilmiş hissələr ola bilər; birləşmə yerlərini yoxla.
-- **Danışıq səsi** aydın və təbii saxlanılır. Yalnız səs səviyyəsi bərabərləşdirilir (−16 LUFS). Güclü səs təmizləmə tətbiq edilmir.
+- **Danışıq səsi** aydın və təbii saxlanılır, səviyyə −16 LUFS-ə bərabərləşdirilir.
+- **Arxa fon səsi** (kafe, çəngəl-bıçaq, musiqi) olanda və ya istifadəçi istəyəndə `denoise.sh <id>` işlədilir: DeepFilterNet3 (`deep-filter` binary, GitHub release) səsi təmizləyir, şəkil yenidən render edilmədən səs dəyişdirilir.
 
 ### Uzun təlim dərsi (növ 15, M14)
 
