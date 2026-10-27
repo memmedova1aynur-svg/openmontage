@@ -18,6 +18,7 @@ import { CARTOON } from "./cartoon";
 import { CounterPop, SKETCH } from "./sketch";
 import { PAPER, Paper, RetroOverlay, Strip } from "./paper";
 import { ILLUSTRATED } from "./illustrations";
+import { BLUEPRINT, BpNote, BpSpark } from "./blueprint";
 import { Backdrop, CommentCTA, PIP_SIDE, SCENES } from "./scenes";
 import { Cutaway, E, EMPH, FONT, FONT_HAND, FPS, Page, Pill, T, ZoomKey, clamp01, rgba, useFonts } from "./theme";
 
@@ -196,10 +197,11 @@ const Captions: React.FC = () => {
           maxWidth: 940,
           textAlign: "center",
           lineHeight: 1.12,
-          padding: style === "box" ? "14px 26px 18px" : 0,
-          borderRadius: 26,
-          background: style === "box" ? (T.light ? rgba(T.accent, 0.9) : rgba(T.primary, 0.82)) : "transparent",
-          transform: `translateY(${(1 - enter) * 26}px) scale(${0.86 + 0.14 * enter}) rotate(${(1 - enter) * -2.5}deg)`,
+          padding: style === "box" ? "14px 26px 18px" : style === "frame" ? "16px 30px 20px" : 0,
+          borderRadius: style === "frame" ? 0 : 26,
+          background: style === "box" ? (T.light ? rgba(T.accent, 0.9) : rgba(T.primary, 0.82)) : style === "frame" ? rgba(T.primary, 0.86) : "transparent",
+          position: "relative",
+          transform: style === "frame" ? `translateY(${(1 - enter) * 18}px)` : `translateY(${(1 - enter) * 26}px) scale(${0.86 + 0.14 * enter}) rotate(${(1 - enter) * -2.5}deg)`,
           opacity: Math.min(1, enter * 1.6),
         }}
       >
@@ -222,24 +224,40 @@ const Captions: React.FC = () => {
                 fontWeight: 900,
                 fontSize: 74,
                 letterSpacing: -0.5,
-                color: chip ? T.onAccent : active ? (style === "box" && T.light ? T.accentSoft : T.accent) : onPale ? T.text : "#FFFFFF",
+                color: chip ? T.onAccent : active ? ((style === "box" || style === "frame") && T.light ? T.accentSoft : T.accent) : onPale ? T.text : "#FFFFFF",
                 opacity: spoken ? 1 : 0.55,
                 transform: `scale(${scale})`,
-                WebkitTextStroke: style === "box" || chip || onPale ? undefined : "3px rgba(0,0,0,0.85)",
+                WebkitTextStroke: style === "box" || style === "frame" || chip || onPale ? undefined : "3px rgba(0,0,0,0.85)",
                 paintOrder: "stroke fill",
                 textShadow: onPale ? "none" : "0 6px 18px rgba(0,0,0,0.55)",
-                backgroundImage: style === "box" && active ? `linear-gradient(${T.accentSoft}, ${T.accentSoft})` : undefined,
+                backgroundImage: (style === "box" || style === "frame") && active ? `linear-gradient(${T.accentSoft}, ${T.accentSoft})` : undefined,
                 backgroundRepeat: "no-repeat",
                 backgroundPosition: "0 100%",
-                backgroundSize: style === "box" && active ? `${100 * Math.min(1, pop * 1.2)}% 6px` : undefined,
+                backgroundSize: (style === "box" || style === "frame") && active ? `${100 * Math.min(1, pop * 1.2)}% 6px` : undefined,
               }}
             >
               {w.w}
             </span>
           );
         })}
+        {style === "frame" && <FrameTicks k={enter} />}
       </div>
     </AbsoluteFill>
+  );
+};
+
+// corner brackets around the "frame" caption panel
+const FrameTicks: React.FC<{ k: number }> = ({ k }) => {
+  const l = 26 * k;
+  const w = `5px solid ${T.accent}`;
+  const c = (pos: React.CSSProperties) => <div style={{ position: "absolute", width: l, height: l, ...pos }} />;
+  return (
+    <>
+      {c({ left: -12, top: -12, borderLeft: w, borderTop: w })}
+      {c({ right: -12, top: -12, borderRight: w, borderTop: w })}
+      {c({ right: -12, bottom: -12, borderRight: w, borderBottom: w })}
+      {c({ left: -12, bottom: -12, borderLeft: w, borderBottom: w })}
+    </>
   );
 };
 
@@ -460,7 +478,7 @@ const PipPanels: React.FC<{ c: Cutaway; p: number }> = ({ c, p }) => {
         const start = i === 0 ? c.in : pn.at;
         const end = i + 1 < panels.length ? panels[i + 1].at : c.out + 0.6;
         if (t < start - 0.1 || t >= end + 0.25) return null;
-        const Scene = SCENES[pn.kind] ?? CARTOON[pn.kind] ?? SKETCH[pn.kind] ?? PAPER[pn.kind] ?? ILLUSTRATED[pn.kind];
+        const Scene = SCENES[pn.kind] ?? BLUEPRINT[pn.kind] ?? CARTOON[pn.kind] ?? SKETCH[pn.kind] ?? PAPER[pn.kind] ?? ILLUSTRATED[pn.kind];
         if (!Scene) return null;
         // outgoing panel slides away, incoming slides in
         const out = i + 1 < panels.length ? interpolate(t, [end - 0.15, end + 0.2], [1, 0], clamp01) : 1;
@@ -577,7 +595,7 @@ const Reel: React.FC = () => {
         ))}
       {E.overlays.filter((o) => !o.plate).map((o) => (
         <Sequence key={o.id} from={Math.round(o.in * FPS)} durationInFrames={Math.round((o.out - o.in) * FPS)}>
-          {o.kind === "strip" ? <Strip o={o as any} /> : o.kind === "counter" ? <CounterFrame o={o} /> : o.kind === "icon" ? <IconChip o={o} /> : o.kind === "title" ? <TitleCard o={o} /> : o.kind === "end" ? <EndCard o={o} /> : o.kind !== "pop" ? <PillCard o={o} /> : E.style.pops === "type" || o.hand || o.strike !== undefined ? <TypePop o={o} /> : <KeywordPop o={o} />}
+          {o.kind === "note" ? <BpNote o={o as any} /> : o.kind === "spark" ? <BpSpark o={o as any} /> : o.kind === "strip" ? <Strip o={o as any} /> : o.kind === "counter" ? <CounterFrame o={o} /> : o.kind === "icon" ? <IconChip o={o} /> : o.kind === "title" ? <TitleCard o={o} /> : o.kind === "end" ? <EndCard o={o} /> : o.kind !== "pop" ? <PillCard o={o} /> : E.style.pops === "type" || o.hand || o.strike !== undefined ? <TypePop o={o} /> : <KeywordPop o={o} />}
         </Sequence>
       ))}
       <Captions />
