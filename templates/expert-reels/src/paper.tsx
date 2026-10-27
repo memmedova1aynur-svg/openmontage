@@ -139,14 +139,14 @@ export const CollageScene: React.FC<{ f: number; p: Record<string, any>; startT:
   if (p.scene === "bath") {
     body = (
       <>
-        <Sticker x={540} y={1300} k={at(a.tub)} rot={-2} s={1.25}>
+        <Sticker x={580} y={1300} k={at(a.tub)} rot={-2} s={1.2}>
           <path d="M-380 -60 h760 q0 260 -220 260 h-320 q-220 0 -220 -260 Z" fill="#FFFFFF" stroke="#9BC7E3" strokeWidth={12} />
           <path d="M-300 200 l-20 70 M300 200 l20 70" stroke="#8C97A3" strokeWidth={18} strokeLinecap="round" />
           {[0, 1, 2, 3, 4].map((i) => (
             <circle key={i} cx={-250 + i * 120} cy={-80 - (i % 2) * 30} r={44 + (i % 3) * 10} fill="#EAF4FB" stroke="#FFFFFF" strokeWidth={6} />
           ))}
         </Sticker>
-        <Sticker x={540} y={1010} k={at(a.kid)} rot={3} s={1.6}>
+        <Sticker x={650} y={1010} k={at(a.kid)} rot={3} s={1.6}>
           <CutKid mood="cry" arms={t >= (a.run ?? 99) ? "up" : "head"} />
         </Sticker>
         <Sticker x={800} y={520} k={at(a.shower)} rot={-6} s={1.4}>
@@ -155,9 +155,9 @@ export const CollageScene: React.FC<{ f: number; p: Record<string, any>; startT:
             <path key={i} d={`M${-150 + i * 30} 20 q -6 ${40 + ((step(f0, 4) + i * 7) % 40)} 0 ${60 + ((step(f0, 4) + i * 11) % 50)}`} stroke="#7FC4EA" strokeWidth={8} fill="none" strokeLinecap="round" />
           ))}
         </Sticker>
-        <Word text="Ağlayır" x={260} y={420} k={at(a.w1)} rot={-5 + wob(1)} color="#FFE3D6" />
-        <Word text="Qaçır" x={300} y={600} k={at(a.w2)} rot={4 + wob(2)} color="#FFF4C9" />
-        <Word text="Etiraz edir" x={360} y={780} k={at(a.w3)} rot={-3 + wob(3)} color="#E3F1EA" />
+        <Word text="Ağlayır" x={240} y={420} k={at(a.w1)} rot={-5 + wob(1)} color="#FFE3D6" />
+        <Word text="Qaçır" x={250} y={600} k={at(a.w2)} rot={4 + wob(2)} color="#FFF4C9" />
+        <Word text="Etiraz edir" x={270} y={780} k={at(a.w3)} rot={-3 + wob(3)} color="#E3F1EA" />
       </>
     );
   } else if (p.scene === "water") {
