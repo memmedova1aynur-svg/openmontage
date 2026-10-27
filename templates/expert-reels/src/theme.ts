@@ -42,7 +42,7 @@ export type Pill = {
 export type Panel = { kind: string; at: number; props: Record<string, any> };
 export type Cutaway = {
   id: string;
-  kind: "pip" | "full" | "comment" | "split";
+  kind: "pip" | "full" | "comment" | "split" | "scene";
   in: number;
   out: number;
   panels?: Panel[];

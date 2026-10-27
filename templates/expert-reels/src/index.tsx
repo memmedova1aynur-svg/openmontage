@@ -50,7 +50,7 @@ const punchShake = (t: number) => {
 };
 
 const pipAt = (t: number, fps: number) => {
-  const c = E.cutaways.find((c: Cutaway) => (c.kind === "pip" || c.kind === "full") && t >= c.in - 0.01 && t < c.out + 0.6);
+  const c = E.cutaways.find((c: Cutaway) => (c.kind === "pip" || c.kind === "full" || c.kind === "scene") && t >= c.in - 0.01 && t < c.out + 0.6);
   if (!c) return { p: 0, c: undefined };
   const cfg = { damping: 16, stiffness: 140, mass: 0.8 };
   const enter = spring({ frame: Math.round((t - c.in) * fps), fps, config: cfg });
@@ -460,7 +460,9 @@ const Reel: React.FC = () => {
   const { p: cutP, c: pipCut } = pipAt(t, fps);
   // "full" cutaways replace the speaker entirely for a few seconds (voice continues);
   // "pip" cutaways keep her in a corner frame.
-  const full = pipCut?.kind === "full";
+  // "scene": a full-frame animation covers the speaker (her voice continues); scenes draw their own world
+  const scene = pipCut?.kind === "scene";
+  const full = pipCut?.kind === "full" || scene;
   const p = full ? 0 : cutP;
   const pc = Math.min(1, p);
   const [fx, fy] = E.pip.focus;
@@ -522,7 +524,12 @@ const Reel: React.FC = () => {
           }}
         />
       )}
-      {full && pipCut && cutP > 0.001 && (
+      {scene && pipCut && cutP > 0.001 && (
+        <AbsoluteFill style={{ opacity: Math.min(1, cutP * 1.4), transform: `scale(${1.08 - 0.08 * Math.min(1, cutP)})` }}>
+          <PipPanels c={pipCut} p={1} />
+        </AbsoluteFill>
+      )}
+      {full && !scene && pipCut && cutP > 0.001 && (
         <AbsoluteFill style={{ transform: `scale(${1.06 - 0.06 * Math.min(1, cutP)})` }}>
           <Backdrop p={cutP} />
           {/* centre scenes vertically; the tall phone mock stays high so it clears the captions */}

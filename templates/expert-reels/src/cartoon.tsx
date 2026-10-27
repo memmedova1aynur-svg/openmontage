@@ -89,6 +89,32 @@ const Flower: React.FC<{ x: number; y: number; c: string; f: number }> = ({ x, y
   </g>
 );
 
+// Full 9:16 frame around a 1080 x 900 world: more sky above, more ground below, the world scaled up
+// so the kids read on a phone. `top` is where the world box starts.
+export const FullFrame: React.FC<{ f: number; children: React.ReactNode }> = ({ f, children }) => {
+  const S = 1.12;
+  const top = 360;
+  return (
+    <div style={{ position: "absolute", inset: 0, width: 1080, height: 1920, overflow: "hidden", background: "linear-gradient(180deg, #68C6E7 0%, #7FD0EA 18.75%)" }}>
+      <svg viewBox="0 0 1080 1920" width={1080} height={1920} style={{ position: "absolute", inset: 0 }}>
+        <rect y={1340} width={1080} height={580} fill="#5CBF86" />
+        {[[200, 170, 0.9, 0.4], [760, 300, 1.1, 0.3], [1180, 120, 0.8, 0.5]].map(([x0, y, sc, sp], i) => {
+          const x = ((x0 + f * sp) % 1400) - 160;
+          return (
+            <g key={i} transform={`translate(${x} ${y}) scale(${sc})`} fill="#FFFFFF" opacity={0.95}>
+              <ellipse cx={0} cy={20} rx={70} ry={30} />
+              <circle cx={-30} cy={8} r={30} />
+              <circle cx={18} cy={-2} r={40} />
+              <circle cx={55} cy={14} r={26} />
+            </g>
+          );
+        })}
+      </svg>
+      <div style={{ position: "absolute", top, left: (1080 - 1080 * S) / 2, width: 1080, height: 900, transform: `scale(${S})`, transformOrigin: "0 0" }}>{children}</div>
+    </div>
+  );
+};
+
 // ---------------------------------------------------------------- kid rig
 export type Pose = {
   ls: number; le: number; rs: number; re: number; // shoulder / elbow angles (deg, 0 = hanging down, + = towards the kid's right)
@@ -267,7 +293,7 @@ const walk = (f: number, sp = 6): Partial<Pose> => {
 // ---------------------------------------------------------------- pair scenes
 const Tag: React.FC<{ x: number; text: string; k: number; tone?: "a" | "b" }> = ({ x, text, k, tone }) => (
   <g transform={`translate(${x} ${GROUND + 70}) scale(${k})`} opacity={Math.min(1, k * 1.5)}>
-    <rect x={-190} y={-40} width={380} height={80} rx={40} fill="#FFFFFF" stroke={tone === "b" ? "#FF8A65" : T.accent} strokeWidth={5} />
+    <rect x={text.length > 18 ? -230 : -190} y={-40} width={text.length > 18 ? 460 : 380} height={80} rx={40} fill="#FFFFFF" stroke={tone === "b" ? "#FF8A65" : T.accent} strokeWidth={5} />
     <text x={0} y={14} textAnchor="middle" fontFamily={FONT} fontWeight={800} fontSize={text.length > 18 ? 30 : 38} fill={T.primary}>
       {text}
     </text>
@@ -360,11 +386,12 @@ export const CartoonPair: React.FC<{ f: number; p: Record<string, any>; startT: 
       </>
     );
   }
-  return (
+  const world = (
     <div style={{ position: "absolute", inset: 0, width: W, height: H }}>
       <Landscape f={f + startT * 30}>{body}</Landscape>
     </div>
   );
+  return p.full ? <FullFrame f={f}>{world}</FullFrame> : world;
 };
 
 // ---------------------------------------------------------------- senses
@@ -419,7 +446,7 @@ export const CartoonSenses: React.FC<{ f: number; p: Record<string, any>; startT
       </g>
     );
   }
-  return (
+  const world = (
     <div style={{ position: "absolute", inset: 0, width: W, height: H }}>
       <Landscape f={f + startT * 30}>{kid}</Landscape>
       <div style={{ position: "absolute", top: 40, left: 0, right: 0, display: "flex", justifyContent: "center", gap: 20, transform: `scale(${shrink})`, transformOrigin: "50% 0%" }}>
@@ -455,6 +482,7 @@ export const CartoonSenses: React.FC<{ f: number; p: Record<string, any>; startT
       )}
     </div>
   );
+  return p.full ? <FullFrame f={f}>{world}</FullFrame> : world;
 };
 
 export const CARTOON: Record<string, React.FC<{ f: number; p: Record<string, any>; startT: number }>> = {
