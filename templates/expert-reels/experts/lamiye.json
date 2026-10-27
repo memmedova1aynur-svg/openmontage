@@ -12,7 +12,8 @@
   "video_types": "reklam, ekspert danışığı, sual-cavab, praktik fəaliyyət, seminar, digər uyğun formatlar",
   "cautions": [
     "Bütün görüntüyə yaşıl filtr yox; rəng yalnız vurğularda.",
-    "Video mənbə necə bitirsə, eləcə bitir; sonu kəsilmir."
+    "Video mənbə necə bitirsə, eləcə bitir; sonu kəsilmir.",
+    "Kənar/yuxarı elementlər üzü örtməməlidir: yuxarıda yalnız bir element bir anda, yalnız deyilərkən; altyazı lövhədə sabit qalır."
   ],
   "theme_source": "approved by the user in the first video (2026-10-27): soft green #3A7A60 text/lines on soft mint #DCEFE4; shades derived from the family",
   "theme": {
@@ -35,7 +36,7 @@
         "captions": "plate",
         "pops": "icon chips"
       },
-      "notes": "White caption plate with soft-mint top line fixed low (covers the waist area); small opening title card above the head (VEBİNAR / Duyusal bütövləmə / subtitle); animated line-icon chips beside the face (symptoms both sides, webinar topics numbered on the left); tab on the plate 'Vebinar · Duyusal bütövləmə', CTA 'Şərhdə “DUYU” yazın' at the end; Caveat handwritten closing line. Topic SFX (chime, swish, clink, knock, snip, tick-tock). User liked the soft green, the plate and the icon chips; asked for smaller top cards (not over head/face), no date, no 'ödənişsiz'."
+      "notes": "White caption plate with soft-mint top line fixed low (covers the waist area); small opening title card above the head (VEBİNAR / Duyusal bütövləmə / subtitle); animated line-icon chips beside the face (symptoms both sides, webinar topics numbered on the left); tab on the plate 'Vebinar · Duyusal bütövləmə', CTA 'Şərhdə “DUYU” yazın' at the end; Caveat handwritten closing line. Topic SFX (chime, swish, clink, knock, snip, tick-tock). User liked the soft green, the plate and the icon chips; asked for smaller top cards (not over head/face), no date, no 'ödənişsiz'. Revision (approved): side chips covered the face -> small cardless title above the head for ~3 s, then icon chips appear ONE AT A TIME above the head only while she says the phrase; the bottom plate keeps captions the whole time. Webinar name: 'Duyusal bütünləmə' (not bütövləmə). No 'ödənişsiz', no date."
     }
   ]
 }
