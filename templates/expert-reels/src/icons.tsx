@@ -101,3 +101,39 @@ export const TitleCard: React.FC<{ o: Pill }> = ({ o }) => {
     </div>
   );
 };
+
+// An icon card that takes over the caption plate for a moment (the face stays clear).
+export const PlateCard: React.FC<{ o: Pill; t: number }> = ({ o, t }) => {
+  const { fps } = useVideoConfig();
+  const f = Math.round((t - o.in) * fps);
+  const dur = Math.round((o.out - o.in) * fps);
+  const pop = spring({ frame: f, fps, config: { damping: 12, stiffness: 200, mass: 0.6 } });
+  const draw = interpolate(f, [3, 18], [0, 1], clamp01);
+  const txt = spring({ frame: f - 4, fps, config: { damping: 16, stiffness: 180 } });
+  const exit = interpolate(f, [dur - 6, dur], [1, 0], clamp01);
+  const ink = T.primary;
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 28, opacity: exit, maxWidth: 900 }}>
+      <div style={{ position: "relative", flex: "0 0 auto", width: 128, height: 128, borderRadius: 64, background: T.accentSoft, border: `4px solid ${T.accent}`, transform: `scale(${pop})`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <svg width={74} height={74} viewBox="0 0 24 24" fill="none" stroke={ink} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+          {(ICONS[o.icon ?? "heart"] ?? []).map((d, i) => {
+            const common = { key: i, pathLength: 1, strokeDasharray: 1, strokeDashoffset: 1 - draw };
+            if (d.startsWith("c:")) {
+              const [cx, cy, r] = d.slice(2).split(",").map(Number);
+              return <circle {...common} cx={cx} cy={cy} r={r} />;
+            }
+            return <path {...common} d={d} />;
+          })}
+        </svg>
+        {o.badge && (
+          <div style={{ position: "absolute", top: -6, right: -6, width: 42, height: 42, borderRadius: 21, background: ink, color: "#fff", fontFamily: FONT, fontWeight: 800, fontSize: 24, display: "flex", alignItems: "center", justifyContent: "center" }}>{o.badge}</div>
+        )}
+      </div>
+      <div style={{ textAlign: "left", transform: `translateX(${(1 - txt) * 30}px)`, opacity: txt }}>
+        {o.label && <div style={{ fontFamily: FONT, fontWeight: 800, fontSize: 24, letterSpacing: 3, color: rgba(ink, 0.75), marginBottom: 4 }}>{o.label}</div>}
+        <div style={{ fontFamily: FONT, fontWeight: 800, fontSize: 54, lineHeight: 1.06, color: ink }}>{o.parts.map(([x]) => x).join("")}</div>
+        {o.sub && <div style={{ fontFamily: FONT, fontWeight: 500, fontSize: 30, lineHeight: 1.2, color: rgba(ink, 0.85), marginTop: 6 }}>{o.sub}</div>}
+      </div>
+    </div>
+  );
+};

@@ -33,6 +33,7 @@ export type Pill = {
   icon?: string; // icon chip: name from ICONS (src/icons.tsx), drawn in with a stroke animation
   sub?: string; // icon chip: small second line
   badge?: string; // icon chip: small number / tag on the circle
+  plate?: boolean; // icon chip: shown inside the caption plate, replacing the captions while it is on
   parts: [string, number][];
   in: number;
   out: number;

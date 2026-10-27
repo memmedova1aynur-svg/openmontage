@@ -12,7 +12,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import { IconChip, TitleCard } from "./icons";
+import { IconChip, PlateCard, TitleCard } from "./icons";
 import { Backdrop, CommentCTA, PIP_SIDE, SCENES } from "./scenes";
 import { Cutaway, E, EMPH, FONT, FONT_HAND, FPS, Page, Pill, T, ZoomKey, clamp01, rgba, useFonts } from "./theme";
 
@@ -63,7 +63,8 @@ const PlateCaptions: React.FC = () => {
   const { fps } = useVideoConfig();
   const t = frame / fps;
   const pl = E.plate ?? { y: 1570, h: 280, x: 60 };
-  const page = E.pages.find((p: Page) => t >= p.start && t < p.end);
+  const card = E.overlays.find((o) => o.plate && t >= o.in && t < o.out);
+  const page = card ? undefined : E.pages.find((p: Page) => t >= p.start && t < p.end);
   const enter = page ? spring({ frame: Math.round((t - page.start) * fps), fps, config: { damping: 18, stiffness: 200, mass: 0.6 } }) : 0;
   const settle = interpolate(frame, [0, 10], [0, 1], clamp01);
   return (
@@ -115,6 +116,7 @@ const PlateCaptions: React.FC = () => {
               </div>
             );
           })}
+        {card && <PlateCard o={card} t={t} />}
         {page && (
           <div style={{ textAlign: "center", lineHeight: 1.18, transform: `translateY(${(1 - enter) * 14}px)`, opacity: Math.min(1, enter * 1.6) }}>
             {page.words.map((w, i) => {
@@ -512,7 +514,7 @@ const Reel: React.FC = () => {
         .map((c) => (
           <CommentCTA key={c.id} p={c.props ?? {}} startT={c.in} />
         ))}
-      {E.overlays.map((o) => (
+      {E.overlays.filter((o) => !o.plate).map((o) => (
         <Sequence key={o.id} from={Math.round(o.in * FPS)} durationInFrames={Math.round((o.out - o.in) * FPS)}>
           {o.kind === "icon" ? <IconChip o={o} /> : o.kind === "title" ? <TitleCard o={o} /> : o.kind !== "pop" ? <PillCard o={o} /> : E.style.pops === "type" || o.hand ? <TypePop o={o} /> : <KeywordPop o={o} />}
         </Sequence>
