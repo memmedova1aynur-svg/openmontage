@@ -140,6 +140,7 @@ Adi montaj seçimlərini istifadəçiyə həvalə etmə.
 - şübhəli və mənaya təsir edə biləcək kəsimlər (tibbi və texniki ifadələr təsdiqsiz seçilmir);
 - altyazı: videoya yazılan və ya ayrıca SRT/VTT, ya da hər ikisi;
 - izahlı elementlərin dəqiq mətni və vizualı (varsa);
+- ad–peşə yazısı: yalnız istifadəçi ad, soyad və peşəni verəndə. Storyboardda 2–3 vizual variant şəkil kimi göstərilir, seçilən variant dərsin əvvəlində çıxır və sonra yox olur;
 - mənbə və çıxış ölçüsü (üfüqi qalır);
 - montaj və render üçün real müddət.
 
@@ -185,7 +186,7 @@ bölməsinə yazılır.
 
 ## Sabit texniki qaydalar
 
-- Videolarda müştərinin adı, loqosu və Instagram adı yazılmır (2026-10-27).
+- Videolarda müştərinin adı, loqosu və Instagram adı yazılmır (2026-10-27). İstisna: istifadəçi təlim dərsi üçün ad, soyad və peşəni verərsə, ad–peşə yazısı (yuxarıdakı qayda).
 - Şrift: hər müştəri üçün Montserrat (300–900; mövzuya görə nazik, medium və ya qalın).
   Bəzən vurğu üçün əl yazısı şrifti Caveat (`FONT_HAND`) istifadə olunur; Azərbaycan
   hərflərini dəstəkləyir. Başqa şrift yalnız ə, ğ, ı, ş, ç, ö, ü yoxlanandan sonra əlavə olunur.
