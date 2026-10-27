@@ -31,7 +31,8 @@ The `expert-reels-director` skill says how this template plugs into it.
 ```
 1. Get the footage (> 30 MB: Google Drive link shared as "Anyone with the link").
 2. Transcribe:  transcriber tool, model_size=large-v3, language=az
-3. Correct the transcript by hand, show it to the user, get approval.
+3. Correct the transcript; classify (VIDEO_TYPES.md), pick the approach, present the short storyboard and WAIT for approval
+   (workflow and gate: skills/pipelines/talking-head/expert-reels-director.md).
 3b. Retakes: when a sentence was said more than once, keep the best complete take:
                 python templates/expert-reels/scripts/cut_takes.py <src> <words.json> keep.json base.mp4 words_cut.json
                 (keep.json = [[start, end], ...] in source seconds, cut in the pauses)
