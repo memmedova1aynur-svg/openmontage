@@ -10,17 +10,32 @@
     }
   },
   "video_types": "reklam, ekspert danışığı, sual-cavab, praktik fəaliyyət, seminar, digər uyğun formatlar",
-  "cautions": [],
-  "theme_source": "accent = confirmed #DCEFE4; other tones derived from the colour family; NOT a client-confirmed code - say so in the storyboard",
+  "cautions": [
+    "Bütün görüntüyə yaşıl filtr yox; rəng yalnız vurğularda.",
+    "Video mənbə necə bitirsə, eləcə bitir; sonu kəsilmir."
+  ],
+  "theme_source": "approved by the user in the first video (2026-10-27): soft green #3A7A60 text/lines on soft mint #DCEFE4; shades derived from the family",
   "theme": {
-    "primary": "#1F5A45",
-    "primaryDeep": "#123A2D",
-    "accent": "#DCEFE4",
-    "accentSoft": "#8CCBA8",
+    "primary": "#3A7A60",
+    "primaryDeep": "#2A5A47",
+    "accent": "#A8DCC1",
+    "accentSoft": "#DCEFE4",
     "text": "#FFFFFF",
-    "onAccent": "#1F5A45",
-    "cardAlpha": 0.94
+    "onAccent": "#3A7A60",
+    "cardAlpha": 0.94,
+    "emphasis": "#3A7A60"
   },
   "style": {},
-  "history": []
+  "history": [
+    {
+      "video": "Duyusal bütövləmə vebinarı - reklam",
+      "date": "2026-10-27",
+      "approach": "M01+M03",
+      "style": {
+        "captions": "plate",
+        "pops": "icon chips"
+      },
+      "notes": "White caption plate with soft-mint top line fixed low (covers the waist area); small opening title card above the head (VEBİNAR / Duyusal bütövləmə / subtitle); animated line-icon chips beside the face (symptoms both sides, webinar topics numbered on the left); tab on the plate 'Vebinar · Duyusal bütövləmə', CTA 'Şərhdə “DUYU” yazın' at the end; Caveat handwritten closing line. Topic SFX (chime, swish, clink, knock, snip, tick-tock). User liked the soft green, the plate and the icon chips; asked for smaller top cards (not over head/face), no date, no 'ödənişsiz'."
+    }
+  ]
 }
