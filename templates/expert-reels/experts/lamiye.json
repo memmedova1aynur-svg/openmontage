@@ -13,7 +13,8 @@
   "cautions": [
     "Bütün görüntüyə yaşıl filtr yox; rəng yalnız vurğularda.",
     "Video mənbə necə bitirsə, eləcə bitir; sonu kəsilmir.",
-    "Kənar/yuxarı elementlər üzü örtməməlidir: yuxarıda yalnız bir element bir anda, yalnız deyilərkən; altyazı lövhədə sabit qalır."
+    "Kənar/yuxarı elementlər üzü örtməməlidir: yuxarıda yalnız bir element bir anda, yalnız deyilərkən; altyazı lövhədə sabit qalır.",
+    "Termin: həmişə \"duyu bütünləmə\". \"Bütövləmə\" heç vaxt yazılmır, mətndə gəlsə də \"bütünləmə\" ilə əvəz olunur (istifadəçi qərarı, 2026-10-27)."
   ],
   "theme_source": "approved by the user in the first video (2026-10-27): soft green #3A7A60 text/lines on soft mint #DCEFE4; shades derived from the family",
   "theme": {
