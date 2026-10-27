@@ -15,6 +15,11 @@ export const ICONS: Record<string, string[]> = {
   brain: ["M9 4a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 3 3", "M15 4a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-3 3", "M12 4v16", "M9 9h-1.5", "M15 14h1.5"],
   sun: ["c:12,12,4", "M12 2v2", "M12 20v2", "M2 12h2", "M20 12h2", "M4.9 4.9l1.4 1.4", "M17.7 17.7l1.4 1.4", "M4.9 19.1l1.4-1.4", "M17.7 6.3l1.4-1.4"],
   heart: ["M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"],
+  person: ["c:12,5,2.5", "M12 8v7", "M7 11h10", "M12 15l-3.5 6", "M12 15l3.5 6"],
+  puzzle: ["M4 8h4a2 2 0 1 1 4 0h4v4a2 2 0 1 1 0 4v4H4z"],
+  check: ["c:12,12,9", "M8 12.5l2.6 2.6L16 9.6"],
+  blocks: ["M4 14h7v7H4z", "M13 14h7v7h-7z", "M8.5 7h7v7h-7z"],
+  waves: ["M3 9c3-3 6 3 9 0s6 3 9 0", "M3 15c3-3 6 3 9 0s6 3 9 0"],
 };
 
 // Icon in a soft circle + short label, pinned to the left or right edge beside the speaker.
@@ -44,7 +49,8 @@ export const IconChip: React.FC<{ o: Pill }> = ({ o }) => {
         gap: 14,
         ...(centre ? {} : { maxWidth: 370 }),
         opacity: exit,
-        transform: `translateY(${float}px)`,
+        transform: `translateY(${float}px) scale(${centre ? 1.25 : 1})`,
+        transformOrigin: "50% 0%",
       }}
     >
       <div style={{ position: "relative", flex: "0 0 auto", width: 96, height: 96, borderRadius: 48, background: rgba(T.accentSoft, 0.97), boxShadow: `0 8px 22px ${rgba(ink, 0.18)}`, border: `3px solid ${rgba(T.accent, 0.9)}`, transform: `scale(${pop})`, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -98,14 +104,14 @@ export const TitleCard: React.FC<{ o: Pill }> = ({ o }) => {
           transform: `translateY(${(1 - enter) * -30}px)`,
           // bare: no card, just type with a soft light halo so it reads on the wall
           ...(o.small
-            ? { textShadow: "0 0 14px rgba(255,255,255,0.95), 0 0 4px rgba(255,255,255,0.9)" }
+            ? { textShadow: "0 0 16px rgba(255,255,255,1), 0 0 6px rgba(255,255,255,1), 0 0 2px rgba(255,255,255,1)" }
             : { padding: "16px 34px 20px", borderRadius: 28, background: "rgba(255,255,255,0.93)", boxShadow: `0 12px 34px ${rgba(T.primary, 0.18)}` }),
         }}
       >
         {o.label && (
           <div style={{ display: "inline-block", padding: "5px 16px", borderRadius: 20, background: T.accentSoft, fontFamily: FONT, fontWeight: 800, fontSize: 22, letterSpacing: 3, color: T.primary, marginBottom: 8 }}>{o.label}</div>
         )}
-        <div style={{ fontFamily: FONT, fontWeight: 800, fontSize: o.small ? 44 : 50, lineHeight: 1.08, color: T.primary }}>{o.parts.map(([t]) => t).join("")}</div>
+        <div style={{ fontFamily: FONT, fontWeight: 800, fontSize: o.small ? 54 : 50, lineHeight: 1.08, color: T.primary }}>{o.parts.map(([t]) => t).join("")}</div>
         <div style={{ height: 4, width: `${line * 46}%`, margin: "10px auto 8px", borderRadius: 2, background: T.accent }} />
         {o.sub && <div style={{ fontFamily: FONT, fontWeight: o.small ? 600 : 500, fontSize: o.small ? 24 : 27, lineHeight: 1.25, color: rgba(T.primary, 0.9) }}>{o.sub}</div>}
       </div>
@@ -145,6 +151,44 @@ export const PlateCard: React.FC<{ o: Pill; t: number }> = ({ o, t }) => {
         <div style={{ fontFamily: FONT, fontWeight: 800, fontSize: 54, lineHeight: 1.06, color: ink }}>{o.parts.map(([x]) => x).join("")}</div>
         {o.sub && <div style={{ fontFamily: FONT, fontWeight: 500, fontSize: 30, lineHeight: 1.2, color: rgba(ink, 0.85), marginTop: 6 }}>{o.sub}</div>}
       </div>
+    </div>
+  );
+};
+
+// Full-screen closing card over the held last frame: question, offer, nudge.
+export const EndCard: React.FC<{ o: Pill }> = ({ o }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const bg = interpolate(frame, [0, 10], [0, 1], clamp01);
+  const lines: string[] = (o as any).lines ?? [];
+  return (
+    <div style={{ position: "absolute", inset: 0, background: `linear-gradient(180deg, ${rgba("#F7FCF9", 0.97)} 0%, ${rgba(T.accentSoft, 0.98)} 100%)`, opacity: bg, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 90px", gap: 34, textAlign: "center" }}>
+      {lines.map((ln, i) => {
+        const k = spring({ frame: frame - 6 - i * 10, fps, config: { damping: 15, stiffness: 160 } });
+        const tag = ln.startsWith("#");
+        const big = ln.startsWith("!");
+        const text = tag || big ? ln.slice(1) : ln;
+        return (
+          <div
+            key={i}
+            style={{
+              opacity: k,
+              transform: `translateY(${(1 - k) * 30}px)`,
+              fontFamily: FONT,
+              fontWeight: tag ? 800 : big ? 900 : 600,
+              fontSize: tag ? 28 : big ? 66 : 44,
+              letterSpacing: tag ? 4 : 0,
+              lineHeight: 1.18,
+              color: T.primary,
+              padding: tag ? "8px 22px" : 0,
+              borderRadius: 20,
+              background: tag ? "#FFFFFF" : "transparent",
+            }}
+          >
+            {text}
+          </div>
+        );
+      })}
     </div>
   );
 };

@@ -65,7 +65,7 @@ def auto_sfx(spec: dict, cutaways: list[dict], overlays: list[dict]) -> list[dic
     ]
     for c in cutaways:
         sfx.append({"t": round(c["in"] - 0.12, 2), "src": "sfx/whoosh.wav", "vol": 0.5})
-        if c["kind"] in ("pip", "full"):
+        if c["kind"] in ("pip", "full", "split"):
             sfx.append({"t": round(c["out"] - 0.15, 2), "src": "sfx/whoosh.wav", "vol": 0.45})
             for pn in c.get("panels", [])[1:]:
                 sfx.append({"t": round(pn["at"] - 0.1, 2), "src": "sfx/whoosh.wav", "vol": 0.3})
@@ -201,8 +201,12 @@ def main() -> None:
         if probe.returncode == 0 and probe.stdout.strip():
             # whole frames only, so the edit ends exactly where the footage ends
             duration = int(float(probe.stdout.strip()) * 30) / 30
+    video_dur = duration
+    duration = round(duration + spec.get("tail", 0), 3)  # an end card may run past the footage
     edit = {
         "duration": duration,
+        "videoDur": video_dur,
+        "split": spec.get("split"),
         "video": spec.get("video", "base.mp4"),
         "pillTop": spec.get("pill_top", 300),
         "plate": spec.get("plate"),

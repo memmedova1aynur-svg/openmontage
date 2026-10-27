@@ -3,6 +3,7 @@ import {
   AbsoluteFill,
   Audio,
   Composition,
+  Freeze,
   OffthreadVideo,
   Sequence,
   interpolate,
@@ -12,7 +13,8 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import { IconChip, PlateCard, TitleCard } from "./icons";
+import { EndCard, IconChip, PlateCard, TitleCard } from "./icons";
+import { ILLUSTRATED } from "./illustrations";
 import { Backdrop, CommentCTA, PIP_SIDE, SCENES } from "./scenes";
 import { Cutaway, E, EMPH, FONT, FONT_HAND, FPS, Page, Pill, T, ZoomKey, clamp01, rgba, useFonts } from "./theme";
 
@@ -161,7 +163,7 @@ const Captions: React.FC = () => {
   // box captions keep their own dark backing, so only bare captions switch colour over pale cutaways
   const onPale = !!T.light && style !== "box" && pipAt(t, fps).p > 0.5;
   return (
-    <AbsoluteFill style={{ justifyContent: "flex-end", alignItems: "center", paddingBottom: 430 }}>
+    <AbsoluteFill style={{ justifyContent: "flex-end", alignItems: "center", paddingBottom: E.cutaways.some((c) => c.kind === "split" && t >= c.in && t < c.out) ? 230 : 430 }}>
       <div
         style={{
           maxWidth: 940,
@@ -256,8 +258,8 @@ const TypePop: React.FC<{ o: Pill }> = ({ o }) => {
             lineHeight: o.hand ? 1.0 : 1.06,
             letterSpacing: o.hand ? 0 : -1,
             textAlign: "center",
-            color: o.hand ? T.primary : T.text,
-            textShadow: o.hand ? "0 0 18px rgba(255,255,255,0.9), 0 0 4px rgba(255,255,255,0.9)" : "0 4px 18px rgba(0,0,0,0.55), 0 2px 4px rgba(0,0,0,0.5)",
+            color: o.hand || o.ink ? T.primary : T.text,
+            textShadow: o.hand || o.ink ? "0 0 18px rgba(255,255,255,0.9), 0 0 4px rgba(255,255,255,0.9)" : "0 4px 18px rgba(0,0,0,0.55), 0 2px 4px rgba(0,0,0,0.5)",
             transform: `translateY(${(1 - enter) * 40}px)`,
             opacity: Math.min(1, enter * 1.6) * exit * (1 - 0.45 * strike),
           }}
@@ -431,7 +433,7 @@ const PipPanels: React.FC<{ c: Cutaway; p: number }> = ({ c, p }) => {
         const start = i === 0 ? c.in : pn.at;
         const end = i + 1 < panels.length ? panels[i + 1].at : c.out + 0.6;
         if (t < start - 0.1 || t >= end + 0.25) return null;
-        const Scene = SCENES[pn.kind];
+        const Scene = SCENES[pn.kind] ?? ILLUSTRATED[pn.kind];
         if (!Scene) return null;
         // outgoing panel slides away, incoming slides in
         const out = i + 1 < panels.length ? interpolate(t, [end - 0.15, end + 0.2], [1, 0], clamp01) : 1;
@@ -472,19 +474,38 @@ const Reel: React.FC = () => {
   const clip = rounded
     ? `inset(${Math.max(0, oy - rLocal)}px ${Math.max(0, 1080 - ox - rLocal)}px ${Math.max(0, 1920 - oy - rLocal)}px ${Math.max(0, ox - rLocal)}px round ${(70 / E.pip.scale) * pc}px)`
     : `circle(${rLocal}px at ${ox}px ${oy}px)`;
+  // "split": the speaker slides down (no scaling, so no quality loss) and an illustration
+  // panel opens in the top part of the frame.
+  const splitCut = E.cutaways.find((c) => c.kind === "split" && t >= c.in - 0.01 && t < c.out + 0.7);
+  const spIn = splitCut ? spring({ frame: frame - Math.round(splitCut.in * fps), fps, config: { damping: 18, stiffness: 120, mass: 0.8 } }) : 0;
+  const spOut = splitCut && t >= splitCut.out ? spring({ frame: frame - Math.round(splitCut.out * fps), fps, config: { damping: 18, stiffness: 120, mass: 0.8 } }) : 0;
+  const sp = Math.max(0, Math.min(1, spIn * (1 - spOut)));
+  const SPLIT_TOP = E.split?.top ?? 900;
+  const SPLIT_SHIFT = E.split?.shift ?? 520;
+  const shiftY = SPLIT_SHIFT * sp;
+  const splitClip = `inset(${sp * (SPLIT_TOP - SPLIT_SHIFT)}px ${30 * sp}px ${-shiftY}px ${30 * sp}px round ${44 * sp}px)`;
+  // past the end of the footage (an end card's tail) the last picture is held
+  const vFrames = Math.floor((E.videoDur ?? E.duration) * fps);
+  const video = <OffthreadVideo src={staticFile(E.video ?? "base.mp4")} />;
   return (
     <AbsoluteFill style={{ backgroundColor: "black" }}>
+      {sp > 0.001 && <AbsoluteFill style={{ background: `linear-gradient(180deg, #F7FCF9 0%, ${T.accentSoft} 100%)`, opacity: Math.min(1, sp * 1.5) }} />}
       {!full && p > 0.001 && <Backdrop p={p} />}
       {!full && pipCut && p > 0.001 && <PipPanels c={pipCut} p={p} />}
       <AbsoluteFill
         style={{
-          transform: `translate(${shake + dx}px, ${shake * 0.4 + dy}px) scale(${sc})`,
+          transform: `translate(${shake + dx}px, ${shake * 0.4 + dy + shiftY}px) scale(${sc})`,
           transformOrigin: `${ox}px ${oy}px`,
-          clipPath: p > 0.001 ? clip : undefined,
+          clipPath: p > 0.001 ? clip : sp > 0.001 ? splitClip : undefined,
         }}
       >
-        <OffthreadVideo src={staticFile(E.video ?? "base.mp4")} />
+        {frame >= vFrames - 1 ? <Freeze frame={vFrames - 2}>{video}</Freeze> : video}
       </AbsoluteFill>
+      {splitCut && sp > 0.001 && (
+        <AbsoluteFill style={{ height: SPLIT_TOP, overflow: "hidden", opacity: Math.min(1, sp * 1.4), transform: `translateY(${(1 - sp) * -60}px)` }}>
+          <PipPanels c={splitCut} p={1} />
+        </AbsoluteFill>
+      )}
       {p > 0.02 && (
         <div
           style={{
@@ -516,7 +537,7 @@ const Reel: React.FC = () => {
         ))}
       {E.overlays.filter((o) => !o.plate).map((o) => (
         <Sequence key={o.id} from={Math.round(o.in * FPS)} durationInFrames={Math.round((o.out - o.in) * FPS)}>
-          {o.kind === "icon" ? <IconChip o={o} /> : o.kind === "title" ? <TitleCard o={o} /> : o.kind !== "pop" ? <PillCard o={o} /> : E.style.pops === "type" || o.hand ? <TypePop o={o} /> : <KeywordPop o={o} />}
+          {o.kind === "icon" ? <IconChip o={o} /> : o.kind === "title" ? <TitleCard o={o} /> : o.kind === "end" ? <EndCard o={o} /> : o.kind !== "pop" ? <PillCard o={o} /> : E.style.pops === "type" || o.hand || o.strike !== undefined ? <TypePop o={o} /> : <KeywordPop o={o} />}
         </Sequence>
       ))}
       <Captions />
