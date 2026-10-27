@@ -135,6 +135,12 @@ def synth_sfx(out_dir: Path) -> None:
     t = np.arange(int(sr * 1.1)) / sr
     partials = [(1318, 1, 4), (2637, 0.45, 6), (3951, 0.2, 9), (1976, 0.25, 5)]
     save("ding", sum(a * np.sin(2 * np.pi * fr * t) * np.exp(-t * d) for fr, a, d in partials))
+    # pen-stroke scratch for strike-throughs: short high band of noise with a quick swell
+    t = np.arange(int(sr * 0.28)) / sr
+    save("scratch", bandpass_sweep(0.28, 2600, 5200) * np.sin(np.pi * t / 0.28) ** 1.5)
+    # soft low thump for a closing key line (no click, no noise burst like "hit")
+    t = np.arange(int(sr * 0.4)) / sr
+    save("thump", np.sin(2 * np.pi * np.cumsum(110 * np.exp(-t * 6) + 55) / sr) * (1 - np.exp(-t * 300)) * np.exp(-t * 9))
 
 
 def main() -> None:
