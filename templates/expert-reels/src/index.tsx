@@ -15,6 +15,7 @@ import {
 } from "remotion";
 import { EndCard, IconChip, PlateCard, TitleCard } from "./icons";
 import { CARTOON } from "./cartoon";
+import { CounterPop, SKETCH } from "./sketch";
 import { ILLUSTRATED } from "./illustrations";
 import { Backdrop, CommentCTA, PIP_SIDE, SCENES } from "./scenes";
 import { Cutaway, E, EMPH, FONT, FONT_HAND, FPS, Page, Pill, T, ZoomKey, clamp01, rgba, useFonts } from "./theme";
@@ -164,7 +165,7 @@ const Captions: React.FC = () => {
   // box captions keep their own dark backing, so only bare captions switch colour over pale cutaways
   const onPale = !!T.light && style !== "box" && pipAt(t, fps).p > 0.5;
   return (
-    <AbsoluteFill style={{ justifyContent: "flex-end", alignItems: "center", paddingBottom: E.cutaways.some((c) => c.kind === "split" && t >= c.in && t < c.out) ? 230 : 430 }}>
+    <AbsoluteFill style={{ justifyContent: "flex-end", alignItems: "center", paddingBottom: E.cutaways.some((c) => (c.kind === "split" || c.kind === "scene") && t >= c.in && t < c.out) ? 230 : 430 }}>
       <div
         style={{
           maxWidth: 940,
@@ -252,13 +253,13 @@ const TypePop: React.FC<{ o: Pill }> = ({ o }) => {
         <div
           style={{
             position: "relative",
-            maxWidth: 960,
+            maxWidth: o.side ? 560 : 960,
             fontFamily: o.hand ? FONT_HAND : FONT,
             fontWeight: o.hand ? 700 : 900,
             fontSize: o.hand ? (chars > 30 ? 66 : 84) : chars > 22 ? 62 : chars > 14 ? 74 : 88,
             lineHeight: o.hand ? 1.0 : 1.06,
             letterSpacing: o.hand ? 0 : -1,
-            textAlign: "center",
+            textAlign: o.side === "l" ? "left" : o.side === "r" ? "right" : "center",
             color: o.hand || o.ink ? T.primary : T.text,
             textShadow: o.hand || o.ink ? "0 0 18px rgba(255,255,255,0.9), 0 0 4px rgba(255,255,255,0.9)" : "0 4px 18px rgba(0,0,0,0.55), 0 2px 4px rgba(0,0,0,0.5)",
             transform: `translateY(${(1 - enter) * 40}px)`,
@@ -434,7 +435,7 @@ const PipPanels: React.FC<{ c: Cutaway; p: number }> = ({ c, p }) => {
         const start = i === 0 ? c.in : pn.at;
         const end = i + 1 < panels.length ? panels[i + 1].at : c.out + 0.6;
         if (t < start - 0.1 || t >= end + 0.25) return null;
-        const Scene = SCENES[pn.kind] ?? CARTOON[pn.kind] ?? ILLUSTRATED[pn.kind];
+        const Scene = SCENES[pn.kind] ?? CARTOON[pn.kind] ?? SKETCH[pn.kind] ?? ILLUSTRATED[pn.kind];
         if (!Scene) return null;
         // outgoing panel slides away, incoming slides in
         const out = i + 1 < panels.length ? interpolate(t, [end - 0.15, end + 0.2], [1, 0], clamp01) : 1;
@@ -448,6 +449,8 @@ const PipPanels: React.FC<{ c: Cutaway; p: number }> = ({ c, p }) => {
     </AbsoluteFill>
   );
 };
+
+const CounterFrame: React.FC<{ o: Pill }> = ({ o }) => <CounterPop o={o} f={useCurrentFrame()} />;
 
 // ---------------------------------------------------------------- main
 const Reel: React.FC = () => {
@@ -545,7 +548,7 @@ const Reel: React.FC = () => {
         ))}
       {E.overlays.filter((o) => !o.plate).map((o) => (
         <Sequence key={o.id} from={Math.round(o.in * FPS)} durationInFrames={Math.round((o.out - o.in) * FPS)}>
-          {o.kind === "icon" ? <IconChip o={o} /> : o.kind === "title" ? <TitleCard o={o} /> : o.kind === "end" ? <EndCard o={o} /> : o.kind !== "pop" ? <PillCard o={o} /> : E.style.pops === "type" || o.hand || o.strike !== undefined ? <TypePop o={o} /> : <KeywordPop o={o} />}
+          {o.kind === "counter" ? <CounterFrame o={o} /> : o.kind === "icon" ? <IconChip o={o} /> : o.kind === "title" ? <TitleCard o={o} /> : o.kind === "end" ? <EndCard o={o} /> : o.kind !== "pop" ? <PillCard o={o} /> : E.style.pops === "type" || o.hand || o.strike !== undefined ? <TypePop o={o} /> : <KeywordPop o={o} />}
         </Sequence>
       ))}
       <Captions />
