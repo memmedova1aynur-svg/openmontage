@@ -20,6 +20,7 @@ import { PAPER, Paper, RetroOverlay, Strip } from "./paper";
 import { ILLUSTRATED } from "./illustrations";
 import { BLUEPRINT, BpNote, BpSpark } from "./blueprint";
 import { CallCard, Marker, SHEET, Ticket } from "./sheet";
+import { CARDS, Flash } from "./cards";
 import { Backdrop, CommentCTA, PIP_SIDE, SCENES } from "./scenes";
 import { Cutaway, E, EMPH, FONT, FONT_HAND, FPS, Page, Pill, T, ZoomKey, clamp01, rgba, useFonts } from "./theme";
 
@@ -190,6 +191,7 @@ const Captions: React.FC = () => {
   const enter = spring({ frame: Math.round((t - page.start) * fps), fps, config: { damping: 14, stiffness: 220, mass: 0.6 } });
   const style = E.style.captions;
   if (style === "lower" || style === "marker") return <AltCaptions page={page} t={t} enter={enter} style={style} />;
+  if (style === "solo") return <SoloCaption t={t} />;
   // box captions keep their own dark backing, so only bare captions switch colour over pale cutaways
   const onPale = !!T.light && style !== "box" && pipAt(t, fps).p > 0.5;
   return (
@@ -286,6 +288,35 @@ const AltCaptions: React.FC<{ page: Page; t: number; enter: number; style: "lowe
             </span>
           );
         })}
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+// "solo": one big word at a time, white with a hard navy offset shadow (sticker look)
+const SoloCaption: React.FC<{ t: number }> = ({ t }) => {
+  const { fps } = useVideoConfig();
+  const words = E.pages.flatMap((p) => p.words);
+  const i = words.findIndex((w, j) => t >= w.s && (j + 1 >= words.length ? t < w.e + 0.6 : t < words[j + 1].s));
+  if (i < 0) return null;
+  const w = words[i];
+  const inScene = E.cutaways.some((c) => (c.kind === "split" || c.kind === "scene") && t >= c.in && t < c.out);
+  const k = spring({ frame: Math.round((t - w.s) * fps), fps, config: { damping: 11, stiffness: 320, mass: 0.45 } });
+  return (
+    <AbsoluteFill style={{ justifyContent: "flex-end", alignItems: "center", paddingBottom: inScene ? 240 : 440 }}>
+      <div
+        style={{
+          fontFamily: FONT,
+          fontWeight: 900,
+          fontSize: w.w.length > 14 ? 76 : 96,
+          letterSpacing: -1,
+          color: "#FFFFFF",
+          textShadow: `6px 6px 0 ${T.primary}, 0 10px 26px rgba(0,0,0,0.45)`,
+          transform: `scale(${0.75 + 0.25 * k}) translateY(${(1 - k) * 18}px)`,
+          opacity: Math.min(1, k * 2),
+        }}
+      >
+        {w.w.replace(/^["“”«]+|["“”»,.:;!?]+$/g, "") || w.w}
       </div>
     </AbsoluteFill>
   );
@@ -523,7 +554,7 @@ const PipPanels: React.FC<{ c: Cutaway; p: number }> = ({ c, p }) => {
         const start = i === 0 ? c.in : pn.at;
         const end = i + 1 < panels.length ? panels[i + 1].at : c.out + 0.6;
         if (t < start - 0.1 || t >= end + 0.25) return null;
-        const Scene = SCENES[pn.kind] ?? BLUEPRINT[pn.kind] ?? SHEET[pn.kind] ?? CARTOON[pn.kind] ?? SKETCH[pn.kind] ?? PAPER[pn.kind] ?? ILLUSTRATED[pn.kind];
+        const Scene = SCENES[pn.kind] ?? BLUEPRINT[pn.kind] ?? SHEET[pn.kind] ?? CARDS[pn.kind] ?? CARTOON[pn.kind] ?? SKETCH[pn.kind] ?? PAPER[pn.kind] ?? ILLUSTRATED[pn.kind];
         if (!Scene) return null;
         // outgoing panel slides away, incoming slides in
         const out = i + 1 < panels.length ? interpolate(t, [end - 0.15, end + 0.2], [1, 0], clamp01) : 1;
@@ -640,7 +671,7 @@ const Reel: React.FC = () => {
         ))}
       {E.overlays.filter((o) => !o.plate).map((o) => (
         <Sequence key={o.id} from={Math.round(o.in * FPS)} durationInFrames={Math.round((o.out - o.in) * FPS)}>
-          {o.kind === "ticket" ? <Ticket o={o as any} /> : o.kind === "marker" ? <Marker o={o as any} /> : o.kind === "callcard" ? <CallCard o={o as any} /> : o.kind === "note" ? <BpNote o={o as any} /> : o.kind === "spark" ? <BpSpark o={o as any} /> : o.kind === "strip" ? <Strip o={o as any} /> : o.kind === "counter" ? <CounterFrame o={o} /> : o.kind === "icon" ? <IconChip o={o} /> : o.kind === "title" ? <TitleCard o={o} /> : o.kind === "end" ? <EndCard o={o} /> : o.kind !== "pop" ? <PillCard o={o} /> : E.style.pops === "type" || o.hand || o.strike !== undefined ? <TypePop o={o} /> : <KeywordPop o={o} />}
+          {o.kind === "flash" ? <Flash o={o as any} /> : o.kind === "ticket" ? <Ticket o={o as any} /> : o.kind === "marker" ? <Marker o={o as any} /> : o.kind === "callcard" ? <CallCard o={o as any} /> : o.kind === "note" ? <BpNote o={o as any} /> : o.kind === "spark" ? <BpSpark o={o as any} /> : o.kind === "strip" ? <Strip o={o as any} /> : o.kind === "counter" ? <CounterFrame o={o} /> : o.kind === "icon" ? <IconChip o={o} /> : o.kind === "title" ? <TitleCard o={o} /> : o.kind === "end" ? <EndCard o={o} /> : o.kind !== "pop" ? <PillCard o={o} /> : E.style.pops === "type" || o.hand || o.strike !== undefined ? <TypePop o={o} /> : <KeywordPop o={o} />}
         </Sequence>
       ))}
       <Captions />
