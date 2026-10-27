@@ -14,6 +14,7 @@ import {
   useVideoConfig,
 } from "remotion";
 import { EndCard, IconChip, PlateCard, TitleCard } from "./icons";
+import { CARTOON } from "./cartoon";
 import { ILLUSTRATED } from "./illustrations";
 import { Backdrop, CommentCTA, PIP_SIDE, SCENES } from "./scenes";
 import { Cutaway, E, EMPH, FONT, FONT_HAND, FPS, Page, Pill, T, ZoomKey, clamp01, rgba, useFonts } from "./theme";
@@ -265,7 +266,7 @@ const TypePop: React.FC<{ o: Pill }> = ({ o }) => {
           }}
         >
           {words.map(({ w, hl }, i) => (
-            <span key={i} style={{ display: "inline-block", whiteSpace: "pre", color: o.hand ? (hl ? T.primary : T.primary) : hl ? EMPH : T.text, textDecoration: o.hand && hl ? `underline 6px ${T.accentSoft}` : undefined, textUnderlineOffset: 10 }}>
+            <span key={i} style={{ display: "inline-block", whiteSpace: "pre", color: o.hand || o.ink ? T.primary : hl ? EMPH : T.text, textDecoration: o.hand && hl ? `underline 6px ${T.accentSoft}` : undefined, textUnderlineOffset: 10 }}>
               {w}
             </span>
           ))}
@@ -433,7 +434,7 @@ const PipPanels: React.FC<{ c: Cutaway; p: number }> = ({ c, p }) => {
         const start = i === 0 ? c.in : pn.at;
         const end = i + 1 < panels.length ? panels[i + 1].at : c.out + 0.6;
         if (t < start - 0.1 || t >= end + 0.25) return null;
-        const Scene = SCENES[pn.kind] ?? ILLUSTRATED[pn.kind];
+        const Scene = SCENES[pn.kind] ?? CARTOON[pn.kind] ?? ILLUSTRATED[pn.kind];
         if (!Scene) return null;
         // outgoing panel slides away, incoming slides in
         const out = i + 1 < panels.length ? interpolate(t, [end - 0.15, end + 0.2], [1, 0], clamp01) : 1;
