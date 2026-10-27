@@ -22,7 +22,7 @@ export type Page = { start: number; end: number; words: Word[] };
 export type ZoomKey = { t: number; s: number; k: "cut" | "push" | "punch" };
 export type Pill = {
   id: string;
-  kind: "pill" | "hook" | "cta" | "pop" | "icon" | "title" | "end" | "counter" | "strip" | "note" | "spark" | "ticket" | "marker" | "callcard" | "flash";
+  kind: "pill" | "hook" | "cta" | "pop" | "icon" | "title" | "end" | "counter" | "strip" | "note" | "spark" | "ticket" | "marker" | "callcard" | "flash" | "edcard";
   label: string | null;
   pos?: "t" | "tl" | "tr" | "l" | "r"; // "pop" keyword position around the speaker
   top?: number; // pop: centred line at this y instead of pos (stack several pops as rows)
