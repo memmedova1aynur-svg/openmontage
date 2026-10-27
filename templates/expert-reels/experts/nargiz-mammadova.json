@@ -22,6 +22,22 @@
     "cardAlpha": 0.94,
     "emphasis": "#C9A45C"
   },
-  "style": {},
-  "history": []
+  "style": {
+    "captions": "marker",
+    "pops": "edcard"
+  },
+  "history": [
+    {
+      "date": "2026-10-27",
+      "video": "Cambridge Müəllim Hazırlıq Proqramı (ad)",
+      "style": {
+        "captions": "marker (cream highlight)",
+        "pops": "edcard (cream + gold rule)"
+      },
+      "scenes": [
+        "ac_skills (Reading/Writing/Speaking/Listening)"
+      ],
+      "notes": "Type 3, M01+M03, spoken order kept. Academic editorial look: cream cards, navy type, deep-gold labels (#946C22 for text on cream; #C9A45C rules). Source was mirrored (watch on her right wrist) - flipped after approval. Pre-cut file, 37 s. 'sizə yaza bilərsiniz' captioned as 'bizə'. End card: 077 346 08 70 + 'Bizə yaza bilərsiniz'. Voice cleaned with DeepFilterNet."
+    }
+  ]
 }
