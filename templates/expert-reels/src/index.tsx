@@ -256,7 +256,7 @@ const TypePop: React.FC<{ o: Pill }> = ({ o }) => {
             maxWidth: o.side ? 560 : 960,
             fontFamily: o.hand ? FONT_HAND : FONT,
             fontWeight: o.hand ? 700 : 900,
-            fontSize: o.hand ? (chars > 30 ? 66 : 84) : chars > 22 ? 62 : chars > 14 ? 74 : 88,
+            fontSize: o.size ?? (o.hand ? (chars > 30 ? 66 : 84) : chars > 22 ? 62 : chars > 14 ? 74 : 88),
             lineHeight: o.hand ? 1.0 : 1.06,
             letterSpacing: o.hand ? 0 : -1,
             textAlign: o.side === "l" ? "left" : o.side === "r" ? "right" : "center",

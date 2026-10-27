@@ -30,6 +30,7 @@ export type Pill = {
   side?: "l" | "r"; // pop with top: pin to the left / right edge instead of centring
   small?: boolean; // pop: compact chip (lists beside the speaker)
   hand?: boolean; // pop: handwritten (Caveat) line, drawn without a card
+  size?: number; // type pop: explicit font size (keeps a list on one line per item)
   ink?: boolean; // boxless type pop in the brand colour with a light halo (for pale walls)
   icon?: string; // icon chip: name from ICONS (src/icons.tsx), drawn in with a stroke animation
   sub?: string; // icon chip: small second line
