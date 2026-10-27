@@ -81,6 +81,8 @@ accent colour.
 - `overlays`: keyword pills (`hook` | `pill` | `cta`). `parts` = `[[text, highlight]]`.
   `pop` + `pos` (`t` | `tl` | `tr` | `l` | `r`) is a short emphasised word that bounces in around the
   speaker. Use it for talking-only videos (no cutaways): 1-3 words, 1.2-2.5 s, varied sides.
+  `top: <y>` puts a pop on a centred row (stack rows to build a list word by word); `strike: <t>` crosses it out.
+  `style.pops: "type"` draws pops as boxless large type (M02) instead of cards.
   Pills that overlap a cutaway are dropped automatically.
 - `cutaways`:
   - `pip`: the speaker shrinks into the corner. `panels` play in order, each
@@ -130,7 +132,7 @@ Pick the edit approach from the type first ([`VIDEO_TYPES.md`](VIDEO_TYPES.md): 
    - `backdrop`: dots / grid / orbs / diagonal
    - `pipShape`: circle / rounded
    - `pipCorner`: br / bl
-   - `pops`: dark / light (keyword pop cards)
+   - `pops`: dark / light (cards) / type (boxless large type)
    Same set and outfit as the previous video? Change `captions` and `pops` at least, or the two read as one video.
 3. **Vary the structure.** Don't open with the same device twice in a row (a
    pill hook, then a questions cutaway, then a stat). Move where the first

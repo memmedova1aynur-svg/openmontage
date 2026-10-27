@@ -373,7 +373,7 @@ export const CommentCTA: React.FC<{ p: Record<string, any>; startT: number }> = 
   return (
     <AbsoluteFill style={{ alignItems: "center" }}>
       <div style={{ marginTop: 300, transform: `translateY(${(1 - enter) * -120}px) scale(${0.85 + 0.15 * enter})`, opacity: Math.min(1, enter * 1.5), position: "relative" }}>
-        <div style={{ fontFamily: FONT, fontWeight: 800, fontSize: 34, color: "#fff", textAlign: "center", marginBottom: 16, textShadow: "0 4px 14px rgba(0,0,0,0.6)" }}>
+        <div style={{ fontFamily: FONT, fontWeight: 800, fontSize: p.hintSize ?? 34, color: "#fff", textAlign: "center", marginBottom: 16, maxWidth: 940, textShadow: "0 4px 14px rgba(0,0,0,0.75), 0 1px 3px rgba(0,0,0,0.6)" }}>
           <Rich text={p.hint ?? "Şərhlərdə **yaz** 👇"} />
         </div>
         <div style={{ width: 940, height: 132, borderRadius: 66, background: "#fff", display: "flex", alignItems: "center", padding: "0 18px", boxShadow: "0 18px 50px rgba(0,0,0,0.4)", transform: `scale(${sent ? 1 + 0.05 * (1 - Math.min(1, sendPop)) : 1})` }}>

@@ -25,6 +25,8 @@ export type Pill = {
   kind: "pill" | "hook" | "cta" | "pop";
   label: string | null;
   pos?: "t" | "tl" | "tr" | "l" | "r"; // "pop" keyword position around the speaker
+  top?: number; // pop: centred line at this y instead of pos (stack several pops as rows)
+  strike?: number; // pop: time (s) at which a line crosses the text out
   parts: [string, number][];
   in: number;
   out: number;
@@ -44,7 +46,7 @@ export type Style = {
   backdrop: "dots" | "grid" | "orbs" | "diagonal";
   pipShape: "circle" | "rounded";
   pipCorner: "br" | "bl";
-  pops?: "dark" | "light"; // keyword pop cards: brand-dark (default) or white with a marker on the emphasis
+  pops?: "dark" | "light" | "type"; // keyword pops: brand-dark card (default), white card with a marker, or boxless large type (M02)
 };
 export type Pip = { focus: [number, number]; radius: number; scale: number };
 export type Edit = {

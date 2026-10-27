@@ -131,13 +131,59 @@ const POP_POS: Record<string, { box: React.CSSProperties; rot: number }> = {
   r: { box: { bottom: 600, right: 40 }, rot: 3 },
 };
 
+// Boxless typography (M02): large white type with a soft shadow, emphasis in the brand colour.
+// Calm entrance (rise + fade), no wobble; an optional strike crosses the phrase out.
+const TypePop: React.FC<{ o: Pill }> = ({ o }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const dur = (o.out - o.in) * fps;
+  const enter = spring({ frame, fps, config: { damping: 18, stiffness: 140, mass: 0.7 } });
+  const exit = interpolate(frame, [dur - 8, dur], [1, 0], clamp01);
+  const chars = o.parts.map(([txt]) => txt).join("").length;
+  const strikeF = o.strike !== undefined ? Math.round((o.strike - o.in) * fps) : null;
+  const strike = strikeF === null ? 0 : interpolate(frame, [strikeF, strikeF + 8], [0, 1], clamp01);
+  const pos = o.top !== undefined ? { top: o.top, left: 0, right: 0, display: "flex", justifyContent: "center" } : POP_POS[o.pos ?? "t"].box;
+  const words = o.parts.flatMap(([txt, hl]) => txt.split(/(?<= )/).map((w) => ({ w, hl })));
+  return (
+    <AbsoluteFill>
+      <div style={{ position: "absolute", ...pos }}>
+        <div
+          style={{
+            position: "relative",
+            maxWidth: 960,
+            fontFamily: FONT,
+            fontWeight: 900,
+            fontSize: chars > 22 ? 62 : chars > 14 ? 74 : 88,
+            lineHeight: 1.06,
+            letterSpacing: -1,
+            textAlign: "center",
+            color: T.text,
+            textShadow: "0 4px 18px rgba(0,0,0,0.55), 0 2px 4px rgba(0,0,0,0.5)",
+            transform: `translateY(${(1 - enter) * 40}px)`,
+            opacity: Math.min(1, enter * 1.6) * exit * (1 - 0.45 * strike),
+          }}
+        >
+          {words.map(({ w, hl }, i) => (
+            <span key={i} style={{ display: "inline-block", whiteSpace: "pre", color: hl ? EMPH : T.text }}>
+              {w}
+            </span>
+          ))}
+          {strikeF !== null && (
+            <div style={{ position: "absolute", left: -10, top: "52%", height: 9, width: `calc(${strike * 100}% + 20px)`, background: "#E5484D", borderRadius: 5, boxShadow: "0 2px 8px rgba(0,0,0,0.4)" }} />
+          )}
+        </div>
+      </div>
+    </AbsoluteFill>
+  );
+};
+
 const KeywordPop: React.FC<{ o: Pill }> = ({ o }) => {
   const frame = useCurrentFrame();
   const lightPop = E.style.pops === "light";
   const popChars = o.parts.map(([txt]) => txt).join("").length;
   const { fps } = useVideoConfig();
   const dur = (o.out - o.in) * fps;
-  const pos = POP_POS[o.pos ?? "t"];
+  const pos = o.top !== undefined ? { box: { top: o.top, left: 0, right: 0, display: "flex", justifyContent: "center" } as React.CSSProperties, rot: 0 } : POP_POS[o.pos ?? "t"];
   const enter = spring({ frame, fps, config: { damping: 9, stiffness: 220, mass: 0.6 } });
   const exit = interpolate(frame, [dur - 7, dur], [1, 0], clamp01);
   const float = Math.sin(frame / 16) * 6 * Math.min(1, frame / 15);
@@ -371,7 +417,7 @@ const Reel: React.FC = () => {
         ))}
       {E.overlays.map((o) => (
         <Sequence key={o.id} from={Math.round(o.in * FPS)} durationInFrames={Math.round((o.out - o.in) * FPS)}>
-          {o.kind === "pop" ? <KeywordPop o={o} /> : <PillCard o={o} />}
+          {o.kind !== "pop" ? <PillCard o={o} /> : E.style.pops === "type" ? <TypePop o={o} /> : <KeywordPop o={o} />}
         </Sequence>
       ))}
       <Captions />
