@@ -27,6 +27,9 @@ export type Pill = {
   pos?: "t" | "tl" | "tr" | "l" | "r"; // "pop" keyword position around the speaker
   top?: number; // pop: centred line at this y instead of pos (stack several pops as rows)
   strike?: number; // pop: time (s) at which a line crosses the text out
+  side?: "l" | "r"; // pop with top: pin to the left / right edge instead of centring
+  small?: boolean; // pop: compact chip (lists beside the speaker)
+  hand?: boolean; // pop: handwritten (Caveat) line, drawn without a card
   parts: [string, number][];
   in: number;
   out: number;
@@ -41,7 +44,7 @@ export type Cutaway = {
   props?: Record<string, any>;
 };
 export type Style = {
-  captions: "stroke" | "box" | "chip";
+  captions: "stroke" | "box" | "chip" | "plate"; // plate: fixed light panel (also hides burned-in text / a problem area)
   pills: "top-card" | "side-tag";
   backdrop: "dots" | "grid" | "orbs" | "diagonal";
   pipShape: "circle" | "rounded";
@@ -52,6 +55,7 @@ export type Pip = { focus: [number, number]; radius: number; scale: number };
 export type Edit = {
   duration: number;
   video?: string; // footage file in public/, default base.mp4 (e.g. base_blur.mp4)
+  plate?: { y: number; h: number; x: number }; // "plate" captions: panel rect (y, height, side margin)
   pillTop?: number; // y of keyword cards; lower it when the speaker sits high in frame (Instagram top bar ends ~220)
   theme: Theme;
   style: Style;

@@ -13,7 +13,7 @@ import {
   useVideoConfig,
 } from "remotion";
 import { Backdrop, CommentCTA, PIP_SIDE, SCENES } from "./scenes";
-import { Cutaway, E, EMPH, FONT, FPS, Page, Pill, T, ZoomKey, clamp01, rgba, useFonts } from "./theme";
+import { Cutaway, E, EMPH, FONT, FONT_HAND, FPS, Page, Pill, T, ZoomKey, clamp01, rgba, useFonts } from "./theme";
 
 // Point of the speaker the full-frame zoom pushes toward (x, y in 1080x1920).
 const FACE = { x: 540, y: 0.36 * 1920 };
@@ -55,11 +55,74 @@ const pipAt = (t: number, fps: number) => {
 };
 
 // ---------------------------------------------------------------- captions
+// Fixed light panel with calm captions inside. It stays on screen the whole video, so it can also
+// hide burned-in text or a distracting area low in the frame without anything jumping in and out.
+const PlateCaptions: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const t = frame / fps;
+  const pl = E.plate ?? { y: 1570, h: 280, x: 60 };
+  const page = E.pages.find((p: Page) => t >= p.start && t < p.end);
+  const enter = page ? spring({ frame: Math.round((t - page.start) * fps), fps, config: { damping: 18, stiffness: 200, mass: 0.6 } }) : 0;
+  const settle = interpolate(frame, [0, 10], [0, 1], clamp01);
+  return (
+    <AbsoluteFill>
+      <div
+        style={{
+          position: "absolute",
+          top: pl.y,
+          left: pl.x,
+          right: pl.x,
+          height: pl.h,
+          borderRadius: 44,
+          background: "rgba(255,255,255,0.97)",
+          borderTop: `10px solid ${T.accentSoft}`,
+          boxShadow: "0 18px 50px rgba(0,0,0,0.18)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "0 40px",
+          opacity: settle,
+        }}
+      >
+        {page && (
+          <div style={{ textAlign: "center", lineHeight: 1.18, transform: `translateY(${(1 - enter) * 14}px)`, opacity: Math.min(1, enter * 1.6) }}>
+            {page.words.map((w, i) => {
+              const active = t >= w.s && t < Math.max(w.e, w.s + 0.12);
+              const spoken = t >= w.s;
+              return (
+                <span
+                  key={i}
+                  style={{
+                    display: "inline-block",
+                    margin: "0 10px",
+                    padding: "0 12px",
+                    borderRadius: 14,
+                    background: active ? T.accentSoft : "transparent",
+                    fontFamily: FONT,
+                    fontWeight: 800,
+                    fontSize: 64,
+                    color: T.primary,
+                    opacity: spoken ? 1 : 0.4,
+                  }}
+                >
+                  {w.w}
+                </span>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </AbsoluteFill>
+  );
+};
+
 const Captions: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const t = frame / fps;
   const page = E.pages.find((p: Page) => t >= p.start && t < p.end);
+  if (E.style.captions === "plate") return <PlateCaptions />;
   if (!page) return null;
   const enter = spring({ frame: Math.round((t - page.start) * fps), fps, config: { damping: 14, stiffness: 220, mass: 0.6 } });
   const style = E.style.captions;
@@ -131,6 +194,10 @@ const POP_POS: Record<string, { box: React.CSSProperties; rot: number }> = {
   r: { box: { bottom: 600, right: 40 }, rot: 3 },
 };
 
+// a pop with `top` sits on a row: centred, or pinned to the left / right edge with `side`
+const rowPos = (o: Pill): React.CSSProperties =>
+  o.side === "l" ? { top: o.top, left: 40 } : o.side === "r" ? { top: o.top, right: 40 } : { top: o.top, left: 0, right: 0, display: "flex", justifyContent: "center" };
+
 // Boxless typography (M02): large white type with a soft shadow, emphasis in the brand colour.
 // Calm entrance (rise + fade), no wobble; an optional strike crosses the phrase out.
 const TypePop: React.FC<{ o: Pill }> = ({ o }) => {
@@ -142,7 +209,7 @@ const TypePop: React.FC<{ o: Pill }> = ({ o }) => {
   const chars = o.parts.map(([txt]) => txt).join("").length;
   const strikeF = o.strike !== undefined ? Math.round((o.strike - o.in) * fps) : null;
   const strike = strikeF === null ? 0 : interpolate(frame, [strikeF, strikeF + 8], [0, 1], clamp01);
-  const pos = o.top !== undefined ? { top: o.top, left: 0, right: 0, display: "flex", justifyContent: "center" } : POP_POS[o.pos ?? "t"].box;
+  const pos = o.top !== undefined ? rowPos(o) : POP_POS[o.pos ?? "t"].box;
   const words = o.parts.flatMap(([txt, hl]) => txt.split(/(?<= )/).map((w) => ({ w, hl })));
   return (
     <AbsoluteFill>
@@ -151,20 +218,20 @@ const TypePop: React.FC<{ o: Pill }> = ({ o }) => {
           style={{
             position: "relative",
             maxWidth: 960,
-            fontFamily: FONT,
-            fontWeight: 900,
-            fontSize: chars > 22 ? 62 : chars > 14 ? 74 : 88,
-            lineHeight: 1.06,
-            letterSpacing: -1,
+            fontFamily: o.hand ? FONT_HAND : FONT,
+            fontWeight: o.hand ? 700 : 900,
+            fontSize: o.hand ? (chars > 30 ? 76 : 92) : chars > 22 ? 62 : chars > 14 ? 74 : 88,
+            lineHeight: o.hand ? 1.0 : 1.06,
+            letterSpacing: o.hand ? 0 : -1,
             textAlign: "center",
-            color: T.text,
-            textShadow: "0 4px 18px rgba(0,0,0,0.55), 0 2px 4px rgba(0,0,0,0.5)",
+            color: o.hand ? T.primary : T.text,
+            textShadow: o.hand ? "0 0 18px rgba(255,255,255,0.9), 0 0 4px rgba(255,255,255,0.9)" : "0 4px 18px rgba(0,0,0,0.55), 0 2px 4px rgba(0,0,0,0.5)",
             transform: `translateY(${(1 - enter) * 40}px)`,
             opacity: Math.min(1, enter * 1.6) * exit * (1 - 0.45 * strike),
           }}
         >
           {words.map(({ w, hl }, i) => (
-            <span key={i} style={{ display: "inline-block", whiteSpace: "pre", color: hl ? EMPH : T.text }}>
+            <span key={i} style={{ display: "inline-block", whiteSpace: "pre", color: o.hand ? (hl ? T.primary : T.primary) : hl ? EMPH : T.text, textDecoration: o.hand && hl ? `underline 6px ${T.accentSoft}` : undefined, textUnderlineOffset: 10 }}>
               {w}
             </span>
           ))}
@@ -183,7 +250,7 @@ const KeywordPop: React.FC<{ o: Pill }> = ({ o }) => {
   const popChars = o.parts.map(([txt]) => txt).join("").length;
   const { fps } = useVideoConfig();
   const dur = (o.out - o.in) * fps;
-  const pos = o.top !== undefined ? { box: { top: o.top, left: 0, right: 0, display: "flex", justifyContent: "center" } as React.CSSProperties, rot: 0 } : POP_POS[o.pos ?? "t"];
+  const pos = o.top !== undefined ? { box: rowPos(o), rot: 0 } : POP_POS[o.pos ?? "t"];
   const enter = spring({ frame, fps, config: { damping: 9, stiffness: 220, mass: 0.6 } });
   const exit = interpolate(frame, [dur - 7, dur], [1, 0], clamp01);
   const float = Math.sin(frame / 16) * 6 * Math.min(1, frame / 15);
@@ -194,18 +261,18 @@ const KeywordPop: React.FC<{ o: Pill }> = ({ o }) => {
       <div style={{ position: "absolute", ...pos.box }}>
         <div
           style={{
-            maxWidth: o.pos === "t" ? 900 : 500,
-            padding: "16px 28px 20px",
+            maxWidth: o.small ? 360 : o.pos === "t" ? 900 : 500,
+            padding: o.small ? "10px 20px 13px" : "16px 28px 20px",
             borderRadius: 26,
             background: lightPop ? "rgba(255,255,255,0.96)" : rgba(T.primary, 0.92),
             boxShadow: "0 16px 40px rgba(0,0,0,0.4)",
-            borderBottom: `8px solid ${lightPop ? T.primary : T.accent}`,
+            borderBottom: `${o.small ? 6 : 8}px solid ${lightPop ? T.primary : T.accent}`,
             fontFamily: FONT,
             fontWeight: 900,
-            fontSize: popChars > 16 ? 50 : 60,
+            fontSize: o.small ? 38 : popChars > 16 ? 50 : 60,
             lineHeight: 1.08,
             color: T.text,
-            textAlign: o.pos === "r" || o.pos === "tr" ? "right" : o.pos === "t" ? "center" : "left",
+            textAlign: o.side === "r" || o.pos === "r" || o.pos === "tr" ? "right" : o.side === "l" ? "left" : o.pos === "t" ? "center" : "left",
             transform: `translateY(${float}px) scale(${enter * (0.85 + 0.15 * exit)}) rotate(${pos.rot * enter + wobble}deg)`,
             transformOrigin: o.pos === "r" || o.pos === "tr" ? "100% 50%" : o.pos === "t" ? "50% 50%" : "0% 50%",
             opacity: Math.min(1, enter * 2) * exit,
@@ -417,7 +484,7 @@ const Reel: React.FC = () => {
         ))}
       {E.overlays.map((o) => (
         <Sequence key={o.id} from={Math.round(o.in * FPS)} durationInFrames={Math.round((o.out - o.in) * FPS)}>
-          {o.kind !== "pop" ? <PillCard o={o} /> : E.style.pops === "type" ? <TypePop o={o} /> : <KeywordPop o={o} />}
+          {o.kind !== "pop" ? <PillCard o={o} /> : E.style.pops === "type" || o.hand ? <TypePop o={o} /> : <KeywordPop o={o} />}
         </Sequence>
       ))}
       <Captions />

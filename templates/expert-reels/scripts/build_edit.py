@@ -173,7 +173,7 @@ def main() -> None:
             overlays.append(o)
     # the footage decides the length; spec["duration"] is only a fallback
     footage = ws / "public" / spec.get("video", "base.mp4")
-    duration = spec["duration"]
+    duration = spec.get("duration", 0)
     if footage.exists():
         probe = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", str(footage)],
                                capture_output=True, text=True)
@@ -183,6 +183,7 @@ def main() -> None:
         "duration": duration,
         "video": spec.get("video", "base.mp4"),
         "pillTop": spec.get("pill_top", 300),
+        "plate": spec.get("plate"),
         "theme": expert["theme"],
         "style": {**DEFAULT_STYLE, **expert.get("style", {}), **spec.get("style", {})},
         "pip": {**DEFAULT_PIP, **spec.get("pip", {})},
