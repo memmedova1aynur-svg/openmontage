@@ -1,0 +1,30 @@
+{
+  "name": "Səidə Əliyeva",
+  "status": "active",
+  "activity": "İnklüziv təhsil üzrə təlimçi. Mövzular: diaqnostik testlər, autizm, inklüziv təhsil, pedaqoji metodika, disleksiya.",
+  "audience": "Müəllimlər və inklüziv təhsil sahəsində çalışan pedaqoqlar.",
+  "identity": "Inclusive Education Academy × Modern Teacher Training Editorial",
+  "fonts": "Montserrat ExtraBold + Medium",
+  "palette": {
+    "confirmed": {
+      "light_bg": "#F8F9FA",
+      "deep_teal": "#2E6F73",
+      "bright_teal": "#3BA7B6"
+    }
+  },
+  "video_types": "ekspert danışığı, praktik izah, təlim reklamı, sual-cavab, seminar",
+  "cautions": [],
+  "theme_source": "built from the client's confirmed codes (role mapping is ours); primaryDeep and emphasis are derived shades",
+  "theme": {
+    "primary": "#2E6F73",
+    "primaryDeep": "#1D4A4D",
+    "accent": "#3BA7B6",
+    "accentSoft": "#F8F9FA",
+    "text": "#FFFFFF",
+    "onAccent": "#FFFFFF",
+    "cardAlpha": 0.94,
+    "emphasis": "#BDE6EB"
+  },
+  "style": {},
+  "history": []
+}

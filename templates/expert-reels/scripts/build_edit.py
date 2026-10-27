@@ -147,6 +147,13 @@ def main() -> None:
     spec_path, ws = Path(sys.argv[1]), Path(sys.argv[2])
     spec = json.loads(spec_path.read_text(encoding="utf-8"))
     expert = json.loads((TEMPLATE / "experts" / f"{spec['expert']}.json").read_text(encoding="utf-8"))
+    if expert.get("status") == "inactive":
+        sys.exit(f"{spec['expert']} is inactive: no edit tasks for this profile until the user activates it")
+    # a per-video theme (e.g. the colour column chosen in the storyboard) overrides the profile's default
+    if "theme" in spec:
+        expert["theme"] = {**expert.get("theme", {}), **spec["theme"]}
+    if "theme" not in expert:
+        sys.exit(f"{spec['expert']} has no default theme ({expert.get('theme_source', '')}); set spec['theme'] from the approved storyboard")
     words = json.loads((spec_path.parent / spec["words"]).read_text(encoding="utf-8"))
     if words and "words" in words[0]:  # transcriber segment format
         words = [w for seg in words for w in seg["words"]]

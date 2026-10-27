@@ -1,0 +1,28 @@
+{
+  "name": "Lamiyə",
+  "status": "active",
+  "activity": "Sensor həssaslıq və uşaq inkişafı sahəsində mütəxəssis; uşaqlarla işləyən peşəkarlar üçün təlimçilik istiqamətini inkişaf etdirir.",
+  "audience": "Pedaqoqlar, terapevtlər, bağça müəllimləri, uşaqlarla işləyən mütəxəssislər.",
+  "palette": {
+    "family": "soft mint yaşıl və ağ",
+    "confirmed": {
+      "soft_mint": "#DCEFE4"
+    }
+  },
+  "video_types": "reklam, ekspert danışığı, sual-cavab, praktik fəaliyyət, seminar, digər uyğun formatlar",
+  "cautions": [
+    "Soyadı dəqiqləşməyib; ekranda və mətndə soyad yazılmır."
+  ],
+  "theme_source": "accent = confirmed #DCEFE4; other tones derived from the colour family; NOT a client-confirmed code - say so in the storyboard",
+  "theme": {
+    "primary": "#1F5A45",
+    "primaryDeep": "#123A2D",
+    "accent": "#DCEFE4",
+    "accentSoft": "#8CCBA8",
+    "text": "#FFFFFF",
+    "onAccent": "#1F5A45",
+    "cardAlpha": 0.94
+  },
+  "style": {},
+  "history": []
+}

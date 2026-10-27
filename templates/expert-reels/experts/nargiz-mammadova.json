@@ -1,0 +1,27 @@
+{
+  "name": "Nərgiz Məmmədova",
+  "status": "active",
+  "activity": "İngilis dili müəllimi və müəllim yetişdirən mentor / təlimçi.",
+  "audience": "İngilis dili müəllimləri və müəllimliyə başlayanlar.",
+  "identity": "Premium Teacher Education × Academic Editorial",
+  "palette": {
+    "family": "tünd lacivərt, açıq mavi, krem, məhdud qızılı vurğu"
+  },
+  "video_types": "ekspert danışığı, təlim reklamı, müəllimlik üzrə izahlar, sual-cavab, seminar materialları",
+  "cautions": [
+    "Rəng ailəsi Aytən Cəlilova ilə yaxındır (lacivərt + açıq mavi): krem kartlar, akademik tipoqrafiya və qızılı vurğu ilə ayrı kimlik; Aytənin tünd göy kart üslubu təkrarlanmır."
+  ],
+  "theme_source": "derived from the colour family; NOT a client-confirmed code - say so in the storyboard",
+  "theme": {
+    "primary": "#14284B",
+    "primaryDeep": "#0B1830",
+    "accent": "#F5EFE3",
+    "accentSoft": "#A9D3F5",
+    "text": "#FFFFFF",
+    "onAccent": "#14284B",
+    "cardAlpha": 0.94,
+    "emphasis": "#C9A45C"
+  },
+  "style": {},
+  "history": []
+}

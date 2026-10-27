@@ -1,0 +1,25 @@
+{
+  "name": "Rəhimə Niyazlı",
+  "status": "active",
+  "activity": "Uşaq inkişafı mütəxəssisi və təlimçi; bağça işi, Montessori, metodika və bağça idarəçiliyi.",
+  "audience": "Mövzuya görə: bağça müəllimləri, rəhbərlər, bağça sahəsində işə başlamaq istəyənlər.",
+  "palette": {
+    "family": "narıncı və krem; uyğun olduqda tünd qəhvəyi vurğular"
+  },
+  "video_types": "ekspert danışığı, reklam, seminar çıxarışı, nağıl danışığı, praktik nümayiş, digər uyğun materiallar",
+  "cautions": [
+    "Nağıl və praktik nümayişdə intonasiya, jest və mənalı pauzalar qorunur."
+  ],
+  "theme_source": "derived from the colour family; NOT a client-confirmed code - say so in the storyboard",
+  "theme": {
+    "primary": "#4A2C1D",
+    "primaryDeep": "#2E1A10",
+    "accent": "#F2994A",
+    "accentSoft": "#F6E7D2",
+    "text": "#FFFFFF",
+    "onAccent": "#4A2C1D",
+    "cardAlpha": 0.94
+  },
+  "style": {},
+  "history": []
+}

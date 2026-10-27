@@ -43,6 +43,12 @@ Hər link yeni montaj tapşırığıdır.
 
 ### 2. Qısa analiz və storyboard
 
+Montaj seçimi belə qurulur: müştərinin vizual dili (`experts/<id>.json`) + video növü + danışığın
+mövzusu + mövcud material. Storyboard **yazılı və şəkillidir**: əsas anlar üçün nümunə kadrlar
+(`STILL=<frame> render.sh`) göstərilir. Profildə rəng `derived` kimi qeyd olunubsa, seçilən çalarlar
+storyboardda "təklif olunan çalar" kimi yazılır, müştərinin kodu kimi yox. Profilin `cautions`
+bölməsi standart qaydalardan üstündür.
+
 Analiz bu formada verilir:
 
 ```

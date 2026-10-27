@@ -1,0 +1,31 @@
+{
+  "name": "Sevinc Məhsimova",
+  "status": "active",
+  "activity": "İnklüziv təhsil üzrə mütəxəssis və təlimçi.",
+  "audience": "Müəllimlər, təlimçilər, təhsil rəhbərləri və mütəxəssislər.",
+  "identity": "International Inclusive Education × Global Academic Authority",
+  "palette": {
+    "confirmed": {
+      "academic_navy": "#163E59",
+      "mid_blue": "#3187AC",
+      "ice_blue": "#DFF3FA",
+      "white": "#FFFFFF"
+    }
+  },
+  "video_types": "ekspert danışığı, seminar çıxarışı, təlim və reklam materialları",
+  "cautions": [
+    "Vəzifə yalnız mövzuya uyğun və təsdiqlənmiş olduqda yazılır."
+  ],
+  "theme_source": "built from the client's confirmed codes (role mapping is ours); primaryDeep is a derived shade",
+  "theme": {
+    "primary": "#163E59",
+    "primaryDeep": "#0C2738",
+    "accent": "#DFF3FA",
+    "accentSoft": "#3187AC",
+    "text": "#FFFFFF",
+    "onAccent": "#163E59",
+    "cardAlpha": 0.94
+  },
+  "style": {},
+  "history": []
+}

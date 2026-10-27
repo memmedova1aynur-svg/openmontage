@@ -51,6 +51,16 @@ The `expert-reels-director` skill says how this template plugs into it.
 
 ## Expert profile (`experts/<id>.json`)
 
+Every client has a profile. Besides the render `theme` it holds the brand facts the user approved:
+`name`, `status` (`inactive` blocks edits), `activity`, `audience`, `identity` (the visual language),
+`palette` (`confirmed` codes from the client vs. a colour `family` only), `fonts`, `video_types`,
+`cautions` (rules that override defaults) and `theme_source`. When `theme_source` says *derived*, the
+theme's shades were chosen by us from the family: show them in the storyboard and never present them as
+the client's own codes. A spec may carry `"theme": {...}` to override the default for one video
+(e.g. Xalidə's colour column). Brand stays recognisable across a client's videos; the edit approach,
+layout, motion and sound still change with the video type (VIDEO_TYPES.md). Clients with similar
+colours (Aytən / Nərgiz, Nilüfər / PİKMENT) are separated by typography, graphics and layout.
+
 Copy `experts/_example.json`. Take the colours from the expert's own Instagram:
 grid, highlight covers, logo. Don't take them from the footage. Ask the user for
 a screenshot of the profile if no brand colours are given.

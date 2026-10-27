@@ -1,0 +1,20 @@
+{
+  "name": "Xalidə Baycan",
+  "status": "active",
+  "activity": "Uşaq inkişafı mütəxəssisi və təlimçi; oyun, nağıl terapiyası və Montessori istiqamətləri.",
+  "audience": "Pedaqoqlar, uşaqlarla işləyən mütəxəssislər.",
+  "palette": {
+    "confirmed": {
+      "pink": "#F66CA1",
+      "turquoise": "#35C4CC",
+      "yellow": "#FFD21A"
+    }
+  },
+  "video_types": "ekspert danışığı, reklam, fəaliyyət nümayişi, sual-cavab, seminar görüntüləri",
+  "cautions": [
+    "Videonun hansı rəng sütununa (çəhrayı / firuzəyi / sarı) aid olduğu məlum deyilsə, təxmin edilmir: storyboardda soruşulur."
+  ],
+  "theme_source": "no default theme: the colour column is chosen per video in the storyboard",
+  "style": {},
+  "history": []
+}

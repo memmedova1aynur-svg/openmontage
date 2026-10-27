@@ -1,0 +1,24 @@
+{
+  "name": "Sura Malik",
+  "status": "active",
+  "activity": "Uşaq inkişafı və laktasiya mütəxəssisi.",
+  "palette": {
+    "family": "yumşaq çəhrayı, gül qurusu, isti krem, ağ"
+  },
+  "video_types": "ekspert danışığı, təlim dərsi, reklam, sual-cavab, digər uyğun materiallar",
+  "cautions": [
+    "Tibbi və peşəkar məlumat danışıqda deyildiyindən daha qəti formada verilmir."
+  ],
+  "theme_source": "derived from the colour family; NOT a client-confirmed code - say so in the storyboard",
+  "theme": {
+    "primary": "#8E4F5F",
+    "primaryDeep": "#5E3240",
+    "accent": "#F6C9D3",
+    "accentSoft": "#F4ECE4",
+    "text": "#FFFFFF",
+    "onAccent": "#8E4F5F",
+    "cardAlpha": 0.94
+  },
+  "style": {},
+  "history": []
+}

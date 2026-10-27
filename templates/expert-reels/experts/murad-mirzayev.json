@@ -1,0 +1,29 @@
+{
+  "name": "Murad Mirzəyev / Murad Elxan",
+  "status": "active",
+  "activity": "Bağça biznesi, mentorluq və təlimçilik.",
+  "palette": {
+    "confirmed": {
+      "deep_navy": "#0B1D35",
+      "navy": "#163B63",
+      "sky": "#38A9E8",
+      "ice": "#DDF3FC"
+    }
+  },
+  "video_types": "ekspert danışığı, biznes izahı, reklam, sual-cavab, seminar",
+  "cautions": [
+    "İki ad eyni şəxsdir. Ekranda hansı adın yazılacağı təsdiqlənməyib: ad lazım olan hər videoda soruşulur."
+  ],
+  "theme_source": "built from the client's confirmed codes (role mapping is ours)",
+  "theme": {
+    "primary": "#163B63",
+    "primaryDeep": "#0B1D35",
+    "accent": "#38A9E8",
+    "accentSoft": "#DDF3FC",
+    "text": "#FFFFFF",
+    "onAccent": "#163B63",
+    "cardAlpha": 0.94
+  },
+  "style": {},
+  "history": []
+}

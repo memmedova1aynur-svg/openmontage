@@ -1,7 +1,29 @@
 {
-  "name": "Aytan Calilova | Mentor | Karyera",
+  "name": "Aytən Cəlilova",
   "instagram": "aytan.calilova",
-  "notes": "Brand taken from the Instagram grid: light powder-blue/white carousels, deep navy headlines, navy/white rounded title ribbons on Reels covers, steel-blue secondary. Light theme: cards and backdrops are pale blue with navy type; the active caption word sits on a navy chip like her cover ribbons. 2026-10-26: user rejected the pale/icy-blue backdrop; use dark navy backdrops and cards (like the first video) with her light brand blue as the accent. Do not blur the background unless asked. Talking-only videos: captions + keyword pops (top/left/right) + zooms, no cutaways; cut retakes keeping the best take. When consecutive videos share the same set and outfit, change the caption style and pop style between them. White/light clothing: use box or chip captions; stroke-only captions get lost over it. Never end on the last word: hold ~1 s after it so the sentence and her closing expression finish (cut_takes.py does this). SFX: the user wants a fitting sound on every card/animation (not on zooms), kept under the voice.",
+  "status": "active",
+  "activity": "Mentor, təlimçi, kurs rəhbəri və bağça biznesi konsultantı. Əsas təqdimat: mentorluq, təlimçilik, liderlik və peşəkar inkişaf.",
+  "identity": "Premium Mentorship × Modern Leadership Editorial",
+  "palette": {
+    "family": "mavi tonlar və ağ",
+    "approved_in_use": {
+      "navy": "#13213F",
+      "deep_navy": "#0A1428",
+      "light_blue": "#A9C8F2",
+      "steel_blue": "#6F93C9"
+    },
+    "note": "Kodlar Instagram profilindən götürülüb; istifadəçi tünd göy kartları və açıq mavi vurğunu videolarda təsdiqləyib (2026-10-26/27). Buz mavisi/solğun mavi fon rədd edilib."
+  },
+  "fonts": "Montserrat (indiyə qədər istifadə edilən)",
+  "video_types": "ekspert danışığı, reklam, sual-cavab, seminar, mövzuya uyğun digər formatlar",
+  "cautions": [
+    "Buz mavisi / solğun mavi fon istifadə edilmir (istifadəçi rədd edib).",
+    "Arxa fon xahiş olmadan bulanıqlaşdırılmır.",
+    "Ağ/açıq köynəkdə yalnız-kontur altyazı oxunmur: qutu və ya chip.",
+    "Eyni məkan və geyimdə ardıcıl videolarda altyazı və vurğu üslubu dəyişdirilir.",
+    "Hər kart və animasiyaya uyğun səs effekti (zoom-larda yox), danışığın altında - storyboardda göstərilir."
+  ],
+  "theme_source": "approved in delivered videos",
   "theme": {
     "primary": "#13213F",
     "primaryDeep": "#0A1428",
@@ -19,6 +41,7 @@
     "pipShape": "rounded",
     "pipCorner": "bl"
   },
+  "notes_legacy": "Brand taken from the Instagram grid: light powder-blue/white carousels, deep navy headlines, navy/white rounded title ribbons on Reels covers, steel-blue secondary. Light theme: cards and backdrops are pale blue with navy type; the active caption word sits on a navy chip like her cover ribbons. 2026-10-26: user rejected the pale/icy-blue backdrop; use dark navy backdrops and cards (like the first video) with her light brand blue as the accent. Do not blur the background unless asked. Talking-only videos: captions + keyword pops (top/left/right) + zooms, no cutaways; cut retakes keeping the best take. When consecutive videos share the same set and outfit, change the caption style and pop style between them. White/light clothing: use box or chip captions; stroke-only captions get lost over it. Never end on the last word: hold ~1 s after it so the sentence and her closing expression finish (cut_takes.py does this). SFX: the user wants a fitting sound on every card/animation (not on zooms), kept under the voice.",
   "history": [
     {
       "video": "Təlimçi konsultasiyası (6 aylıq karyera xəritəsi)",

@@ -1,0 +1,29 @@
+{
+  "name": "Data Clone Academy",
+  "status": "active",
+  "activity": "Texnologiya və IT sahəsində təhsil / kurs səhifəsi.",
+  "palette": {
+    "confirmed": {
+      "deep": "#241044",
+      "violet": "#6734C7",
+      "lilac": "#A77AE8",
+      "light": "#F5F2FC"
+    }
+  },
+  "video_types": "ekspert danışığı, kurs reklamı, ekran üzərində izah, seminar, texnologiya mövzulu videolar",
+  "cautions": [
+    "Şirkət / kurs səhifəsidir, şəxsi brend kimi təqdim edilmir."
+  ],
+  "theme_source": "built from the client's confirmed codes (role mapping is ours); primaryDeep is a derived shade",
+  "theme": {
+    "primary": "#241044",
+    "primaryDeep": "#160A2B",
+    "accent": "#A77AE8",
+    "accentSoft": "#6734C7",
+    "text": "#FFFFFF",
+    "onAccent": "#241044",
+    "cardAlpha": 0.94
+  },
+  "style": {},
+  "history": []
+}

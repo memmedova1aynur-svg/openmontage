@@ -1,0 +1,24 @@
+{
+  "name": "Nilüfər Mehdiyeva",
+  "status": "active",
+  "activity": "Uşaq inkişafı mütəxəssisi və mentor; bu sahədə mütəxəssislər yetişdirir. Təlim istiqamətləri: bağça işi və Montessori.",
+  "palette": {
+    "family": "lavanda, orta və dərin bənövşəyi"
+  },
+  "video_types": "ekspert danışığı, təlim və reklam videoları, sual-cavab, seminar, digər uyğun materiallar",
+  "cautions": [
+    "PİKMENT ilə rəng ailəsi yaxındır: tipoqrafiya, qrafika və təqdimat dili ilə ayrı kimlik."
+  ],
+  "theme_source": "derived from the colour family; NOT a client-confirmed code - say so in the storyboard",
+  "theme": {
+    "primary": "#3E2466",
+    "primaryDeep": "#26143F",
+    "accent": "#C9B6EC",
+    "accentSoft": "#8E6CC4",
+    "text": "#FFFFFF",
+    "onAccent": "#3E2466",
+    "cardAlpha": 0.94
+  },
+  "style": {},
+  "history": []
+}
