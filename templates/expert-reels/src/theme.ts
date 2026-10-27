@@ -22,7 +22,7 @@ export type Page = { start: number; end: number; words: Word[] };
 export type ZoomKey = { t: number; s: number; k: "cut" | "push" | "punch" };
 export type Pill = {
   id: string;
-  kind: "pill" | "hook" | "cta" | "pop";
+  kind: "pill" | "hook" | "cta" | "pop" | "icon";
   label: string | null;
   pos?: "t" | "tl" | "tr" | "l" | "r"; // "pop" keyword position around the speaker
   top?: number; // pop: centred line at this y instead of pos (stack several pops as rows)
@@ -30,6 +30,9 @@ export type Pill = {
   side?: "l" | "r"; // pop with top: pin to the left / right edge instead of centring
   small?: boolean; // pop: compact chip (lists beside the speaker)
   hand?: boolean; // pop: handwritten (Caveat) line, drawn without a card
+  icon?: string; // icon chip: name from ICONS (src/icons.tsx), drawn in with a stroke animation
+  sub?: string; // icon chip: small second line
+  badge?: string; // icon chip: small number / tag on the circle
   parts: [string, number][];
   in: number;
   out: number;

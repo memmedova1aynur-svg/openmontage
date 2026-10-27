@@ -12,6 +12,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
+import { IconChip } from "./icons";
 import { Backdrop, CommentCTA, PIP_SIDE, SCENES } from "./scenes";
 import { Cutaway, E, EMPH, FONT, FONT_HAND, FPS, Page, Pill, T, ZoomKey, clamp01, rgba, useFonts } from "./theme";
 
@@ -220,7 +221,7 @@ const TypePop: React.FC<{ o: Pill }> = ({ o }) => {
             maxWidth: 960,
             fontFamily: o.hand ? FONT_HAND : FONT,
             fontWeight: o.hand ? 700 : 900,
-            fontSize: o.hand ? (chars > 30 ? 76 : 92) : chars > 22 ? 62 : chars > 14 ? 74 : 88,
+            fontSize: o.hand ? (chars > 30 ? 66 : 84) : chars > 22 ? 62 : chars > 14 ? 74 : 88,
             lineHeight: o.hand ? 1.0 : 1.06,
             letterSpacing: o.hand ? 0 : -1,
             textAlign: "center",
@@ -484,7 +485,7 @@ const Reel: React.FC = () => {
         ))}
       {E.overlays.map((o) => (
         <Sequence key={o.id} from={Math.round(o.in * FPS)} durationInFrames={Math.round((o.out - o.in) * FPS)}>
-          {o.kind !== "pop" ? <PillCard o={o} /> : E.style.pops === "type" || o.hand ? <TypePop o={o} /> : <KeywordPop o={o} />}
+          {o.kind === "icon" ? <IconChip o={o} /> : o.kind !== "pop" ? <PillCard o={o} /> : E.style.pops === "type" || o.hand ? <TypePop o={o} /> : <KeywordPop o={o} />}
         </Sequence>
       ))}
       <Captions />

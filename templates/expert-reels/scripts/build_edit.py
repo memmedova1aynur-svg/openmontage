@@ -178,7 +178,8 @@ def main() -> None:
         probe = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", str(footage)],
                                capture_output=True, text=True)
         if probe.returncode == 0 and probe.stdout.strip():
-            duration = round(float(probe.stdout.strip()) - 0.05, 2)
+            # whole frames only, so the edit ends exactly where the footage ends
+            duration = int(float(probe.stdout.strip()) * 30) / 30
     edit = {
         "duration": duration,
         "video": spec.get("video", "base.mp4"),
