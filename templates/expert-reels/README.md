@@ -21,6 +21,8 @@ into a finished Instagram Reel. The output has:
 
 Reference build: the "6 aylıq karyera xəritəsi" consultation Reel (Oct 2026).
 
+Before editing, classify the footage with [`VIDEO_TYPES.md`](VIDEO_TYPES.md) (14 video types; form, content and purpose kept apart).
+
 ## Pipeline
 
 This runs the `talking-head` pipeline (see `skills/pipelines/talking-head/`).
