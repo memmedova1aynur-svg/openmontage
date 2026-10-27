@@ -162,7 +162,7 @@ const Exam: React.FC<SceneProps> = ({ f, p, startT }) => {
   const t = startT + f / FPSX;
   const rows: { text: string; at: number; mark?: number }[] = p.rows;
   const cross = !!p.cross;
-  const gap = rows.length > 4 ? 172 : 230;
+  const gap = rows.length > 4 ? 172 : 250;
   return (
     <svg width={1080} height={1920} style={{ position: "absolute", inset: 0 }}>
       <Title t={t} at={startT} small={p.small} text={p.title} />
@@ -173,18 +173,18 @@ const Exam: React.FC<SceneProps> = ({ f, p, startT }) => {
         const mark = r.mark ?? i % 4;
         return (
           <g key={i} opacity={Math.max(0.0, k)}>
-            <Txt x={180} y={y + 14} p={1} size={30} weight={800} color={T.accentSoft}>{String(i + 1).padStart(2, "0")}</Txt>
-            <Txt x={250} y={y + 14} p={1} size={rows.length > 4 ? 40 : 46} weight={800}>{r.text}</Txt>
+            <Txt x={180} y={y + 14} p={1} size={34} weight={800} color={T.accentSoft}>{String(i + 1).padStart(2, "0")}</Txt>
+            <Txt x={250} y={y + 14} p={1} size={rows.length > 4 ? 50 : 58} weight={800}>{r.text}</Txt>
             {["A", "B", "C", "D"].map((L, j) => {
-              const cx = 280 + j * 92;
-              const cy = y + 72;
+              const cx = 292 + j * 112;
+              const cy = y + 82;
               const on = j === mark;
               return (
                 <g key={j}>
-                  <circle cx={cx} cy={cy} r={30} fill="#FFFFFF" stroke={rgba(T.primary, 0.55)} strokeWidth={3} />
-                  <text x={cx} y={cy + 9} fontFamily={FONT} fontWeight={700} fontSize={26} fill={rgba(T.primary, 0.55)} textAnchor="middle">{L}</text>
-                  {on && !cross && <circle cx={cx} cy={cy} r={30 * fill} fill={INK()} />}
-                  {on && cross && <Line d={`M${cx - 26} ${cy - 26} L${cx + 26} ${cy + 26} M${cx + 26} ${cy - 26} L${cx - 26} ${cy + 26}`} p={fill} sw={8} />}
+                  <circle cx={cx} cy={cy} r={38} fill="#FFFFFF" stroke={rgba(T.primary, 0.55)} strokeWidth={3} />
+                  <text x={cx} y={cy + 9} fontFamily={FONT} fontWeight={700} fontSize={30} fill={rgba(T.primary, 0.55)} textAnchor="middle">{L}</text>
+                  {on && !cross && <circle cx={cx} cy={cy} r={38 * fill} fill={INK()} />}
+                  {on && cross && <Line d={`M${cx - 32} ${cy - 32} L${cx + 32} ${cy + 32} M${cx + 32} ${cy - 32} L${cx - 32} ${cy + 32}`} p={fill} sw={8} />}
                 </g>
               );
             })}

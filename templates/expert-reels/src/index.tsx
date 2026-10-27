@@ -262,7 +262,7 @@ const AltCaptions: React.FC<{ page: Page; t: number; enter: number; style: "lowe
         {page.words.map((w, i) => {
           const active = t >= w.s && t < Math.max(w.e, w.s + 0.12);
           const spoken = t >= w.s;
-          const onPaper = inScene && !lower;
+          const onPaper = inScene;
           return (
             <span
               key={i}
@@ -275,7 +275,7 @@ const AltCaptions: React.FC<{ page: Page; t: number; enter: number; style: "lowe
                 fontWeight: lower ? 700 : 900,
                 fontSize: lower ? 66 : 72,
                 letterSpacing: lower ? 0 : -0.5,
-                color: style === "marker" && active ? T.primary : lower && active ? T.accent : onPaper ? T.primary : "#FFFFFF",
+                color: style === "marker" && active ? T.primary : lower && active ? (onPaper ? T.accentSoft : T.accent) : onPaper ? T.primary : "#FFFFFF",
                 opacity: spoken ? 1 : lower ? 0.6 : 0.5,
                 background: style === "marker" && active ? T.accent : "transparent",
                 transform: style === "marker" && active ? "rotate(-1.5deg)" : undefined,
