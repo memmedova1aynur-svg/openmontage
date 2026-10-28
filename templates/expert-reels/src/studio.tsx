@@ -16,9 +16,31 @@ const tOf = (p: SceneProps) => p.startT + p.f / FPSX;
 
 // The stage is never still: the light drifts and soft particles rise from the first frame,
 // so a scene is alive before its first object lands on the spoken word.
-const Stage: React.FC<{ light?: boolean; t?: number }> = ({ light, t = 0 }) => {
+// skins give each video in a batch its own world: "navy" (default), "paper" (light sheet with
+// dots), "grid" (drafting grid), "split" (a wide brand-blue diagonal band sweeping behind)
+let SKIN = "navy";
+const Stage: React.FC<{ light?: boolean; t?: number }> = ({ light: l0, t = 0 }) => {
+  const light = l0 || SKIN === "paper";
   const lx = 50 + Math.sin(t * 0.6) * 18;
   const ly = 30 + Math.cos(t * 0.45) * 10;
+  if (SKIN === "grid" && !l0) {
+    const off = (t * 12) % 60;
+    return (
+      <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: `radial-gradient(ellipse at ${lx}% ${ly}%, #22365E 0%, ${T.primaryDeep} 90%)` }}>
+        <div style={{ position: "absolute", inset: -60, transform: `translate(${off}px, ${off}px)`, backgroundImage: `linear-gradient(${rgba(T.accent, 0.12)} 2px, transparent 2px), linear-gradient(90deg, ${rgba(T.accent, 0.12)} 2px, transparent 2px)`, backgroundSize: "60px 60px" }} />
+        <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at 50% 50%, transparent 40%, ${rgba(T.primaryDeep, 0.85)} 100%)` }} />
+      </div>
+    );
+  }
+  if (SKIN === "split" && !l0) {
+    const sweep = Math.sin(t * 0.5) * 60;
+    return (
+      <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: T.primary }}>
+        <div style={{ position: "absolute", left: -400, right: -400, top: 620 + sweep, height: 520, background: `linear-gradient(90deg, ${rgba(T.accent, 0.95)}, ${rgba(T.accentSoft, 0.95)})`, transform: "rotate(-14deg)" }} />
+        <div style={{ position: "absolute", left: -400, right: -400, top: 1210 + sweep * 0.6, height: 40, background: rgba(T.accent, 0.5), transform: "rotate(-14deg)" }} />
+      </div>
+    );
+  }
   return (
     <div
       style={{
@@ -26,7 +48,9 @@ const Stage: React.FC<{ light?: boolean; t?: number }> = ({ light, t = 0 }) => {
         inset: 0,
         overflow: "hidden",
         background: light
-          ? `radial-gradient(ellipse at ${lx}% ${ly + 5}%, #FFFFFF 0%, #EEF2F8 60%, #DCE4EF 100%)`
+          ? SKIN === "paper"
+            ? `radial-gradient(ellipse at ${lx}% ${ly + 5}%, #FFFFFF 0%, #F6F3EC 60%, #ECE6DA 100%)`
+            : `radial-gradient(ellipse at ${lx}% ${ly + 5}%, #FFFFFF 0%, #EEF2F8 60%, #DCE4EF 100%)`
           : `radial-gradient(ellipse at ${lx}% ${ly}%, #2E4470 0%, ${T.primary} 45%, ${T.primaryDeep} 100%)`,
       }}
     >
@@ -43,7 +67,8 @@ const Stage: React.FC<{ light?: boolean; t?: number }> = ({ light, t = 0 }) => {
   );
 };
 
-const Title: React.FC<{ t: number; at: number; text: string; dark?: boolean; top?: number }> = ({ t, at, text, dark, top = 250 }) => {
+const Title: React.FC<{ t: number; at: number; text: string; dark?: boolean; top?: number }> = ({ t, at, text, dark: d0, top = 250 }) => {
+  const dark = d0 || SKIN === "paper";
   const k = prog(t, at, 0.5);
   return (
     <div style={{ position: "absolute", top, left: 70, right: 70, textAlign: "center", opacity: k, transform: `translateY(${(1 - k) * 24}px)`, fontFamily: FONT, fontWeight: 900, fontSize: 64, lineHeight: 1.1, color: dark ? T.primary : "#FFFFFF" }}>
@@ -224,14 +249,14 @@ const Forget: React.FC<SceneProps> = (props) => {
           const op = stay ? 1 : 1 - 0.88 * fade;
           return (
             <g key={i} opacity={k * op} transform={`translate(0 ${stay ? 0 : fade * 30})`}>
-              <rect x={x - 60} y={y - 60} width={120} height={120} rx={26} fill={stay ? T.accent : "#FFFFFF"} />
+              <rect x={x - 60} y={y - 60} width={120} height={120} rx={26} fill={stay ? T.accent : SKIN === "paper" ? rgba(T.primary, 0.1) : "#FFFFFF"} />
               <text x={x} y={y + 18} fontFamily={FONT} fontWeight={900} fontSize={50} fill={T.primary} textAnchor="middle">{i + 1}</text>
             </g>
           );
         })}
       </svg>
       <div style={{ position: "absolute", top: 1300, left: 0, right: 0, textAlign: "center", opacity: fade }}>
-        <span style={{ fontFamily: FONT, fontWeight: 800, fontSize: 46, color: "#FFFFFF" }}>{props.p.fadeText ?? "tətbiq olunmayan unudulur"}</span>
+        <span style={{ fontFamily: FONT, fontWeight: 800, fontSize: 46, color: SKIN === "paper" ? T.primary : "#FFFFFF" }}>{props.p.fadeText ?? "tətbiq olunmayan unudulur"}</span>
       </div>
     </div>
   );
@@ -253,7 +278,7 @@ const Checks: React.FC<SceneProps> = (props) => {
         y += 110 + b.items.length * 120 + 40;
         return (
           <div key={bi} style={{ position: "absolute", top, left: 80, right: 80, opacity: hk, transform: `translateY(${(1 - hk) * 30}px)` }}>
-            <div style={{ fontFamily: FONT, fontWeight: 900, fontSize: 52, color: props.p.light ? T.primary : "#FFFFFF", marginBottom: 18 }}>{b.head}</div>
+            <div style={{ fontFamily: FONT, fontWeight: 900, fontSize: 52, color: props.p.light || SKIN === "paper" ? T.primary : "#FFFFFF", marginBottom: 18 }}>{b.head}</div>
             {b.items.map((it, ii) => {
               const k = pop(t, it.at);
               return (
@@ -356,6 +381,7 @@ const Funnel: React.FC<SceneProps> = (props) => {
 
 // slow push-in and sway on the whole scene (camera move), on from the first frame
 const live = (S: React.FC<SceneProps>): React.FC<SceneProps> => (props) => {
+  SKIN = props.p.skin ?? "navy";
   const local = props.f / FPSX;
   const z = 1 + Math.min(0.07, local * 0.012);
   const sway = Math.sin(local * 0.9) * 0.6;
