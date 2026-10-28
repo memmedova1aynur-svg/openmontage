@@ -17,6 +17,7 @@ the old files are kept as *_v1.
 from __future__ import annotations
 
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -42,6 +43,12 @@ log = subprocess.run(["ffmpeg", "-hide_banner", "-i", str(ART / "dn/out/voice.wa
 starts = [float(x) for x in re.findall(r"silence_start: ([\d.]+)", log)]
 ends = [float(x) for x in re.findall(r"silence_end: ([\d.]+)", log)]
 removed = []
+# REMOVE='[[a,b],...]' (cut timeline): drop exactly these spans (a false start the
+# silence detector cannot see) instead of shortening pauses; their words are dropped too.
+manual = json.loads(os.environ["REMOVE"]) if os.environ.get("REMOVE") else None
+if manual:
+    starts, ends = [], []
+    removed = [tuple(x) for x in sorted(manual)]
 for s, e in zip(starts, ends):
     if e >= cut_dur - 0.05:  # closing hold stays
         continue
@@ -109,6 +116,8 @@ words_p = ART / "words.json"
 shutil.copy(words_p, ART / "words_v1.json")
 segs = json.load(open(words_p))
 for seg in segs:
+    if manual:
+        seg["words"] = [w for w in seg["words"] if not any(a <= w["start"] < b for a, b in removed)]
     for w in seg["words"]:
         w["start"], w["end"] = remap(w["start"]), max(remap(w["start"]) + 0.05, remap(w["end"]))
 json.dump(segs, open(words_p, "w"), ensure_ascii=False)

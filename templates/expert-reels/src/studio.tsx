@@ -21,7 +21,7 @@ const Stage: React.FC<{ light?: boolean }> = ({ light }) => (
       inset: 0,
       background: light
         ? `radial-gradient(ellipse at 50% 35%, #FFFFFF 0%, #EEF2F8 60%, #DCE4EF 100%)`
-        : `radial-gradient(ellipse at 50% 30%, ${rgba(T.accent, 0.28)} 0%, ${T.primary} 45%, ${T.primaryDeep} 100%)`,
+        : `radial-gradient(ellipse at 50% 30%, #2C416A 0%, ${T.primary} 45%, ${T.primaryDeep} 100%)`,
     }}
   />
 );
@@ -254,8 +254,8 @@ const Juggle: React.FC<SceneProps> = (props) => {
   const t = tOf(props);
   const items: { text: string; at: number }[] = props.p.items;
   const keep = props.p.keep ?? 0;
-  const strike = prog(t, props.p.strikeAt, 0.5);
-  const focus = prog(t, props.p.focusAt, 0.6);
+  const strike = props.p.strikeAt === undefined ? 0 : prog(t, props.p.strikeAt, 0.5);
+  const focus = props.p.focusAt === undefined ? 0 : prog(t, props.p.focusAt, 0.6);
   const spots = [
     { x: 90, y: 420, r: -6 },
     { x: 520, y: 560, r: 5 },
