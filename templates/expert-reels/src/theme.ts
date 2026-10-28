@@ -89,7 +89,13 @@ export const rgba = (hex: string, a: number) => {
   return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
 };
 
-export const clamp01 = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
+// a colour too pale to read as text on a white card (yellow, cream)
+export const isPale = (hex: string) => {
+  const n = parseInt(hex.replace("#", ""), 16);
+  return 0.299 * ((n >> 16) & 255) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255) > 170;
+};
+
+export const clamp01 ={ extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 
 // ---------------------------------------------------------------- fonts
 // Montserrat latin + latin-ext: latin-ext carries Azerbaijani ə, ğ, ş, ı, ç, ö, ü.

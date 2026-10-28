@@ -1,30 +1,130 @@
 {
-  "name": "Xalidə Baycan",
-  "status": "active",
-  "activity": "Uşaq inkişafı mütəxəssisi və təlimçi; oyun, nağıl terapiyası və Montessori istiqamətləri.",
-  "audience": "Pedaqoqlar, uşaqlarla işləyən mütəxəssislər.",
-  "palette": {
-    "confirmed": {
-      "pink": "#F66CA1",
-      "turquoise": "#35C4CC",
-      "yellow": "#FFD21A"
-    }
-  },
-  "video_types": "ekspert danışığı, reklam, fəaliyyət nümayişi, sual-cavab, seminar görüntüləri",
-  "cautions": [
-    "Standart rəng sarıdır. Çəhrayı və ya firuzəyi yalnız istifadəçi həmin video üçün desə."
-  ],
-  "theme_source": "standart: sarı #FFD21A (istifadəçi seçimi, 2026-10-27); tünd fon çaları bizim seçimimizdir",
-  "style": {},
-  "history": [],
-  "theme": {
-    "primary": "#2B2414",
-    "primaryDeep": "#1A1609",
-    "accent": "#FFD21A",
-    "accentSoft": "#FFE57A",
-    "text": "#FFFFFF",
-    "onAccent": "#2B2414",
-    "cardAlpha": 0.94,
-    "emphasis": "#FFD21A"
+ "name": "Xalidə Baycan",
+ "status": "active",
+ "activity": "Uşaq inkişafı mütəxəssisi və təlimçi; oyun, nağıl terapiyası və Montessori istiqamətləri.",
+ "audience": "Pedaqoqlar, uşaqlarla işləyən mütəxəssislər.",
+ "palette": {
+  "confirmed": {
+   "pink": "#F66CA1",
+   "turquoise": "#35C4CC",
+   "yellow": "#FFD21A"
   }
+ },
+ "video_types": "ekspert danışığı, reklam, fəaliyyət nümayişi, sual-cavab, seminar görüntüləri",
+ "cautions": [
+  "Standart rəng sarıdır. Çəhrayı və ya firuzəyi yalnız istifadəçi həmin video üçün desə.",
+  "Bütün mənbə videolar ayna effektli gəlib (mikrofon tərəfinə bax) - istifadəçinin təsdiqi ilə çevrilir.",
+  "Sarı accent ağ kart üzərində mətn rəngi kimi oxunmur: vurğu tünd mətn + sarı marker xətti ilə verilir (isPale).",
+  "Mikrofonla çəkilir - səs təmizləməsi yalnız ehtiyac olduqda."
+ ],
+ "theme_source": "standart: sarı #FFD21A (istifadəçi seçimi, 2026-10-27); tünd fon çaları bizim seçimimizdir",
+ "style": {
+  "note": "hər videoda fərqli: chip/marker/lower/box/solo/stroke/plate/frame altyazılar; sarı #FFD21A + tünd qəhvəyi #2B2414"
+ },
+ "history": [
+  {
+   "date": "2026-10-28",
+   "video": "xalide-1: IMG Ekran asılılığı (alternativ oyunlar)",
+   "style": {
+    "captions": "chip",
+    "pops": "dark pops"
+   },
+   "scenes": [
+    "st_checks Telefon əvəzinə"
+   ],
+   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon)."
+  },
+  {
+   "date": "2026-10-28",
+   "video": "xalide-2: Mağazada ağlayan uşaq / Etmə əvəzinə yönləndir",
+   "style": {
+    "captions": "marker",
+    "pops": "marker overlays"
+   },
+   "scenes": [
+    "fc_versus Etmə! vs Gəl, yerinə qoyaq"
+   ],
+   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon)."
+  },
+  {
+   "date": "2026-10-28",
+   "video": "xalide-3: Gecə qorxuları / nağıl terapiyası",
+   "style": {
+    "captions": "lower",
+    "pops": "ticket"
+   },
+   "scenes": [
+    "sh_route dovşan hekayəsi"
+   ],
+   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon)."
+  },
+  {
+   "date": "2026-10-28",
+   "video": "xalide-4: Bağça seçimi: 4 meyar",
+   "style": {
+    "captions": "box",
+    "pops": "callcard #1-#4"
+   },
+   "scenes": [
+    "st_checks grid: proqramda olmalıdır"
+   ],
+   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon)."
+  },
+  {
+   "date": "2026-10-28",
+   "video": "xalide-5: Nitq gecikməsi / ekran / TPR",
+   "style": {
+    "captions": "solo",
+    "pops": "flash"
+   },
+   "scenes": [
+    "fc_recipe 4 addım"
+   ],
+   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon)."
+  },
+  {
+   "date": "2026-10-28",
+   "video": "xalide-6: Qrupda hiperaktiv uşaq",
+   "style": {
+    "captions": "stroke",
+    "pops": "type pops + bubble sitatlar"
+   },
+   "scenes": [],
+   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon)."
+  },
+  {
+   "date": "2026-10-28",
+   "video": "xalide-7: Evdə hiperaktiv uşaq: 2 qayda",
+   "style": {
+    "captions": "plate",
+    "pops": "light pops"
+   },
+   "scenes": [
+    "st_checks paper: enerjini bayıra atın"
+   ],
+   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon)."
+  },
+  {
+   "date": "2026-10-28",
+   "video": "xalide-8: Özünə inam: 3 səhv",
+   "style": {
+    "captions": "frame",
+    "pops": "note + bubble"
+   },
+   "scenes": [
+    "sh_answers tənqid və saxta tərif"
+   ],
+   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon)."
+  }
+ ],
+ "theme": {
+  "primary": "#2B2414",
+  "primaryDeep": "#1A1609",
+  "accent": "#FFD21A",
+  "accentSoft": "#FFE57A",
+  "text": "#FFFFFF",
+  "onAccent": "#2B2414",
+  "cardAlpha": 0.94,
+  "emphasis": "#FFD21A"
+ }
 }

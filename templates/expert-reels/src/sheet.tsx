@@ -1,6 +1,6 @@
 import React from "react";
 import { Easing, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { FONT, Pill, T, clamp01, rgba } from "./theme";
+import { FONT, Pill, T, clamp01, isPale, rgba } from "./theme";
 
 // Light paper scenes (white sheet, navy ink, brand-blue accents) in two families:
 //  - "route": a road map whose stops pin in one by one (consultation / process ads)
@@ -285,7 +285,8 @@ export const Ticket: React.FC<{ o: Ov }> = ({ o }) => {
           )}
           <div style={{ fontFamily: FONT, fontWeight: 800, fontSize: o.size ?? (chars > 34 ? 46 : chars > 18 ? 54 : 62), lineHeight: 1.12, color: T.primary }}>
             {o.parts.map(([s, hl], i) => (
-              <span key={i} style={{ color: hl ? T.accentSoft : T.primary }}>{s}</span>
+              // a pale accent (yellow) is unreadable on the white ticket: keep the word dark and mark it underneath
+              <span key={i} style={{ color: hl && !isPale(T.accentSoft) ? T.accentSoft : T.primary, backgroundImage: hl && isPale(T.accentSoft) ? `linear-gradient(${T.accent}, ${T.accent})` : undefined, backgroundSize: "100% 38%", backgroundPosition: "0 88%", backgroundRepeat: "no-repeat" }}>{s}</span>
             ))}
           </div>
           {strikeF !== null && <div style={{ position: "absolute", left: 20, top: "52%", height: 8, borderRadius: 4, width: `calc(${strike} * (100% - 40px))`, background: T.primary }} />}

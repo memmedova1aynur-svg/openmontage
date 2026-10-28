@@ -24,7 +24,7 @@ import { CARDS, Flash } from "./cards";
 import { ACADEMIC, EdCard } from "./academic";
 import { STUDIO } from "./studio";
 import { Backdrop, CommentCTA, PIP_SIDE, SCENES } from "./scenes";
-import { Cutaway, E, EMPH, FONT, FONT_HAND, FPS, Page, Pill, T, ZoomKey, clamp01, rgba, useFonts } from "./theme";
+import { Cutaway, E, EMPH, FONT, FONT_HAND, FPS, Page, Pill, T, ZoomKey, clamp01, isPale, rgba, useFonts } from "./theme";
 
 // Point of the speaker the full-frame zoom pushes toward (x, y in 1080x1920).
 const FACE = { x: 540, y: 0.36 * 1920 };
@@ -260,30 +260,32 @@ const AltCaptions: React.FC<{ page: Page; t: number; enter: number; style: "lowe
   return (
     <AbsoluteFill style={{ justifyContent: "flex-end", alignItems: "center", paddingBottom: inScene ? 230 : 430 }}>
       {lower && !inScene && (
-        <div style={{ position: "absolute", left: 0, right: 0, bottom: 300, height: 380, background: `linear-gradient(180deg, ${rgba(T.primaryDeep, 0)} 0%, ${rgba(T.primaryDeep, 0.62)} 45%, ${rgba(T.primaryDeep, 0.62)} 75%, ${rgba(T.primaryDeep, 0)} 100%)` }} />
+        <div style={{ position: "absolute", left: 0, right: 0, bottom: 300, height: 380, background: `linear-gradient(180deg, ${rgba(T.primaryDeep, 0)} 0%, ${rgba(T.primaryDeep, 0.8)} 40%, ${rgba(T.primaryDeep, 0.8)} 78%, ${rgba(T.primaryDeep, 0)} 100%)` }} />
       )}
       <div style={{ position: "relative", maxWidth: 960, textAlign: "center", lineHeight: 1.16, transform: `translateY(${(1 - enter) * 16}px)`, opacity: Math.min(1, enter * 1.8) }}>
         {page.words.map((w, i) => {
           const active = t >= w.s && t < Math.max(w.e, w.s + 0.12);
           const spoken = t >= w.s;
           const onPaper = inScene;
+          // a pale accent (yellow) can't be read on paper: the active word gets the marker swipe instead
+          const swipe = (style === "marker" || (onPaper && isPale(T.accentSoft))) && active;
           return (
             <span
               key={i}
               style={{
                 display: "inline-block",
                 margin: "0 8px",
-                padding: style === "marker" ? "0 10px" : 0,
+                padding: style === "marker" || swipe ? "0 10px" : 0,
                 borderRadius: 6,
                 fontFamily: FONT,
                 fontWeight: lower ? 700 : 900,
                 fontSize: lower ? 66 : 72,
                 letterSpacing: lower ? 0 : -0.5,
-                color: style === "marker" && active ? T.primary : lower && active ? (onPaper ? T.accentSoft : T.accent) : onPaper ? T.primary : "#FFFFFF",
-                opacity: spoken ? 1 : lower ? 0.6 : 0.5,
-                background: style === "marker" && active ? T.accent : "transparent",
-                transform: style === "marker" && active ? "rotate(-1.5deg)" : undefined,
-                textShadow: style === "marker" && active ? "none" : onPaper ? "none" : "0 3px 12px rgba(0,0,0,0.6), 0 1px 3px rgba(0,0,0,0.5)",
+                color: swipe ? T.primary : lower && active ? (onPaper ? T.accentSoft : T.accent) : onPaper ? T.primary : "#FFFFFF",
+                opacity: spoken ? 1 : lower ? 0.75 : 0.5,
+                background: swipe ? T.accent : "transparent",
+                transform: swipe ? "rotate(-1.5deg)" : undefined,
+                textShadow: swipe ? "none" : onPaper ? "none" : "0 3px 12px rgba(0,0,0,0.6), 0 1px 3px rgba(0,0,0,0.5)",
               }}
             >
               {w.w}

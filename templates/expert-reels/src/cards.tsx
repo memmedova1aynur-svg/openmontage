@@ -1,6 +1,6 @@
 import React from "react";
 import { Easing, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { FONT, Pill, T, clamp01, rgba } from "./theme";
+import { FONT, Pill, T, clamp01, isPale, rgba } from "./theme";
 
 // Flashcards: white index cards (thin ruled lines, a brand-blue tab) flip in on a deep navy
 // stage. Scenes for study topics (open / closed book, recognise vs recall, self-quiz cards,
@@ -131,7 +131,15 @@ const Book: React.FC<SceneProps> = ({ f, p, startT }) => {
   );
 };
 
-// ---------------------------------------------------------------- recognise vs recall
+// a big cross or tick in a brand circle (Versus cards given as props)
+const Mark: React.FC<{ kind: string }> = ({ kind }) => (
+  <svg width={130} height={130} viewBox="0 0 130 130">
+    <circle cx={65} cy={65} r={58} fill={kind === "x" ? rgba(T.primary, 0.08) : T.accent} stroke={T.primary} strokeWidth={6} />
+    <path d={kind === "x" ? "M42 42 L88 88 M88 42 L42 88" : "M36 66 L56 86 L94 44"} fill="none" stroke={T.primary} strokeWidth={11} strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+// ---------------------------------------------------------------- two cards side by side (default: recognise vs recall)
 const Versus: React.FC<SceneProps> = ({ f, p, startT }) => {
   const t = startT + f / FPSX;
   const a = p.at ?? {};
@@ -142,19 +150,21 @@ const Versus: React.FC<SceneProps> = ({ f, p, startT }) => {
     <div style={{ position: "absolute", inset: 0 }}>
       <Head t={t} at={startT} text={p.title ?? ""} />
       <Card x={70} y={520} w={430} h={620} k={A} rot={-4} tab="1">
+        {p.left ? <Mark kind={p.left.icon ?? "x"} /> : (
         <svg width={170} height={110} viewBox="0 0 170 110">
           <path d="M10 55 Q85 -10 160 55 Q85 120 10 55 Z" fill="none" stroke={T.primary} strokeWidth={8} />
           <circle cx={85} cy={55} r={24} fill={T.accent} stroke={T.primary} strokeWidth={6} />
-        </svg>
-        <Big size={58}>Tanımaq</Big>
-        <div style={{ fontFamily: FONT, fontWeight: 600, fontSize: 36, color: T.primary, marginTop: 16, lineHeight: 1.2 }}>görəndə<br />“tanış gəlir”</div>
+        </svg>)}
+        <Big size={p.left?.size ?? 58}>{p.left?.title ?? "Tanımaq"}</Big>
+        <div style={{ fontFamily: FONT, fontWeight: 600, fontSize: 36, color: T.primary, marginTop: 16, lineHeight: 1.2 }}>{p.left?.sub ?? <>görəndə<br />“tanış gəlir”</>}</div>
       </Card>
       <Card x={580} y={540} w={430} h={620} k={B} rot={4} tab="2">
+        {p.right ? <Mark kind={p.right.icon ?? "check"} /> : (
         <svg width={150} height={130} viewBox="0 0 150 130">
           <path d="M75 120 V20 M75 20 Q30 0 22 40 Q0 50 15 80 Q10 115 55 115 M75 20 Q120 0 128 40 Q150 50 135 80 Q140 115 95 115" fill={rgba(T.accent, 0.5)} stroke={T.primary} strokeWidth={7} strokeLinejoin="round" />
-        </svg>
-        <Big size={52}>Xatırlamaq</Big>
-        <div style={{ fontFamily: FONT, fontWeight: 600, fontSize: 36, color: T.primary, marginTop: 16, lineHeight: 1.2 }}>baxmadan<br />özün deyirsən</div>
+        </svg>)}
+        <Big size={p.right?.size ?? 52}>{p.right?.title ?? "Xatırlamaq"}</Big>
+        <div style={{ fontFamily: FONT, fontWeight: 600, fontSize: 36, color: T.primary, marginTop: 16, lineHeight: 1.2 }}>{p.right?.sub ?? <>baxmadan<br />özün deyirsən</>}</div>
       </Card>
       <div style={{ position: "absolute", top: 1190, left: 0, right: 0, textAlign: "center", transform: `scale(${ne})`, fontFamily: FONT, fontWeight: 900, fontSize: 130, color: T.accent }}>≠</div>
     </div>
@@ -254,7 +264,8 @@ export const Flash: React.FC<{ o: Pill & { rot?: number } }> = ({ o }) => {
           )}
           <div style={{ position: "relative", display: "inline-block", fontFamily: FONT, fontWeight: 900, fontSize: o.size ?? (chars > 26 ? 50 : chars > 14 ? 62 : 76), lineHeight: 1.1, color: T.primary, opacity: 1 - 0.45 * strike }}>
             {o.parts.map(([s, hl], i) => (
-              <span key={i} style={{ color: hl ? T.accentSoft : T.primary, textDecoration: hl ? `underline 7px ${T.accent}` : undefined, textUnderlineOffset: 8 }}>{s}</span>
+              // a pale accent (yellow) is unreadable on the white card: keep the word dark and mark it underneath
+              <span key={i} style={{ color: hl && !isPale(T.accentSoft) ? T.accentSoft : T.primary, textDecoration: hl && !isPale(T.accentSoft) ? `underline 7px ${T.accent}` : undefined, textUnderlineOffset: 8, backgroundImage: hl && isPale(T.accentSoft) ? `linear-gradient(${T.accent}, ${T.accent})` : undefined, backgroundSize: "100% 38%", backgroundPosition: "0 88%", backgroundRepeat: "no-repeat" }}>{s}</span>
             ))}
             {strikeF !== null && <div style={{ position: "absolute", left: -10, top: "50%", height: 10, width: `calc(${strike} * (100% + 20px))`, background: T.primary, borderRadius: 5 }} />}
           </div>
