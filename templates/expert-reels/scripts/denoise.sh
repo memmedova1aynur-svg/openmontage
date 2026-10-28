@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Remove background noise (cafe clatter, cutlery, music bleed) from an already-rendered edit
 # without re-rendering the picture:
-#   1. DeepFilterNet3 cleans the cut footage's voice track (assets/video/cut.mp4)
+#   1. DeepFilterNet3 cleans the cut footage's voice track (assets/video/cut.mp4), then
+#      everything between the expert's words is gated down (other voices, music between phrases)
 #   2. public/base.mp4 gets the clean voice (video stream copied)
 #   3. Remotion renders the audio only (voice + SFX), then it replaces the audio of
 #      renders/<name>.mp4 and renders/<name>_ig.mp4 (pictures copied, -16 LUFS kept)
@@ -22,7 +23,18 @@ mkdir -p "$TMP"
 
 ffmpeg -v error -y -i "$P/assets/video/cut.mp4" -vn -ac 1 -ar 48000 -c:a pcm_s16le "$TMP/voice.wav"
 # -D keeps the voice in sync (compensates the model look-ahead); --pf = post-filter for residual noise
-"$DF" -D --pf -o "$TMP/out" "$TMP/voice.wav" >/dev/null 2>&1
+"$DF" -D --pf --pf-beta 0.06 -o "$TMP/out" "$TMP/voice.wav" >/dev/null 2>&1
+# PASSES=2: a second pass for rooms with steady chatter / music under the voice
+if [ "${PASSES:-1}" -ge 2 ]; then
+  mv "$TMP/out/voice.wav" "$TMP/voice_p1.wav"
+  "$DF" -D --pf --pf-beta 0.06 -o "$TMP/out" "$TMP/voice_p1.wav" >/dev/null 2>&1
+  mv "$TMP/out/voice_p1.wav" "$TMP/out/voice.wav"
+fi
+# DeepFilterNet keeps anything speech-like (other people talking, sung music). Between the
+# expert's own words (artifacts/words.json, cut timeline) the track is gated down by 30 dB.
+if [ -f "$P/artifacts/words.json" ]; then
+  python3 "$(dirname "$0")/speech_gate.py" "$TMP/out/voice.wav" "$P/artifacts/words.json" "$TMP/out/voice.wav"
+fi
 
 cp "$WS/public/base.mp4" "$TMP/base_noisy.mp4"
 ffmpeg -v error -y -i "$TMP/base_noisy.mp4" -i "$TMP/out/voice.wav" -map 0:v -map 1:a -c:v copy \
