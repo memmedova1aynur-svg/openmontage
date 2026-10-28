@@ -14,17 +14,34 @@ const pop = (t: number, at: number | undefined) =>
 type SceneProps = { f: number; p: Record<string, any>; startT: number };
 const tOf = (p: SceneProps) => p.startT + p.f / FPSX;
 
-const Stage: React.FC<{ light?: boolean }> = ({ light }) => (
-  <div
-    style={{
-      position: "absolute",
-      inset: 0,
-      background: light
-        ? `radial-gradient(ellipse at 50% 35%, #FFFFFF 0%, #EEF2F8 60%, #DCE4EF 100%)`
-        : `radial-gradient(ellipse at 50% 30%, #2C416A 0%, ${T.primary} 45%, ${T.primaryDeep} 100%)`,
-    }}
-  />
-);
+// The stage is never still: the light drifts and soft particles rise from the first frame,
+// so a scene is alive before its first object lands on the spoken word.
+const Stage: React.FC<{ light?: boolean; t?: number }> = ({ light, t = 0 }) => {
+  const lx = 50 + Math.sin(t * 0.6) * 18;
+  const ly = 30 + Math.cos(t * 0.45) * 10;
+  return (
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        overflow: "hidden",
+        background: light
+          ? `radial-gradient(ellipse at ${lx}% ${ly + 5}%, #FFFFFF 0%, #EEF2F8 60%, #DCE4EF 100%)`
+          : `radial-gradient(ellipse at ${lx}% ${ly}%, #2E4470 0%, ${T.primary} 45%, ${T.primaryDeep} 100%)`,
+      }}
+    >
+      {Array.from({ length: 16 }).map((_, i) => {
+        const sp = 40 + ((i * 53) % 70);
+        const x = ((i * 137) % 1000) + 40 + Math.sin(t * 0.8 + i) * 30;
+        const y = 1920 - (((t * sp + i * 211) % 2100) - 90);
+        const r = 6 + (i % 4) * 4;
+        return (
+          <div key={i} style={{ position: "absolute", left: x, top: y, width: r * 2, height: r * 2, borderRadius: r, background: light ? rgba(T.primary, 0.08) : rgba(T.accent, 0.16 + (i % 3) * 0.06) }} />
+        );
+      })}
+    </div>
+  );
+};
 
 const Title: React.FC<{ t: number; at: number; text: string; dark?: boolean; top?: number }> = ({ t, at, text, dark, top = 250 }) => {
   const k = prog(t, at, 0.5);
@@ -45,7 +62,7 @@ const Profile: React.FC<SceneProps> = (props) => {
   const circle = prog(t, a.bio === undefined ? undefined : a.bio + 0.3, 0.6);
   return (
     <div style={{ position: "absolute", inset: 0 }}>
-      <Stage />
+      <Stage t={t} />
       <div style={{ position: "absolute", left: 230, top: 300, width: 620, height: 1180, borderRadius: 70, background: "#0B0F17", boxShadow: "0 40px 90px rgba(0,0,0,0.55)", transform: `translateY(${(1 - k) * 200}px) rotate(${(1 - k) * -6}deg)`, opacity: Math.min(1, k * 1.5) }}>
         <div style={{ position: "absolute", inset: 18, borderRadius: 54, background: "#FFFFFF", overflow: "hidden" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 30, padding: "70px 40px 20px" }}>
@@ -89,15 +106,19 @@ const Numbers: React.FC<SceneProps> = (props) => {
   const rows: { big: string; small: string; at: number }[] = props.p.rows;
   return (
     <div style={{ position: "absolute", inset: 0 }}>
-      <Stage />
+      <Stage t={t} />
       <Title t={t} at={props.startT} text={props.p.title ?? ""} />
       {rows.map((r, i) => {
         const k = pop(t, r.at);
+        const frame = pop(t, props.startT + 0.1 + i * 0.15);
         return (
-          <div key={i} style={{ position: "absolute", top: 520 + i * 430, left: 90, right: 90, height: 360, borderRadius: 40, background: "#FFFFFF", boxShadow: "0 30px 70px rgba(0,0,0,0.4)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", transform: `scale(${0.7 + 0.3 * k})`, opacity: Math.min(1, k * 2) }}>
+          <React.Fragment key={i}>
+          <div style={{ position: "absolute", top: 520 + i * 430, left: 90, right: 90, height: 360, borderRadius: 40, border: `4px dashed ${rgba(T.accent, 0.6)}`, transform: `scale(${0.8 + 0.2 * frame})`, opacity: frame * (1 - Math.min(1, k * 2)) }} />
+          <div style={{ position: "absolute", top: 520 + i * 430, left: 90, right: 90, height: 360, borderRadius: 40, background: "#FFFFFF", boxShadow: "0 30px 70px rgba(0,0,0,0.4)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", transform: `scale(${0.7 + 0.3 * k})`, opacity: Math.min(1, k * 2) }}>
             <div style={{ fontFamily: FONT, fontWeight: 900, fontSize: 150, lineHeight: 1, color: T.primary, letterSpacing: -4 }}>{r.big}</div>
             <div style={{ marginTop: 18, fontFamily: FONT, fontWeight: 700, fontSize: 44, color: T.primary, background: T.accent, padding: "6px 24px", borderRadius: 14 }}>{r.small}</div>
           </div>
+          </React.Fragment>
         );
       })}
     </div>
@@ -117,7 +138,7 @@ const Balance: React.FC<SceneProps> = (props) => {
   const tilt = (1 - level) * 12 * (t >= (a.w1 ?? 0) ? 1 : 0) + Math.sin(t * 3) * 1.2 * level;
   return (
     <div style={{ position: "absolute", inset: 0 }}>
-      <Stage />
+      <Stage t={t} />
       <Title t={t} at={props.startT} text={props.p.title ?? "Balans"} />
       <svg width={1080} height={1920} style={{ position: "absolute", inset: 0 }}>
         <path d="M540 640 V1300 M400 1300 H680" stroke="#FFFFFF" strokeWidth={14} strokeLinecap="round" />
@@ -157,7 +178,7 @@ const Certs: React.FC<SceneProps> = (props) => {
   const q = pop(t, a.q);
   return (
     <div style={{ position: "absolute", inset: 0 }}>
-      <Stage />
+      <Stage t={t} />
       <Title t={t} at={props.startT} text={props.p.title ?? ""} />
       {Array.from({ length: n }).map((_, i) => {
         const at = (a.pile ?? props.startT) + i * 0.22;
@@ -192,7 +213,7 @@ const Forget: React.FC<SceneProps> = (props) => {
   const fade = prog(t, a.fade, 1.6);
   return (
     <div style={{ position: "absolute", inset: 0 }}>
-      <Stage />
+      <Stage t={t} />
       <Title t={t} at={props.startT} text={props.p.title ?? ""} />
       <svg width={1080} height={1920} style={{ position: "absolute", inset: 0 }}>
         {Array.from({ length: 20 }).map((_, i) => {
@@ -224,7 +245,7 @@ const Checks: React.FC<SceneProps> = (props) => {
   let y = props.p.top ?? 420;
   return (
     <div style={{ position: "absolute", inset: 0 }}>
-      <Stage light={props.p.light} />
+      <Stage light={props.p.light} t={t} />
       {props.p.title && <Title t={t} at={props.startT} text={props.p.title} dark={props.p.light} />}
       {blocks.map((b, bi) => {
         const hk = prog(t, b.at, 0.4);
@@ -265,7 +286,7 @@ const Juggle: React.FC<SceneProps> = (props) => {
   ];
   return (
     <div style={{ position: "absolute", inset: 0 }}>
-      <Stage />
+      <Stage t={t} />
       {props.p.title && <Title t={t} at={props.startT} text={props.p.title} top={240} />}
       {items.map((it, i) => {
         const s = spots[i % spots.length];
@@ -301,7 +322,7 @@ const Funnel: React.FC<SceneProps> = (props) => {
   const leak = Math.max(0, t - (a.leak ?? 1e9));
   return (
     <div style={{ position: "absolute", inset: 0 }}>
-      <Stage />
+      <Stage t={t} />
       <Title t={t} at={props.startT} text={props.p.title ?? ""} />
       <svg width={1080} height={1920} style={{ position: "absolute", inset: 0 }}>
         <path d="M200 520 H880 L640 920 V1180 H440 V920 Z" fill={rgba("#FFFFFF", 0.1)} stroke="#FFFFFF" strokeWidth={10} strokeLinejoin="round" opacity={pour} />
@@ -333,13 +354,28 @@ const Funnel: React.FC<SceneProps> = (props) => {
   );
 };
 
+// slow push-in and sway on the whole scene (camera move), on from the first frame
+const live = (S: React.FC<SceneProps>): React.FC<SceneProps> => (props) => {
+  const local = props.f / FPSX;
+  const z = 1 + Math.min(0.07, local * 0.012);
+  const sway = Math.sin(local * 0.9) * 0.6;
+  const enter = ease(interpolate(local, [0, 0.45], [0, 1], clamp01));
+  return (
+    <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
+      <div style={{ position: "absolute", inset: 0, transform: `scale(${z * (1.06 - 0.06 * enter)}) rotate(${sway}deg)` }}>
+        <S {...props} />
+      </div>
+    </div>
+  );
+};
+
 export const STUDIO: Record<string, React.FC<SceneProps>> = {
-  st_profile: Profile,
-  st_numbers: Numbers,
-  st_balance: Balance,
-  st_certs: Certs,
-  st_forget: Forget,
-  st_checks: Checks,
-  st_juggle: Juggle,
-  st_funnel: Funnel,
+  st_profile: live(Profile),
+  st_numbers: live(Numbers),
+  st_balance: live(Balance),
+  st_certs: live(Certs),
+  st_forget: live(Forget),
+  st_checks: live(Checks),
+  st_juggle: live(Juggle),
+  st_funnel: live(Funnel),
 };
