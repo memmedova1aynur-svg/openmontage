@@ -15,7 +15,9 @@
   "Standart rəng sarıdır. Çəhrayı və ya firuzəyi yalnız istifadəçi həmin video üçün desə.",
   "Bütün mənbə videolar ayna effektli gəlib (mikrofon tərəfinə bax) - istifadəçinin təsdiqi ilə çevrilir.",
   "Sarı accent ağ kart üzərində mətn rəngi kimi oxunmur: vurğu tünd mətn + sarı marker xətti ilə verilir (isPale).",
-  "Mikrofonla çəkilir - səs təmizləməsi yalnız ehtiyac olduqda."
+  "Səs: hər videoda DeepFilterNet + söz daxilində bərpa (speech_gate raw) - istifadəçi təmiz səs istəyir (2026-10-28).",
+  "Qutular baş/üz/göz/əllərə düşməməlidir; alt yazılar da əllərə. Hər render-dən əvvəl guard.py <id> --fix işlət.",
+  "Çərçivə dəyişir: başı yuxarıda olan çəkilişlərdə (açıq hava) qutular başın yanındakı sütunlara (note col / bubble maxw) qoyulur."
  ],
  "theme_source": "standart: sarı #FFD21A (istifadəçi seçimi, 2026-10-27); tünd fon çaları bizim seçimimizdir",
  "style": {
@@ -32,7 +34,7 @@
    "scenes": [
     "st_checks Telefon əvəzinə"
    ],
-   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon)."
+   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon). Düzəliş: guard.py ilə qutular/alt yazılar baş və əllərdən çəkildi, səs təmizləndi (x7 plate->paper, x8 kənar sütunlar)."
   },
   {
    "date": "2026-10-28",
@@ -44,7 +46,7 @@
    "scenes": [
     "fc_versus Etmə! vs Gəl, yerinə qoyaq"
    ],
-   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon)."
+   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon). Düzəliş: guard.py ilə qutular/alt yazılar baş və əllərdən çəkildi, səs təmizləndi (x7 plate->paper, x8 kənar sütunlar)."
   },
   {
    "date": "2026-10-28",
@@ -56,7 +58,7 @@
    "scenes": [
     "sh_route dovşan hekayəsi"
    ],
-   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon)."
+   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon). Düzəliş: guard.py ilə qutular/alt yazılar baş və əllərdən çəkildi, səs təmizləndi (x7 plate->paper, x8 kənar sütunlar)."
   },
   {
    "date": "2026-10-28",
@@ -68,7 +70,7 @@
    "scenes": [
     "st_checks grid: proqramda olmalıdır"
    ],
-   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon)."
+   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon). Düzəliş: guard.py ilə qutular/alt yazılar baş və əllərdən çəkildi, səs təmizləndi (x7 plate->paper, x8 kənar sütunlar)."
   },
   {
    "date": "2026-10-28",
@@ -80,7 +82,7 @@
    "scenes": [
     "fc_recipe 4 addım"
    ],
-   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon)."
+   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon). Düzəliş: guard.py ilə qutular/alt yazılar baş və əllərdən çəkildi, səs təmizləndi (x7 plate->paper, x8 kənar sütunlar)."
   },
   {
    "date": "2026-10-28",
@@ -90,7 +92,7 @@
     "pops": "type pops + bubble sitatlar"
    },
    "scenes": [],
-   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon)."
+   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon). Düzəliş: guard.py ilə qutular/alt yazılar baş və əllərdən çəkildi, səs təmizləndi (x7 plate->paper, x8 kənar sütunlar)."
   },
   {
    "date": "2026-10-28",
@@ -102,7 +104,7 @@
    "scenes": [
     "st_checks paper: enerjini bayıra atın"
    ],
-   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon)."
+   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon). Düzəliş: guard.py ilə qutular/alt yazılar baş və əllərdən çəkildi, səs təmizləndi (x7 plate->paper, x8 kənar sütunlar)."
   },
   {
    "date": "2026-10-28",
@@ -114,7 +116,7 @@
    "scenes": [
     "sh_answers tənqid və saxta tərif"
    ],
-   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon)."
+   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon). Düzəliş: guard.py ilə qutular/alt yazılar baş və əllərdən çəkildi, səs təmizləndi (x7 plate->paper, x8 kənar sütunlar)."
   }
  ],
  "theme": {

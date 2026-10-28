@@ -325,7 +325,8 @@ export const BLUEPRINT: Record<string, React.FC<SceneProps>> = {
 // ---------------------------------------------------------------- overlays on the speaker
 // "note": a framed label. Without `point` it is a centred title row at `top`; with `point`
 // ([x, y] on the speaker) it sits on the left / right with a thin leader line and a dot.
-export const BpNote: React.FC<{ o: Pill & { point?: [number, number]; big?: boolean } }> = ({ o }) => {
+// col: a narrow card in the side column next to the speaker's head (maxw wide), for close framings
+export const BpNote: React.FC<{ o: Pill & { point?: [number, number]; big?: boolean; col?: boolean; maxw?: number } }> = ({ o }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const dur = (o.out - o.in) * fps;
@@ -336,7 +337,9 @@ export const BpNote: React.FC<{ o: Pill & { point?: [number, number]; big?: bool
   const strikeF = o.strike !== undefined ? Math.round((o.strike - o.in) * fps) : null;
   const strike = strikeF === null ? 0 : interpolate(frame, [strikeF, strikeF + 8], [0, 1], clamp01);
   const side = o.side ?? "l";
-  const box: React.CSSProperties = o.point
+  const box: React.CSSProperties = o.col
+    ? { position: "absolute", top: o.top ?? 330, [side === "l" ? "left" : "right"]: 26, width: o.maxw ?? 280, display: "flex", justifyContent: side === "l" ? "flex-start" : "flex-end" }
+    : o.point
     ? { position: "absolute", top: o.top ?? 900, [side === "l" ? "left" : "right"]: 40 }
     : { position: "absolute", top: o.top ?? 280, left: 0, right: 0, display: "flex", justifyContent: "center" };
   return (
@@ -350,7 +353,7 @@ export const BpNote: React.FC<{ o: Pill & { point?: [number, number]; big?: bool
         <div
           style={{
             position: "relative",
-            padding: o.big ? "18px 48px 24px" : o.point ? "12px 24px 15px" : "16px 34px 20px",
+            padding: o.big ? "18px 48px 24px" : o.point || o.col ? "12px 22px 15px" : "16px 34px 20px",
             background: rgba(T.primary, 0.9),
             border: `2px solid ${rgba(T.accent, 0.55)}`,
             fontFamily: FONT,
@@ -359,7 +362,7 @@ export const BpNote: React.FC<{ o: Pill & { point?: [number, number]; big?: bool
             lineHeight: 1.1,
             letterSpacing: o.big ? 4 : 0,
             color: "#FFFFFF",
-            maxWidth: o.point ? 420 : 960,
+            maxWidth: o.col ? (o.maxw ?? 280) : o.point ? 420 : 960,
             textAlign: "center",
             transform: `translateY(${(1 - k) * 24}px)`,
             opacity: Math.min(1, k * 1.5) * (1 - 0.4 * strike),

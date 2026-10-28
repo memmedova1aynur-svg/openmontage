@@ -72,6 +72,7 @@ export type Edit = {
   pip: Pip;
   pages: Page[];
   zoom: ZoomKey[];
+  captionShift?: [number, number, number, number?][]; // [in, out, dy, dx px]: captions moved off the hands
   overlays: Pill[];
   cutaways: Cutaway[];
   sfx: { t: number; src: string; vol: number }[];

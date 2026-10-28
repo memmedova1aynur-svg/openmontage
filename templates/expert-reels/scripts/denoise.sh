@@ -40,7 +40,7 @@ fi
 # DeepFilterNet keeps anything speech-like (other people talking, sung music). Between the
 # expert's own words (artifacts/words.json, cut timeline) the track is gated down by 30 dB.
 if [ -f "$P/artifacts/words.json" ]; then
-  python3 "$(dirname "$0")/speech_gate.py" "$TMP/out/voice.wav" "$P/artifacts/words.json" "$TMP/out/voice.wav"
+  python3 "$(dirname "$0")/speech_gate.py" "$TMP/out/voice.wav" "$P/artifacts/words.json" "$TMP/out/voice.wav" -30 "$TMP/voice.wav"
 fi
 fi
 

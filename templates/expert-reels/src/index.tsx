@@ -49,6 +49,18 @@ const zoomAt = (t: number, fps: number): number => {
   return prev.s + (cur.s - prev.s) * prog + drift;
 };
 
+// captions step out of the way of the speaker's hands (spans from guard.py: [in, out, dy, dx?]), easing 0.25 s
+const captionShift = (t: number) => {
+  let x = 0;
+  let y = 0;
+  for (const [a, b, dy, dx] of E.captionShift ?? []) {
+    const k = Math.min(interpolate(t, [a - 0.25, a], [0, 1], clamp01), interpolate(t, [b, b + 0.25], [1, 0], clamp01));
+    y += dy * k;
+    x += (dx ?? 0) * k;
+  }
+  return { x, y };
+};
+
 const punchShake = (t: number) => {
   const p = E.zoom.find((k: ZoomKey) => k.k === "punch" && t >= k.t && t < k.t + 0.18);
   if (!p) return 0;
@@ -678,7 +690,9 @@ const Reel: React.FC = () => {
           {o.kind === "edcard" ? <EdCard o={o as any} /> : o.kind === "flash" ? <Flash o={o as any} /> : o.kind === "ticket" ? <Ticket o={o as any} /> : o.kind === "marker" ? <Marker o={o as any} /> : o.kind === "callcard" ? <CallCard o={o as any} /> : o.kind === "note" ? <BpNote o={o as any} /> : o.kind === "spark" ? <BpSpark o={o as any} /> : o.kind === "strip" ? <Strip o={o as any} /> : o.kind === "counter" ? <CounterFrame o={o} /> : o.kind === "icon" ? <IconChip o={o} /> : o.kind === "title" ? <TitleCard o={o} /> : o.kind === "end" ? <EndCard o={o} /> : o.kind !== "pop" ? <PillCard o={o} /> : E.style.pops === "type" || o.hand || o.strike !== undefined ? <TypePop o={o} /> : <KeywordPop o={o} />}
         </Sequence>
       ))}
-      <Captions />
+      <AbsoluteFill style={{ transform: `translate(${captionShift(t).x}px, ${captionShift(t).y}px)` }}>
+        <Captions />
+      </AbsoluteFill>
       {E.sfx.map((s, i) => (
         <Sequence key={i} from={Math.max(0, Math.round(s.t * FPS))} durationInFrames={40}>
           <Audio src={staticFile(s.src)} volume={s.vol} />

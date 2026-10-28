@@ -201,3 +201,13 @@ bölməsinə yazılır.
 - Görüntünün öz səsi saxlanılır. Musiqi və təsdiqlənməmiş səs effekti əlavə
   edilmir.
 - Arxa fon xahiş olmadan bulanıqlaşdırılmır.
+
+
+## Placement guard (before every final render)
+
+`python3 templates/expert-reels/scripts/guard.py <project-id> --fix` finds the speaker's head and hands
+(MediaPipe pose) and renders every overlay alone to get its real box. Any box that touches the head,
+face or hands is reported and must be moved (higher, narrower, one line, or into the side column next
+to the head: note `col` + `maxw`, bubble `maxw`). `--fix` also writes `caption_shift` into spec.json so the
+captions step off the hands (one stable spot per stretch, not page-by-page hopping). Re-run build_edit
+afterwards. Wide bottom panels (plate captions) cover the hands of a standing speaker - avoid them there.

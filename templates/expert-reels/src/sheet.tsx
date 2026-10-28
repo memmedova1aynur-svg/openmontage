@@ -247,7 +247,7 @@ export const SHEET: Record<string, React.FC<SceneProps>> = {
 };
 
 // ---------------------------------------------------------------- overlays
-type Ov = Pill & { bubble?: boolean; tail?: "l" | "r"; lines?: string[]; tag?: string };
+type Ov = Pill & { bubble?: boolean; tail?: "l" | "r"; lines?: string[]; tag?: string; maxw?: number };
 
 const rowBox = (o: Ov): React.CSSProperties =>
   o.side === "l" ? { position: "absolute", top: o.top ?? 300, left: 50 } : o.side === "r" ? { position: "absolute", top: o.top ?? 300, right: 50 } : { position: "absolute", top: o.top ?? 300, left: 0, right: 0, display: "flex", justifyContent: "center" };
@@ -313,7 +313,7 @@ export const Marker: React.FC<{ o: Ov }> = ({ o }) => {
     return (
       <div style={{ position: "absolute", inset: 0, opacity: exit }}>
         <div style={rowBox(o)}>
-          <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 34, padding: "18px 30px 22px", maxWidth: 640, boxShadow: "0 14px 34px rgba(0,0,0,0.28)", transform: `scale(${k})`, transformOrigin: tailL ? "0% 100%" : "100% 100%", fontFamily: FONT, fontWeight: 700, fontSize: o.size ?? 44, lineHeight: 1.15, color: T.primary }}>
+          <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 34, padding: "18px 30px 22px", maxWidth: o.maxw ?? 640, boxShadow: "0 14px 34px rgba(0,0,0,0.28)", transform: `scale(${k})`, transformOrigin: tailL ? "0% 100%" : "100% 100%", fontFamily: FONT, fontWeight: 700, fontSize: o.size ?? 44, lineHeight: 1.15, color: T.primary }}>
             {o.parts.map(([s]) => s).join("")}
             <div style={{ position: "absolute", bottom: -16, [tailL ? "left" : "right"]: 34, width: 36, height: 36, background: "#FFFFFF", transform: "rotate(45deg)", borderRadius: 6 }} />
           </div>
