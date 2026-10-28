@@ -142,3 +142,6 @@ if spec_p.exists():  # tightening before the spec is written is fine too
     json.dump(spec, open(spec_p, "w"), ensure_ascii=False, indent=1)
 
 print(f"{len(removed)} pauses shortened, {cut_dur:.2f}s -> {acc:.2f}s; new keep: {len(new_keep)} ranges")
+
+# the cleaned voice can hide soft syllables; give back anything voiced in the raw audio
+subprocess.run([sys.executable, str(Path(__file__).with_name("unclip.py")), str(proj), str(src)], check=True)
