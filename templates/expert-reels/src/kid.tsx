@@ -42,21 +42,21 @@ export const Kid: React.FC<{ o: Pill }> = ({ o }) => {
           <path d={`M116 182 L${126 + leg} ${228 - leg * 0.6}`} stroke={TEAL} strokeWidth={16} strokeLinecap="round" />
           <ellipse cx={80 - leg} cy={234 - leg * 0.6} rx={14} ry={8} fill={INK} />
           <ellipse cx={128 + leg} cy={234 - leg * 0.6} rx={14} ry={8} fill={INK} />
-          {/* arms */}
-          <g transform={`rotate(${arm} 82 118)`}><path d="M82 118 L44 140" stroke={SKIN} strokeWidth={13} strokeLinecap="round" /><circle cx={42} cy={141} r={9} fill={SKIN} /></g>
-          <g transform={`rotate(${-arm} 126 118)`}><path d="M126 118 L164 140" stroke={SKIN} strokeWidth={13} strokeLinecap="round" /><circle cx={166} cy={141} r={9} fill={SKIN} /></g>
           {/* body */}
           <rect x={76} y={108} width={56} height={82} rx={22} fill={PINK} />
           <path d="M88 140 h32" stroke="#FFFFFF" strokeWidth={6} strokeLinecap="round" opacity={0.8} />
+          {/* arms */}
+          <g transform={`rotate(${arm} 82 118)`}><path d="M82 118 L44 140" stroke={SKIN} strokeWidth={13} strokeLinecap="round" /><circle cx={42} cy={141} r={9} fill={SKIN} /></g>
+          <g transform={`rotate(${-arm} 126 118)`}><path d="M126 118 L164 140" stroke={SKIN} strokeWidth={13} strokeLinecap="round" /><circle cx={166} cy={141} r={9} fill={SKIN} /></g>
           {/* head */}
-          <circle cx={104} cy={74} r={40} fill={SKIN} />
-          <path d="M64 70 Q66 30 104 32 Q142 30 144 70 Q130 52 104 54 Q80 52 64 70 Z" fill={YEL} />
-          <path d="M100 32 q6 -16 18 -14" stroke={YEL} strokeWidth={7} fill="none" strokeLinecap="round" />
-          <circle cx={90} cy={78} r={5} fill={INK} />
-          <circle cx={118} cy={78} r={5} fill={INK} />
-          <path d={air > 0.5 ? "M92 94 Q104 110 116 94 Z" : "M93 94 Q104 104 115 94"} fill={air > 0.5 ? INK : "none"} stroke={INK} strokeWidth={4} strokeLinecap="round" />
-          <circle cx={80} cy={92} r={6} fill={PINK} opacity={0.5} />
-          <circle cx={128} cy={92} r={6} fill={PINK} opacity={0.5} />
+          <circle cx={104} cy={80} r={32} fill={SKIN} />
+          <path d="M71 78 Q70 42 104 44 Q138 42 137 78 Q128 60 104 62 Q82 60 71 78 Z" fill="#6B4226" />
+          
+          <circle cx={93} cy={84} r={4} fill={INK} />
+          <circle cx={115} cy={84} r={4} fill={INK} />
+          <path d={air > 0.5 ? "M96 96 Q104 106 112 96 Z" : "M97 96 Q104 102 111 96"} fill={air > 0.5 ? INK : "none"} stroke={INK} strokeWidth={4} strokeLinecap="round" />
+          <circle cx={86} cy={94} r={5} fill={PINK} opacity={0.4} />
+          <circle cx={122} cy={94} r={5} fill={PINK} opacity={0.4} />
         </g>
       </svg>
     </div>
@@ -79,10 +79,86 @@ export const BigNumber: React.FC<{ f: number; p: any; startT: number }> = ({ f, 
         const c = [PINK, YEL, "#FFFFFF", TEAL][i % 4];
         return <div key={i} style={{ position: "absolute", left: 540 + Math.cos(a) * r - 10, top: 880 + Math.sin(a) * r - 10, width: 20, height: i % 2 ? 20 : 12, borderRadius: i % 3 ? 4 : 10, background: c, opacity: 1 - burst * 0.6, transform: `rotate(${a * 57 + f * 8}deg)` }} />;
       })}
-      <div style={{ position: "absolute", left: 0, right: 0, top: 880, transform: `translateY(-50%) scale(${(0.3 + 0.7 * k) * breathe})`, textAlign: "center", fontFamily: "Montserrat", fontWeight: 900, fontSize: p.size ?? 520, lineHeight: 1, color: "#FFFFFF", textShadow: `0 18px 0 ${PINK}, 0 30px 60px rgba(0,0,0,0.35)` }}>
+      <div style={{ position: "absolute", left: 0, right: 0, top: 880, transform: `translateY(-50%) scale(${(0.3 + 0.7 * k) * breathe})`, textAlign: "center", fontFamily: "Montserrat", fontWeight: 900, fontSize: p.size ?? 520, lineHeight: 1, whiteSpace: "pre-line", color: "#FFFFFF", textShadow: `0 18px 0 ${PINK}, 0 30px 60px rgba(0,0,0,0.35)` }}>
         {p.text}
       </div>
       {p.sub && <div style={{ position: "absolute", left: 0, right: 0, top: 1250, textAlign: "center", fontFamily: "Montserrat", fontWeight: 800, fontSize: 64, color: YEL, opacity: interpolate(f, [6, 14], [0, 1], clamp01) }}>{p.sub}</div>}
     </div>
+  );
+};
+
+// ---------------------------------------------------------------- devices row
+// "devices": real-looking screens (tv / tablet / phone) appear one by one in a centred row above
+// the speaker's head as each is named (o.items: [{ type, at }], absolute times), each with a soft
+// screen glow; o.top = row top, o.label under each device (optional).
+const Screen: React.FC<{ type: string; k: number; t: number }> = ({ type, k, t }) => {
+  const glow = 0.75 + 0.25 * Math.sin(t * 3 + type.length);
+  const scr = (x: number, y: number, w: number, h: number, r: number) => (
+    <>
+      <defs>
+        <linearGradient id={`g-${type}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#7FE3E8" />
+          <stop offset="0.55" stopColor="#35C4CC" />
+          <stop offset="1" stopColor="#F66CA1" />
+        </linearGradient>
+      </defs>
+      <rect x={x} y={y} width={w} height={h} rx={r} fill={`url(#g-${type})`} opacity={glow} />
+      <path d={`M${x + w * 0.1} ${y + h * 0.15} L${x + w * 0.45} ${y + h * 0.15}`} stroke="#FFFFFF" strokeWidth={6} strokeLinecap="round" opacity={0.5} />
+    </>
+  );
+  const body = { fill: "#1E1F24", stroke: "#3A3C44", strokeWidth: 3 };
+  return (
+    <g transform={`scale(${k})`} opacity={Math.min(1, k * 1.4)}>
+      {type === "tv" && (
+        <g>
+          <rect x={-120} y={-80} width={240} height={150} rx={12} {...body} />
+          {scr(-110, -70, 220, 130, 6)}
+          <path d="M-30 70 L-45 98 M30 70 L45 98" stroke="#3A3C44" strokeWidth={8} strokeLinecap="round" />
+          <rect x={-70} y={96} width={140} height={8} rx={4} fill="#3A3C44" />
+        </g>
+      )}
+      {type === "tablet" && (
+        <g>
+          <rect x={-78} y={-100} width={156} height={200} rx={18} {...body} />
+          {scr(-68, -88, 136, 176, 8)}
+          <circle cx={0} cy={-94} r={2.5} fill="#55575F" />
+        </g>
+      )}
+      {type === "phone" && (
+        <g>
+          <rect x={-50} y={-100} width={100} height={200} rx={20} {...body} />
+          {scr(-43, -90, 86, 180, 12)}
+          <rect x={-14} y={-96} width={28} height={6} rx={3} fill="#1E1F24" />
+        </g>
+      )}
+    </g>
+  );
+};
+
+export const Devices: React.FC<{ o: Pill & { items?: { type: string; at: number; label?: string }[] } }> = ({ o }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const dur = (o.out - o.in) * fps;
+  const exit = interpolate(frame, [dur - 8, dur], [1, 0], clamp01);
+  const items = o.items ?? [];
+  const W = 1080;
+  const gap = W / (items.length + 1);
+  const t = o.in + frame / fps;
+  return (
+    <svg width={1080} height={1920} style={{ position: "absolute", inset: 0, opacity: exit }}>
+      {items.map((it, i) => {
+        const k = spring({ frame: frame - Math.round((it.at - o.in) * fps), fps, config: { damping: 13, stiffness: 170, mass: 0.7 } });
+        if (t < it.at) return null;
+        const float = Math.sin(t * 1.6 + i) * 5;
+        return (
+          <g key={i} transform={`translate(${gap * (i + 1)} ${(o.top ?? 330) + float}) scale(${o.size ?? 1})`}>
+            <Screen type={it.type} k={k} t={t} />
+            {it.label && (
+              <text x={0} y={140} textAnchor="middle" fontFamily="Montserrat" fontWeight={800} fontSize={38} fill="#FFFFFF" opacity={Math.min(1, k)} style={{ paintOrder: "stroke", stroke: "rgba(0,0,0,0.55)", strokeWidth: 6 }}>{it.label}</text>
+            )}
+          </g>
+        );
+      })}
+    </svg>
   );
 };

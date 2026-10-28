@@ -22,7 +22,11 @@
   "Kəsiklər yumşaq olsun: smooth_joins.py (0.12 s dissolve) + zoomlar yalnız 'push' (sərt zoom kəsikləri yox).",
   "Səhnələr hərəkətsiz qalmasın; vizual danışılan sözlə gəlsin. Uşaq mövzusu: kids skin, dovşan, atılan uşaq, ikonlar.",
   "Rəng tonları bütün videolarda eyni balansda; fərq vizual istiqamətdə olsun, rənglərdə yox.",
-  "Səs: əks-sədalı otaqda GENTLE=1 denoise (4, 5-ci videolar)."
+  "Səs: əks-sədalı otaqda GENTLE=1 denoise (4, 5-ci videolar).",
+  "Hər render-dən əvvəl fix_joins.py: kəsimlər mənbə səsinə görə sükuta çəkilir (söz sonu 0.17 s, başlanğıc 0.11 s); retake sözü qayıdırsa PIN ilə saxla.",
+  "Səs: LIGHT=1 (highpass + yüngül afftdn), açıq havada GENTLE=1 ATTEN=12. Güclü DFN + bərpa süni səs verdi.",
+  "Bəyənilmədi: ikon dairələri, yan sütun qeydləri, buludlar, ensiz kartlar. Təsdiqli: firuzəyi 'dark' pop kartları, kids səhnəsi, dovşan, 1-2-3 rəqəm kadrları (altında alt yazı yox), real cihaz təsvirləri.",
+  "Qırmızı geyimdə alt yazı tam ağ (style.activeColor #FFFFFF). Son sözdən sonra ən azı 1 s qalsın - yekun faylda yoxla."
  ],
  "theme_source": "istifadəçi təsdiqi (2026-10-28): firuzəyi #127A80 əsas + çəhrayı #F66CA1 vurğu + sarı #FFD21A; səhifə rəngləri. Qırmızı geyimdə alt yazı ağ olsun.",
  "style": {

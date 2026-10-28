@@ -25,7 +25,12 @@ TMP="$P/artifacts/dn"
 mkdir -p "$TMP"
 
 ffmpeg -v error -y -i "$P/assets/video/cut.mp4" -vn -ac 1 -ar 48000 -c:a pcm_s16le "$TMP/voice.wav"
-if [ "${CLEAN:-1}" = "0" ]; then
+if [ "${LIGHT:-0}" = "1" ]; then
+  # LIGHT=1: the natural voice - only rumble below 70 Hz and a light broadband noise reduction
+  # (no neural denoiser, no gate), for lavalier speech that must not sound processed
+  mkdir -p "$TMP/out"
+  ffmpeg -v error -y -i "$TMP/voice.wav" -af "highpass=f=70,afftdn=nr=8:nf=-48:tn=1" -c:a pcm_s16le "$TMP/out/voice.wav"
+elif [ "${CLEAN:-1}" = "0" ]; then
   # CLEAN=0: no cleanup (clean lavalier sound) - only re-mix the original voice with the SFX
   mkdir -p "$TMP/out" && cp "$TMP/voice.wav" "$TMP/out/voice.wav"
 else

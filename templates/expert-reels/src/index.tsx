@@ -1,4 +1,4 @@
-import { BigNumber, Kid } from "./kid";
+import { BigNumber, Devices, Kid } from "./kid";
 import React from "react";
 import {
   AbsoluteFill,
@@ -250,7 +250,7 @@ const Captions: React.FC = () => {
                 fontWeight: 900,
                 fontSize: 74,
                 letterSpacing: -0.5,
-                color: chip ? T.onAccent : active ? ((style === "box" || style === "frame") && T.light ? T.accentSoft : T.accent) : onPale ? (paleScene ? T.primary : T.text) : "#FFFFFF",
+                color: chip ? T.onAccent : active ? (E.style.activeColor ?? ((style === "box" || style === "frame") && T.light ? T.accentSoft : T.accent)) : onPale ? (paleScene ? T.primary : T.text) : "#FFFFFF",
                 opacity: spoken ? 1 : 0.55,
                 transform: `scale(${scale})`,
                 WebkitTextStroke: style === "box" || style === "frame" || chip || onPale ? undefined : "3px rgba(0,0,0,0.85)",
@@ -696,7 +696,7 @@ const Reel: React.FC = () => {
         ))}
       {E.overlays.filter((o) => !o.plate).map((o) => (
         <Sequence key={o.id} from={Math.round(o.in * FPS)} durationInFrames={Math.round((o.out - o.in) * FPS)}>
-          {o.kind === "kid" ? <Kid o={o as any} /> : o.kind === "edcard" ? <EdCard o={o as any} /> : o.kind === "flash" ? <Flash o={o as any} /> : o.kind === "ticket" ? <Ticket o={o as any} /> : o.kind === "marker" ? <Marker o={o as any} /> : o.kind === "callcard" ? <CallCard o={o as any} /> : o.kind === "note" ? <BpNote o={o as any} /> : o.kind === "spark" ? <BpSpark o={o as any} /> : o.kind === "strip" ? <Strip o={o as any} /> : o.kind === "counter" ? <CounterFrame o={o} /> : o.kind === "icon" ? <IconChip o={o} /> : o.kind === "title" ? <TitleCard o={o} /> : o.kind === "end" ? <EndCard o={o} /> : o.kind !== "pop" ? <PillCard o={o} /> : E.style.pops === "type" || o.hand || o.strike !== undefined ? <TypePop o={o} /> : <KeywordPop o={o} />}
+          {o.kind === "kid" ? <Kid o={o as any} /> : o.kind === "devices" ? <Devices o={o as any} /> : o.kind === "edcard" ? <EdCard o={o as any} /> : o.kind === "flash" ? <Flash o={o as any} /> : o.kind === "ticket" ? <Ticket o={o as any} /> : o.kind === "marker" ? <Marker o={o as any} /> : o.kind === "callcard" ? <CallCard o={o as any} /> : o.kind === "note" ? <BpNote o={o as any} /> : o.kind === "spark" ? <BpSpark o={o as any} /> : o.kind === "strip" ? <Strip o={o as any} /> : o.kind === "counter" ? <CounterFrame o={o} /> : o.kind === "icon" ? <IconChip o={o} /> : o.kind === "title" ? <TitleCard o={o} /> : o.kind === "end" ? <EndCard o={o} /> : o.kind !== "pop" ? <PillCard o={o} /> : E.style.pops === "type" || o.hand || o.strike !== undefined ? <TypePop o={o} /> : <KeywordPop o={o} />}
         </Sequence>
       ))}
       <AbsoluteFill style={{ transform: `translate(${captionShift(t).x}px, ${captionShift(t).y}px)` }}>

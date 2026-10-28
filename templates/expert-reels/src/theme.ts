@@ -22,7 +22,7 @@ export type Page = { start: number; end: number; words: Word[] };
 export type ZoomKey = { t: number; s: number; k: "cut" | "push" | "punch" };
 export type Pill = {
   id: string;
-  kind: "pill" | "hook" | "cta" | "pop" | "icon" | "title" | "end" | "counter" | "strip" | "note" | "spark" | "ticket" | "marker" | "callcard" | "flash" | "edcard" | "kid";
+  kind: "pill" | "hook" | "cta" | "pop" | "icon" | "title" | "end" | "counter" | "strip" | "note" | "spark" | "ticket" | "marker" | "callcard" | "flash" | "edcard" | "kid" | "devices";
   label: string | null;
   pos?: "t" | "tl" | "tr" | "l" | "r"; // "pop" keyword position around the speaker
   top?: number; // pop: centred line at this y instead of pos (stack several pops as rows)
@@ -57,6 +57,7 @@ export type Style = {
   backdrop: "dots" | "grid" | "orbs" | "diagonal";
   pipShape: "circle" | "rounded";
   pipCorner: "br" | "bl";
+  activeColor?: string; // caption active word colour (e.g. white over a red outfit)
   pops?: "dark" | "light" | "type"; // keyword pops: brand-dark card (default), white card with a marker, or boxless large type (M02)
 };
 export type Pip = { focus: [number, number]; radius: number; scale: number };
