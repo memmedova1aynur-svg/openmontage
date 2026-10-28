@@ -22,7 +22,7 @@ export type Page = { start: number; end: number; words: Word[] };
 export type ZoomKey = { t: number; s: number; k: "cut" | "push" | "punch" };
 export type Pill = {
   id: string;
-  kind: "pill" | "hook" | "cta" | "pop" | "icon" | "title" | "end" | "counter" | "strip" | "note" | "spark" | "ticket" | "marker" | "callcard" | "flash" | "edcard";
+  kind: "pill" | "hook" | "cta" | "pop" | "icon" | "title" | "end" | "counter" | "strip" | "note" | "spark" | "ticket" | "marker" | "callcard" | "flash" | "edcard" | "kid";
   label: string | null;
   pos?: "t" | "tl" | "tr" | "l" | "r"; // "pop" keyword position around the speaker
   top?: number; // pop: centred line at this y instead of pos (stack several pops as rows)
@@ -39,6 +39,8 @@ export type Pill = {
   parts: [string, number][];
   in: number;
   out: number;
+  tint?: string; // icon chip: coloured circle, white icon
+  stack?: boolean; // icon chip: circle above the label (narrow side column)
 };
 export type Panel = { kind: string; at: number; props: Record<string, any> };
 export type Cutaway = {
@@ -72,6 +74,7 @@ export type Edit = {
   pip: Pip;
   pages: Page[];
   zoom: ZoomKey[];
+  frame?: { s: number; y: number }; // reframing of a badly framed shot: constant scale (around FACE) + lift in px
   captionShift?: [number, number, number, number?][]; // [in, out, dy, dx px]: captions moved off the hands
   overlays: Pill[];
   cutaways: Cutaway[];

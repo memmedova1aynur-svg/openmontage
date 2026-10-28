@@ -149,7 +149,8 @@ const Versus: React.FC<SceneProps> = ({ f, p, startT }) => {
   return (
     <div style={{ position: "absolute", inset: 0 }}>
       <Head t={t} at={startT} text={p.title ?? ""} />
-      <Card x={70} y={520} w={430} h={620} k={A} rot={-4} tab="1">
+      {/* the cards never stand still: a slow float and sway, and the whole pair drifts closer */}
+      <Card x={70 + Math.sin(t * 1.3) * 10} y={520 + Math.sin(t * 1.7) * 14} w={430} h={620} k={A} rot={-4 + Math.sin(t * 1.1) * 1.8} tab="1">
         {p.left ? <Mark kind={p.left.icon ?? "x"} /> : (
         <svg width={170} height={110} viewBox="0 0 170 110">
           <path d="M10 55 Q85 -10 160 55 Q85 120 10 55 Z" fill="none" stroke={T.primary} strokeWidth={8} />
@@ -158,7 +159,7 @@ const Versus: React.FC<SceneProps> = ({ f, p, startT }) => {
         <Big size={p.left?.size ?? 58}>{p.left?.title ?? "Tanımaq"}</Big>
         <div style={{ fontFamily: FONT, fontWeight: 600, fontSize: 36, color: T.primary, marginTop: 16, lineHeight: 1.2 }}>{p.left?.sub ?? <>görəndə<br />“tanış gəlir”</>}</div>
       </Card>
-      <Card x={580} y={540} w={430} h={620} k={B} rot={4} tab="2">
+      <Card x={580 + Math.sin(t * 1.2 + 2) * 10} y={540 + Math.sin(t * 1.6 + 1) * 14 - 30 * pop(t, a.c ?? 1e9)} w={430} h={620} k={B} rot={4 + Math.sin(t * 1.0 + 1) * 1.8} tab="2">
         {p.right ? <Mark kind={p.right.icon ?? "check"} /> : (
         <svg width={150} height={130} viewBox="0 0 150 130">
           <path d="M75 120 V20 M75 20 Q30 0 22 40 Q0 50 15 80 Q10 115 55 115 M75 20 Q120 0 128 40 Q150 50 135 80 Q140 115 95 115" fill={rgba(T.accent, 0.5)} stroke={T.primary} strokeWidth={7} strokeLinejoin="round" />

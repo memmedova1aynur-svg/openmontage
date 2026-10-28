@@ -1,6 +1,7 @@
 import React from "react";
 import { Easing, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { FONT, Pill, T, clamp01, isPale, rgba } from "./theme";
+import { KidsStage } from "./studio";
 
 // Light paper scenes (white sheet, navy ink, brand-blue accents) in two families:
 //  - "route": a road map whose stops pin in one by one (consultation / process ads)
@@ -82,6 +83,28 @@ const PIN = (x: number, y: number, k: number, n: string) => (
   </g>
 );
 
+// a little bunny that hops along the road as it is drawn (p.bunny)
+const bezier = (p0: number[], p1: number[], p2: number[], p3: number[], u: number) => {
+  const v = 1 - u;
+  return [0, 1].map((k) => v * v * v * p0[k] + 3 * v * v * u * p1[k] + 3 * v * u * u * p2[k] + u * u * u * p3[k]);
+};
+const Bunny: React.FC<{ x: number; y: number; flip: boolean; hop: number }> = ({ x, y, flip, hop }) => (
+  <g transform={`translate(${x} ${y - 70 - hop}) scale(${flip ? -1.5 : 1.5} 1.5)`}>
+    <ellipse cx={0} cy={58 + hop} rx={34 - hop * 0.4} ry={8} fill="rgba(0,0,0,0.12)" />
+    <ellipse cx={-6} cy={14} rx={34} ry={28} fill="#FFFFFF" stroke={INK()} strokeWidth={5} />
+    <circle cx={-40} cy={10} r={9} fill="#FFFFFF" stroke={INK()} strokeWidth={4} />
+    <ellipse cx={14} cy={-34} rx={8} ry={26} transform="rotate(-12 14 -34)" fill="#FFFFFF" stroke={INK()} strokeWidth={5} />
+    <ellipse cx={14} cy={-34} rx={3.5} ry={17} transform="rotate(-12 14 -34)" fill="#F66CA1" />
+    <ellipse cx={30} cy={-30} rx={8} ry={26} transform="rotate(14 30 -30)" fill="#FFFFFF" stroke={INK()} strokeWidth={5} />
+    <ellipse cx={30} cy={-30} rx={3.5} ry={17} transform="rotate(14 30 -30)" fill="#F66CA1" />
+    <circle cx={24} cy={-2} r={20} fill="#FFFFFF" stroke={INK()} strokeWidth={5} />
+    <circle cx={31} cy={-6} r={3.5} fill={INK()} />
+    <circle cx={42} cy={0} r={3.5} fill="#F66CA1" />
+    <ellipse cx={-14} cy={40} rx={12} ry={6} fill="#FFFFFF" stroke={INK()} strokeWidth={4} />
+    <ellipse cx={14} cy={40} rx={12} ry={6} fill="#FFFFFF" stroke={INK()} strokeWidth={4} />
+  </g>
+);
+
 const Route: React.FC<SceneProps> = ({ f, p, startT }) => {
   const t = startT + f / FPSX;
   const a = p.at ?? {};
@@ -113,6 +136,27 @@ const Route: React.FC<SceneProps> = ({ f, p, startT }) => {
           </g>
         );
       })}
+      {p.bunny && (() => {
+        // points along the road, by arc length, so the bunny keeps an even pace
+        const pts: number[][] = [];
+        stops.forEach((st, i) => {
+          if (i === 0) return;
+          const pr = stops[i - 1];
+          const my = (pr.y + st.y) / 2;
+          for (let j = 0; j <= 40; j++) pts.push(bezier([pr.x, pr.y], [pr.x, my], [st.x, my], [st.x, st.y], j / 40));
+        });
+        const len = [0];
+        for (let i = 1; i < pts.length; i++) len.push(len[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+        const want = road * len[len.length - 1];
+        let i = len.findIndex((l) => l >= want);
+        if (i < 1) i = 1;
+        const u = (want - len[i - 1]) / Math.max(1e-6, len[i] - len[i - 1]);
+        const x = pts[i - 1][0] + (pts[i][0] - pts[i - 1][0]) * u;
+        const y = pts[i - 1][1] + (pts[i][1] - pts[i - 1][1]) * u;
+        const moving = road < 0.999;
+        const hop = moving ? Math.abs(Math.sin(t * 7)) * 26 : Math.abs(Math.sin(t * 3)) * 8;
+        return <g opacity={prog(t, startT, 0.4)}><Bunny x={x} y={y} flip={pts[i][0] < pts[i - 1][0]} hop={hop} /></g>;
+      })()}
       {a.flag !== undefined && t >= a.flag && (
         <g transform={`translate(${stops[stops.length - 1].x + 10} ${stops[stops.length - 1].y - 150})`} opacity={prog(t, a.flag, 0.3)}>
           <path d="M0 0 V110" stroke={INK()} strokeWidth={7} />
@@ -232,9 +276,10 @@ const NotEqual: React.FC<SceneProps> = ({ f, p, startT }) => {
   );
 };
 
+// skin "kids": the bright playroom (expert's page colours) instead of the paper sheet
 const wrap = (kind: "route" | "exam", S: React.FC<SceneProps>): React.FC<SceneProps> => (props) => (
   <div style={{ position: "absolute", inset: 0 }}>
-    <Sheet kind={kind} />
+    {props.p.skin === "kids" ? <KidsStage t={props.startT + props.f / FPSX} blocks={false} /> : <Sheet kind={kind} />}
     <S {...props} />
   </div>
 );

@@ -70,7 +70,7 @@ while True:
             cx = sum(L[k][0] for k in range(11)) / 11
             eye_y = min(L[2][1], L[5][1])
             mouth_y = max(L[9][1], L[10][1])
-            head = (cx - 0.8 * hw, eye_y - 1.3 * hw, cx + 0.8 * hw, mouth_y + 0.6 * hw)
+            head = (cx - 0.75 * hw, eye_y - 1.1 * hw, cx + 0.75 * hw, mouth_y + 0.55 * hw)
             boxes.append(("head", head))
             top = head[1]
             for name, ids in (("hand_l", (15, 17, 19, 21)), ("hand_r", (16, 18, 20, 22))):
@@ -81,7 +81,11 @@ while True:
                 if hb[1] < 1920:
                     boxes.append((name, hb))
         # the push-in zoom (1.0 .. ~1.1) can move every point outward from FACE
+        fr = json.load(open(WS / "public/edit.json")).get("frame") or {"s": 1, "y": 0}
+        boxes = [(n, tuple(v + (fr["y"] if k % 2 else 0) for k, v in enumerate(zoomed(b, fr["s"])))) for n, b in boxes]  # reframing
         boxes = [(n, union(zoomed(b, 1.0), zoomed(b, 1.1))) for n, b in boxes]
+        if top is not None:
+            top = FACE[1] + (top - FACE[1]) * fr["s"] + fr["y"]
         samples.append((i / fps, boxes, None if top is None else min(zoomed((0, top, 0, top), 1.0)[1], zoomed((0, top, 0, top), 1.1)[1])))
     i += 1
 

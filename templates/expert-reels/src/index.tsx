@@ -1,3 +1,4 @@
+import { BigNumber, Kid } from "./kid";
 import React from "react";
 import {
   AbsoluteFill,
@@ -51,10 +52,13 @@ const zoomAt = (t: number, fps: number): number => {
 
 // captions step out of the way of the speaker's hands (spans from guard.py: [in, out, dy, dx?]), easing 0.25 s
 const captionShift = (t: number) => {
+  // scenes cover the speaker: there the captions keep their own place
+  if (E.cutaways.some((c) => (c.kind === "scene" || c.kind === "split") && t >= c.in && t < c.out)) return { x: 0, y: 0 };
   let x = 0;
   let y = 0;
   for (const [a, b, dy, dx] of E.captionShift ?? []) {
-    const k = Math.min(interpolate(t, [a - 0.25, a], [0, 1], clamp01), interpolate(t, [b, b + 0.25], [1, 0], clamp01));
+    // ramps centred on the span edges, so back-to-back spans hand over instead of adding up
+    const k = Math.min(interpolate(t, [a - 0.125, a + 0.125], [0, 1], clamp01), interpolate(t, [b - 0.125, b + 0.125], [1, 0], clamp01));
     y += dy * k;
     x += (dx ?? 0) * k;
   }
@@ -207,7 +211,9 @@ const Captions: React.FC = () => {
   if (style === "lower" || style === "marker") return <AltCaptions page={page} t={t} enter={enter} style={style} />;
   if (style === "solo") return <SoloCaption t={t} />;
   // box captions keep their own dark backing, so only bare captions switch colour over pale cutaways
-  const onPale = !!T.light && style !== "box" && pipAt(t, fps).p > 0.5;
+  // pale scene skins (paper, kids) need dark caption type too
+  const paleScene = E.cutaways.some((c) => c.kind === "scene" && t >= c.in && t < c.out && c.panels?.some((p: any) => ["paper", "kids"].includes(p.props?.skin)));
+  const onPale = (!!T.light && style !== "box" && pipAt(t, fps).p > 0.5) || (paleScene && style !== "box");
   return (
     <AbsoluteFill style={{ justifyContent: "flex-end", alignItems: "center", paddingBottom: E.cutaways.some((c) => (c.kind === "split" || c.kind === "scene") && t >= c.in && t < c.out) ? 230 : 430 }}>
       <div
@@ -242,7 +248,7 @@ const Captions: React.FC = () => {
                 fontWeight: 900,
                 fontSize: 74,
                 letterSpacing: -0.5,
-                color: chip ? T.onAccent : active ? ((style === "box" || style === "frame") && T.light ? T.accentSoft : T.accent) : onPale ? T.text : "#FFFFFF",
+                color: chip ? T.onAccent : active ? ((style === "box" || style === "frame") && T.light ? T.accentSoft : T.accent) : onPale ? (paleScene ? T.primary : T.text) : "#FFFFFF",
                 opacity: spoken ? 1 : 0.55,
                 transform: `scale(${scale})`,
                 WebkitTextStroke: style === "box" || style === "frame" || chip || onPale ? undefined : "3px rgba(0,0,0,0.85)",
@@ -278,7 +284,8 @@ const AltCaptions: React.FC<{ page: Page; t: number; enter: number; style: "lowe
         {page.words.map((w, i) => {
           const active = t >= w.s && t < Math.max(w.e, w.s + 0.12);
           const spoken = t >= w.s;
-          const onPaper = inScene;
+          // only pale scenes (paper sheets, kids playroom) take dark type; card scenes sit on the dark brand colour
+          const onPaper = inScene && E.cutaways.some((c) => c.kind === "scene" && t >= c.in && t < c.out && c.panels?.some((p: any) => p.kind.startsWith("sh_") || ["paper", "kids"].includes(p.props?.skin)));
           // a pale accent (yellow) can't be read on paper: the active word gets the marker swipe instead
           const swipe = (style === "marker" || (onPaper && isPale(T.accentSoft))) && active;
           return (
@@ -570,7 +577,7 @@ const PipPanels: React.FC<{ c: Cutaway; p: number }> = ({ c, p }) => {
         const start = i === 0 ? c.in : pn.at;
         const end = i + 1 < panels.length ? panels[i + 1].at : c.out + 0.6;
         if (t < start - 0.1 || t >= end + 0.25) return null;
-        const Scene = SCENES[pn.kind] ?? BLUEPRINT[pn.kind] ?? SHEET[pn.kind] ?? CARDS[pn.kind] ?? ACADEMIC[pn.kind] ?? STUDIO[pn.kind] ?? CARTOON[pn.kind] ?? SKETCH[pn.kind] ?? PAPER[pn.kind] ?? ILLUSTRATED[pn.kind];
+        const Scene = (pn.kind === "bg_number" ? BigNumber : undefined) ?? SCENES[pn.kind] ?? BLUEPRINT[pn.kind] ?? SHEET[pn.kind] ?? CARDS[pn.kind] ?? ACADEMIC[pn.kind] ?? STUDIO[pn.kind] ?? CARTOON[pn.kind] ?? SKETCH[pn.kind] ?? PAPER[pn.kind] ?? ILLUSTRATED[pn.kind];
         if (!Scene) return null;
         // outgoing panel slides away, incoming slides in
         const out = i + 1 < panels.length ? interpolate(t, [end - 0.15, end + 0.2], [1, 0], clamp01) : 1;
@@ -636,7 +643,7 @@ const Reel: React.FC = () => {
       {!full && pipCut && p > 0.001 && <PipPanels c={pipCut} p={p} />}
       <AbsoluteFill
         style={{
-          transform: `translate(${shake + dx}px, ${shake * 0.4 + dy + shiftY}px) scale(${sc})`,
+          transform: `translate(${shake + dx}px, ${shake * 0.4 + dy + shiftY + (E.frame?.y ?? 0) * (1 - pc)}px) scale(${sc * (1 + ((E.frame?.s ?? 1) - 1) * (1 - pc))})`,
           transformOrigin: `${ox}px ${oy}px`,
           clipPath: p > 0.001 ? clip : sp > 0.001 ? splitClip : undefined,
         }}
@@ -687,7 +694,7 @@ const Reel: React.FC = () => {
         ))}
       {E.overlays.filter((o) => !o.plate).map((o) => (
         <Sequence key={o.id} from={Math.round(o.in * FPS)} durationInFrames={Math.round((o.out - o.in) * FPS)}>
-          {o.kind === "edcard" ? <EdCard o={o as any} /> : o.kind === "flash" ? <Flash o={o as any} /> : o.kind === "ticket" ? <Ticket o={o as any} /> : o.kind === "marker" ? <Marker o={o as any} /> : o.kind === "callcard" ? <CallCard o={o as any} /> : o.kind === "note" ? <BpNote o={o as any} /> : o.kind === "spark" ? <BpSpark o={o as any} /> : o.kind === "strip" ? <Strip o={o as any} /> : o.kind === "counter" ? <CounterFrame o={o} /> : o.kind === "icon" ? <IconChip o={o} /> : o.kind === "title" ? <TitleCard o={o} /> : o.kind === "end" ? <EndCard o={o} /> : o.kind !== "pop" ? <PillCard o={o} /> : E.style.pops === "type" || o.hand || o.strike !== undefined ? <TypePop o={o} /> : <KeywordPop o={o} />}
+          {o.kind === "kid" ? <Kid o={o as any} /> : o.kind === "edcard" ? <EdCard o={o as any} /> : o.kind === "flash" ? <Flash o={o as any} /> : o.kind === "ticket" ? <Ticket o={o as any} /> : o.kind === "marker" ? <Marker o={o as any} /> : o.kind === "callcard" ? <CallCard o={o as any} /> : o.kind === "note" ? <BpNote o={o as any} /> : o.kind === "spark" ? <BpSpark o={o as any} /> : o.kind === "strip" ? <Strip o={o as any} /> : o.kind === "counter" ? <CounterFrame o={o} /> : o.kind === "icon" ? <IconChip o={o} /> : o.kind === "title" ? <TitleCard o={o} /> : o.kind === "end" ? <EndCard o={o} /> : o.kind !== "pop" ? <PillCard o={o} /> : E.style.pops === "type" || o.hand || o.strike !== undefined ? <TypePop o={o} /> : <KeywordPop o={o} />}
         </Sequence>
       ))}
       <AbsoluteFill style={{ transform: `translate(${captionShift(t).x}px, ${captionShift(t).y}px)` }}>

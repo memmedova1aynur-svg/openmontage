@@ -20,6 +20,20 @@ export const ICONS: Record<string, string[]> = {
   check: ["c:12,12,9", "M8 12.5l2.6 2.6L16 9.6"],
   blocks: ["M4 14h7v7H4z", "M13 14h7v7h-7z", "M8.5 7h7v7h-7z"],
   waves: ["M3 9c3-3 6 3 9 0s6 3 9 0", "M3 15c3-3 6 3 9 0s6 3 9 0"],
+  shield: ["M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z", "M8.5 12l2.5 2.5 4.5-5"],
+  chair: ["M7 3v10h10V3", "M6 13h12", "M7 13v8", "M17 13v8", "M7 8h10"],
+  drop: ["M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z", "M9.5 15a2.5 2.5 0 0 0 2.5 2.5"],
+  mute: ["M3 10v4h4l5 4V6L7 10z", "M16 9l5 6", "M21 9l-5 6"],
+  hand: ["M8 13V6a1.5 1.5 0 0 1 3 0v5", "M11 11V4.5a1.5 1.5 0 0 1 3 0V11", "M14 11V6a1.5 1.5 0 0 1 3 0v7", "M8 12.5a1.5 1.5 0 0 0-3 0V15a6 6 0 0 0 6 6h1a5 5 0 0 0 5-5v-3"],
+  people: ["c:8,7,2.5", "c:16,7,2.5", "M3.5 19a4.5 4.5 0 0 1 9 0", "M11.5 19a4.5 4.5 0 0 1 9 0"],
+  teacher: ["c:7,6,2.5", "M7 9v6", "M4 21l3-6 3 6", "M12 4h9v8h-9", "M7 11l5-3"],
+  phone: ["M7 2h10a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z", "M11 18.5h2"],
+  tablet: ["M4 3h16a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z", "M11 18h2"],
+  tv: ["M3 6h18v12H3z", "M8 21h8", "M9 2l3 4 3-4"],
+  star: ["M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"],
+  ball: ["c:12,12,9", "M3.5 9.5c5 2 12 2 17 0", "M3.5 14.5c5-2 12-2 17 0"],
+  moon: ["M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"],
+  book: ["M4 5c3-1 6-1 8 1v14c-2-2-5-2-8-1z", "M20 5c-3-1-6-1-8 1v14c2-2 5-2 8-1z"],
 };
 
 // Icon in a soft circle + short label, pinned to the left or right edge beside the speaker.
@@ -42,19 +56,20 @@ export const IconChip: React.FC<{ o: Pill }> = ({ o }) => {
       style={{
         position: "absolute",
         top: o.top ?? 420,
-        ...(centre ? { left: "50%", maxWidth: 900, whiteSpace: "nowrap", translate: "-50% 0" } : { [right ? "right" : "left"]: 36 }),
+        ...(centre ? { left: "50%", maxWidth: 900, whiteSpace: "nowrap", translate: "-50% 0" } : { [right ? "right" : "left"]: o.stack ? 14 : 36 }),
         display: "flex",
-        flexDirection: right ? "row-reverse" : "row",
+        // stack: circle above a centred label - a narrow chip for the side column next to a close-up head
+        flexDirection: o.stack ? "column" : right ? "row-reverse" : "row",
         alignItems: "center",
-        gap: 14,
-        ...(centre ? {} : { maxWidth: 370 }),
+        gap: o.stack ? 8 : 14,
+        ...(centre ? {} : { maxWidth: o.stack ? 240 : 370 }),
         opacity: exit,
         transform: `translateY(${float}px) scale(${centre ? 1.25 : 1})`,
         transformOrigin: "50% 0%",
       }}
     >
-      <div style={{ position: "relative", flex: "0 0 auto", width: 96, height: 96, borderRadius: 48, background: rgba(T.accentSoft, 0.97), boxShadow: `0 8px 22px ${rgba(ink, 0.18)}`, border: `3px solid ${rgba(T.accent, 0.9)}`, transform: `scale(${pop})`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <svg width={56} height={56} viewBox="0 0 24 24" fill="none" stroke={ink} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+      <div style={{ position: "relative", flex: "0 0 auto", width: o.stack ? 150 : 96, height: o.stack ? 150 : 96, borderRadius: o.stack ? 75 : 48, background: o.tint ?? rgba(T.accentSoft, 0.97), boxShadow: `0 8px 22px ${rgba(ink, 0.18)}`, border: o.tint ? "4px solid #FFFFFF" : `3px solid ${rgba(T.accent, 0.9)}`, transform: `scale(${pop}) rotate(${(1 - pop) * -40}deg)`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <svg width={o.stack ? 86 : 56} height={o.stack ? 86 : 56} viewBox="0 0 24 24" fill="none" stroke={o.tint ? "#FFFFFF" : ink} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
           {(ICONS[o.icon ?? "heart"] ?? []).map((d, i) => {
             const common = { key: i, pathLength: 1, strokeDasharray: 1, strokeDashoffset: 1 - draw };
             if (d.startsWith("c:")) {
@@ -70,19 +85,19 @@ export const IconChip: React.FC<{ o: Pill }> = ({ o }) => {
           </div>
         )}
       </div>
-      <div
+      {(text.trim() || o.sub) && <div
         style={{
           padding: "8px 14px 10px",
           borderRadius: 16,
           background: "rgba(255,255,255,0.88)",
-          textAlign: right ? "right" : "left",
-          transform: `translateX(${(1 - label) * (right ? 30 : -30)}px)`,
+          textAlign: o.stack ? "center" : right ? "right" : "left",
+          transform: o.stack ? `translateY(${(1 - label) * -20}px)` : `translateX(${(1 - label) * (right ? 30 : -30)}px)`,
           opacity: label,
         }}
       >
-        <div style={{ fontFamily: FONT, fontWeight: 700, fontSize: 31, lineHeight: 1.12, color: ink }}>{text}</div>
+        <div style={{ fontFamily: FONT, fontWeight: 700, fontSize: o.stack ? 34 : 31, lineHeight: 1.12, color: ink }}>{text}</div>
         {o.sub && <div style={{ fontFamily: FONT, fontWeight: 500, fontSize: 25, lineHeight: 1.2, color: rgba(ink, 0.8), marginTop: 3 }}>{o.sub}</div>}
-      </div>
+      </div>}
     </div>
   );
 };

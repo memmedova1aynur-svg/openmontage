@@ -30,7 +30,13 @@ if [ "${CLEAN:-1}" = "0" ]; then
   mkdir -p "$TMP/out" && cp "$TMP/voice.wav" "$TMP/out/voice.wav"
 else
 # -D keeps the voice in sync (compensates the model look-ahead); --pf = post-filter for residual noise
+# GENTLE=1: limited attenuation (ATTEN dB, default 16), no post-filter and no raw-voice patching -
+# the most natural voice for rooms with a soft echo, where full suppression sounds "underwater"
+if [ "${GENTLE:-0}" = "1" ]; then
+  "$DF" -D -a "${ATTEN:-16}" -o "$TMP/out" "$TMP/voice.wav" >/dev/null 2>&1
+else
 "$DF" -D --pf --pf-beta 0.06 -o "$TMP/out" "$TMP/voice.wav" >/dev/null 2>&1
+fi
 # PASSES=2: a second pass for rooms with steady chatter / music under the voice
 if [ "${PASSES:-1}" -ge 2 ]; then
   mv "$TMP/out/voice.wav" "$TMP/voice_p1.wav"
@@ -40,7 +46,7 @@ fi
 # DeepFilterNet keeps anything speech-like (other people talking, sung music). Between the
 # expert's own words (artifacts/words.json, cut timeline) the track is gated down by 30 dB.
 if [ -f "$P/artifacts/words.json" ]; then
-  python3 "$(dirname "$0")/speech_gate.py" "$TMP/out/voice.wav" "$P/artifacts/words.json" "$TMP/out/voice.wav" -30 "$TMP/voice.wav"
+  python3 "$(dirname "$0")/speech_gate.py" "$TMP/out/voice.wav" "$P/artifacts/words.json" "$TMP/out/voice.wav" -30 $([ "${GENTLE:-0}" = "1" ] || echo "$TMP/voice.wav")
 fi
 fi
 

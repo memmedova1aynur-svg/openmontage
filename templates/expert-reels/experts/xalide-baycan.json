@@ -17,9 +17,14 @@
   "Sarı accent ağ kart üzərində mətn rəngi kimi oxunmur: vurğu tünd mətn + sarı marker xətti ilə verilir (isPale).",
   "Səs: hər videoda DeepFilterNet + söz daxilində bərpa (speech_gate raw) - istifadəçi təmiz səs istəyir (2026-10-28).",
   "Qutular baş/üz/göz/əllərə düşməməlidir; alt yazılar da əllərə. Hər render-dən əvvəl guard.py <id> --fix işlət.",
-  "Çərçivə dəyişir: başı yuxarıda olan çəkilişlərdə (açıq hava) qutular başın yanındakı sütunlara (note col / bubble maxw) qoyulur."
+  "Çərçivə dəyişir: başı yuxarıda olan çəkilişlərdə (açıq hava) qutular başın yanındakı sütunlara (note col / bubble maxw) qoyulur.",
+  "Kadrı düzəlt (spec frame {s,y}): başın üstündə boşluq qalmasın - istifadəçi çox bəyəndi.",
+  "Kəsiklər yumşaq olsun: smooth_joins.py (0.12 s dissolve) + zoomlar yalnız 'push' (sərt zoom kəsikləri yox).",
+  "Səhnələr hərəkətsiz qalmasın; vizual danışılan sözlə gəlsin. Uşaq mövzusu: kids skin, dovşan, atılan uşaq, ikonlar.",
+  "Rəng tonları bütün videolarda eyni balansda; fərq vizual istiqamətdə olsun, rənglərdə yox.",
+  "Səs: əks-sədalı otaqda GENTLE=1 denoise (4, 5-ci videolar)."
  ],
- "theme_source": "standart: sarı #FFD21A (istifadəçi seçimi, 2026-10-27); tünd fon çaları bizim seçimimizdir",
+ "theme_source": "istifadəçi təsdiqi (2026-10-28): firuzəyi #127A80 əsas + çəhrayı #F66CA1 vurğu + sarı #FFD21A; səhifə rəngləri. Qırmızı geyimdə alt yazı ağ olsun.",
  "style": {
   "note": "hər videoda fərqli: chip/marker/lower/box/solo/stroke/plate/frame altyazılar; sarı #FFD21A + tünd qəhvəyi #2B2414"
  },
@@ -120,12 +125,12 @@
   }
  ],
  "theme": {
-  "primary": "#2B2414",
-  "primaryDeep": "#1A1609",
-  "accent": "#FFD21A",
-  "accentSoft": "#FFE57A",
+  "primary": "#127A80",
+  "primaryDeep": "#0A4F53",
+  "accent": "#F66CA1",
+  "accentSoft": "#FFC2DA",
   "text": "#FFFFFF",
-  "onAccent": "#2B2414",
+  "onAccent": "#FFFFFF",
   "cardAlpha": 0.94,
   "emphasis": "#FFD21A"
  }

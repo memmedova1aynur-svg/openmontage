@@ -218,6 +218,7 @@ def main() -> None:
         "pages": caption_pages(words, cap.get("max_words", 3), cap.get("max_chars", 17)),
         "zoom": [{"t": t, "s": s, "k": k} for t, s, k in spec["zoom"]],
         "captionShift": spec.get("caption_shift", []),
+        "frame": spec.get("frame"),
         "overlays": overlays,
         "cutaways": cutaways,
         "sfx": auto_sfx(spec, cutaways, overlays),

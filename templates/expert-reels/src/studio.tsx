@@ -19,14 +19,45 @@ const tOf = (p: SceneProps) => p.startT + p.f / FPSX;
 // skins give each video in a batch its own world: "navy" (default), "paper" (light sheet with
 // dots), "grid" (drafting grid), "split" (a wide brand-blue diagonal band sweeping behind)
 let SKIN = "navy";
+// skins with a pale world: dark type on top
+const PALE = () => SKIN === "paper" || SKIN === "kids";
+// "kids": a bright playroom in the expert's own page colours (pink, turquoise, yellow) - floating
+// toy shapes and ABC blocks bobbing in the corners
+const KIDS = ["#F66CA1", "#35C4CC", "#FFD21A"];
+export const KidsStage: React.FC<{ t: number; blocks?: boolean }> = ({ t, blocks = true }) => (
+  <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: "linear-gradient(180deg, #FFF8EC 0%, #FFF1F6 55%, #E9FAFB 100%)" }}>
+    <div style={{ position: "absolute", left: -260 + Math.sin(t * 0.5) * 40, top: -200, width: 760, height: 760, borderRadius: 380, background: rgba(KIDS[1], 0.22) }} />
+    <div style={{ position: "absolute", right: -300 + Math.cos(t * 0.4) * 40, top: 1250, width: 820, height: 820, borderRadius: 410, background: rgba(KIDS[0], 0.2) }} />
+    {Array.from({ length: 18 }).map((_, i) => {
+      const sp = 50 + ((i * 53) % 70);
+      const x = ((i * 137) % 1000) + 20 + Math.sin(t * 0.9 + i) * 36;
+      const y = 1920 - (((t * sp + i * 211) % 2100) - 90);
+      const c = KIDS[i % 3];
+      const r = 14 + (i % 4) * 7;
+      const rot = t * 60 + i * 40;
+      const shape = i % 3;
+      return (
+        <div key={i} style={{ position: "absolute", left: x, top: y, transform: `rotate(${rot}deg)`, opacity: 0.85 }}>
+          {shape === 0 && <div style={{ width: r * 2, height: r * 2, borderRadius: r, background: c }} />}
+          {shape === 1 && <div style={{ width: r * 2, height: r * 2, borderRadius: 8, background: c }} />}
+          {shape === 2 && <div style={{ width: 0, height: 0, borderLeft: `${r}px solid transparent`, borderRight: `${r}px solid transparent`, borderBottom: `${r * 1.8}px solid ${c}` }} />}
+        </div>
+      );
+    })}
+    {blocks && ["A", "B", "C"].map((L, i) => (
+      <div key={L} style={{ position: "absolute", left: 330 + i * 140, top: 1260 + Math.sin(t * 2.2 + i) * 14 - (i === 1 ? 40 : 0), width: 120, height: 120, borderRadius: 18, background: KIDS[i], transform: `rotate(${(i - 1) * 8 + Math.sin(t * 1.6 + i) * 4}deg)`, boxShadow: "0 10px 0 rgba(0,0,0,0.12)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: FONT, fontWeight: 900, fontSize: 72, color: "#FFFFFF" }}>{L}</div>
+    ))}
+  </div>
+);
 const Stage: React.FC<{ light?: boolean; t?: number }> = ({ light: l0, t = 0 }) => {
+  if (SKIN === "kids") return <KidsStage t={t} />;
   const light = l0 || SKIN === "paper";
   const lx = 50 + Math.sin(t * 0.6) * 18;
   const ly = 30 + Math.cos(t * 0.45) * 10;
   if (SKIN === "grid" && !l0) {
     const off = (t * 12) % 60;
     return (
-      <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: `radial-gradient(ellipse at ${lx}% ${ly}%, #22365E 0%, ${T.primaryDeep} 90%)` }}>
+      <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: `radial-gradient(ellipse at ${lx}% ${ly}%, ${T.primary} 0%, ${T.primaryDeep} 90%)` }}>
         <div style={{ position: "absolute", inset: -60, transform: `translate(${off}px, ${off}px)`, backgroundImage: `linear-gradient(${rgba(T.accent, 0.12)} 2px, transparent 2px), linear-gradient(90deg, ${rgba(T.accent, 0.12)} 2px, transparent 2px)`, backgroundSize: "60px 60px" }} />
         <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at 50% 50%, transparent 40%, ${rgba(T.primaryDeep, 0.85)} 100%)` }} />
       </div>
@@ -68,7 +99,7 @@ const Stage: React.FC<{ light?: boolean; t?: number }> = ({ light: l0, t = 0 }) 
 };
 
 const Title: React.FC<{ t: number; at: number; text: string; dark?: boolean; top?: number }> = ({ t, at, text, dark: d0, top = 250 }) => {
-  const dark = d0 || SKIN === "paper";
+  const dark = d0 || PALE();
   const k = prog(t, at, 0.5);
   return (
     <div style={{ position: "absolute", top, left: 70, right: 70, textAlign: "center", opacity: k, transform: `translateY(${(1 - k) * 24}px)`, fontFamily: FONT, fontWeight: 900, fontSize: 64, lineHeight: 1.1, color: dark ? T.primary : "#FFFFFF" }}>
@@ -278,12 +309,12 @@ const Checks: React.FC<SceneProps> = (props) => {
         y += 110 + b.items.length * 120 + 40;
         return (
           <div key={bi} style={{ position: "absolute", top, left: 80, right: 80, opacity: hk, transform: `translateY(${(1 - hk) * 30}px)` }}>
-            <div style={{ fontFamily: FONT, fontWeight: 900, fontSize: 52, color: props.p.light || SKIN === "paper" ? T.primary : "#FFFFFF", marginBottom: 18 }}>{b.head}</div>
+            <div style={{ fontFamily: FONT, fontWeight: 900, fontSize: 52, color: props.p.light || PALE() ? T.primary : "#FFFFFF", marginBottom: 18 }}>{b.head}</div>
             {b.items.map((it, ii) => {
               const k = pop(t, it.at);
               return (
-                <div key={ii} style={{ display: "flex", alignItems: "center", gap: 24, height: 100, marginBottom: 20, padding: "0 30px", borderRadius: 24, background: "#FFFFFF", boxShadow: "0 12px 28px rgba(0,0,0,0.22)", transform: `scale(${0.85 + 0.15 * k})`, opacity: Math.min(1, k * 2), transformOrigin: "0% 50%" }}>
-                  <div style={{ width: 58, height: 58, borderRadius: 29, background: T.accent, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: FONT, fontWeight: 900, fontSize: 36, color: T.primary, flexShrink: 0 }}>{mark}</div>
+                <div key={ii} style={{ display: "flex", alignItems: "center", gap: 24, height: 100, marginBottom: 20, padding: "0 30px", borderRadius: 24, background: "#FFFFFF", boxShadow: "0 12px 28px rgba(0,0,0,0.22)", borderLeft: SKIN === "kids" ? `14px solid ${KIDS[ii % 3]}` : undefined, transform: `scale(${0.85 + 0.15 * k})`, opacity: Math.min(1, k * 2), transformOrigin: "0% 50%" }}>
+                  <div style={{ width: 58, height: 58, borderRadius: 29, background: SKIN === "kids" ? KIDS[ii % 3] : T.accent, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: FONT, fontWeight: 900, fontSize: 36, color: T.primary, flexShrink: 0 }}>{mark}</div>
                   <div style={{ fontFamily: FONT, fontWeight: 800, fontSize: it.text.length > 26 ? 40 : 46, color: T.primary }}>{it.text}</div>
                 </div>
               );
