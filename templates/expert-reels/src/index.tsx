@@ -180,6 +180,8 @@ const Captions: React.FC = () => {
   const { fps } = useVideoConfig();
   const t = frame / fps;
   const page = E.pages.find((p: Page) => t >= p.start && t < p.end);
+  // a full-frame word/number beat already says it: no captions under it
+  if (E.cutaways.some((c) => c.kind === "scene" && t >= c.in - 0.05 && t < c.out + 0.3 && c.panels?.some((p: any) => p.kind === "bg_number"))) return null;
   if (E.style.captions === "plate") return <PlateCaptions />;
   if (!page) return null;
   if (E.style.captions === "paper") {

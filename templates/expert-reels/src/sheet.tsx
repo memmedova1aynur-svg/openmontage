@@ -88,22 +88,42 @@ const bezier = (p0: number[], p1: number[], p2: number[], p3: number[], u: numbe
   const v = 1 - u;
   return [0, 1].map((k) => v * v * v * p0[k] + 3 * v * v * u * p1[k] + 3 * v * u * u * p2[k] + u * u * u * p3[k]);
 };
-const Bunny: React.FC<{ x: number; y: number; flip: boolean; hop: number }> = ({ x, y, flip, hop }) => (
-  <g transform={`translate(${x} ${y - 70 - hop}) scale(${flip ? -1.5 : 1.5} 1.5)`}>
-    <ellipse cx={0} cy={58 + hop} rx={34 - hop * 0.4} ry={8} fill="rgba(0,0,0,0.12)" />
-    <ellipse cx={-6} cy={14} rx={34} ry={28} fill="#FFFFFF" stroke={INK()} strokeWidth={5} />
-    <circle cx={-40} cy={10} r={9} fill="#FFFFFF" stroke={INK()} strokeWidth={4} />
-    <ellipse cx={14} cy={-34} rx={8} ry={26} transform="rotate(-12 14 -34)" fill="#FFFFFF" stroke={INK()} strokeWidth={5} />
-    <ellipse cx={14} cy={-34} rx={3.5} ry={17} transform="rotate(-12 14 -34)" fill="#F66CA1" />
-    <ellipse cx={30} cy={-30} rx={8} ry={26} transform="rotate(14 30 -30)" fill="#FFFFFF" stroke={INK()} strokeWidth={5} />
-    <ellipse cx={30} cy={-30} rx={3.5} ry={17} transform="rotate(14 30 -30)" fill="#F66CA1" />
-    <circle cx={24} cy={-2} r={20} fill="#FFFFFF" stroke={INK()} strokeWidth={5} />
-    <circle cx={31} cy={-6} r={3.5} fill={INK()} />
-    <circle cx={42} cy={0} r={3.5} fill="#F66CA1" />
-    <ellipse cx={-14} cy={40} rx={12} ry={6} fill="#FFFFFF" stroke={INK()} strokeWidth={4} />
-    <ellipse cx={14} cy={40} rx={12} ry={6} fill="#FFFFFF" stroke={INK()} strokeWidth={4} />
-  </g>
-);
+// cartoon motion: squash on landing, stretch in the air, ears trail the jump, the body leans into
+// each hop and the eyes blink now and then. ph = 0..1 through one hop.
+const Bunny: React.FC<{ x: number; y: number; flip: boolean; ph: number; moving: boolean; t: number }> = ({ x, y, flip, ph, moving, t }) => {
+  const air = moving ? Math.sin(ph * Math.PI) : 0;
+  const lift = air * 34;
+  const land = moving ? Math.max(0, 1 - Math.min(ph, 1 - ph) / 0.12) : 0; // 1 right at take-off / touch-down
+  const sx = 1 + 0.18 * land - 0.08 * air;
+  const sy = 1 - 0.2 * land + 0.12 * air;
+  const vel = moving ? Math.cos(ph * Math.PI) : 0; // + rising, - falling
+  const ear = -vel * 22 + Math.sin(t * 9) * (moving ? 0 : 4);
+  const lean = moving ? 10 * vel : 0;
+  const blink = (t * 1.3) % 3 < 0.12;
+  return (
+    <g transform={`translate(${x} ${y}) scale(${flip ? -1 : 1} 1)`}>
+      <ellipse cx={0} cy={4} rx={24 * (1 - 0.45 * air)} ry={5 * (1 - 0.45 * air)} fill="rgba(0,0,0,0.13)" />
+      <g transform={`translate(0 ${-lift}) scale(${sx} ${sy}) rotate(${lean})`}>
+        <circle cx={-26} cy={-22} r={7} fill="#FFFFFF" stroke={INK()} strokeWidth={3.5} />
+        <ellipse cx={-4} cy={-24} rx={24} ry={20} fill="#FFFFFF" stroke={INK()} strokeWidth={3.5} />
+        <g transform={`rotate(${ear - 12} 12 -52)`}>
+          <ellipse cx={12} cy={-68} rx={5.5} ry={17} fill="#FFFFFF" stroke={INK()} strokeWidth={3.5} />
+          <ellipse cx={12} cy={-68} rx={2.4} ry={11} fill="#F66CA1" />
+        </g>
+        <g transform={`rotate(${ear + 14} 22 -50)`}>
+          <ellipse cx={22} cy={-66} rx={5.5} ry={17} fill="#FFFFFF" stroke={INK()} strokeWidth={3.5} />
+          <ellipse cx={22} cy={-66} rx={2.4} ry={11} fill="#F66CA1" />
+        </g>
+        <circle cx={17} cy={-40} r={14} fill="#FFFFFF" stroke={INK()} strokeWidth={3.5} />
+        {blink ? <path d="M18 -43 h6" stroke={INK()} strokeWidth={2.5} strokeLinecap="round" /> : <circle cx={21} cy={-43} r={2.6} fill={INK()} />}
+        <circle cx={29.5} cy={-38} r={2.4} fill="#F66CA1" />
+        <circle cx={14} cy={-34} r={3.2} fill="#F66CA1" opacity={0.45} />
+        <ellipse cx={-10 - 6 * air} cy={-4 + 2 * air} rx={9} ry={4.5} fill="#FFFFFF" stroke={INK()} strokeWidth={3} />
+        <ellipse cx={10 + 6 * air} cy={-4 + 2 * air} rx={9} ry={4.5} fill="#FFFFFF" stroke={INK()} strokeWidth={3} />
+      </g>
+    </g>
+  );
+};
 
 const Route: React.FC<SceneProps> = ({ f, p, startT }) => {
   const t = startT + f / FPSX;
@@ -153,9 +173,9 @@ const Route: React.FC<SceneProps> = ({ f, p, startT }) => {
         const u = (want - len[i - 1]) / Math.max(1e-6, len[i] - len[i - 1]);
         const x = pts[i - 1][0] + (pts[i][0] - pts[i - 1][0]) * u;
         const y = pts[i - 1][1] + (pts[i][1] - pts[i - 1][1]) * u;
-        const moving = road < 0.999;
-        const hop = moving ? Math.abs(Math.sin(t * 7)) * 26 : Math.abs(Math.sin(t * 3)) * 8;
-        return <g opacity={prog(t, startT, 0.4)}><Bunny x={x} y={y} flip={pts[i][0] < pts[i - 1][0]} hop={hop} /></g>;
+        const moving = road < 0.999 && road > 0.021;
+        const ph = (t * 2.2) % 1;
+        return <g opacity={prog(t, startT, 0.4)}><Bunny x={x} y={y - 8} flip={pts[i][0] < pts[i - 1][0]} ph={ph} moving={moving} t={t} /></g>;
       })()}
       {a.flag !== undefined && t >= a.flag && (
         <g transform={`translate(${stops[stops.length - 1].x + 10} ${stops[stops.length - 1].y - 150})`} opacity={prog(t, a.flag, 0.3)}>
