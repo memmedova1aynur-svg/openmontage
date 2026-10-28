@@ -23,7 +23,9 @@
   "Eyni məkan və geyimdə ardıcıl videolarda altyazı və vurğu üslubu dəyişdirilir.",
   "Hər kart və animasiyaya uyğun səs effekti (zoom-larda yox), danışığın altında - storyboardda göstərilir.",
   "Aytənin telefonla (Edit) çəkdiyi videolar güzgü (mirror) ola bilər: əvvəl/sonra kadrı göstər, təsdiqdən sonra çevir.",
-  "Kafe/restoran məkanında çəkilişlər: arxa fon səsi (çəngəl-bıçaq, musiqi) denoise.sh (DeepFilterNet) ilə təmizlənir; pauzalar tighten.py ilə ~0.25 s-ə qədər qısaldılır (istifadəçi 2026-10-27 istədi)."
+  "Kafe/restoran məkanında çəkilişlər: arxa fon səsi (çəngəl-bıçaq, musiqi) denoise.sh (DeepFilterNet) ilə təmizlənir; pauzalar tighten.py ilə ~0.25 s-ə qədər qısaldılır (istifadəçi 2026-10-27 istədi).",
+  "Hər videonu təhvildən əvvəl hazır faylın səsini yenidən mətnə çevirib skriptlə müqayisə et (təkrar cümlə, yarımçıq söz); bir partiyadakı videolar ayrı skin/altyazı ilə fərqləndirilir.",
+  "Mikrofonla çəkilir: səs təmizləmə yalnız ehtiyac olanda (kafe, çəngəl-bıçaq). Göy köynəkli otaq çəkilişlərində təmizləmə yoxdur."
  ],
  "theme_source": "approved in delivered videos",
  "theme": {
@@ -229,6 +231,17 @@
    "style": {},
    "scenes": [],
    "notes": "User asked to remove cafe noise (cutlery, music) and to tighten leftover pauses. All four: DeepFilterNet3 voice cleanup; pauses cut to ~0.24 s with spec/words re-timed. 68.5->65.1, 54.1->51.1, 56.4->54.4, 57.3->52.6 s. Video 2 end card got the phone number 050 368 85 83."
+  },
+  {
+   "date": "2026-10-28",
+   "video": "IMG_6285 / 6211 / 6212 / 6214 (blue shirt, painting room)",
+   "style": {
+    "captions": "plate / marker / chip / box"
+   },
+   "scenes": [
+    "studio skins: navy / paper / grid / split"
+   ],
+   "notes": "6285 story (profile, numbers, balance), 6211 certificates (certs, forget, checks), 6212 focus (juggle, questions, shorten list), 6214 sales consultation ad (checks, funnel, SATIŞ call card). All flipped (mic side = earlier mirrored batch). User feedback: scenes were static until the trigger word -> living stage + camera push; all four looked alike -> per-video skins; repeats/clipped syllables -> unclip.py + full re-transcription check; no voice cleanup for lavalier sound."
   }
  ]
 }
