@@ -25,7 +25,14 @@ keep = json.load(open(keep_path, encoding="utf-8"))
 # expression must not be clipped (capped at the end of the source).
 src_dur = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", src],
                                capture_output=True, text=True, check=True).stdout.strip())
-keep[-1][1] = min(src_dur, keep[-1][1] + 1.0)
+# Every range is a whole number of frames, and pieces carry PCM audio until the final mux:
+# per-piece AAC padding and frame rounding otherwise add ~20-30 ms at every join, so a cut
+# with 20 joins drifts 0.4 s and anything timed on keep.json (pause trims, words) lands late.
+FR = 30
+keep = [[round(a * FR) / FR, round(b * FR) / FR] for a, b in keep]
+keep = [[a, b] for a, b in keep if b - a >= 1 / FR]
+json.dump(keep, open(keep_path, "w"))  # write the frame-snapped ranges back
+keep[-1][1] = min(int(src_dur * FR) / FR, round((keep[-1][1] + 1.0) * FR) / FR)
 segs = json.load(open(words_path, encoding="utf-8"))
 if isinstance(segs, dict):  # raw transcriber output
     words = segs["word_timestamps"]
@@ -40,17 +47,18 @@ listfile = os.path.join(tmp, "list.txt")
 with open(listfile, "w") as lf:
     for i, (a, b) in enumerate(keep):
         d = b - a
-        piece = os.path.join(tmp, f"p{i:03d}.mp4")
+        piece = os.path.join(tmp, f"p{i:03d}.mov")
+        nf = round(d * FR)
         subprocess.run(
-            ["ffmpeg", "-v", "error", "-y", "-ss", f"{a}", "-i", src, "-t", f"{d}",
-             "-af", f"afade=t=in:d=0.04,afade=t=out:st={max(0, d - 0.04):.3f}:d=0.04",
-             "-c:v", "libx264", "-preset", "fast", "-crf", "16", "-pix_fmt", "yuv420p", "-r", "30",
-             "-c:a", "aac", "-b:a", "256k", "-ar", "48000", piece],
+            ["ffmpeg", "-v", "error", "-y", "-ss", f"{a}", "-i", src, "-frames:v", str(nf),
+             "-af", f"afade=t=in:d=0.04,afade=t=out:st={max(0, d - 0.04):.3f}:d=0.04,atrim=end={d:.6f},apad=whole_dur={d:.6f}",
+             "-c:v", "libx264", "-preset", "fast", "-crf", "16", "-pix_fmt", "yuv420p", "-r", str(FR),
+             "-c:a", "pcm_s16le", "-ar", "48000", piece],
             check=True,
         )
         lf.write(f"file '{piece}'\n")
-subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", listfile, "-c", "copy",
-                "-movflags", "+faststart", out_video], check=True)
+subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", listfile, "-c:v", "copy",
+                "-c:a", "aac", "-b:a", "256k", "-movflags", "+faststart", out_video], check=True)
 shutil.rmtree(tmp)
 
 # words: keep those whose midpoint falls inside a kept range, shifted onto the new timeline
