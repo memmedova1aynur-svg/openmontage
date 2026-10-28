@@ -116,7 +116,7 @@ words_p = ART / "words.json"
 shutil.copy(words_p, ART / "words_v1.json")
 segs = json.load(open(words_p))
 for seg in segs:
-    if manual:
+    if manual and not os.environ.get("KEEPWORDS"):  # KEEPWORDS=1: the spans are pauses, keep every word
         seg["words"] = [w for w in seg["words"] if not any(a <= w["start"] < b for a, b in removed)]
     for w in seg["words"]:
         w["start"], w["end"] = remap(w["start"]), max(remap(w["start"]) + 0.05, remap(w["end"]))
@@ -144,4 +144,5 @@ if spec_p.exists():  # tightening before the spec is written is fine too
 print(f"{len(removed)} pauses shortened, {cut_dur:.2f}s -> {acc:.2f}s; new keep: {len(new_keep)} ranges")
 
 # the cleaned voice can hide soft syllables; give back anything voiced in the raw audio
-subprocess.run([sys.executable, str(Path(__file__).with_name("unclip.py")), str(proj), str(src)], check=True)
+if not manual:  # hand-picked spans are trusted as they are
+    subprocess.run([sys.executable, str(Path(__file__).with_name("unclip.py")), str(proj), str(src)], check=True)
