@@ -124,11 +124,12 @@ def walk(o, key=None):
 
 
 spec_p = proj / "spec.json"
-shutil.copy(spec_p, proj / "spec_v1.json")
-spec = json.load(open(spec_p))
-zoom = spec.pop("zoom", [])
-spec = walk(spec)
-spec["zoom"] = [[remap(z[0])] + z[1:] for z in zoom]
-json.dump(spec, open(spec_p, "w"), ensure_ascii=False, indent=1)
+if spec_p.exists():  # tightening before the spec is written is fine too
+    shutil.copy(spec_p, proj / "spec_v1.json")
+    spec = json.load(open(spec_p))
+    zoom = spec.pop("zoom", [])
+    spec = walk(spec)
+    spec["zoom"] = [[remap(z[0])] + z[1:] for z in zoom]
+    json.dump(spec, open(spec_p, "w"), ensure_ascii=False, indent=1)
 
 print(f"{len(removed)} pauses shortened, {cut_dur:.2f}s -> {acc:.2f}s; new keep: {len(new_keep)} ranges")

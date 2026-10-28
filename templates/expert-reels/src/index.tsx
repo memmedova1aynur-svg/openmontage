@@ -22,6 +22,7 @@ import { BLUEPRINT, BpNote, BpSpark } from "./blueprint";
 import { CallCard, Marker, SHEET, Ticket } from "./sheet";
 import { CARDS, Flash } from "./cards";
 import { ACADEMIC, EdCard } from "./academic";
+import { STUDIO } from "./studio";
 import { Backdrop, CommentCTA, PIP_SIDE, SCENES } from "./scenes";
 import { Cutaway, E, EMPH, FONT, FONT_HAND, FPS, Page, Pill, T, ZoomKey, clamp01, rgba, useFonts } from "./theme";
 
@@ -555,7 +556,7 @@ const PipPanels: React.FC<{ c: Cutaway; p: number }> = ({ c, p }) => {
         const start = i === 0 ? c.in : pn.at;
         const end = i + 1 < panels.length ? panels[i + 1].at : c.out + 0.6;
         if (t < start - 0.1 || t >= end + 0.25) return null;
-        const Scene = SCENES[pn.kind] ?? BLUEPRINT[pn.kind] ?? SHEET[pn.kind] ?? CARDS[pn.kind] ?? ACADEMIC[pn.kind] ?? CARTOON[pn.kind] ?? SKETCH[pn.kind] ?? PAPER[pn.kind] ?? ILLUSTRATED[pn.kind];
+        const Scene = SCENES[pn.kind] ?? BLUEPRINT[pn.kind] ?? SHEET[pn.kind] ?? CARDS[pn.kind] ?? ACADEMIC[pn.kind] ?? STUDIO[pn.kind] ?? CARTOON[pn.kind] ?? SKETCH[pn.kind] ?? PAPER[pn.kind] ?? ILLUSTRATED[pn.kind];
         if (!Scene) return null;
         // outgoing panel slides away, incoming slides in
         const out = i + 1 < panels.length ? interpolate(t, [end - 0.15, end + 0.2], [1, 0], clamp01) : 1;

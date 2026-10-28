@@ -4,9 +4,10 @@
 Usage: speech_gate.py <in.wav> <words.json> <out.wav> [floor_db=-30]
 
 words.json: aligned segments ([{words: [{start, end}]}]) or a flat word list, in the
-same timeline as the wav. Each word is padded (0.10 s before, 0.15 s after) and gaps
+same timeline as the wav. Each word is padded (0.12 s before, 0.25 s after) and gaps
 shorter than 0.25 s stay open, so breaths and word tails are not chopped; outside
-the speech the gain ramps (40 ms) down to the floor.
+the speech the gain ramps (40 ms) down to the floor. After the last word nothing is
+gated, so the final word and the closing hold keep their natural tail.
 """
 import json
 import subprocess
@@ -23,11 +24,14 @@ segs = json.load(open(words_p, encoding="utf-8"))
 words = [w for s in segs for w in s["words"]] if segs and "words" in segs[0] else segs
 spans = []
 for w in sorted(words, key=lambda w: w["start"]):
-    a, b = max(0.0, w["start"] - 0.10), w["end"] + 0.15
+    a, b = max(0.0, w["start"] - 0.12), w["end"] + 0.25
     if spans and a - spans[-1][1] < 0.25:
         spans[-1][1] = max(spans[-1][1], b)
     else:
         spans.append([a, b])
+# the closing tail stays open: word timings often end before the last word has died away
+if spans:
+    spans[-1][1] = len(x) / sr + 1
 g = np.full(len(x), floor, dtype=np.float32)
 for a, b in spans:
     g[int(a * sr): int(b * sr)] = 1.0
