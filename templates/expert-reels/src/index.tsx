@@ -1,6 +1,7 @@
 import { BigNumber, Devices, Kid } from "./kid";
 import { RAHIME } from "./rahime";
 import { BROLL } from "./broll";
+import { Poll, QBox } from "./stickers";
 import React from "react";
 import {
   AbsoluteFill,
@@ -710,7 +711,7 @@ const Reel: React.FC = () => {
         ))}
       {E.overlays.filter((o) => !o.plate).map((o) => (
         <Sequence key={o.id} from={Math.round(o.in * FPS)} durationInFrames={Math.round((o.out - o.in) * FPS)}>
-          {o.kind === "kid" ? <Kid o={o as any} /> : o.kind === "devices" ? <Devices o={o as any} /> : o.kind === "edcard" ? <EdCard o={o as any} /> : o.kind === "flash" ? <Flash o={o as any} /> : o.kind === "ticket" ? <Ticket o={o as any} /> : o.kind === "marker" ? <Marker o={o as any} /> : o.kind === "callcard" ? <CallCard o={o as any} /> : o.kind === "note" ? <BpNote o={o as any} /> : o.kind === "spark" ? <BpSpark o={o as any} /> : o.kind === "strip" ? <Strip o={o as any} /> : o.kind === "counter" ? <CounterFrame o={o} /> : o.kind === "icon" ? <IconChip o={o} /> : o.kind === "title" ? <TitleCard o={o} /> : o.kind === "end" ? <EndCard o={o} /> : o.kind !== "pop" ? <PillCard o={o} /> : E.style.pops === "type" || o.hand || o.strike !== undefined ? <TypePop o={o} /> : <KeywordPop o={o} />}
+          {o.kind === "poll" ? <Poll o={o as any} /> : o.kind === "qbox" ? <QBox o={o as any} /> : o.kind === "kid" ? <Kid o={o as any} /> : o.kind === "devices" ? <Devices o={o as any} /> : o.kind === "edcard" ? <EdCard o={o as any} /> : o.kind === "flash" ? <Flash o={o as any} /> : o.kind === "ticket" ? <Ticket o={o as any} /> : o.kind === "marker" ? <Marker o={o as any} /> : o.kind === "callcard" ? <CallCard o={o as any} /> : o.kind === "note" ? <BpNote o={o as any} /> : o.kind === "spark" ? <BpSpark o={o as any} /> : o.kind === "strip" ? <Strip o={o as any} /> : o.kind === "counter" ? <CounterFrame o={o} /> : o.kind === "icon" ? <IconChip o={o} /> : o.kind === "title" ? <TitleCard o={o} /> : o.kind === "end" ? <EndCard o={o} /> : o.kind !== "pop" ? <PillCard o={o} /> : E.style.pops === "type" || o.hand || o.strike !== undefined ? <TypePop o={o} /> : <KeywordPop o={o} />}
         </Sequence>
       ))}
       <AbsoluteFill style={{ transform: `translate(${captionShift(t).x}px, ${captionShift(t).y}px)` }}>
