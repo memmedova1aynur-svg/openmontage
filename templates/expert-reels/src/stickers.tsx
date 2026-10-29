@@ -113,3 +113,20 @@ export const DM: React.FC<{ o: any }> = ({ o }) => {
     </Card>
   );
 };
+
+// tip: a big orange numeral next to a short line on a cream band (numbered advice: "1 · …")
+export const Tip: React.FC<{ o: any }> = ({ o }) => {
+  const { k, exit, frame, fps } = useIn(o);
+  const kn = spring({ frame: frame - 4, fps, config: { damping: 11, stiffness: 200, mass: 0.6 } });
+  return (
+    <div style={{ position: "absolute", left: 40, right: 40, top: o.top ?? 200, opacity: Math.min(1, k * 1.6) * exit, transform: `translateX(${(1 - k) * -60}px)` }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 28, background: "rgba(247,230,208,0.97)", borderRadius: 30, padding: "18px 36px 18px 26px", boxShadow: "0 18px 44px rgba(40,15,0,0.3)" }}>
+        <div style={{ fontFamily: FONT, fontWeight: 900, fontSize: o.numSize ?? 150, lineHeight: 0.9, color: ORANGE, transform: `scale(${0.6 + 0.4 * kn})`, minWidth: 100, textAlign: "center" }}>{o.num}</div>
+        <div style={{ fontFamily: FONT, fontWeight: 900, fontSize: o.size ?? 50, lineHeight: 1.1, color: INK }}>
+          {o.text}
+          {o.sub && <div style={{ fontWeight: 700, fontSize: (o.size ?? 50) * 0.66, color: DEEP, marginTop: 6 }}>{o.sub}</div>}
+        </div>
+      </div>
+    </div>
+  );
+};
