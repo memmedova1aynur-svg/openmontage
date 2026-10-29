@@ -25,6 +25,32 @@ const Clip: React.FC<{ p: Record<string, any>; f: number; w: number; h: number }
 
 const Broll: React.FC<SceneProps> = ({ f, p, startT }) => {
   const start = Math.round(startT * FPSX);
+  // label chip(s) on a clip: p.labels [{text, at}] (the latest one shows), or a single p.label
+  const t = startT + f / FPSX;
+  const labels: { text: string; at: number }[] = p.labels ?? (p.label ? [{ text: p.label, at: startT }] : []);
+  const cur = [...labels].reverse().find((l) => t >= l.at);
+  const Chip: React.FC<{ text: string; at: number; top: number }> = ({ text, at, top }) => {
+    const k = Math.min(1, Math.max(0, (t - at) / 0.25));
+    return (
+      <div style={{ position: "absolute", left: 50, top, opacity: k, transform: `translateX(${(1 - k) * -40}px)`, background: "#F7E6D0", borderLeft: "14px solid #E0662A", borderRadius: 10, padding: "14px 26px", fontFamily: "Montserrat", fontWeight: 900, fontSize: 58, color: "#B8460F", boxShadow: "0 12px 30px rgba(40,15,0,0.35)" }}>{text}</div>
+    );
+  };
+  if (p.layout === "compare") {
+    // two clips stacked, each with its own label: the contrast the speaker describes (p.src / p.src2)
+    const k2 = Math.min(1, Math.max(0, (t - (p.at2 ?? startT)) / 0.35));
+    return (
+      <div style={{ position: "absolute", inset: 0, background: "#F7E6D0" }}>
+        <div style={{ position: "absolute", left: 0, top: 0, width: 1080, height: 956, overflow: "hidden" }}>
+          <Sequence from={start} layout="none"><Clip p={p} f={f} w={1080} h={956} /></Sequence>
+          {p.label && <Chip text={p.label} at={p.labelAt ?? startT} top={p.labelTop ?? 230} />}
+        </div>
+        <div style={{ position: "absolute", left: 0, top: 964, width: 1080, height: 956, overflow: "hidden", opacity: k2, transform: `translateY(${(1 - k2) * 80}px)` }}>
+          <Sequence from={start} layout="none"><Clip p={{ ...p, src: p.src2, from: p.from2 ?? 0 }} f={f} w={1080} h={956} /></Sequence>
+          {p.label2 && <Chip text={p.label2} at={p.label2At ?? p.at2 ?? startT} top={60} />}
+        </div>
+      </div>
+    );
+  }
   if (p.layout === "top") {
     // the clip keeps its own shape (16:9 = 608 px tall) across the top; the speaker fills the rest
     const H = p.clipH ?? 608;
@@ -68,6 +94,7 @@ const Broll: React.FC<SceneProps> = ({ f, p, startT }) => {
       <Sequence from={start} layout="none">
         <Clip p={p} f={f} w={1080} h={1920} />
       </Sequence>
+      {cur && <Chip key={cur.text} text={cur.text} at={cur.at} top={p.labelTop ?? 1140} />}
     </div>
   );
 };
