@@ -1,0 +1,141 @@
+{
+ "name": "Xalidə Baycan",
+ "status": "active",
+ "activity": "Uşaq inkişafı mütəxəssisi və təlimçi; oyun, nağıl terapiyası və Montessori istiqamətləri.",
+ "audience": "Pedaqoqlar, uşaqlarla işləyən mütəxəssislər.",
+ "palette": {
+  "confirmed": {
+   "pink": "#F66CA1",
+   "turquoise": "#35C4CC",
+   "yellow": "#FFD21A"
+  }
+ },
+ "video_types": "ekspert danışığı, reklam, fəaliyyət nümayişi, sual-cavab, seminar görüntüləri",
+ "cautions": [
+  "Standart rəng sarıdır. Çəhrayı və ya firuzəyi yalnız istifadəçi həmin video üçün desə.",
+  "Bütün mənbə videolar ayna effektli gəlib (mikrofon tərəfinə bax) - istifadəçinin təsdiqi ilə çevrilir.",
+  "Sarı accent ağ kart üzərində mətn rəngi kimi oxunmur: vurğu tünd mətn + sarı marker xətti ilə verilir (isPale).",
+  "Səs: hər videoda DeepFilterNet + söz daxilində bərpa (speech_gate raw) - istifadəçi təmiz səs istəyir (2026-10-28).",
+  "Qutular baş/üz/göz/əllərə düşməməlidir; alt yazılar da əllərə. Hər render-dən əvvəl guard.py <id> --fix işlət.",
+  "Çərçivə dəyişir: başı yuxarıda olan çəkilişlərdə (açıq hava) qutular başın yanındakı sütunlara (note col / bubble maxw) qoyulur.",
+  "Kadrı düzəlt (spec frame {s,y}): başın üstündə boşluq qalmasın - istifadəçi çox bəyəndi.",
+  "Kəsiklər yumşaq olsun: smooth_joins.py (0.12 s dissolve) + zoomlar yalnız 'push' (sərt zoom kəsikləri yox).",
+  "Səhnələr hərəkətsiz qalmasın; vizual danışılan sözlə gəlsin. Uşaq mövzusu: kids skin, dovşan, atılan uşaq, ikonlar.",
+  "Rəng tonları bütün videolarda eyni balansda; fərq vizual istiqamətdə olsun, rənglərdə yox.",
+  "Səs: əks-sədalı otaqda GENTLE=1 denoise (4, 5-ci videolar).",
+  "Hər render-dən əvvəl fix_joins.py: kəsimlər mənbə səsinə görə sükuta çəkilir (söz sonu 0.17 s, başlanğıc 0.11 s); retake sözü qayıdırsa PIN ilə saxla.",
+  "Səs: LIGHT=1 (highpass + yüngül afftdn), açıq havada GENTLE=1 ATTEN=12. Güclü DFN + bərpa süni səs verdi.",
+  "Bəyənilmədi: ikon dairələri, yan sütun qeydləri, buludlar, ensiz kartlar. Təsdiqli: firuzəyi 'dark' pop kartları, kids səhnəsi, dovşan, 1-2-3 rəqəm kadrları (altında alt yazı yox), real cihaz təsvirləri.",
+  "Qırmızı geyimdə alt yazı tam ağ (style.activeColor #FFFFFF). Son sözdən sonra ən azı 1 s qalsın - yekun faylda yoxla."
+ ],
+ "theme_source": "istifadəçi təsdiqi (2026-10-28): firuzəyi #127A80 əsas + çəhrayı #F66CA1 vurğu + sarı #FFD21A; səhifə rəngləri. Qırmızı geyimdə alt yazı ağ olsun.",
+ "style": {
+  "note": "hər videoda fərqli: chip/marker/lower/box/solo/stroke/plate/frame altyazılar; sarı #FFD21A + tünd qəhvəyi #2B2414"
+ },
+ "history": [
+  {
+   "date": "2026-10-28",
+   "video": "xalide-1: IMG Ekran asılılığı (alternativ oyunlar)",
+   "style": {
+    "captions": "chip",
+    "pops": "dark pops"
+   },
+   "scenes": [
+    "st_checks Telefon əvəzinə"
+   ],
+   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon). Düzəliş: guard.py ilə qutular/alt yazılar baş və əllərdən çəkildi, səs təmizləndi (x7 plate->paper, x8 kənar sütunlar)."
+  },
+  {
+   "date": "2026-10-28",
+   "video": "xalide-2: Mağazada ağlayan uşaq / Etmə əvəzinə yönləndir",
+   "style": {
+    "captions": "marker",
+    "pops": "marker overlays"
+   },
+   "scenes": [
+    "fc_versus Etmə! vs Gəl, yerinə qoyaq"
+   ],
+   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon). Düzəliş: guard.py ilə qutular/alt yazılar baş və əllərdən çəkildi, səs təmizləndi (x7 plate->paper, x8 kənar sütunlar)."
+  },
+  {
+   "date": "2026-10-28",
+   "video": "xalide-3: Gecə qorxuları / nağıl terapiyası",
+   "style": {
+    "captions": "lower",
+    "pops": "ticket"
+   },
+   "scenes": [
+    "sh_route dovşan hekayəsi"
+   ],
+   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon). Düzəliş: guard.py ilə qutular/alt yazılar baş və əllərdən çəkildi, səs təmizləndi (x7 plate->paper, x8 kənar sütunlar)."
+  },
+  {
+   "date": "2026-10-28",
+   "video": "xalide-4: Bağça seçimi: 4 meyar",
+   "style": {
+    "captions": "box",
+    "pops": "callcard #1-#4"
+   },
+   "scenes": [
+    "st_checks grid: proqramda olmalıdır"
+   ],
+   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon). Düzəliş: guard.py ilə qutular/alt yazılar baş və əllərdən çəkildi, səs təmizləndi (x7 plate->paper, x8 kənar sütunlar)."
+  },
+  {
+   "date": "2026-10-28",
+   "video": "xalide-5: Nitq gecikməsi / ekran / TPR",
+   "style": {
+    "captions": "solo",
+    "pops": "flash"
+   },
+   "scenes": [
+    "fc_recipe 4 addım"
+   ],
+   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon). Düzəliş: guard.py ilə qutular/alt yazılar baş və əllərdən çəkildi, səs təmizləndi (x7 plate->paper, x8 kənar sütunlar)."
+  },
+  {
+   "date": "2026-10-28",
+   "video": "xalide-6: Qrupda hiperaktiv uşaq",
+   "style": {
+    "captions": "stroke",
+    "pops": "type pops + bubble sitatlar"
+   },
+   "scenes": [],
+   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon). Düzəliş: guard.py ilə qutular/alt yazılar baş və əllərdən çəkildi, səs təmizləndi (x7 plate->paper, x8 kənar sütunlar)."
+  },
+  {
+   "date": "2026-10-28",
+   "video": "xalide-7: Evdə hiperaktiv uşaq: 2 qayda",
+   "style": {
+    "captions": "plate",
+    "pops": "light pops"
+   },
+   "scenes": [
+    "st_checks paper: enerjini bayıra atın"
+   ],
+   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon). Düzəliş: guard.py ilə qutular/alt yazılar baş və əllərdən çəkildi, səs təmizləndi (x7 plate->paper, x8 kənar sütunlar)."
+  },
+  {
+   "date": "2026-10-28",
+   "video": "xalide-8: Özünə inam: 3 səhv",
+   "style": {
+    "captions": "frame",
+    "pops": "note + bubble"
+   },
+   "scenes": [
+    "sh_answers tənqid və saxta tərif"
+   ],
+   "notes": "Type 1, M01+M03. Test/çəkiliş öncəsi hissə kəsildi, ayna çevrildi, pauzalar xam səsdən qısaldıldı, səs təmizlənmədi (mikrofon). Düzəliş: guard.py ilə qutular/alt yazılar baş və əllərdən çəkildi, səs təmizləndi (x7 plate->paper, x8 kənar sütunlar)."
+  }
+ ],
+ "theme": {
+  "primary": "#127A80",
+  "primaryDeep": "#0A4F53",
+  "accent": "#F66CA1",
+  "accentSoft": "#FFC2DA",
+  "text": "#FFFFFF",
+  "onAccent": "#FFFFFF",
+  "cardAlpha": 0.94,
+  "emphasis": "#FFD21A"
+ }
+}

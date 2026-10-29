@@ -1,0 +1,25 @@
+{
+  "name": "PİKMENT",
+  "status": "active",
+  "activity": "Pedaqoji və psixoloji sahələrdə mütəxəssisləri birləşdirən şirkət / platforma.",
+  "palette": {
+    "family": "bənövşəyi tonlar"
+  },
+  "video_types": "mütəxəssis videoları, platforma və xidmət təqdimatları, motion, hərəkətli kartlar, uyğun seminar materialları",
+  "cautions": [
+    "Şəxsi brend deyil, şirkət kimi təqdim edilir.",
+    "Nilüfər Mehdiyeva ilə rəng ailəsi yaxındır: kimliklər ayrı saxlanılır."
+  ],
+  "theme_source": "derived from the colour family; NOT a client-confirmed code - say so in the storyboard",
+  "theme": {
+    "primary": "#2D1457",
+    "primaryDeep": "#1B0B36",
+    "accent": "#8F5BEA",
+    "accentSoft": "#E9DDFB",
+    "text": "#FFFFFF",
+    "onAccent": "#2D1457",
+    "cardAlpha": 0.94
+  },
+  "style": {},
+  "history": []
+}

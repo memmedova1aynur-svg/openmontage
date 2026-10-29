@@ -1,6 +1,6 @@
 import React from "react";
 import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { E, FONT, T, clamp01, rgba } from "../theme";
+import { E, EMPH, FONT, T, clamp01, rgba } from "../theme";
 
 // Every cutaway scene leaves the corner held by the speaker circle free:
 // content lives in y 300..880 across the full width, plus the lower area on
@@ -16,7 +16,7 @@ export const Rich: React.FC<{ text: string; onAccent?: boolean }> = ({ text, onA
   <>
     {text.split(/(\*\*[^*]+\*\*)/).map((chunk, i) =>
       chunk.startsWith("**") ? (
-        <span key={i} style={onAccent ? { textDecoration: "underline", textDecorationThickness: 5, textUnderlineOffset: 6 } : { color: T.accent }}>
+        <span key={i} style={onAccent ? { textDecoration: "underline", textDecorationThickness: 5, textUnderlineOffset: 6 } : { color: EMPH }}>
           {chunk.slice(2, -2)}
         </span>
       ) : (
@@ -201,14 +201,16 @@ export const Phone: React.FC<SceneProps> = ({ f, p, startT }) => {
   );
 };
 
-const Check: React.FC<{ f: number; at: number; text: string; size?: number }> = ({ f, at, text, size = 32 }) => {
+const Check: React.FC<{ f: number; at: number; text: string; size?: number; gap?: number }> = ({ f, at, text, size = 32, gap = 22 }) => {
   const { fps } = useVideoConfig();
   const s = spring({ frame: f - at, fps, config: { damping: 13, stiffness: 200 } });
+  // a leading "!" marks a negative item: ✗ on a muted tile instead of ✓
+  const neg = text.startsWith("!");
   return (
-    <div style={{ display: "flex", alignItems: "center", marginBottom: 22, opacity: s, transform: `translateX(${(1 - s) * 40}px)` }}>
-      <div style={{ width: size * 1.6, height: size * 1.6, borderRadius: 14, background: T.accent, color: T.onAccent, fontSize: size * 1.05, fontWeight: 900, display: "flex", alignItems: "center", justifyContent: "center", marginRight: 16, flexShrink: 0 }}>✓</div>
+    <div style={{ display: "flex", alignItems: "center", marginBottom: gap, opacity: s, transform: `translateX(${(1 - s) * 40}px)` }}>
+      <div style={{ width: size * 1.6, height: size * 1.6, borderRadius: 14, background: neg ? "#E5484D" : T.accent, color: neg ? "#FFFFFF" : T.onAccent, fontSize: size * 1.05, fontWeight: 900, fontFamily: FONT, display: "flex", alignItems: "center", justifyContent: "center", marginRight: 16, flexShrink: 0, transform: `scale(${0.6 + 0.4 * Math.min(1.1, s)})` }}>{neg ? "✗" : "✓"}</div>
       <div style={{ fontFamily: FONT, fontWeight: 700, fontSize: size, color: T.text, lineHeight: 1.15 }}>
-        <Rich text={text} />
+        <Rich text={neg ? text.slice(1) : text} />
       </div>
     </div>
   );
@@ -221,9 +223,9 @@ export const Checklist: React.FC<SceneProps> = ({ f, p, startT }) => {
   return (
     <AbsoluteFill>
       <Header f={f} label={p.label} title={p.title} />
-      <div style={{ position: "absolute", left: 90, top: 560, width: 900 }}>
+      <div style={{ position: "absolute", left: 90, top: 530, width: 900 }}>
         {(p.items as string[]).map((it, i) => (
-          <Check key={i} f={f} at={appearFrame(p, i, startT, fps, 14, 14)} text={it} size={40} />
+          <Check key={i} f={f} at={appearFrame(p, i, startT, fps, 14, 14)} text={it} size={p.items.length <= 3 ? 46 : 36} gap={p.items.length <= 3 ? 28 : 16} />
         ))}
       </div>
     </AbsoluteFill>
@@ -371,7 +373,7 @@ export const CommentCTA: React.FC<{ p: Record<string, any>; startT: number }> = 
   return (
     <AbsoluteFill style={{ alignItems: "center" }}>
       <div style={{ marginTop: 300, transform: `translateY(${(1 - enter) * -120}px) scale(${0.85 + 0.15 * enter})`, opacity: Math.min(1, enter * 1.5), position: "relative" }}>
-        <div style={{ fontFamily: FONT, fontWeight: 800, fontSize: 34, color: "#fff", textAlign: "center", marginBottom: 16, textShadow: "0 4px 14px rgba(0,0,0,0.6)" }}>
+        <div style={{ fontFamily: FONT, fontWeight: 800, fontSize: p.hintSize ?? 34, color: "#fff", textAlign: "center", marginBottom: 16, maxWidth: 940, textShadow: "0 4px 14px rgba(0,0,0,0.75), 0 1px 3px rgba(0,0,0,0.6)" }}>
           <Rich text={p.hint ?? "Şərhlərdə **yaz** 👇"} />
         </div>
         <div style={{ width: 940, height: 132, borderRadius: 66, background: "#fff", display: "flex", alignItems: "center", padding: "0 18px", boxShadow: "0 18px 50px rgba(0,0,0,0.4)", transform: `scale(${sent ? 1 + 0.05 * (1 - Math.min(1, sendPop)) : 1})` }}>

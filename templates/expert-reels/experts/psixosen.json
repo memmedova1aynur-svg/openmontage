@@ -1,0 +1,24 @@
+{
+  "name": "Psixosən",
+  "status": "inactive",
+  "activity": "Psixoloji sahədə fəaliyyət göstərən platforma / səhifə.",
+  "palette": {
+    "family": "petrol mavisi (maviyə çalan), qara, qırmızı, yumşaq kremə yaxın ağ"
+  },
+  "video_types": "ekspert danışığı, platforma təqdimatı, maarifləndirici video, motion, digər formatlar",
+  "cautions": [
+    "Hazırda aktiv deyil: avtomatik kontent və ya montaj tapşırığı yaradılmır."
+  ],
+  "theme_source": "derived from the colour family; NOT a client-confirmed code - say so in the storyboard",
+  "theme": {
+    "primary": "#1F5F6B",
+    "primaryDeep": "#0F1A1D",
+    "accent": "#E04B4B",
+    "accentSoft": "#F4F0E8",
+    "text": "#FFFFFF",
+    "onAccent": "#1F5F6B",
+    "cardAlpha": 0.94
+  },
+  "style": {},
+  "history": []
+}

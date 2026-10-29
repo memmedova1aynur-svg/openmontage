@@ -1,0 +1,27 @@
+{
+  "name": "Rəşad Rəşidov",
+  "status": "active",
+  "activity": "Coffee shop bizneslərinin qurulması və inkişafı; menyu və iş sistemlərinin təşkili.",
+  "palette": {
+    "confirmed": {
+      "black": "#151515",
+      "copper": "#C66A3B",
+      "cream": "#F3EFE6"
+    }
+  },
+  "video_types": "biznes izahı, reklam, məkan və proses görüntüləri, sual-cavab",
+  "cautions": [],
+  "theme_source": "built from the client's confirmed codes (role mapping is ours); primaryDeep and emphasis are derived shades",
+  "theme": {
+    "primary": "#151515",
+    "primaryDeep": "#0B0B0B",
+    "accent": "#C66A3B",
+    "accentSoft": "#F3EFE6",
+    "text": "#F3EFE6",
+    "onAccent": "#FFFFFF",
+    "cardAlpha": 0.94,
+    "emphasis": "#E39A72"
+  },
+  "style": {},
+  "history": []
+}

@@ -1,0 +1,77 @@
+{
+  "name": "Lamiyə",
+  "status": "active",
+  "activity": "Sensor həssaslıq və uşaq inkişafı sahəsində mütəxəssis; uşaqlarla işləyən peşəkarlar üçün təlimçilik istiqamətini inkişaf etdirir.",
+  "audience": "Pedaqoqlar, terapevtlər, bağça müəllimləri, uşaqlarla işləyən mütəxəssislər.",
+  "palette": {
+    "family": "soft mint yaşıl və ağ",
+    "confirmed": {
+      "soft_mint": "#DCEFE4"
+    }
+  },
+  "video_types": "reklam, ekspert danışığı, sual-cavab, praktik fəaliyyət, seminar, digər uyğun formatlar",
+  "cautions": [
+    "Bütün görüntüyə yaşıl filtr yox; rəng yalnız vurğularda.",
+    "Video mənbə necə bitirsə, eləcə bitir; sonu kəsilmir.",
+    "Kənar/yuxarı elementlər üzü örtməməlidir: yuxarıda yalnız bir element bir anda, yalnız deyilərkən; altyazı lövhədə sabit qalır.",
+    "Termin: həmişə \"duyu bütünləmə\". \"Bütövləmə\" heç vaxt yazılmır, mətndə gəlsə də \"bütünləmə\" ilə əvəz olunur (istifadəçi qərarı, 2026-10-27).",
+    "Alt altyazı lövhəsi (plate) yalnız kadrda örtülməli bir yer olanda istifadə olunur; standart deyil. Belə ehtiyac yoxdursa, montaj daha dinamik olur (lövhəsiz canlı altyazı, qısa tam ekran illüstrasiyalar).",
+    "Animasiya/illüstrasiya: üstünlük verilən üslub prompt-motion #9 kimi parlaq düz cizgi film (src/cartoon.tsx). Animasiya hissələri tam ekran olur, Lamiyə görünmür, səsi davam edir.",
+    "Ardıcıl videolarda animasiya üslubu təkrarlanmır: cizgi film (cartoon.tsx) → akvarel eskiz (sketch.tsx) → növbəti dəfə başqa üslub.",
+    "İstifadəçi xam videoda bir hissəni hazır göndərirsə (səs effekti, rəng effekti), ona toxunulmur, təkrar effekt əlavə edilmir."
+  ],
+  "theme_source": "approved by the user in the first video (2026-10-27): soft green #3A7A60 text/lines on soft mint #DCEFE4; shades derived from the family",
+  "theme": {
+    "primary": "#3A7A60",
+    "primaryDeep": "#2A5A47",
+    "accent": "#A8DCC1",
+    "accentSoft": "#DCEFE4",
+    "text": "#FFFFFF",
+    "onAccent": "#3A7A60",
+    "cardAlpha": 0.94,
+    "emphasis": "#3A7A60"
+  },
+  "style": {},
+  "history": [
+    {
+      "video": "Duyusal bütövləmə vebinarı - reklam",
+      "date": "2026-10-27",
+      "approach": "M01+M03",
+      "style": {
+        "captions": "plate",
+        "pops": "icon chips"
+      },
+      "notes": "White caption plate with soft-mint top line fixed low (covers the waist area); small opening title card above the head (VEBİNAR / Duyusal bütövləmə / subtitle); animated line-icon chips beside the face (symptoms both sides, webinar topics numbered on the left); tab on the plate 'Vebinar · Duyusal bütövləmə', CTA 'Şərhdə “DUYU” yazın' at the end; Caveat handwritten closing line. Topic SFX (chime, swish, clink, knock, snip, tick-tock). User liked the soft green, the plate and the icon chips; asked for smaller top cards (not over head/face), no date, no 'ödənişsiz'. Revision (approved): side chips covered the face -> small cardless title above the head for ~3 s, then icon chips appear ONE AT A TIME above the head only while she says the phrase; the bottom plate keeps captions the whole time. Webinar name: 'Duyusal bütünləmə' (not bütövləmə). No 'ödənişsiz', no date."
+    },
+    {
+      "video": "Uşağınız dünyanı sizin kimi hiss edirmi? (duyu bütünləmə izahı)",
+      "date": "2026-10-27",
+      "approach": "M01+M03 (type 1, educational - not an ad)",
+      "style": {
+        "captions": "box (soft green)",
+        "scenes": "full-frame flat cartoon (prompt-motion #9 style)"
+      },
+      "notes": "User rejected the earlier editor's version (images arrived before the sentence) and my first line-art illustrations; chose style #9 from prompt-motion.com (bright flat cartoon: sky, sun, clouds, hills, round trees, white-outlined kids). Animations must fill the WHOLE frame with the speaker hidden and her voice continuing (no split screen). Each image appears exactly on its word; the second child of each pair only on 'digəri'. Senses: 5 icons on '5 duyu', then Tarazlıq / Bədənin vəziyyəti / Daxili siqnallar big with a fuller sound. Title from the text at the start, above the head. Not an ad: no webinar end card. No fixed caption plate (nothing to cover). RESULT: user: 'Mükəmməldir, çox bəyəndim' - use this as the reference for her next videos (type 1 educational). Note for next time: put small above-head texts over a clean wall area, not over busy shelves."
+    },
+    {
+      "video": "Hər davranış inad deyil! (duyusal səbəblər)",
+      "date": "2026-10-27",
+      "approach": "M01+M03 (type 1, educational)",
+      "style": {
+        "captions": "box (soft green)",
+        "scenes": "full-frame watercolour sketchbook (prompt-motion #1 style) - deliberately different from the cartoon video"
+      },
+      "notes": "Opening '100' as a smooth rolling counter with a hand-drawn ring (user disliked the static '100' box in the earlier edit). Sketch scenes on their words: geyinmək / saç daramaq / yemək; toxunuş / qoxu / hərəkət; paltarın tikişi / qidanın teksturası. Handwritten Caveat notes on the clean left wall (not over the shelf). Ends on her last sentence; text's CTA lines left for the post caption."
+    },
+    {
+      "video": "«Öyrəşəcək» deməzdən əvvəl bir də düşünək (hamam, su)",
+      "date": "2026-10-27",
+      "approach": "M01+M03 (type 1, educational)",
+      "style": {
+        "captions": "paper (torn white paper, yellow marker)",
+        "scenes": "full-frame paper-cut collage (paper.tsx), stop-motion timing"
+      },
+      "notes": "User supplied the opening ready-made (grey look + megaphone voice on 'Ağlama, heç nə yoxdur, öyrəşəcəksən'): keep such parts untouched. Title corrected to Azerbaijani norms: «ÖYRƏŞƏCƏK» DEMƏZDƏN ƏVVƏL BİR DƏ DÜŞÜNƏK. Collage scenes: bath (tub, crying kid, shower, Ağlayır/Qaçır/Etiraz edir), water (axan su, damcılar, duşun səsi), steps (təhlükəsiz temp, tədricən). Kept the user's 'DAVAMLILIQ' idea. RESULT: user: 'Əladır, superdir, mükəmməldir' - paper-cut collage approved."
+    }
+  ]
+}

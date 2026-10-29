@@ -9,10 +9,10 @@ into a finished Instagram Reel. The output has:
 - Keyword pills.
 - Animated cutaways with the speaker in a corner circle.
 - An Instagram comment-box CTA.
-- Synthesized SFX: whoosh, pop, hit, tick and ding.
+- Synthesized SFX (whoosh, pop, hit, tick, ding), only when the approved storyboard asks for them (`sfx_level`).
 - The original audio (including any music already in the footage), normalized
   to -16 LUFS.
-- Two-pass encode to about 26 MB for 60 s, under Claude's 30 MB upload limit.
+- Output at the source's size (1080x1920 stays 1080x1920, 4K stays 4K, never upscaled), plus an HEVC delivery copy capped at ~44 MB.
 
 > **AZ qısa:** Bu şablon mütəxəssis videolarını eyni peşəkar səviyyədə, amma hər
 > dəfə fərqli görünüşlə montaj etmək üçündür. Hər mütəxəssisin öz rəng
@@ -20,6 +20,8 @@ into a finished Instagram Reel. The output has:
 > seçilir, üslub variantları isə əvvəlki videolardan fərqli götürülür.
 
 Reference build: the "6 aylıq karyera xəritəsi" consultation Reel (Oct 2026).
+
+Before editing, classify the footage with [`VIDEO_TYPES.md`](VIDEO_TYPES.md) (14 video types, M01-M13 edit approaches and the type → approach map).
 
 ## Pipeline
 
@@ -29,7 +31,13 @@ The `expert-reels-director` skill says how this template plugs into it.
 ```
 1. Get the footage (> 30 MB: Google Drive link shared as "Anyone with the link").
 2. Transcribe:  transcriber tool, model_size=large-v3, language=az
-3. Correct the transcript by hand, show it to the user, get approval.
+3. Correct the transcript; classify (VIDEO_TYPES.md), pick the approach, present the short storyboard and WAIT for approval
+   (workflow and gate: skills/pipelines/talking-head/expert-reels-director.md).
+3b. Retakes: when a sentence was said more than once, keep the best complete take:
+                python templates/expert-reels/scripts/cut_takes.py <src> <words.json> keep.json base.mp4 words_cut.json
+                (keep.json = [[start, end], ...] in source seconds, cut in the pauses)
+                (the last range is held 1 s past its end so the final sentence is never clipped;
+                 build_edit.py reads the video length from the footage)
 4. Align:       python templates/expert-reels/scripts/align_words.py \
                   projects/<id>/artifacts/<x>_transcript.json corrected.txt \
                   projects/<id>/artifacts/corrected_word_segments.json
@@ -43,6 +51,16 @@ The `expert-reels-director` skill says how this template plugs into it.
 
 ## Expert profile (`experts/<id>.json`)
 
+Every client has a profile. Besides the render `theme` it holds the brand facts the user approved:
+`name`, `status` (`inactive` blocks edits), `activity`, `audience`, `identity` (the visual language),
+`palette` (`confirmed` codes from the client vs. a colour `family` only), `fonts`, `video_types`,
+`cautions` (rules that override defaults) and `theme_source`. When `theme_source` says *derived*, the
+theme's shades were chosen by us from the family: show them in the storyboard and never present them as
+the client's own codes. A spec may carry `"theme": {...}` to override the default for one video
+(e.g. Xalidə's colour column). Brand stays recognisable across a client's videos; the edit approach,
+layout, motion and sound still change with the video type (VIDEO_TYPES.md). Clients with similar
+colours (Aytən / Nərgiz, Nilüfər / PİKMENT) are separated by typography, graphics and layout.
+
 Copy `experts/_example.json`. Take the colours from the expert's own Instagram:
 grid, highlight covers, logo. Don't take them from the footage. Ask the user for
 a screenshot of the profile if no brand colours are given.
@@ -52,6 +70,8 @@ a screenshot of the profile if no brand colours are given.
 | `primary`, `primaryDeep` | card and backdrop tones (the expert's dark brand colour) |
 | `accent`, `accentSoft` | active caption word, labels, bars, tiles |
 | `text`, `onAccent` | text on `primary` / on `accent` |
+| `emphasis` (optional) | colour of `**highlighted**` words; set it when `accent` is close to `text` |
+| `light` (optional) | pale theme: captions over cutaways turn dark instead of white + stroke |
 | `style` | the expert's default style picks (overridable per video) |
 | `history` | the style + scenes of every delivered video, newest last |
 
@@ -69,16 +89,26 @@ accent colour.
   fast with a shake and a hit SFX. Put cuts and pushes on sentence and clause
   starts. Save punches for 2-3 key lines.
 - `overlays`: keyword pills (`hook` | `pill` | `cta`). `parts` = `[[text, highlight]]`.
+  `pop` + `pos` (`t` | `tl` | `tr` | `l` | `r`) is a short emphasised word that bounces in around the
+  speaker. Use it for talking-only videos (no cutaways): 1-3 words, 1.2-2.5 s, varied sides.
+  `top: <y>` puts a pop on a centred row (stack rows to build a list word by word); `strike: <t>` crosses it out.
+  `style.pops: "type"` draws pops as boxless large type (M02) instead of cards.
   Pills that overlap a cutaway are dropped automatically.
 - `cutaways`:
   - `pip`: the speaker shrinks into the corner. `panels` play in order, each
     with `kind`, `at` and `props`.
+  - `full`: the scene replaces the speaker for a few seconds (voice continues). Keep these to 3-5 s and
+    2-3 per video when the user wants a calmer edit without the corner frame.
   - `comment`: the speaker stays full screen and an IG comment bar types
     `keyword`.
 - `pip`: `focus` is the head-and-shoulders point of the speaker in the
   1080x1920 frame. Measure it on a gridded frame so the circle holds head and
   shoulders with no empty background. `radius` is about 210 and `scale` = radius / local radius.
 - `style`: per-video overrides (see Variety).
+- `video`: footage file in `public/` (default `base.mp4`). For a softly blurred background run
+  `python templates/expert-reels/scripts/blur_background.py public/base.mp4 public/base_blur.mp4`
+  (MODNet portrait matting, Apache-2.0) and set `"video": "base_blur.mp4"`.
+- `sfx_level`: `"none"` (default, no SFX), `"minimal"` for calm edits or `"full"`; set only when the storyboard approved SFX. Use it when the user asks for something simple; it drops zoom pops and softens the rest.
 
 ### Scene library (`src/scenes/index.tsx`)
 
@@ -99,6 +129,9 @@ staggered defaults are only a fallback.
 
 The template is shared. The look must not repeat. For every new video:
 
+Pick the edit approach from the type first ([`VIDEO_TYPES.md`](VIDEO_TYPES.md): M01-M13). Hooks, cutaways and B-roll are never automatic. The rules below apply to the M01/M02/M03/M04 talking edits this template renders.
+
+0. **Pacing.** Don't leave the speaker talking straight to camera for more than ~6 s without a change (insert, card or zoom). Long static stretches lose viewers.
 1. **Scenes come from the topic.** Read the approved script and pick 2-4
    cutaways whose content the speaker says out loud. Don't add a scene for
    decoration, and don't invent numbers or claims that aren't in the script.
@@ -109,6 +142,8 @@ The template is shared. The look must not repeat. For every new video:
    - `backdrop`: dots / grid / orbs / diagonal
    - `pipShape`: circle / rounded
    - `pipCorner`: br / bl
+   - `pops`: dark / light (cards) / type (boxless large type)
+   Same set and outfit as the previous video? Change `captions` and `pops` at least, or the two read as one video.
 3. **Vary the structure.** Don't open with the same device twice in a row (a
    pill hook, then a questions cutaway, then a stat). Move where the first
    cutaway lands.
@@ -120,8 +155,9 @@ The template is shared. The look must not repeat. For every new video:
 
 ## Notes
 
-- Fonts: Montserrat (SIL OFL, `public/fonts/Montserrat-OFL.txt`), latin and
-  latin-ext subsets. latin-ext covers ə ğ ı ş ç ö ü.
+- Fonts: Montserrat 300-900 (SIL OFL, `public/fonts/Montserrat-OFL.txt`) and the handwritten
+  Caveat 400/700 (`FONT_HAND`, OFL, `public/fonts/Caveat-OFL.txt`), latin and latin-ext subsets.
+  Both cover ə ğ ı ş ç ö ü (checked); Kalam and Patrick Hand lack ə.
 - Caption zone: the bottom of the caption block is at y=1490, above Instagram's
   username/caption UI. Pills and cutaway titles start at y>=300, below the top
   bar.

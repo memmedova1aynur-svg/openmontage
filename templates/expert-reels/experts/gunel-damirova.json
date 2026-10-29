@@ -1,0 +1,22 @@
+{
+  "name": "Günel Dəmirova",
+  "status": "active",
+  "activity": "Uşaq inkişafı və nağıl terapiyası istiqamətində təlimçilik fəaliyyəti inkişaf etdirilir.",
+  "palette": {
+    "family": "krem, yumşaq sarı, açıq mavi, xaki"
+  },
+  "video_types": "nağıl danışığı, ekspert izahı, təlim reklamı, seminar, digər uyğun formatlar",
+  "cautions": [],
+  "theme_source": "derived from the colour family; NOT a client-confirmed code - say so in the storyboard",
+  "theme": {
+    "primary": "#5C5A3A",
+    "primaryDeep": "#3A3924",
+    "accent": "#F4D77A",
+    "accentSoft": "#BFDDF0",
+    "text": "#FFFFFF",
+    "onAccent": "#5C5A3A",
+    "cardAlpha": 0.94
+  },
+  "style": {},
+  "history": []
+}
