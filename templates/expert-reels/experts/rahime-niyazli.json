@@ -13,7 +13,9 @@
     "Əsas rəng NARINCIDIR: alt yazılar narıncı (#E0662A, deyilən söz #B8460F), krem kənar xətti; qəhvəyi mümkün qədər az.",
     "Ağ rəngdə yazı yoxdur (Rəhimə ağ köynəkdədir); alt yazılar bir az aşağıda (captionBottom 300, CAP_UP=60).",
     "Kadr düzəlişi təsdiqlənib: frame s1.15, x-81, y-80 (ortaya çəkilir, aşağı hissə azalır, qollar kadrda qalır).",
-    "Rəhimənin stili Aytəninkindən fərqli olmalıdır: krem qeyd kartları (pops 'cream'), ağ kartlar yox."
+    "Rəhimənin stili Aytəninkindən fərqli olmalıdır: krem qeyd kartları (pops 'cream'), ağ kartlar yox.",
+    "B-roll: real stok kliplər (Mixkit, şaquli üstün tutulur); bayram/Yeni il, üzərində yazı və ya loqo olan kliplər QƏTİYYƏN yoxdur; mövzuya birbaşa uyğun olmalıdır.",
+    "B-roll formaları növbələnir (tam ekran 9:16 / bölünmüş ekran: yuxarıda Rəhimə, aşağıda klip) - hamısı eyni formada deyil. Əl ilə çəkilmiş fiqurlar bəyənilmədi."
   ],
   "theme_source": "colour family confirmed by the user (burnt orange / orange-cream); exact hex chosen by us",
   "theme": {

@@ -1,6 +1,6 @@
 import React from "react";
-import { interpolate } from "remotion";
-import { FONT, FONT_HAND, T, clamp01, rgba } from "./theme";
+import { OffthreadVideo, interpolate, staticFile } from "remotion";
+import { E, FONT, FONT_HAND, T, clamp01, rgba } from "./theme";
 
 // Rəhimə Niyazlı's own insert shots: orange single-line drawings that draw themselves on warm cream
 // paper (no boxes, no glow, no bouncy easing). Lines "boil" a little (redrawn every 2 frames with a
@@ -115,20 +115,31 @@ const Bounds: React.FC<SceneProps> = ({ f, p, startT }) => {
   );
 };
 
+// rh_word: the speaker stays behind the type, blurred and warmed to the brand orange; the words
+// come in one by one in cream, then at p.strikeAt a marker line crosses them out and a handwritten
+// p.sub (e.g. "deyil") lands under them.
 const Word: React.FC<SceneProps> = ({ f, p, startT }) => {
   const t = startT + f / FPSX;
-  const k = ease((t - startT) / 0.35);
-  const st = prog(t, p.strikeAt, 0.35);
+  const words: string[] = String(p.text ?? "").split(/\s+/);
+  const st = prog(t, p.strikeAt, 0.3);
   return (
-    <div style={{ position: "absolute", inset: 0 }}>
-      <Paper />
-      <div style={{ position: "absolute", left: 0, right: 0, top: 820, transform: `translateY(-50%) scale(${0.92 + 0.08 * k})`, opacity: k, textAlign: "center",
-        fontFamily: FONT, fontWeight: 900, fontSize: p.size ?? 170, lineHeight: 1.02, whiteSpace: "pre-line", color: T.accent, letterSpacing: -2 }}>
-        {p.text}
+    <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
+      <div style={{ position: "absolute", inset: -60, filter: "blur(26px) saturate(1.1)", transform: "scale(1.1)" }}>
+        <OffthreadVideo src={staticFile(E.video ?? "base.mp4")} muted style={{ width: 1200, height: 2040 }} />
+      </div>
+      <div style={{ position: "absolute", inset: 0, background: `linear-gradient(180deg, ${rgba(T.accent, 0.72)} 0%, ${rgba(DEEP, 0.82)} 100%)` }} />
+      <div style={{ position: "absolute", left: 0, right: 0, top: 640, textAlign: "center" }}>
+        {words.map((w, i) => {
+          const k = ease((t - startT - i * 0.22) / 0.3);
+          return (
+            <div key={i} style={{ fontFamily: FONT, fontWeight: 900, fontSize: p.size ?? 190, lineHeight: 1.0, letterSpacing: -3, color: PAPER,
+              opacity: k * (1 - 0.35 * st), transform: `translateY(${(1 - k) * 40}px)` }}>{w}</div>
+          );
+        })}
       </div>
       <svg width={1080} height={1920} style={{ position: "absolute", inset: 0 }}>
-        <Line f={f} p={st} w={26} c={DEEP} d="M110 860 C340 800 700 840 970 760" />
-        <Label x={540} y={1150} p={prog(t, p.subAt ?? startT + 0.3, 0.4)} size={90}>{p.sub ?? ""}</Label>
+        <Line f={f} p={st} w={22} c={PAPER} d="M150 870 C380 820 700 850 930 790" />
+        <Label x={540} y={1180} p={st} size={130} color={PAPER}>{p.sub ?? ""}</Label>
       </svg>
     </div>
   );
