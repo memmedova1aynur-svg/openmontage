@@ -82,7 +82,7 @@ while True:
                     boxes.append((name, hb))
         # the push-in zoom (1.0 .. ~1.1) can move every point outward from FACE
         fr = json.load(open(WS / "public/edit.json")).get("frame") or {"s": 1, "y": 0}
-        boxes = [(n, tuple(v + (fr["y"] if k % 2 else 0) for k, v in enumerate(zoomed(b, fr["s"])))) for n, b in boxes]  # reframing
+        boxes = [(n, tuple(v + (fr["y"] if k % 2 else fr.get("x", 0)) for k, v in enumerate(zoomed(b, fr["s"])))) for n, b in boxes]  # reframing
         boxes = [(n, union(zoomed(b, 1.0), zoomed(b, 1.1))) for n, b in boxes]
         if top is not None:
             top = FACE[1] + (top - FACE[1]) * fr["s"] + fr["y"]
@@ -168,7 +168,8 @@ if band:
         lo = head_bottom(sts)
         # down at most to a band bottom of 1660 (Instagram's own caption text sits lower); up while it stays under
         # the chin; sideways (only when up/down cannot clear it) while the text stays inside the frame
-        dys = [d for d in range(-1200, 1661 - band["y1"], 20) if band["y0"] + d > lo + 10]
+        # CAP_UP=N: captions may rise at most N px (keeps them low on the body when the user asks for that)
+        dys = [d for d in range(-int(os.environ.get("CAP_UP", 1200)), 1661 - band["y1"], 20) if band["y0"] + d > lo + 10]
         dxs = [d for d in range(-300, 301, 40) if 540 - w / 2 + d >= 20 and 540 + w / 2 + d <= 1060]
 
         def cover(dy, dx):  # overlap area summed over the samples

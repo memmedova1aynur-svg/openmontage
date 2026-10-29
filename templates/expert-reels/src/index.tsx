@@ -217,7 +217,7 @@ const Captions: React.FC = () => {
   const paleScene = E.cutaways.some((c) => c.kind === "scene" && t >= c.in && t < c.out && c.panels?.some((p: any) => ["paper", "kids"].includes(p.props?.skin)));
   const onPale = (!!T.light && style !== "box" && pipAt(t, fps).p > 0.5) || (paleScene && style !== "box");
   return (
-    <AbsoluteFill style={{ justifyContent: "flex-end", alignItems: "center", paddingBottom: E.cutaways.some((c) => (c.kind === "split" || c.kind === "scene") && t >= c.in && t < c.out) ? 230 : 430 }}>
+    <AbsoluteFill style={{ justifyContent: "flex-end", alignItems: "center", paddingBottom: E.cutaways.some((c) => (c.kind === "split" || c.kind === "scene") && t >= c.in && t < c.out) ? 230 : E.style.captionBottom ?? 430 }}>
       <div
         style={{
           maxWidth: 940,
@@ -250,12 +250,12 @@ const Captions: React.FC = () => {
                 fontWeight: 900,
                 fontSize: 74,
                 letterSpacing: -0.5,
-                color: chip ? T.onAccent : active ? (E.style.activeColor ?? ((style === "box" || style === "frame") && T.light ? T.accentSoft : T.accent)) : onPale ? (paleScene ? T.primary : T.text) : "#FFFFFF",
+                color: chip ? T.onAccent : active ? (E.style.activeColor ?? ((style === "box" || style === "frame") && T.light ? T.accentSoft : T.accent)) : onPale ? (paleScene ? T.primary : T.text) : E.style.textColor ?? "#FFFFFF",
                 opacity: spoken ? 1 : 0.55,
                 transform: `scale(${scale})`,
-                WebkitTextStroke: style === "box" || style === "frame" || chip || onPale ? undefined : "3px rgba(0,0,0,0.85)",
+                WebkitTextStroke: style === "box" || style === "frame" || chip || onPale ? undefined : E.style.strokeColor ? `10px ${E.style.strokeColor}` : "3px rgba(0,0,0,0.85)",
                 paintOrder: "stroke fill",
-                textShadow: onPale ? "none" : "0 6px 18px rgba(0,0,0,0.55)",
+                textShadow: onPale ? "none" : E.style.strokeColor ? "0 4px 12px rgba(60,25,5,0.25)" : "0 6px 18px rgba(0,0,0,0.55)",
                 backgroundImage: (style === "box" || style === "frame") && active ? `linear-gradient(${T.accentSoft}, ${T.accentSoft})` : undefined,
                 backgroundRepeat: "no-repeat",
                 backgroundPosition: "0 100%",
@@ -652,7 +652,7 @@ const Reel: React.FC = () => {
       {!full && pipCut && p > 0.001 && <PipPanels c={pipCut} p={p} />}
       <AbsoluteFill
         style={{
-          transform: `translate(${shake + dx}px, ${shake * 0.4 + dy + shiftY + (E.frame?.y ?? 0) * (1 - pc)}px) scale(${sc * (1 + ((E.frame?.s ?? 1) - 1) * (1 - pc))})`,
+          transform: `translate(${shake + dx + (E.frame?.x ?? 0) * (1 - pc)}px, ${shake * 0.4 + dy + shiftY + (E.frame?.y ?? 0) * (1 - pc)}px) scale(${sc * (1 + ((E.frame?.s ?? 1) - 1) * (1 - pc))})`,
           transformOrigin: `${ox}px ${oy}px`,
           clipPath: p > 0.001 ? clip : sp > 0.001 ? splitClip : undefined,
         }}

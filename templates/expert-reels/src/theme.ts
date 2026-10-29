@@ -58,6 +58,9 @@ export type Style = {
   pipShape: "circle" | "rounded";
   pipCorner: "br" | "bl";
   activeColor?: string; // caption active word colour (e.g. white over a red outfit)
+  textColor?: string; // caption type colour instead of white (e.g. brand brown over a white shirt)
+  strokeColor?: string; // wide caption outline in this colour instead of the thin black one
+  captionBottom?: number; // caption distance from the bottom edge in px (default 430)
   pops?: "dark" | "light" | "type" | "cream"; // keyword pops: brand-dark card (default), white card with a marker, or boxless large type (M02)
 };
 export type Pip = { focus: [number, number]; radius: number; scale: number };
@@ -75,7 +78,7 @@ export type Edit = {
   pip: Pip;
   pages: Page[];
   zoom: ZoomKey[];
-  frame?: { s: number; y: number }; // reframing of a badly framed shot: constant scale (around FACE) + lift in px
+  frame?: { s: number; y: number; x?: number }; // reframing of a badly framed shot: constant scale (around FACE) + lift in px
   captionShift?: [number, number, number, number?][]; // [in, out, dy, dx px]: captions moved off the hands
   overlays: Pill[];
   cutaways: Cutaway[];
