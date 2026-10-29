@@ -1,4 +1,5 @@
 import { BigNumber, Devices, Kid } from "./kid";
+import { RAHIME } from "./rahime";
 import React from "react";
 import {
   AbsoluteFill,
@@ -181,7 +182,7 @@ const Captions: React.FC = () => {
   const t = frame / fps;
   const page = E.pages.find((p: Page) => t >= p.start && t < p.end);
   // a full-frame word/number beat already says it: no captions under it
-  if (E.cutaways.some((c) => c.kind === "scene" && t >= c.in - 0.05 && t < c.out + 0.3 && c.panels?.some((p: any) => p.kind === "bg_number"))) return null;
+  if (E.cutaways.some((c) => c.kind === "scene" && t >= c.in - 0.05 && t < c.out + 0.3 && c.panels?.some((p: any) => p.kind === "bg_number" || p.kind === "rh_word"))) return null;
   if (E.style.captions === "plate") return <PlateCaptions />;
   if (!page) return null;
   if (E.style.captions === "paper") {
@@ -586,7 +587,7 @@ const PipPanels: React.FC<{ c: Cutaway; p: number }> = ({ c, p }) => {
         const start = i === 0 ? c.in : pn.at;
         const end = i + 1 < panels.length ? panels[i + 1].at : c.out + 0.6;
         if (t < start - 0.1 || t >= end + 0.25) return null;
-        const Scene = (pn.kind === "bg_number" ? BigNumber : undefined) ?? SCENES[pn.kind] ?? BLUEPRINT[pn.kind] ?? SHEET[pn.kind] ?? CARDS[pn.kind] ?? ACADEMIC[pn.kind] ?? STUDIO[pn.kind] ?? CARTOON[pn.kind] ?? SKETCH[pn.kind] ?? PAPER[pn.kind] ?? ILLUSTRATED[pn.kind];
+        const Scene = (pn.kind === "bg_number" ? BigNumber : undefined) ?? SCENES[pn.kind] ?? RAHIME[pn.kind] ?? BLUEPRINT[pn.kind] ?? SHEET[pn.kind] ?? CARDS[pn.kind] ?? ACADEMIC[pn.kind] ?? STUDIO[pn.kind] ?? CARTOON[pn.kind] ?? SKETCH[pn.kind] ?? PAPER[pn.kind] ?? ILLUSTRATED[pn.kind];
         if (!Scene) return null;
         // outgoing panel slides away, incoming slides in
         const out = i + 1 < panels.length ? interpolate(t, [end - 0.15, end + 0.2], [1, 0], clamp01) : 1;
