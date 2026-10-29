@@ -31,6 +31,11 @@ import { Cutaway, E, EMPH, FONT, FONT_HAND, FPS, Page, Pill, T, ZoomKey, clamp01
 
 // Point of the speaker the full-frame zoom pushes toward (x, y in 1080x1920).
 const FACE = { x: 540, y: 0.36 * 1920 };
+// a scene panel can move the captions (props.capBottom, px from the bottom), e.g. off a face in b-roll
+const sceneCapBottom = (t: number): number | undefined => {
+  const c = E.cutaways.find((c) => c.kind === "scene" && t >= c.in && t < c.out);
+  return c?.panels?.[0]?.props?.capBottom;
+};
 
 // ---------------------------------------------------------------- zoom
 const zoomAt = (t: number, fps: number): number => {
@@ -219,7 +224,7 @@ const Captions: React.FC = () => {
   const paleScene = E.cutaways.some((c) => c.kind === "scene" && t >= c.in && t < c.out && c.panels?.some((p: any) => ["paper", "kids"].includes(p.props?.skin)));
   const onPale = (!!T.light && style !== "box" && pipAt(t, fps).p > 0.5) || (paleScene && style !== "box");
   return (
-    <AbsoluteFill style={{ justifyContent: "flex-end", alignItems: "center", paddingBottom: E.cutaways.some((c) => (c.kind === "split" || c.kind === "scene") && t >= c.in && t < c.out) ? 230 : E.style.captionBottom ?? 430 }}>
+    <AbsoluteFill style={{ justifyContent: "flex-end", alignItems: "center", paddingBottom: sceneCapBottom(t) ?? (E.cutaways.some((c) => (c.kind === "split" || c.kind === "scene") && t >= c.in && t < c.out) ? 230 : E.style.captionBottom ?? 430) }}>
       <div
         style={{
           maxWidth: 940,
