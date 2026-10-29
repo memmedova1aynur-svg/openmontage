@@ -33,7 +33,7 @@ import { Cutaway, E, EMPH, FONT, FONT_HAND, FPS, Page, Pill, T, ZoomKey, clamp01
 const FACE = { x: 540, y: 0.36 * 1920 };
 // a scene panel can move the captions (props.capBottom, px from the bottom), e.g. off a face in b-roll
 const sceneCapBottom = (t: number): number | undefined => {
-  const c = E.cutaways.find((c) => c.kind === "scene" && t >= c.in && t < c.out);
+  const c = E.cutaways.find((c) => (c.kind === "scene" || c.kind === "pip") && t >= c.in && t < c.out);
   return c?.panels?.[0]?.props?.capBottom;
 };
 
@@ -60,7 +60,7 @@ const zoomAt = (t: number, fps: number): number => {
 // captions step out of the way of the speaker's hands (spans from guard.py: [in, out, dy, dx?]), easing 0.25 s
 const captionShift = (t: number) => {
   // scenes cover the speaker: there the captions keep their own place
-  if (E.cutaways.some((c) => (c.kind === "scene" || c.kind === "split") && t >= c.in && t < c.out)) return { x: 0, y: 0 };
+  if (E.cutaways.some((c) => (c.kind === "scene" || c.kind === "split" || c.kind === "pip") && t >= c.in && t < c.out)) return { x: 0, y: 0 };
   let x = 0;
   let y = 0;
   for (const [a, b, dy, dx] of E.captionShift ?? []) {

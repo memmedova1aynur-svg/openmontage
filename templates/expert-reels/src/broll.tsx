@@ -25,6 +25,25 @@ const Clip: React.FC<{ p: Record<string, any>; f: number; w: number; h: number }
 
 const Broll: React.FC<SceneProps> = ({ f, p, startT }) => {
   const start = Math.round(startT * FPSX);
+  if (p.layout === "top") {
+    // the clip keeps its own shape (16:9 = 608 px tall) across the top; the speaker fills the rest
+    const H = p.clipH ?? 608;
+    return (
+      <div style={{ position: "absolute", inset: 0, background: "#F7E6D0" }}>
+        <div style={{ position: "absolute", left: 0, top: H, width: 1080, height: 1920 - H, overflow: "hidden" }}>
+          <div style={{ position: "absolute", left: 0, top: 0, width: 1080, height: 1920, transform: `translate(${p.speakerX ?? (E.frame?.x ?? 0)}px, ${-(p.speakerY ?? 560)}px) scale(${p.speakerS ?? 1.0})`, transformOrigin: "50% 0%" }}>
+            <OffthreadVideo src={staticFile(E.video ?? "base.mp4")} muted style={{ width: 1080, height: 1920 }} />
+          </div>
+        </div>
+        <div style={{ position: "absolute", left: 0, top: 0, width: 1080, height: H, overflow: "hidden" }}>
+          <Sequence from={start} layout="none">
+            <Clip p={p} f={f} w={1080} h={H} />
+          </Sequence>
+        </div>
+        <div style={{ position: "absolute", left: 0, right: 0, top: H - 4, height: 8, background: "#F7E6D0" }} />
+      </div>
+    );
+  }
   if (p.layout === "split") {
     const s = p.speakerS ?? 1.0;
     return (
