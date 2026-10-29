@@ -20,7 +20,8 @@
     "Hər video fərqli stildə olmalıdır (1-ci: krem qeydlər + b-roll; 2-ci reklam: narıncı kartlar, b-roll yox). Proqram adı: 'Bağça işi proqramı'.",
     "CTA/son kartlar başın üstünə düşməməlidir: lazım olsa sinə səviyyəsinə endir (top ~1300), alt yazını kartın üstünə qaldır.",
     "Rəhimə 4: 2-ci çəkilişdə 'yanaşmalı' deyilib - sözləri digər çəkilişlə müqayisə et, tam deyilən variantı götür.",
-    "Mənbəni güzgü effektinə görə yoxla (Rəhimə 5 güzgü çəkilmişdi - çevrildi)."
+    "Mənbəni güzgü effektinə görə yoxla (Rəhimə 5 güzgü çəkilmişdi - çevrildi).",
+    "Zəif/tez deyilən sözləri (məs. 'Hər səhvində') digər çəkilişlərlə müqayisə et; aydın olanı götür."
   ],
   "theme_source": "colour family confirmed by the user (burnt orange / orange-cream); exact hex chosen by us",
   "theme": {
@@ -66,7 +67,7 @@
     {
       "video": "inbox-13 / rahime-5",
       "file": "projects/rahime-final/Rahime_5_sizi_nece_xatirlayacaq.mp4",
-      "notes": "güzgü çəkilib -> hflip; keep 78.84-84.68 + 10.32-34.76 + 73.18-76.9; sual formatı: IG sual qutusu + sorğu stikerləri aşağıda (top ~1360-1420), stiker zamanı alt yazı başın üstündə; b-roll yox"
+      "notes": "güzgü çəkilib -> hflip; keep 78.84-84.68 + 10.32-34.76 + 73.18-76.9; sual formatı: IG sual qutusu + sorğu stikerləri aşağıda (top ~1360-1420), stiker zamanı alt yazı başın üstündə; b-roll yox; düzəliş: 'Hər səhvində onu danlayan' 95.84-97.62 çəkilişindən (əsas çəkilişdə zəif deyilmişdi)"
     }
   ]
 }
