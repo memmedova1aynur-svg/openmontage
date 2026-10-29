@@ -145,4 +145,36 @@ const Word: React.FC<SceneProps> = ({ f, p, startT }) => {
   );
 };
 
-export const RAHIME: Record<string, React.FC<SceneProps>> = { rh_fear: Fear, rh_bounds: Bounds, rh_word: Word };
+// rh_list (ad layout): the top half is a brand-orange panel where a numbered list builds up item by
+// item (p.title, p.items [{text, at}], p.mark "num" | "check"); the speaker stays in the bottom half
+// (same footage and timing; p.speakerY = source y shown at the panel edge, p.speakerX, p.speakerS).
+const List: React.FC<SceneProps> = ({ f, p, startT }) => {
+  const t = startT + f / FPSX;
+  const items: { text: string; at: number }[] = p.items ?? [];
+  const k0 = ease((t - startT) / 0.35);
+  const TOP = p.split ?? 900;
+  return (
+    <div style={{ position: "absolute", inset: 0, background: PAPER }}>
+      <div style={{ position: "absolute", left: 0, top: TOP, width: 1080, height: 1920 - TOP, overflow: "hidden" }}>
+        <div style={{ position: "absolute", left: 0, top: 0, width: 1080, height: 1920, transform: `translate(${p.speakerX ?? (E.frame?.x ?? 0)}px, ${-(p.speakerY ?? 560)}px) scale(${p.speakerS ?? 1.05})`, transformOrigin: "50% 0%" }}>
+          <OffthreadVideo src={staticFile(E.video ?? "base.mp4")} muted style={{ width: 1080, height: 1920 }} />
+        </div>
+      </div>
+      <div style={{ position: "absolute", left: 0, top: 0, width: 1080, height: TOP, background: `linear-gradient(160deg, ${T.accent} 0%, ${DEEP} 100%)`, transform: `translateY(${(1 - k0) * -TOP}px)` }}>
+        <div style={{ position: "absolute", left: 80, right: 80, top: 260, fontFamily: FONT, fontWeight: 800, fontSize: 70, color: PAPER, opacity: k0 }}>{p.title}</div>
+        {items.map((it, i) => {
+          const k = ease((t - it.at) / 0.35);
+          return (
+            <div key={i} style={{ position: "absolute", left: 80, right: 60, top: 390 + i * 165, display: "flex", alignItems: "center", gap: 34, opacity: k, transform: `translateX(${(1 - k) * -80}px)` }}>
+              <div style={{ width: 116, height: 116, borderRadius: 58, background: PAPER, color: DEEP, fontFamily: FONT, fontWeight: 900, fontSize: 64, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{p.mark === "check" ? "✓" : i + 1}</div>
+              <div style={{ fontFamily: FONT, fontWeight: 900, fontSize: p.size ?? 76, color: "#FFFFFF", lineHeight: 1.05, whiteSpace: "nowrap" }}>{it.text}</div>
+            </div>
+          );
+        })}
+      </div>
+      <div style={{ position: "absolute", left: 0, right: 0, top: TOP - 6, height: 12, background: PAPER }} />
+    </div>
+  );
+};
+
+export const RAHIME: Record<string, React.FC<SceneProps>> = { rh_fear: Fear, rh_bounds: Bounds, rh_word: Word, rh_list: List };
