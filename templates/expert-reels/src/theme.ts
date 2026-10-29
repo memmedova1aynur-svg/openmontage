@@ -60,6 +60,7 @@ export type Style = {
   activeColor?: string; // caption active word colour (e.g. white over a red outfit)
   textColor?: string; // caption type colour instead of white (e.g. brand brown over a white shirt)
   strokeColor?: string; // wide caption outline in this colour instead of the thin black one
+  popTextColor?: string; // cream pops: colour of the plain (non-highlighted) words
   captionBottom?: number; // caption distance from the bottom edge in px (default 430)
   pops?: "dark" | "light" | "type" | "cream"; // keyword pops: brand-dark card (default), white card with a marker, or boxless large type (M02)
 };

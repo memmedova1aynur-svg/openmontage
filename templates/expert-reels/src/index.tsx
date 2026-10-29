@@ -469,7 +469,7 @@ const KeywordPop: React.FC<{ o: Pill }> = ({ o }) => {
               style={{
                 display: "inline-block",
                 whiteSpace: "pre",
-                color: cream ? (hl ? T.accent : T.primary) : lightPop ? T.primary : hl ? EMPH : T.text,
+                color: cream ? (hl ? T.accent : E.style.popTextColor ?? T.primary) : lightPop ? T.primary : hl ? EMPH : T.text,
                 textDecoration: cream && hl ? `underline wavy ${T.accent}` : undefined,
                 textDecorationThickness: cream && hl ? 4 : undefined,
                 textUnderlineOffset: cream && hl ? 10 : undefined,
