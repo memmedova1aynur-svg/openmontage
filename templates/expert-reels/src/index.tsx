@@ -427,6 +427,9 @@ const TypePop: React.FC<{ o: Pill }> = ({ o }) => {
 const KeywordPop: React.FC<{ o: Pill }> = ({ o }) => {
   const frame = useCurrentFrame();
   const lightPop = E.style.pops === "light";
+  // "cream": a warm paper note (brand cream) with a brand-colour tab on the left, a slight tilt and
+  // the key words in the brand colour with a hand-drawn wavy underline
+  const cream = E.style.pops === "cream";
   const popChars = o.parts.map(([txt]) => txt).join("").length;
   const { fps } = useVideoConfig();
   const dur = (o.out - o.in) * fps;
@@ -443,17 +446,18 @@ const KeywordPop: React.FC<{ o: Pill }> = ({ o }) => {
           style={{
             maxWidth: o.small ? 360 : o.pos === "t" ? 900 : 500,
             padding: o.small ? "10px 20px 13px" : "16px 28px 20px",
-            borderRadius: 26,
-            background: lightPop ? "rgba(255,255,255,0.96)" : rgba(T.primary, 0.92),
-            boxShadow: "0 16px 40px rgba(0,0,0,0.4)",
-            borderBottom: `${o.small ? 6 : 8}px solid ${lightPop ? T.primary : T.accent}`,
+            borderRadius: cream ? 10 : 26,
+            background: lightPop ? "rgba(255,255,255,0.96)" : cream ? rgba(T.accentSoft, 0.97) : rgba(T.primary, 0.92),
+            boxShadow: cream ? "0 14px 34px rgba(60,25,5,0.35)" : "0 16px 40px rgba(0,0,0,0.4)",
+            borderBottom: cream ? undefined : `${o.small ? 6 : 8}px solid ${lightPop ? T.primary : T.accent}`,
+            borderLeft: cream ? `16px solid ${T.accent}` : undefined,
             fontFamily: FONT,
             fontWeight: 900,
             fontSize: o.small ? 38 : popChars > 16 ? 50 : 60,
             lineHeight: 1.08,
             color: T.text,
             textAlign: o.side === "r" || o.pos === "r" || o.pos === "tr" ? "right" : o.side === "l" ? "left" : o.pos === "t" ? "center" : "left",
-            transform: `translateY(${float}px) scale(${enter * (0.85 + 0.15 * exit)}) rotate(${pos.rot * enter + wobble}deg)`,
+            transform: `translateY(${float}px) scale(${enter * (0.85 + 0.15 * exit)}) rotate(${pos.rot * enter + wobble + (cream ? -1.2 : 0)}deg)`,
             transformOrigin: o.pos === "r" || o.pos === "tr" ? "100% 50%" : o.pos === "t" ? "50% 50%" : "0% 50%",
             opacity: Math.min(1, enter * 2) * exit,
           }}
@@ -465,7 +469,10 @@ const KeywordPop: React.FC<{ o: Pill }> = ({ o }) => {
               style={{
                 display: "inline-block",
                 whiteSpace: "pre",
-                color: lightPop ? T.primary : hl ? EMPH : T.text,
+                color: cream ? (hl ? T.accent : T.primary) : lightPop ? T.primary : hl ? EMPH : T.text,
+                textDecoration: cream && hl ? `underline wavy ${T.accent}` : undefined,
+                textDecorationThickness: cream && hl ? 4 : undefined,
+                textUnderlineOffset: cream && hl ? 10 : undefined,
                 // on white cards the emphasis is a brand-colour marker stroke instead of coloured text
                 background: lightPop && hl ? `linear-gradient(transparent 55%, ${rgba(T.accent, 0.75)} 55%)` : undefined,
               }}

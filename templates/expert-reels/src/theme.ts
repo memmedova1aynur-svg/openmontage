@@ -58,7 +58,7 @@ export type Style = {
   pipShape: "circle" | "rounded";
   pipCorner: "br" | "bl";
   activeColor?: string; // caption active word colour (e.g. white over a red outfit)
-  pops?: "dark" | "light" | "type"; // keyword pops: brand-dark card (default), white card with a marker, or boxless large type (M02)
+  pops?: "dark" | "light" | "type" | "cream"; // keyword pops: brand-dark card (default), white card with a marker, or boxless large type (M02)
 };
 export type Pip = { focus: [number, number]; radius: number; scale: number };
 export type Edit = {
