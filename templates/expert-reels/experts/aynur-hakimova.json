@@ -1,0 +1,34 @@
+{
+  "name": "Aynur Həkimova",
+  "status": "active",
+  "activity": "Rəhbərlik və liderlik üzrə təlimçi; təhsil rəhbərləri, sahibkarlar və bağça sahəsində çalışan mütəxəssislərlə işləyir.",
+  "audience": "Təhsil rəhbərləri, sahibkarlar, bağça sahəsində çalışan mütəxəssislər.",
+  "identity": "Premium Leadership Academy × Business Education Editorial",
+  "fonts": "Montserrat ExtraBold/Bold (başlıq) + Medium/Regular (mətn)",
+  "palette": {
+    "confirmed": {
+      "dark_green": "#103C32",
+      "warm_cream": "#F7F5EC",
+      "sage": "#DDE5D7",
+      "white": "#FFFFFF",
+      "gold_limited_accent": "#C3A15A"
+    }
+  },
+  "video_types": "ekspert danışığı, reklam, rəhbərlik mövzuları, sual-cavab, digər uyğun formatlar",
+  "cautions": [
+    "Qızılı yalnız məhdud vurğu kimi."
+  ],
+  "theme_source": "built from the client's confirmed codes (role mapping is ours); primaryDeep is a derived darker shade",
+  "theme": {
+    "primary": "#103C32",
+    "primaryDeep": "#0A2A23",
+    "accent": "#DDE5D7",
+    "accentSoft": "#F7F5EC",
+    "text": "#FFFFFF",
+    "onAccent": "#103C32",
+    "cardAlpha": 0.94,
+    "emphasis": "#C3A15A"
+  },
+  "style": {},
+  "history": []
+}

@@ -1,0 +1,25 @@
+{
+  "name": "Ülkər Rəşidova",
+  "status": "paused",
+  "activity": "Fashion dizayner; həmin sahədə təlimçi kimi fəaliyyətə başlamağı planlaşdırır.",
+  "palette": {
+    "family": "qara, bordo, krem, taupe, ağ"
+  },
+  "video_types": "ekspert danışığı, dizayn prosesi, parça və geyim nümayişi, reklam, gələcək təlim videoları",
+  "cautions": [
+    "Hələlik video montajı yoxdur; profil saxlanılır."
+  ],
+  "theme_source": "derived from the colour family; NOT a client-confirmed code - say so in the storyboard",
+  "theme": {
+    "primary": "#1A1A1A",
+    "primaryDeep": "#0E0E0E",
+    "accent": "#EFE6D8",
+    "accentSoft": "#7A1F2B",
+    "text": "#FFFFFF",
+    "onAccent": "#1A1A1A",
+    "cardAlpha": 0.94,
+    "emphasis": "#C9A99A"
+  },
+  "style": {},
+  "history": []
+}

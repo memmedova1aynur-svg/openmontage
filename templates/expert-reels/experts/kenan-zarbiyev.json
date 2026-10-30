@@ -1,0 +1,28 @@
+{
+  "name": "Kənan Zərbiyev",
+  "status": "active",
+  "activity": "Bağça biznesi, mentorluq və təlimçilik.",
+  "palette": {
+    "confirmed": {
+      "near_black": "#101116",
+      "charcoal": "#202A36",
+      "red": "#D32F2F",
+      "off_white": "#F3F3F1"
+    }
+  },
+  "video_types": "ekspert danışığı, biznes izahı, reklam, sual-cavab, seminar",
+  "cautions": [],
+  "theme_source": "built from the client's confirmed codes (role mapping is ours)",
+  "theme": {
+    "primary": "#202A36",
+    "primaryDeep": "#101116",
+    "accent": "#D32F2F",
+    "accentSoft": "#F3F3F1",
+    "text": "#F3F3F1",
+    "onAccent": "#FFFFFF",
+    "cardAlpha": 0.94,
+    "emphasis": "#F3F3F1"
+  },
+  "style": {},
+  "history": []
+}
