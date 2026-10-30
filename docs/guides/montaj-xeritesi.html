@@ -1,0 +1,276 @@
+<title>Viral Montaj Xəritəsi</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: an editing-suite page — video types are the V-track, edit styles the E-track; picking a clip on V lights its partners on E. */
+:root{
+  --bg:#F2F3F6; --panel:#FFFFFF; --fg:#15171D; --muted:#5B6070; --line:#DADDE5;
+  --v:#3557D4; --v-soft:#E3E9FC; --e:#B86E00; --e-soft:#FBEED8; --rec:#D8382A;
+  --display:"Unbounded","Arial Black",system-ui,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111319; --panel:#191C24; --fg:#E9EBF1; --muted:#9298A8; --line:#2A2E3A;
+  --v:#7D97F5; --v-soft:#1E2747; --e:#F0A63A; --e-soft:#3A2A10; --rec:#F06253; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111319; --panel:#191C24; --fg:#E9EBF1; --muted:#9298A8; --line:#2A2E3A;
+  --v:#7D97F5; --v-soft:#1E2747; --e:#F0A63A; --e-soft:#3A2A10; --rec:#F06253; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:16px/1.6 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1120px;margin:0 auto;padding-block:40px 72px;display:flex;flex-direction:column;gap:64px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(30px,5.4vw,56px);font-weight:700;letter-spacing:-.01em}
+h2{font-size:clamp(22px,3vw,30px);font-weight:700}
+h3{font-size:16px;font-weight:500}
+p{margin:0}
+.lede{max-width:62ch;color:var(--muted);font-size:18px}
+.eyebrow{font:600 12px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--rec);display:inline-block}
+@media (prefers-reduced-motion:no-preference){.dot{animation:blink 1.4s steps(2,start) infinite}}
+@keyframes blink{to{opacity:.25}}
+header{display:flex;flex-direction:column;gap:18px}
+section{display:flex;flex-direction:column;gap:22px}
+.sec-head{display:flex;flex-direction:column;gap:8px}
+.sec-head p{color:var(--muted);max-width:65ch}
+.tag{font:600 12px var(--mono);padding:2px 7px;border-radius:4px;white-space:nowrap}
+.tv{background:var(--v-soft);color:var(--v)} .te{background:var(--e-soft);color:var(--e)}
+
+/* Timeline of the universal rule */
+.tl{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:10px}
+.tl-scroll{overflow-x:auto}
+.tl-inner{min-width:640px;display:flex;flex-direction:column;gap:6px}
+.ruler{display:grid;grid-template-columns:repeat(8,1fr);font:12px var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.ruler span{border-left:1px solid var(--line);padding-left:4px}
+.lane{display:grid;grid-template-columns:repeat(30,1fr);gap:2px;height:40px}
+.clip{border-radius:4px;font:600 11px var(--mono);display:flex;align-items:center;padding:0 8px;overflow:hidden;white-space:nowrap}
+.c-hook{grid-column:1/4;background:var(--rec);color:#fff}
+.c-body{background:var(--v-soft);color:var(--v);border:1px solid color-mix(in srgb,var(--v) 30%,transparent)}
+.c-sub{background:var(--e-soft);color:var(--e);border:1px solid color-mix(in srgb,var(--e) 30%,transparent)}
+.c-loop{background:var(--fg);color:var(--bg)}
+.tl-notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;font-size:14px;color:var(--muted)}
+.tl-notes b{color:var(--fg);font-weight:600}
+
+/* Matcher */
+.matcher{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:20px;align-items:start}
+.vlist{display:flex;flex-direction:column;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px;max-height:640px;overflow:auto}
+.vbtn{all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;padding:9px 10px;border-radius:6px;font-size:15px}
+.vbtn:hover{background:var(--v-soft)}
+.vbtn:focus-visible{outline:2px solid var(--v);outline-offset:1px}
+.vbtn[aria-pressed="true"]{background:var(--v);color:var(--panel)}
+.vbtn[aria-pressed="true"] .tag{background:var(--panel);color:var(--v)}
+.detail{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:24px;display:flex;flex-direction:column;gap:18px;min-width:0}
+.detail h3{font-size:22px;font-weight:700}
+.detail .why{color:var(--muted)}
+.pairs{display:flex;flex-direction:column;gap:10px}
+.pair{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;padding:12px;border:1px solid var(--line);border-radius:8px}
+.pair .tag{font-size:14px;padding:4px 9px}
+.pair b{display:block;font-weight:600}
+.pair span.d{color:var(--muted);font-size:14px}
+.boost{border-left:3px solid var(--rec);padding:4px 0 4px 14px}
+.boost .eyebrow{color:var(--rec)}
+.example{font:14px var(--mono);color:var(--muted)}
+
+/* Grids */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.card .top{display:flex;gap:8px;align-items:center}
+.card p{font-size:14px;color:var(--muted)}
+.card.on{border-color:var(--e);box-shadow:0 0 0 1px var(--e)}
+
+/* Studio */
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+ol.steps,ul.plain{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px}
+ol.steps li{display:grid;grid-template-columns:28px 1fr;gap:10px}
+ol.steps .n{font:600 13px var(--mono);color:var(--muted);padding-top:2px}
+.steps b,.plain b{font-weight:600}
+.steps span.d,.plain span.d{display:block;color:var(--muted);font-size:14px}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:520px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+td code{font:13px var(--mono);color:var(--v)}
+footer{color:var(--muted);font-size:14px;border-top:1px solid var(--line);padding-top:20px}
+@media (max-width:760px){.matcher{grid-template-columns:minmax(0,1fr)}.vlist{max-height:300px}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow"><span class="dot"></span>AI videoqraf + montaj studiyası</div>
+    <h1>Viral Montaj Xəritəsi</h1>
+    <p class="lede">Hansı videonu çəkmək, onu necə montaj etmək və bu ikisini necə birləşdirmək lazımdır ki, izləyici sona qədər baxsın, saxlasın və paylaşsın. 15 video növü, 14 montaj üslubu və onların ən güclü cütləri.</p>
+  </header>
+
+  <section aria-labelledby="rule">
+    <div class="sec-head">
+      <div class="eyebrow">Universal qayda</div>
+      <h2 id="rule">Hər viral video bu taymlayna oturur</h2>
+    </div>
+    <div class="tl">
+      <div class="tl-scroll"><div class="tl-inner">
+        <div class="ruler"><span>00:00</span><span>00:04</span><span>00:08</span><span>00:12</span><span>00:16</span><span>00:20</span><span>00:24</span><span>00:28</span></div>
+        <div class="lane">
+          <div class="clip c-hook">HOOK 0–3s</div>
+          <div class="clip c-body" style="grid-column:4/7">kadr</div>
+          <div class="clip c-body" style="grid-column:7/10">b-roll</div>
+          <div class="clip c-body" style="grid-column:10/12">zoom</div>
+          <div class="clip c-body" style="grid-column:12/15">kadr</div>
+          <div class="clip c-body" style="grid-column:15/18">qrafika</div>
+          <div class="clip c-body" style="grid-column:18/21">kadr</div>
+          <div class="clip c-body" style="grid-column:21/24">b-roll</div>
+          <div class="clip c-body" style="grid-column:24/28">nəticə</div>
+          <div class="clip c-loop" style="grid-column:28/31">LOOP</div>
+        </div>
+        <div class="lane" style="height:22px">
+          <div class="clip c-sub" style="grid-column:1/31">subtitr · bütün video boyu · səssiz izləyənlər üçün</div>
+        </div>
+      </div></div>
+      <div class="tl-notes">
+        <p><b>0–3 saniyə: hook.</b> Sual, nəticə və ya şok kadr. İzləyici burada qalır və ya keçib gedir.</p>
+        <p><b>Hər 2–4 saniyədə dəyişiklik.</b> Yeni kadr, zoom, b-roll və ya qrafika. Ekran dayanmamalıdır.</p>
+        <p><b>Son kadr əvvələ bağlanır.</b> Video təkrar izlənir, izləmə müddəti və erişim artır.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="match">
+    <div class="sec-head">
+      <div class="eyebrow">Cütləşdirici</div>
+      <h2 id="match">Video növünü seçin, uyğun montajı görün</h2>
+      <p>Soldan video növünü seçin. Sağda onunla ən yaxşı işləyən montaj üslubları və əlavə məsləhət görünəcək. Aşağıdakı montaj kartları da işıqlanacaq.</p>
+    </div>
+    <div class="matcher">
+      <div class="vlist" id="vlist" role="group" aria-label="Video növləri"></div>
+      <div class="detail" id="detail" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="vtypes">
+    <div class="sec-head">
+      <div class="eyebrow"><span class="tag tv">V</span> Video trekı</div>
+      <h2 id="vtypes">15 viral video növü</h2>
+    </div>
+    <div class="grid" id="vgrid"></div>
+  </section>
+
+  <section aria-labelledby="etypes">
+    <div class="sec-head">
+      <div class="eyebrow"><span class="tag te">E</span> Montaj trekı</div>
+      <h2 id="etypes">14 montaj üslubu</h2>
+    </div>
+    <div class="grid" id="egrid"></div>
+  </section>
+
+  <section aria-labelledby="studio">
+    <div class="sec-head">
+      <div class="eyebrow">Biznes</div>
+      <h2 id="studio">AI ilə studiya necə qurulur</h2>
+      <p>Bir operator, bir telefon və ya kamera, qalanını AI edir: ssenari, kəsmə, subtitr, səs, dublyaj.</p>
+    </div>
+    <div class="cols">
+      <div class="box">
+        <h3>Xidmət paketləri</h3>
+        <ul class="plain">
+          <li><b>Reels paketi</b><span class="d">Ayda 8–12 qısa video: çəkiliş, montaj, subtitr, caption.</span></li>
+          <li><b>Brend filmi</b><span class="d">30–90 saniyəlik sinematik tanıtım: restoran, otel, butik.</span></li>
+          <li><b>Klip zavodu</b><span class="d">1 podkast və ya canlı yayım 15–20 qısa klipə çevrilir.</span></li>
+          <li><b>AI paketi</b><span class="d">Çəkilişsiz AI avatar və AI vizual reklam, AZ / RU / EN / TR dublyaj.</span></li>
+          <li><b>İzahlı animasiya</b><span class="d">Startap, bank, təhsil üçün animasiyalı explainer.</span></li>
+        </ul>
+      </div>
+      <div class="box">
+        <h3>İş axını</h3>
+        <ol class="steps">
+          <li><span class="n">1</span><div><b>İdeya və ssenari</b><span class="d">AI trendləri araşdırır, hook variantları və ssenari yazır.</span></div></li>
+          <li><span class="n">2</span><div><b>Çəkiliş planı</b><span class="d">Kadr siyahısı (shot list) və storyboard.</span></div></li>
+          <li><span class="n">3</span><div><b>Kobud montaj</b><span class="d">Transkripsiya, pauza və "ee"-lərin silinməsi, ən güclü anların seçilməsi.</span></div></li>
+          <li><span class="n">4</span><div><b>Vizual və səs</b><span class="d">AI b-roll, musiqi, səs effektləri, diktor səsi, səsin təmizlənməsi.</span></div></li>
+          <li><span class="n">5</span><div><b>Bitirmə</b><span class="d">Dinamik subtitr, rəng, çoxdilli versiyalar, 9:16 / 1:1 / 16:9 formatları.</span></div></li>
+          <li><span class="n">6</span><div><b>Paylaşım</b><span class="d">Caption, hashtag, nəşr təqvimi, nəticələrin analizi.</span></div></li>
+        </ol>
+      </div>
+    </div>
+    <div class="box">
+      <h3>Hazır alətlər: OpenMontage pipeline-ları</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>Xidmət</th><th>Pipeline</th><th>Nə edir</th></tr></thead>
+        <tbody>
+          <tr><td>Talking head</td><td><code>talking-head</code></td><td>Jump cut, subtitr, b-roll üst qatı</td></tr>
+          <tr><td>Klip zavodu</td><td><code>clip-factory</code>, <code>podcast-repurpose</code></td><td>Uzun videodan ən güclü anları kəsir</td></tr>
+          <tr><td>Brend filmi</td><td><code>cinematic</code></td><td>Sinematik montaj, rəng, musiqi</td></tr>
+          <tr><td>Mini-sənədli</td><td><code>documentary-montage</code></td><td>Diktor, arxiv, Ken Burns</td></tr>
+          <tr><td>İzahlı video</td><td><code>animated-explainer</code>, <code>animation</code></td><td>Motion graphics və animasiya</td></tr>
+          <tr><td>AI avatar</td><td><code>avatar-spokesperson</code></td><td>Çəkilişsiz danışan təqdimatçı</td></tr>
+          <tr><td>Dublyaj</td><td><code>localization-dub</code></td><td>Başqa dillərə səs və subtitr</td></tr>
+          <tr><td>Məhsul demosu</td><td><code>screen-demo</code></td><td>Tətbiq və sayt üçün ekran videosu</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <footer>Viral Montaj Xəritəsi · qısa video (Reels, TikTok, Shorts) üçün bələdçi</footer>
+</div>
+
+<script>
+const E = {
+  A:["Jump cut","Pauzalar və \"ee\"-lər silinir, temp yüksək olur."],
+  B:["Dinamik subtitr","Söz-söz yanan, rəngli subtitr. İzləyicilərin çoxu səssiz baxır."],
+  C:["Zoom-punch","Açar sözdə kəskin zoom və səs effekti."],
+  D:["Beat sync","Hər kəsmə musiqinin ritminə düşür."],
+  E:["Sinematik rəng + slow-motion","LUT, film dənəsi, 24fps, yavaş çəkiliş."],
+  F:["Speed ramp","Sürət gah artır, gah azalır. Avtomobil və idman üçün."],
+  G:["Keçid montajı","Əl, obyekt və ya fırlanma ilə gizli keçid."],
+  H:["Split-screen","Ekran ikiyə bölünür: əvvəl və sonra, A və B."],
+  I:["B-roll üst qatı","Danışılan söz görüntü ilə təsvir olunur."],
+  J:["Motion graphics","Rəqəmlər, oxlar, animasiyalı başlıqlar."],
+  K:["Meme / komik","Səs effektləri, meme kadrlar, qəfil kəsmələr."],
+  L:["ASMR / sakit","Musiqi azdır, real səslər önə çıxır, kəsmələr uzundur."],
+  M:["Sənədli üslub","Arxiv görüntüsü, Ken Burns, diktor, gərgin musiqi."],
+  N:["Loop","Son kadr birinci kadra bağlanır, video sonsuz təkrarlanır."]
+};
+const V = [
+  ["Əvvəl / Sonra","Beyin nəticəni görmək istəyir, izləyici sona qədər qalır.","Təmir, saç, makiyaj, avtomobil yuma",["G","H"],"İlk 1 saniyədə \"sonra\"nı göstərin, sonra geri qayıdın."],
+  ["Satisfying proses","Rahatladır və təkrar-təkrar izlənir.","Tort bəzəmə, xalça yuma, dəri işi",["L","N"],"Musiqi qoymayın, yalnız real səs."],
+  ["Pərdəarxası (BTS)","Səmimi görünür, brendə inam yaradır.","\"Bir sifarişi necə hazırlayırıq\"",["A","B"],"Səmimi səs, \"telefonla çəkilmiş\" hissi saxlayın."],
+  ["Mif / həqiqət","Mübahisə yaradır, şərh yazdırır.","\"Bu 3 səhvə görə dəriniz qaralır\"",["A","C","B"],"Ekranda böyük \"MİF / HƏQİQƏT\" yazısı."],
+  ["Top-N siyahı","Saxlanılır və paylaşılır.","\"Bakıda 5 gizli kafe\"",["J","D"],"Ekranda sayğac: 1/5, 2/5…"],
+  ["Mini-sənədli","Emosional bağ yaradır, izləmə müddəti uzanır.","Usta ilə 60 saniyəlik portret",["M","E"],"Gərgin musiqi, sakit diktor səsi."],
+  ["Talking head","Ekspertlik göstərir, istehsalı ucuzdur.","Həkim, hüquqşünas, kouç",["A","B","I","C"],"Hər 2–3 saniyədə vizual dəyişiklik."],
+  ["POV / skeç","Tanış vəziyyət olduğu üçün paylaşılır.","\"POV: müştəri 'endirim olar?' deyir\"",["K","A"],"Tez kəsmələr, reaksiya kadrları."],
+  ["Trend audio","Alqoritm trend səsi itələyir.","Reels trend səsləri",["D","G"],"Kəsmələr düz ritmə düşməlidir."],
+  ["Sinematik tanıtım","Premium görüntü yaradır.","Restoran, otel, butik",["E","F","D"],"Yaxın plan (makro) detallar."],
+  ["Animasiyalı izah","Mürəkkəb mövzunu sadələşdirir.","Fintech, tibb, təhsil",["J","B"],"Sadə ikonlar, aydın diktor səsi."],
+  ["Reaksiya / stitch","Mövcud viralın dalğasına minir.","Trend videoya ekspert cavabı",["H","A","B"],"Orijinalı ilk 2 saniyədə göstərin, sonra öz fikrinizi deyin."],
+  ["Küçə müsahibəsi","Real insanların cavabı maraq doğurur.","\"Maaşın neçədir?\"",["A","B","K"],"Ən gözlənilməz cavabı başa qoyun."],
+  ["Podkast klipləri","Bir uzun materialdan 10–20 qısa video çıxır.","Podkast, canlı yayım",["B","C","A"],"Ən güclü cümlə hook kimi əvvələ gəlir."],
+  ["AI avatar / AI vizual","Yeni olduğu üçün diqqət çəkir, sürətli istehsal olunur.","Çoxdilli reklam, təqdimat",["B","J","I"],"Avatarı tək saxlamayın, b-roll qarışdırın."]
+];
+const $ = id => document.getElementById(id);
+const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+$("vgrid").innerHTML = V.map((v,i)=>`<div class="card"><div class="top"><span class="tag tv">V${i+1}</span><h3>${esc(v[0])}</h3></div><p>${esc(v[1])}</p><p class="example">${esc(v[2])}</p></div>`).join("");
+$("egrid").innerHTML = Object.entries(E).map(([k,e])=>`<div class="card" data-e="${k}"><div class="top"><span class="tag te">${k}</span><h3>${esc(e[0])}</h3></div><p>${esc(e[1])}</p></div>`).join("");
+$("vlist").innerHTML = V.map((v,i)=>`<button class="vbtn" id="v${i}" data-i="${i}" aria-pressed="false"><span class="tag tv">V${i+1}</span>${esc(v[0])}</button>`).join("");
+
+function pick(i){
+  const v = V[i];
+  document.querySelectorAll(".vbtn").forEach(b=>b.setAttribute("aria-pressed", b.dataset.i==i));
+  document.querySelectorAll("#egrid .card").forEach(c=>c.classList.toggle("on", v[3].includes(c.dataset.e)));
+  $("detail").innerHTML = `
+    <div class="eyebrow"><span class="tag tv">V${i+1}</span> video növü</div>
+    <h3>${esc(v[0])}</h3>
+    <p class="why">${esc(v[1])}</p>
+    <p class="example">Nümunə: ${esc(v[2])}</p>
+    <div class="pairs">${v[3].map(k=>`<div class="pair"><span class="tag te">${k}</span><div><b>${esc(E[k][0])}</b><span class="d">${esc(E[k][1])}</span></div></div>`).join("")}</div>
+    <div class="boost"><div class="eyebrow">Gücləndirici</div><p>${esc(v[4])}</p></div>`;
+  try{ localStorage.setItem("vpick", i) }catch(e){}
+}
+$("vlist").addEventListener("click", e=>{ const b=e.target.closest(".vbtn"); if(b) pick(+b.dataset.i) });
+let start = 0;
+try{ const s = +localStorage.getItem("vpick"); if(s>=0 && s<V.length) start = s }catch(e){}
+pick(start);
+</script>
