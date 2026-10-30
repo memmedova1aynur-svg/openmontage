@@ -94,6 +94,20 @@ table{border-collapse:collapse;width:100%;font-size:14px;min-width:520px}
 th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
 th{font:600 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 td code{font:13px var(--mono);color:var(--v)}
+.niche-tbl table{min-width:680px}
+.niche-tbl td:first-child b{display:block}
+.niche-tbl td .tag{margin-right:4px}
+.hooks{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.hooks li{font-family:var(--display);font-weight:500;font-size:15px;line-height:1.4;padding:12px 14px;background:var(--v-soft);border-radius:8px}
+.warn{border:1px solid var(--rec);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:12px;background:var(--panel)}
+.warn h3{color:var(--rec)}
+.warn ul,.box ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:15px}
+.funnel{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}
+.funnel div{padding:12px;border-radius:8px;border:1px solid var(--line);font-size:14px;color:var(--muted)}
+.funnel b{display:block;color:var(--fg);font-weight:600}
+.week{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.week div{padding:10px;border-radius:8px;background:var(--e-soft);font-size:14px}
+.week b{display:block;font:600 12px var(--mono);color:var(--e);text-transform:uppercase;letter-spacing:.08em}
 footer{color:var(--muted);font-size:14px;border-top:1px solid var(--line);padding-top:20px}
 @media (max-width:760px){.matcher{grid-template-columns:minmax(0,1fr)}.vlist{max-height:300px}}
 </style>
@@ -146,6 +160,81 @@ footer{color:var(--muted);font-size:14px;border-top:1px solid var(--line);paddin
     <div class="matcher">
       <div class="vlist" id="vlist" role="group" aria-label="Video növləri"></div>
       <div class="detail" id="detail" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="niche">
+    <div class="sec-head">
+      <div class="eyebrow">Niş: uşaq inkişafı (0–6 yaş)</div>
+      <h2 id="niche">Pedaqoqlar üçün təlimçi və mentor brendi</h2>
+      <p>Auditoriya: bağça müəllimləri, pedaqoqlar, uşaq inkişafı mütəxəssisləri. Məqsəd: ekspert kimi tanınmaq və təlimlərə, mentorluğa yazılış toplamaq. Bu nişdə ən çox saxlanılan və müəllimlərin bir-birinə göndərdiyi kontent praktik olan kontentdir: sabah sinifdə tətbiq edilə bilən bir cümlə, bir oyun, bir həll.</p>
+    </div>
+
+    <div class="box">
+      <h3>Bu niş üçün ən güclü 10 format</h3>
+      <div class="tbl niche-tbl"><table>
+        <thead><tr><th>Format</th><th>Nümunə mövzu</th><th>Montaj</th><th>Pipeline</th></tr></thead>
+        <tbody>
+          <tr><td><b>"Bunu demə → bunu de"</b></td><td>"Ağlama!" əvəzinə "Görürəm, kədərlisən. Gəl birlikdə nəfəs alaq."</td><td><span class="tag te">H</span><span class="tag te">B</span><span class="tag te">C</span></td><td><code>talking-head</code></td></tr>
+          <tr><td><b>60 saniyəlik məşğələ</b></td><td>Sensor qutu, barmaq motorikası oyunu, evdə hazırlanan material</td><td><span class="tag te">L</span><span class="tag te">F</span><span class="tag te">J</span></td><td><code>cinematic</code></td></tr>
+          <tr><td><b>Yaş üzrə inkişaf</b></td><td>"2 yaşında bu davranış normaldır"</td><td><span class="tag te">J</span><span class="tag te">B</span></td><td><code>animated-explainer</code></td></tr>
+          <tr><td><b>Mif / həqiqət</b></td><td>"Solaxay uşağı sağ ələ öyrətmək lazımdır" mifi</td><td><span class="tag te">A</span><span class="tag te">C</span><span class="tag te">B</span></td><td><code>talking-head</code></td></tr>
+          <tr><td><b>Situasiya: siz nə edərdiniz?</b></td><td>Uşaq yerə yıxılıb qışqırır, valideyn qapıdadır</td><td><span class="tag te">I</span><span class="tag te">B</span><span class="tag te">A</span></td><td><code>animation</code></td></tr>
+          <tr><td><b>POV: bağça müəllimi</b></td><td>"POV: 25 uşaq və bir dəqiqəlik sakitlik"</td><td><span class="tag te">K</span><span class="tag te">A</span></td><td>telefon + <code>talking-head</code></td></tr>
+          <tr><td><b>Sinif otağı: əvvəl / sonra</b></td><td>Oyun guşəsinin Montessori prinsipi ilə yenidən qurulması</td><td><span class="tag te">G</span><span class="tag te">H</span><span class="tag te">D</span></td><td><code>cinematic</code></td></tr>
+          <tr><td><b>Təlimdən pərdəarxası</b></td><td>Müəllimlər praktik tapşırığı yerinə yetirir</td><td><span class="tag te">A</span><span class="tag te">B</span><span class="tag te">I</span></td><td><code>clip-factory</code></td></tr>
+          <tr><td><b>Mentor hekayəsi</b></td><td>"Niyə bu sahəni seçdim" mini-sənədli</td><td><span class="tag te">M</span><span class="tag te">E</span></td><td><code>documentary-montage</code></td></tr>
+          <tr><td><b>Vebinar / canlı yayım klipləri</b></td><td>1 saatlıq vebinardan 15 qısa klip</td><td><span class="tag te">B</span><span class="tag te">C</span><span class="tag te">A</span></td><td><code>podcast-repurpose</code></td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="cols">
+      <div class="box">
+        <h3>Hazır hook nümunələri</h3>
+        <ul class="hooks">
+          <li>Bu cümləni hər gün deyirsiniz və uşaq sizi eşitmir.</li>
+          <li>3 yaşlı uşaq "yox" deyirsə, bu uğurdur. Səbəbi budur.</li>
+          <li>Bağça müəllimlərinin 90 saniyədə qrupu sakitləşdirmə üsulu.</li>
+          <li>Bu oyun üçün yalnız bir karton qutu lazımdır.</li>
+          <li>Valideyn "mənim uşağım niyə danışmır?" deyəndə nə cavab verirsiniz?</li>
+          <li>Mən 10 il bu səhvi edirdim.</li>
+        </ul>
+      </div>
+      <div class="warn">
+        <h3>Uşaqlarla çəkilişin qaydaları</h3>
+        <ul>
+          <li>Uşağın üzünü yalnız valideynin yazılı razılığı ilə göstərin. Bu razılıqda sosial media ayrıca qeyd olunmalıdır.</li>
+          <li>Ən təhlükəsiz kadrlar: yalnız əllər, arxadan çəkiliş, yuxarıdan masa kadrı.</li>
+          <li>Uşağın adını, bağçanın yerini və formasındakı loqonu göstərməyin.</li>
+          <li>Ağlayan və ya utanan uşağı baxış üçün çəkməyin. Belə situasiyaları böyüklərlə canlandırın və ya AI animasiya ilə göstərin.</li>
+          <li>Diaqnoz qoymayın ("bu autizm əlamətidir"). Bunun əvəzinə "mütəxəssisə müraciət edin" deyin.</li>
+          <li>AI burada güclü üstünlükdür: situasiyaları animasiya və illüstrasiya ilə real uşaq olmadan göstərmək olar.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="box">
+      <h3>Videodan təlimə yol</h3>
+      <div class="funnel">
+        <div><b>1. Reels</b>Pulsuz praktik dəyər, müəllimlər saxlayır və paylaşır</div>
+        <div><b>2. Açar söz DM</b>"OYUN yazın" → pulsuz PDF məşğələ toplusu</div>
+        <div><b>3. Pulsuz vebinar</b>Bir mövzu üzrə 45 dəqiqəlik canlı dərs</div>
+        <div><b>4. Ödənişli təlim</b>Sertifikatlı kurs və ya bağça üçün korporativ təlim</div>
+        <div><b>5. Mentorluq</b>Fərdi və ya qrup mentorluq proqramı</div>
+      </div>
+    </div>
+
+    <div class="box">
+      <h3>Həftəlik plan nümunəsi</h3>
+      <div class="week">
+        <div><b>B.e.</b>"Bunu demə → bunu de"</div>
+        <div><b>Ç.a.</b>Karusel: yaş üzrə inkişaf</div>
+        <div><b>Çər.</b>60 saniyəlik məşğələ</div>
+        <div><b>C.a.</b>Situasiya: siz nə edərdiniz?</div>
+        <div><b>Cümə</b>POV və ya mif / həqiqət</div>
+        <div><b>Hər gün</b>Stories: sorğu, sual qutusu, təlimdən kadr</div>
+      </div>
     </div>
   </section>
 
