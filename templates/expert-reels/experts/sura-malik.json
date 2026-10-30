@@ -12,17 +12,21 @@
     "İstifadəçi (2026-10-30): sözləri QƏTİYYƏN kəsmə; zəif eşidilən söz sonlarını da saxla. Pauzaları qısaltma (tighten.py işlətmə) - boşluqları istifadəçi CapCut-da musiqi qoyarkən özü kəsir. Yalnız təkrar cəhdləri və lazımsız hissələri çıxar; kəsim sərhədlərini səs enerjisinə görə geniş qoy.",
     "Sadə montaj: araya kadr/B-roll/cutaway yoxdur. Çəhrayı tonlar. Mövzuya uyğun kiçik ikon animasiyaları və uyğun səs effektləri olar.",
     "İlk video nümunədir: istifadəçi baxıb təsdiqləyəndən sonra qalanları soruşmadan eyni üslubda et.",
-    "Çəkilişlər güzgü görüntüdə gəlir (qol etiketi tərs oxunur): hər videonu soruşmadan hflip ilə çevir (2026-10-30)."
+    "Çəkilişlər güzgü görüntüdə gəlir (qol etiketi tərs oxunur): hər videonu soruşmadan hflip ilə çevir (2026-10-30).",
+    "Fon bulanıqlaşdırılmır (istifadəçi bəyənmədi, 2026-10-30). Fonda insan keçirsə: həmin cümlə lazımsız/təkrardırsa çıxar, deyilsə saxla.",
+    "Rakurs: Suranı ortala, əyriliyi düzəlt (şaquli xətlərə görə), başın üstündəki artıq boşluğu kəs (crop ~1.25 + yüngül unsharp). Yazılar hicabın üstündə qalsın.",
+    "sura-01 nümunəsi təsdiqləndi (2026-10-30): qalan videoları soruşmadan et; hər video quruluşca fərqli olsun, insan montajı kimi."
   ],
-  "theme_source": "derived from the colour family; NOT a client-confirmed code - say so in the storyboard",
+  "theme_source": "pink theme chosen by us from the colour family and approved by the user on sura-01 (2026-10-30); not client-confirmed codes",
   "theme": {
-    "primary": "#8E4F5F",
-    "primaryDeep": "#5E3240",
-    "accent": "#F6C9D3",
-    "accentSoft": "#F4ECE4",
+    "primary": "#C9577D",
+    "primaryDeep": "#9E3D5E",
+    "accent": "#F7C6D4",
+    "accentSoft": "#FFF0F4",
     "text": "#FFFFFF",
-    "onAccent": "#8E4F5F",
-    "cardAlpha": 0.94
+    "onAccent": "#9E3D5E",
+    "cardAlpha": 0.94,
+    "emphasis": "#FFD3E0"
   },
   "style": {},
   "history": []
