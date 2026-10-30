@@ -217,7 +217,7 @@ const Check: React.FC<{ f: number; at: number; text: string; size?: number; gap?
 };
 
 // ---------------------------------------------------------------- checklist
-// props: label, title, items[], times[]
+// props: label, title, items[], times[]; 6+ items shrink so the list ends above the pip circle (top y≈915)
 export const Checklist: React.FC<SceneProps> = ({ f, p, startT }) => {
   const { fps } = useVideoConfig();
   return (
@@ -225,7 +225,7 @@ export const Checklist: React.FC<SceneProps> = ({ f, p, startT }) => {
       <Header f={f} label={p.label} title={p.title} />
       <div style={{ position: "absolute", left: 90, top: 530, width: 900 }}>
         {(p.items as string[]).map((it, i) => (
-          <Check key={i} f={f} at={appearFrame(p, i, startT, fps, 14, 14)} text={it} size={p.items.length <= 3 ? 46 : 36} gap={p.items.length <= 3 ? 28 : 16} />
+          <Check key={i} f={f} at={appearFrame(p, i, startT, fps, 14, 14)} text={it} size={p.items.length <= 3 ? 46 : p.items.length <= 5 ? 36 : 32} gap={p.items.length <= 3 ? 28 : p.items.length <= 5 ? 16 : 8} />
         ))}
       </div>
     </AbsoluteFill>
