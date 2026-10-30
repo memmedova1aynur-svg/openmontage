@@ -15,7 +15,8 @@
   "video_types": "ekspert danışığı, praktik izah, təlim reklamı, sual-cavab, seminar",
   "cautions": [
     "Çəkilişlər güzgü görüntüdə gəlir: hər videonu soruşmadan hflip ilə çevir (istifadəçi, 2026-10-30).",
-    "İstifadəçi (2026-10-30): storyboard təsdiqi gözləmədən montaj et və hazır faylı göndər; videolar bir-birini təkrarlamasın, marka rəngləri qorunsun, yazılar baş/üz/əllərə düşməsin (guard.py məcburi)."
+    "İstifadəçi (2026-10-30): storyboard təsdiqi gözləmədən montaj et və hazır faylı göndər; videolar bir-birini təkrarlamasın, marka rəngləri qorunsun, yazılar baş/üz/əllərə düşməsin (guard.py məcburi).",
+    "Naxışlı köynəkli çəkilişlərdə altyazı 'box' olmalıdır: 'chip'/'stroke' passiv sözləri naxışda itir (2026-10-30)."
   ],
   "theme_source": "built from the client's confirmed codes (role mapping is ours); primaryDeep and emphasis are derived shades",
   "theme": {
@@ -44,6 +45,141 @@
         "pops": "dark"
       },
       "notes": "güzgü -> hflip; 1:47 -> 46.9 s; hook '20+ il pedaqoji yol', yuxarıda ardıcıl tünd kartlar, 'məlumat vermək' üstündən xətt, təlim mövzuları checklist (pip), CTA 'Səhifəmi izlə'; SFX/musiqi yox; altyazı əllərdən qaçmaq üçün sinə səviyyəsində"
+    },
+    {
+      "video": "saide-02: Fərdi yanaşma = ayrıca dərs?",
+      "file": "projects/saide-02/renders/final_ig.mp4",
+      "type": "1, mikrodərs",
+      "approach": "M01 + M02",
+      "style": {
+        "captions": "chip",
+        "pills": "side-tag",
+        "backdrop": "orbs",
+        "pipShape": "circle",
+        "pipCorner": "bl",
+        "pops": "type"
+      },
+      "notes": "güzgü -> hflip; təkrar cəhdlər kəsildi; hook sualı, 'tamamilə fərqli dərs' xətt, ADDIM 1-3 side-tag, bacarıqlar checklist (pip); SFX/musiqi yox"
+    },
+    {
+      "video": "saide-03: Oxuyur, amma anlamır?",
+      "file": "projects/saide-03/renders/final_ig.mp4",
+      "type": "1, maarifləndirmə",
+      "approach": "M01 + M02",
+      "style": {
+        "captions": "box",
+        "pills": "top-card",
+        "backdrop": "diagonal",
+        "pipShape": "rounded",
+        "pipCorner": "br",
+        "pops": "dark"
+      },
+      "notes": "güzgü -> hflip; təkrar cəhdlər kəsildi; cutaway yox; SƏBƏB 1-3 kartları, 'diqqətsizlik, tənbəllik' və 'daha çox oxutmaq' xətt; CTA 'Ehtiyacını araşdır'; SFX/musiqi yox"
+    },
+    {
+      "video": "saide-04: Dərs = incəsənət",
+      "file": "projects/saide-04/renders/final_ig.mp4",
+      "type": "1, motivasiya",
+      "approach": "M01 + M02",
+      "style": {
+        "captions": "chip",
+        "pills": "side-tag",
+        "backdrop": "dots",
+        "pipShape": "rounded",
+        "pipCorner": "br",
+        "pops": "dark"
+      },
+      "notes": "güzgü -> hflip; təkrar cəhdlər kəsildi; sual səhnəsi (questions pip), rəssam metaforası kartı, 'yalnız öyrətmək' xətt; CTA 'Birlikdə inkişaf edək'; SFX/musiqi yox"
+    },
+    {
+      "video": "saide-05: 4 müasir təlim modeli",
+      "file": "projects/saide-05/renders/final_ig.mp4",
+      "type": "1, mikrodərs",
+      "approach": "M01 + M03",
+      "style": {
+        "captions": "box",
+        "pills": "top-card",
+        "backdrop": "grid",
+        "pipShape": "circle",
+        "pipCorner": "bl",
+        "pops": "type"
+      },
+      "notes": "güzgü -> hflip; təkrar cəhdlər kəsildi; 4 model nömrəli top-card, seçim meyarları checklist (pip, sonda); SFX/musiqi yox"
+    },
+    {
+      "video": "saide-06: İnklüziv təhsil çətindir?",
+      "file": "projects/saide-06/renders/final_ig.mp4",
+      "type": "1, maarifləndirmə + izləmə",
+      "approach": "M01 + M02",
+      "style": {
+        "captions": "box",
+        "pills": "side-tag",
+        "backdrop": "orbs",
+        "pipShape": "rounded",
+        "pipCorner": "br",
+        "pops": "dark"
+      },
+      "notes": "güzgü -> hflip; təkrar cəhdlər kəsildi; naxışlı köynək (yeni çəkiliş günü); 'kiçik dəyişiklik' checklist, sitat kartları 'Necə bacaracam?' xətt; SFX/musiqi yox"
+    },
+    {
+      "video": "saide-07: Tərbiyə nədir?",
+      "file": "projects/saide-07/renders/final_ig.mp4",
+      "type": "1, maarifləndirmə + sual",
+      "approach": "M01 + M02",
+      "style": {
+        "captions": "box",
+        "pills": "top-card",
+        "backdrop": "diagonal",
+        "pipShape": "circle",
+        "pipCorner": "bl",
+        "pops": "light"
+      },
+      "notes": "güzgü -> hflip; təkrar cəhdlər kəsildi; 6 bacarıq checklist (pip), açıq kartlar, CTA 'Tərbiyəli uşaq = ?'; SFX/musiqi yox"
+    },
+    {
+      "video": "saide-08: Təlim reklamı",
+      "file": "projects/saide-08/renders/final_ig.mp4",
+      "type": "3, reklam",
+      "approach": "M01 + M02",
+      "style": {
+        "captions": "box",
+        "pills": "side-tag",
+        "backdrop": "dots",
+        "pipShape": "rounded",
+        "pipCorner": "br",
+        "pops": "dark"
+      },
+      "notes": "güzgü -> hflip; təkrar cəhdlər kəsildi; ÖYRƏNƏCƏKSİNİZ 1-4 side-tag, telefon səhnəsi (pip) CTA-da; SFX/musiqi yox"
+    },
+    {
+      "video": "saide-09: Uşaqlar təqlid edir",
+      "file": "projects/saide-09/renders/final_ig.mp4",
+      "type": "1, maarifləndirmə",
+      "approach": "M01 + M06",
+      "style": {
+        "captions": "box",
+        "pills": "top-card",
+        "backdrop": "grid",
+        "pipShape": "circle",
+        "pipCorner": "bl",
+        "pops": "type"
+      },
+      "notes": "güzgü -> hflip; təkrar cəhdlər kəsildi; sözlər ✗ / davranış ✓ checklist (pip), qutusuz yazılar; SFX/musiqi yox"
+    },
+    {
+      "video": "saide-10: Tərbiyə nə vaxt başlayır?",
+      "file": "projects/saide-10/renders/final_ig.mp4",
+      "type": "1, sual/müzakirə",
+      "approach": "M01 + M02",
+      "style": {
+        "captions": "box",
+        "pills": "side-tag",
+        "backdrop": "orbs",
+        "pipShape": "rounded",
+        "pipCorner": "br",
+        "pops": "dark"
+      },
+      "notes": "güzgü -> hflip; təkrar cəhdlər kəsildi; 3 yanaşma checklist (pip), şərh CTA '1, 2 yoxsa 3?'; SFX/musiqi yox"
     }
   ]
 }
