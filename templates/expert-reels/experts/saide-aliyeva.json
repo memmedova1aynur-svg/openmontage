@@ -13,7 +13,9 @@
     }
   },
   "video_types": "ekspert danışığı, praktik izah, təlim reklamı, sual-cavab, seminar",
-  "cautions": [],
+  "cautions": [
+    "Çəkilişlər güzgü görüntüdə gəlir: hər videonu soruşmadan hflip ilə çevir (istifadəçi, 2026-10-30)."
+  ],
   "theme_source": "built from the client's confirmed codes (role mapping is ours); primaryDeep and emphasis are derived shades",
   "theme": {
     "primary": "#2E6F73",
