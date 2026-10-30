@@ -14,7 +14,8 @@
   },
   "video_types": "ekspert danışığı, praktik izah, təlim reklamı, sual-cavab, seminar",
   "cautions": [
-    "Çəkilişlər güzgü görüntüdə gəlir: hər videonu soruşmadan hflip ilə çevir (istifadəçi, 2026-10-30)."
+    "Çəkilişlər güzgü görüntüdə gəlir: hər videonu soruşmadan hflip ilə çevir (istifadəçi, 2026-10-30).",
+    "İstifadəçi (2026-10-30): storyboard təsdiqi gözləmədən montaj et və hazır faylı göndər; videolar bir-birini təkrarlamasın, marka rəngləri qorunsun, yazılar baş/üz/əllərə düşməsin (guard.py məcburi)."
   ],
   "theme_source": "built from the client's confirmed codes (role mapping is ours); primaryDeep and emphasis are derived shades",
   "theme": {
