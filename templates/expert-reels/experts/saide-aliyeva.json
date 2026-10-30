@@ -28,5 +28,21 @@
     "emphasis": "#BDE6EB"
   },
   "style": {},
-  "history": []
+  "history": [
+    {
+      "video": "saide-01 (Drive 1CelsURw…)",
+      "file": "projects/saide-01/renders/final_ig.mp4",
+      "type": "1, məqsəd: özünü təqdim + izləməyə çağırış",
+      "approach": "M01 + M02",
+      "style": {
+        "captions": "box",
+        "pills": "top-card",
+        "backdrop": "grid",
+        "pipShape": "rounded",
+        "pipCorner": "br",
+        "pops": "dark"
+      },
+      "notes": "güzgü -> hflip; 1:47 -> 46.9 s; hook '20+ il pedaqoji yol', yuxarıda ardıcıl tünd kartlar, 'məlumat vermək' üstündən xətt, təlim mövzuları checklist (pip), CTA 'Səhifəmi izlə'; SFX/musiqi yox; altyazı əllərdən qaçmaq üçün sinə səviyyəsində"
+    }
+  ]
 }
