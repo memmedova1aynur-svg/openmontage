@@ -8,7 +8,11 @@
   },
   "video_types": "ekspert danışığı, təlim dərsi, reklam, sual-cavab, digər uyğun materiallar",
   "cautions": [
-    "Tibbi və peşəkar məlumat danışıqda deyildiyindən daha qəti formada verilmir."
+    "Tibbi və peşəkar məlumat danışıqda deyildiyindən daha qəti formada verilmir.",
+    "İstifadəçi (2026-10-30): sözləri QƏTİYYƏN kəsmə; zəif eşidilən söz sonlarını da saxla. Pauzaları qısaltma (tighten.py işlətmə) - boşluqları istifadəçi CapCut-da musiqi qoyarkən özü kəsir. Yalnız təkrar cəhdləri və lazımsız hissələri çıxar; kəsim sərhədlərini səs enerjisinə görə geniş qoy.",
+    "Sadə montaj: araya kadr/B-roll/cutaway yoxdur. Çəhrayı tonlar. Mövzuya uyğun kiçik ikon animasiyaları və uyğun səs effektləri olar.",
+    "İlk video nümunədir: istifadəçi baxıb təsdiqləyəndən sonra qalanları soruşmadan eyni üslubda et.",
+    "Çəkilişlər güzgü görüntüdə gəlir (qol etiketi tərs oxunur): hər videonu soruşmadan hflip ilə çevir (2026-10-30)."
   ],
   "theme_source": "derived from the colour family; NOT a client-confirmed code - say so in the storyboard",
   "theme": {
