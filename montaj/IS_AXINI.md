@@ -43,8 +43,8 @@ Hədəf: video ilk dəfədən hazır olsun, əlavə düzəliş tələb etməsin.
    - Musiqi (özün tap, 2–3 namizəd təklif et), lisenziya kommersiya istifadəsinə uyğun olmalıdır:
      1) **Freesound** (`tools/audio/freesound_music.py`, `FREESOUND_API_KEY` mühit dəyişəni, pulsuz açar) —
         yalnız **CC0** (müəllif qeydi tələb etmir). Açar yoxdursa bu yol bağlıdır.
-     2) **Incompetech** (Kevin MacLeod, incompetech.com) — açarsız yüklənir, lisenziya **CC BY 4.0**:
-        caption-a qeyd mütləqdir: “Music: <Ad> — Kevin MacLeod (incompetech.com), CC BY 4.0”. İstifadəçiyə bunu de.
+     2) **Müəllif qeydi tələb edən musiqi (CC BY, məs. Incompetech) İŞLƏDİLMİR** — istifadəçi caption-a ad
+        yazmaq istəmir. Yalnız CC0 / qeydsiz kommersiya lisenziyası.
      3) İstifadəçinin öz faylı/linki.
      ccMixter yükləmələri bu mühitdə bloklanır (403); Pixabay Music da (403); NC (qeyri-kommersiya) lisenziyalı
      musiqi müştəri reklamında işlədilmir. Mənbə, müəllif və lisenziyanı layihədə və istifadəçiyə yaz;
