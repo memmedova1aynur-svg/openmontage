@@ -174,3 +174,37 @@ test('JSON serializasiyası və yenidən açma eyni nəticə verir', () => {
   const re = JSON.parse(JSON.stringify(p));
   assert.deepEqual([...TL.layout(re)], [...TL.layout(p)]);
 });
+
+test('applyStoryboard: yalnız təsdiqdə tətbiq olunur, əl ilə düzəldilmiş mənbə qorunur, subtitr söz vaxtına uyğundur', () => {
+  let p = TL.migrate(base());
+  const [a, b] = vids(p);
+  p = TL.trim(p, b.id, 'out', 5); // B əl ilə düzəldilib
+  const words = [{ w: 'Salam', s: 1.0, e: 1.4 }, { w: 'dostlar', s: 1.5, e: 2.0 }, { w: 'bu', s: 2.1, e: 2.2 }, { w: 'gün', s: 2.3, e: 2.6 }, { w: 'danışaq', s: 2.7, e: 3.2 }];
+  const sb = {
+    subtitles: true,
+    cards: [
+      { id: 'c1', mediaId: 'A', srcIn: 0.8, srcOut: 3.5, include: true, onScreenText: 'Açılış', words },
+      { id: 'c2', mediaId: 'A', srcIn: 6, srcOut: 8, include: false, words: [] },
+      { id: 'c3', mediaId: 'B', srcIn: 0, srcOut: 2, include: true, words: [] },
+    ],
+  };
+  const r = TL.applyStoryboard(p, sb, { frames: { A: { aspect: '9:16', mode: 'auto', keys: [{ t: 0, cx: 0.4, cy: 0.5 }] } } });
+  const v = TL.videoClips(r.project);
+  assert.equal(r.skipped.length, 1);
+  assert.equal(r.skipped[0].mediaId, 'B');
+  assert.ok(v.some((c) => c.media === 'B' && c.srcOut === 5 && c.manual), 'əl ilə düzəldilmiş B toxunulmaz');
+  const ai = v.filter((c) => c.media === 'A');
+  assert.equal(ai.length, 1, 'söndürülmüş kart tətbiq olunmur');
+  assert.deepEqual([ai[0].srcIn, ai[0].srcOut], [0.8, 3.5]);
+  assert.equal(ai[0].frame.mode, 'auto');
+  assert.ok(TL.partnerOf(r.project, ai[0]), 'video öz səsi ilə');
+  const lay = TL.layout(r.project);
+  const subs = r.project.clips.filter((c) => c.track === 'c1');
+  assert.equal(subs.length, 2);
+  const s0 = lay.get(subs[0].id);
+  assert.ok(Math.abs(s0.start - (lay.get(ai[0].id).start + (1.0 - 0.8))) < 1e-6, 'subtitr sözün başladığı anda');
+  assert.ok(r.project.clips.some((c) => c.track === 't1' && c.text === 'Açılış'));
+  // kəsilmiş material yenə geri qaytarıla bilər
+  const back = TL.trim(r.project, ai[0].id, 'in', 0);
+  assert.equal(TL.clipById(back, ai[0].id).srcIn, 0);
+});

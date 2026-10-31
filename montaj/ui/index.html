@@ -4,59 +4,76 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#14161a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Montaj">
+<link rel="manifest" href="/ui/manifest.webmanifest">
+<link rel="icon" href="/ui/icon.svg">
+<link rel="apple-touch-icon" href="/ui/icon.svg">
 <title>Montaj paneli</title>
 <link rel="stylesheet" href="/ui/app.css">
 </head>
 <body>
 <header class="top">
-  <button class="ghost" id="btnHome" title="Layihələr">☰</button>
+  <button class="ghost" id="btnHome" title="Layihələr" aria-label="Layihələr">☰</button>
   <input id="title" class="title" value="" aria-label="Layihə adı" disabled>
   <span id="saveState" class="save-state" aria-live="polite"></span>
   <div class="spacer"></div>
-  <button id="btnUndo" title="Geri al (Ctrl+Z)" disabled>↶<span class="lbl"> Geri al</span></button>
-  <button id="btnRedo" title="Təkrarla (Ctrl+Shift+Z)" disabled>↷<span class="lbl"> Təkrarla</span></button>
-  <button id="btnRender" class="primary" disabled>MP4 ixrac</button>
+  <button id="btnUndo" title="Geri al (Ctrl+Z)" aria-label="Geri al" disabled>↶<span class="lbl"> Geri al</span></button>
+  <button id="btnRedo" title="Təkrarla (Ctrl+Shift+Z)" aria-label="Təkrarla" disabled>↷<span class="lbl"> Təkrarla</span></button>
+  <button id="btnRender" class="primary" disabled>Hazırla</button>
 </header>
 
 <section id="home" class="home">
   <h1>Montaj paneli</h1>
-  <p class="muted">Orijinal fayllar dəyişmir. Hər klip mənbə faylına və onun giriş/çıxış vaxtına istinad edir.</p>
+  <button id="btnNew" class="primary big">＋ Yeni video</button>
+  <details class="blank-proj"><summary class="muted">Boş layihə (birbaşa redaktor)</summary>
   <form id="newForm" class="new-form">
-    <input id="newTitle" placeholder="Layihənin adı" required maxlength="120">
-    <button class="primary" type="submit">Yeni layihə</button>
-  </form>
+    <input id="newTitle" placeholder="Layihənin adı" maxlength="120">
+    <button type="submit">Boş layihə yarat</button>
+  </form></details>
+  <div id="activeJobs"></div>
   <h2>Layihələr</h2>
   <ul id="projectList" class="project-list"><li class="muted">Yüklənir…</li></ul>
+  <p class="foot"><button class="linkish" id="btnDiag">Diaqnostika</button> · <button class="linkish" id="btnLogout">Çıxış</button></p>
 </section>
+
+<section id="flow" class="flow" hidden></section>
 
 <main id="editor" class="editor" hidden>
   <section class="stage">
     <div class="viewer" id="viewer">
-      <video id="vid" playsinline preload="auto"></video>
-      <div id="textLayer" class="text-layer"></div>
-      <div id="emptyHint" class="empty-hint">Video yükləmək üçün aşağıdakı <b>＋ Yüklə</b> düyməsinə toxunun</div>
+      <div class="frame-box" id="frameBox">
+        <video id="vid" playsinline preload="auto"></video>
+        <img id="still" alt="" hidden>
+        <div id="textLayer" class="text-layer"></div>
+        <img id="logoLayer" class="logo-layer" alt="" hidden>
+        <div id="endCard" class="end-card" hidden></div>
+      </div>
+      <div id="emptyHint" class="empty-hint">Material əlavə etmək üçün <b>＋ Yüklə</b> düyməsinə toxunun</div>
     </div>
     <div class="transport">
-      <button id="btnBack" title="1 kadr geri">⏮</button>
-      <button id="btnPlay" class="play" title="Oynat / dayandır (Boşluq)">▶</button>
-      <button id="btnFwd" title="1 kadr irəli">⏭</button>
+      <button id="btnBack" title="1 kadr geri" aria-label="1 kadr geri">⏮</button>
+      <button id="btnPlay" class="play" title="Oynat / dayandır (Boşluq)" aria-label="Oynat">▶</button>
+      <button id="btnFwd" title="1 kadr irəli" aria-label="1 kadr irəli">⏭</button>
       <span id="timecode" class="timecode">0:00.00 / 0:00.00</span>
+      <span class="spacer"></span>
+      <button id="btnCompare" class="small-btn" title="Basılı saxlayın: orijinal görüntü">Orijinal</button>
     </div>
   </section>
 
   <section class="tools" id="tools">
-    <label class="tool upload" title="Video və ya səs yüklə">
-      ＋ Yüklə<input id="fileInput" type="file" accept="video/*,audio/*" multiple hidden>
+    <label class="tool upload" title="Video, şəkil və ya səs yüklə">
+      ＋ Yüklə<input id="fileInput" type="file" accept="video/*,audio/*,image/*" multiple hidden>
     </label>
     <button class="tool" id="tSplit" title="Oynatma xəttində böl (S)">✂ Böl</button>
     <button class="tool" id="tDelete" title="Seçilmişi sil (Delete)">🗑 Sil</button>
-    <button class="tool" id="tLeft" title="Sola">◀</button>
-    <button class="tool" id="tRight" title="Sağa">▶</button>
+    <button class="tool" id="tLeft" title="Sola" aria-label="Sola">◀</button>
+    <button class="tool" id="tRight" title="Sağa" aria-label="Sağa">▶</button>
     <button class="tool" id="tUnlink" title="Videonu öz səsindən ayır">⛓ Səsi ayır</button>
     <button class="tool" id="tText" title="Oynatma xəttində mətn əlavə et">T Mətn</button>
     <span class="spacer"></span>
-    <button class="tool small" id="zOut" title="Kiçilt">−</button>
-    <button class="tool small" id="zIn" title="Böyüt">＋</button>
+    <button class="tool small" id="zOut" title="Kiçilt" aria-label="Kiçilt">−</button>
+    <button class="tool small" id="zIn" title="Böyüt" aria-label="Böyüt">＋</button>
   </section>
 
   <section class="timeline-wrap">
@@ -74,18 +91,29 @@
   <aside class="side">
     <nav class="tabs" role="tablist">
       <button role="tab" data-tab="inspector" class="active">Klip</button>
+      <button role="tab" data-tab="frame">Kadraj</button>
+      <button role="tab" data-tab="look">Görüntü</button>
+      <button role="tab" data-tab="audio">Səs</button>
+      <button role="tab" data-tab="graphics">Qrafika</button>
       <button role="tab" data-tab="ai">Təkliflər</button>
       <button role="tab" data-tab="media">Media</button>
+      <button role="tab" data-tab="share">Paylaş</button>
       <button role="tab" data-tab="export">İxrac</button>
     </nav>
     <div class="tab-body" id="tab-inspector"></div>
+    <div class="tab-body" id="tab-frame" hidden></div>
+    <div class="tab-body" id="tab-look" hidden></div>
+    <div class="tab-body" id="tab-audio" hidden></div>
+    <div class="tab-body" id="tab-graphics" hidden></div>
     <div class="tab-body" id="tab-ai" hidden></div>
     <div class="tab-body" id="tab-media" hidden></div>
+    <div class="tab-body" id="tab-share" hidden></div>
     <div class="tab-body" id="tab-export" hidden></div>
   </aside>
 </main>
 
+<div id="modal" class="modal" hidden><div class="modal-card" id="modalCard" role="dialog" aria-modal="true"></div></div>
 <div id="toast" class="toast" role="status" hidden></div>
-<script type="module" src="/ui/app.js"></script>
+<script type="module" src="/ui/flow.js"></script>
 </body>
 </html>

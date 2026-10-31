@@ -8,7 +8,7 @@ axınına (`pipeline_defs/`, `backlot/`, `tools/`) toxunmur — ayrıca paketdir
 ```bash
 pip install -r requirements.txt          # fastapi, uvicorn, numpy …
 pip install faster-whisper               # istəyə görə: yerli transkripsiya
-python -m montaj                          # http://localhost:4760/
+python -m montaj                          # yalnız lokal sınaq: http://localhost:4760/ (MONTAJ_AUTH=off və ya MONTAJ_PASSWORD lazımdır)
 python -m montaj --host 0.0.0.0           # eyni Wi-Fi-dakı telefondan: http://<kompüter-IP>:4760/
 ```
 
@@ -42,3 +42,13 @@ MONTAJ_URL=http://localhost:4760 MEDIA_DIR=<qovluq> OUT_DIR=<qovluq> NODE_PATH=$
 
 `MEDIA_DIR`-də `sinxron.mp4`, `sukut.mp4`, `musiqi.wav` olmalıdır —
 `tests/montaj/test_montaj.py`-dəki `make_sync_source` / `make_silence_source` ilə yaradılır.
+
+## v2: telefondan istifadə
+
+Telefon üçün HTTPS yerləşdirməsi: [`deploy/README.md`](../deploy/README.md).
+Tələblərin izlənən siyahısı və hər bəndin real statusu: [`TELEBLER.md`](TELEBLER.md).
+
+Axın: **＋ Yeni video** → material (telefon / Drive linki) → “Kimin videosudur?” →
+montaj seçimləri → storyboard (təsdiq) → redaktor (Kadraj, Görüntü, Səs, Qrafika) → **Paylaş**.
+
+Parol: `MONTAJ_PASSWORD` mühit dəyişəni (yoxdursa server 503 qaytarır). Lokal sınaq üçün `MONTAJ_AUTH=off`.

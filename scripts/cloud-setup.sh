@@ -13,6 +13,9 @@
 #   pypi.org, files.pythonhosted.org   — Python paketləri
 #   registry.npmjs.org                 — remotion-composer npm paketləri
 #   huggingface.co (+ yönləndirmə CDN-i) — faster-whisper modeli (ilk transkripsiyada)
+#   storage.googleapis.com             — MediaPipe üz modeli (kadraj)
+#   api.anthropic.com                  — yalnız ANTHROPIC_API_KEY verilsə (paneldaxili AI)
+#   drive.usercontent.google.com       — Drive linkindən fayl yükləmə
 # Gizli açar tələb olunmur. Açarları bu fayla YAZMAYIN — mühitin
 # "Environment variables" bölməsindən verin.
 set -euo pipefail
@@ -24,7 +27,7 @@ echo "[setup] ffmpeg yoxlanılır"
 if ! command -v ffmpeg >/dev/null 2>&1; then
   if command -v apt-get >/dev/null 2>&1; then
     (sudo -n true 2>/dev/null && SUDO=sudo || SUDO="")
-    ${SUDO:-} apt-get update -qq && ${SUDO:-} apt-get install -y -qq ffmpeg fonts-dejavu-core
+    ${SUDO:-} apt-get update -qq && ${SUDO:-} apt-get install -y -qq ffmpeg fonts-dejavu-core libegl1 libgles2
   else
     echo "[setup] XƏBƏRDARLIQ: ffmpeg yoxdur və apt-get tapılmadı" >&2
   fi
@@ -34,8 +37,11 @@ echo "[setup] Python asılılıqları (requirements.txt + dev)"
 python3 -m pip install -q -r requirements.txt
 python3 -m pip install -q -r requirements-dev.txt || true
 
-echo "[setup] Yerli transkripsiya (faster-whisper)"
-python3 -m pip install -q "faster-whisper>=1.0" || echo "[setup] faster-whisper quraşdırılmadı — transkripsiya söndürülmüş görünəcək" >&2
+echo "[setup] Montaj paneli asılılıqları (faster-whisper, mediapipe, anthropic)"
+python3 -m pip install -q -r montaj/requirements.txt || echo "[setup] bəzi montaj asılılıqları quraşdırılmadı" >&2
+if ! ldconfig -p 2>/dev/null | grep -q libEGL.so.1 && command -v apt-get >/dev/null 2>&1; then
+  apt-get install -y -qq libegl1 libgles2 >/dev/null 2>&1 || echo "[setup] libegl1 quraşdırılmadı — avtomatik kadraj işləməyəcək" >&2
+fi
 
 if [ "${MONTAJ_PREFETCH_WHISPER:-1}" = "1" ]; then
   echo "[setup] Whisper modeli əvvəlcədən endirilir (${MONTAJ_WHISPER_MODEL:-small})"
