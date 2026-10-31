@@ -604,3 +604,51 @@ def test_motion_graphics_scenes_scan_cover_pip(tmp_path, monkeypatch):
     hexrgb = lambda h: np.array([int(h[i:i + 2], 16) for i in (1, 3, 5)])
     px = fr[int(Hd * 0.3), int(Wd * 0.9)]
     assert min(np.abs(px - hexrgb(th0["primary"])).sum(), np.abs(px - hexrgb(th0["primaryDeep"])).sum()) < 45, "dairədən kənarda səhnə kadrı tutur"
+
+
+def test_tale_plan_scenes_sticker(tmp_path, monkeypatch):
+    """Nağıl: obraz/məkan/hərəkət danışıqdan, obraz yeri video boyu eyni, kitabxanada olmayan obraz uydurulmur;
+    tale_scene render olunur; şəffaf obraz (sticker) real kadrın üstündə alfa ilə görünür."""
+    import subprocess
+
+    import numpy as np
+
+    from montaj import sceneclip, tale
+
+    def W(txt, t0):
+        return [{"w": w, "s": round(t0 + i * 0.4, 2), "e": round(t0 + i * 0.4 + 0.35, 2)} for i, w in enumerate(txt.split())]
+    words, t = [], 0.0
+    for s in ["Meşədə bir tülkü yaşayırmış.", "Tülkü dovşanla rastlaşdı.", "Tülkü dedi: «Gəl dost olaq».", "Dovşan sevindi.", "Canavar baxırdı."]:
+        ws = W(s, t); words += ws; t = ws[-1]["e"] + 0.8
+    r = tale.plan(words, lambda x: round(x, 2), t)
+    scenes = [b["make"]["props"] for b in r["broll"]]
+    assert r["_characters"] == ["fox", "rabbit"] and scenes[0]["bg"] == "forest"
+    fox_x = {c["x"] for s in scenes for c in s["chars"] if c["kind"] == "fox"}
+    assert len(fox_x) == 1, "obraz öz yerində qalır"
+    assert any(c.get("action") == "talk" for c in scenes[2]["chars"]) and scenes[3]["chars"][0]["action"] == "jump"
+    assert any("canavar" in x for x in r["_review"]) and not any(c["kind"] == "wolf" for s in scenes for c in s["chars"])
+    if not sceneclip.NODE_MODULES.is_dir():
+        pytest.skip("remotion-composer/node_modules yoxdur")
+    th = {"primary": "#203040", "primaryDeep": "#101820", "accent": "#F2C94C", "accentSoft": "#DDDDDD", "text": "#FFFFFF", "onAccent": "#101820", "cardAlpha": 0.94}
+    assert sceneclip.render("tale_scene", scenes[1], 2.0, th, tmp_path / "scenes", still=True).stat().st_size > 20000
+
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import session, store
+
+    plan = tmp_path / "plan.json"
+    plan.write_text(json.dumps({"look": None, "broll": [{"make": {"kind": "tale_char", "props": {"transparent": True,
+        "char": {"kind": "fox", "x": 540, "y": 1500, "scale": 2.0, "enterFrom": "none"}}}, "mode": "sticker", "at": 0.3, "dur": 2.0}]}))
+    assert session.main(["plan", pid, str(plan)]) == 0
+    gen = [m for m in store.load(pid)["media"] if (m.get("source") or {}).get("type") == "generated"]
+    assert gen and gen[0]["file"].endswith(".mov"), "şəffaf obraz ProRes 4444 (alfa)"
+    assert session.main(["render", pid]) == 0
+    mp4 = sorted((tmp_path / "out" / pid).glob(f"{pid}_r*.mp4"))[-1]
+    q = store.load(pid)
+    Wd, Hd = q["width"], q["height"]
+    raw = subprocess.run(["ffmpeg", "-v", "error", "-ss", "1.5", "-i", str(mp4), "-frames:v", "1", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
+                         capture_output=True, check=True).stdout
+    fr = np.frombuffer(raw, np.uint8).reshape(Hd, Wd, 3).astype(int)
+    body = fr[int(Hd * (1500 - 120 * 2) / 1920), int(Wd * (540 - 125) / 1080)]  # tülkünün gövdəsinin yan hissəsi (narıncı; ortası ağ qarındır)
+    assert body[0] > 170 and body[2] < 120, f"obraz görünür: {body}"
+    corner = fr[int(Hd * 0.1), int(Wd * 0.1)]
+    assert not (corner[0] > 170 and corner[2] < 120), "obrazdan kənarda əsas video (alfa şəffafdır)"
