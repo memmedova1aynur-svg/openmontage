@@ -18,6 +18,7 @@ Bu söhbət müştəri videolarının gündəlik montajı üçündür. Montaj si
    - əvvəl bir qısa sorğu (müştəri, məqsəd, format, müddət, xüsusi istək), sonra Drive linki;
    - analiz, təkrar və alınmayan cümlələrin təmizlənməsi (söz kəsilmir), kadraj düzəlişi (`framefix`),
      arxa səs təmizləmə (`voice-clean`);
+   - B-roll-u özün hazırla (`session scenes`, planda `broll[].make`); səhnə mətni yalnız danışıqdan;
    - **bir qərar mesajı**: 3 storyboard + kadraj əvvəl/sonra + rəng variantları + 2–3 musiqi nümunəsi
      (Freesound, yalnız CC0) + səs əvvəl/sonra. Mən bir cavabla seçirəm;
    - sonra yalnız **yekun MP4**: `render` + `verify` + şübhəli sözlər siyahısı. Ara düzəliş raundu yoxdur.
