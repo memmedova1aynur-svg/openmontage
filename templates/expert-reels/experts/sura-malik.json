@@ -1,25 +1,161 @@
 {
-  "name": "Sura Malik",
-  "status": "active",
-  "activity": "Uşaq inkişafı və laktasiya mütəxəssisi.",
-  "palette": {
-    "family": "yumşaq çəhrayı, gül qurusu, isti krem, ağ",
-    "note": "Əsasən yumşaq çəhrayı; bəzən tünd çəhrayı da ola bilər."
+ "name": "Sura Malik",
+ "status": "active",
+ "activity": "Uşaq inkişafı və laktasiya mütəxəssisi.",
+ "palette": {
+  "family": "yumşaq çəhrayı, gül qurusu, isti krem, ağ",
+  "note": "Əsasən yumşaq çəhrayı; bəzən tünd çəhrayı da ola bilər."
+ },
+ "video_types": "ekspert danışığı, təlim dərsi, reklam, sual-cavab, digər uyğun materiallar",
+ "cautions": [
+  "Tibbi və peşəkar məlumat danışıqda deyildiyindən daha qəti formada verilmir.",
+  "İstifadəçi (2026-10-30): sözləri QƏTİYYƏN kəsmə; zəif eşidilən söz sonlarını da saxla. Pauzaları qısaltma (tighten.py işlətmə) - boşluqları istifadəçi CapCut-da musiqi qoyarkən özü kəsir. Yalnız təkrar cəhdləri və lazımsız hissələri çıxar; kəsim sərhədlərini səs enerjisinə görə geniş qoy.",
+  "Sadə montaj: araya kadr/B-roll/cutaway yoxdur. Çəhrayı tonlar. Mövzuya uyğun kiçik ikon animasiyaları və uyğun səs effektləri olar.",
+  "İlk video nümunədir: istifadəçi baxıb təsdiqləyəndən sonra qalanları soruşmadan eyni üslubda et.",
+  "Çəkilişlər güzgü görüntüdə gəlir (qol etiketi tərs oxunur): hər videonu soruşmadan hflip ilə çevir (2026-10-30).",
+  "Fon bulanıqlaşdırılmır (istifadəçi bəyənmədi, 2026-10-30). Fonda insan keçirsə: həmin cümlə lazımsız/təkrardırsa çıxar, deyilsə saxla.",
+  "Rakurs: Suranı ortala, əyriliyi düzəlt (şaquli xətlərə görə), başın üstündəki artıq boşluğu kəs (crop ~1.25 + yüngül unsharp). Yazılar hicabın üstündə qalsın.",
+  "sura-01 nümunəsi təsdiqləndi (2026-10-30): qalan videoları soruşmadan et; hər video quruluşca fərqli olsun, insan montajı kimi.",
+  "Render-lər tək-tək getməlidir: Whisper + Remotion eyni anda 15 GB-ı aşır (2026-10-30). Checklist stikerləri çənəyə düşməsin deyə top >= 1000 və ya caption_shift istifadə et."
+ ],
+ "theme_source": "pink theme chosen by us from the colour family and approved by the user on sura-01 (2026-10-30); brand colour = colour family (user rule 2026-10-31): nearby shades are fine, no 'unconfirmed code' warning",
+ "theme": {
+  "primary": "#C9577D",
+  "primaryDeep": "#9E3D5E",
+  "accent": "#F7C6D4",
+  "accentSoft": "#FFF0F4",
+  "text": "#FFFFFF",
+  "onAccent": "#9E3D5E",
+  "cardAlpha": 0.94,
+  "emphasis": "#FFD3E0"
+ },
+ "style": {},
+ "history": [
+  {
+   "video": "sura-01: Uşaq qucağa öyrəşərmi?",
+   "file": "projects/sura-01/renders/final_ig.mp4",
+   "style": {
+    "captions": "box",
+    "pills": "top-card",
+    "backdrop": "dots",
+    "pipShape": "circle",
+    "pipCorner": "br",
+    "pops": "dark"
+   },
+   "theme_primary": "#C9577D",
+   "notes": "güzgü -> hflip; söz kəsilmədi, boşluqlar saxlandı; blur yox; rotate -1.26, crop 864:1536:145:344; mərkəzi ikonlar; keçən insanlar olan 2 artıq cümlə kəsildi"
   },
-  "video_types": "ekspert danışığı, təlim dərsi, reklam, sual-cavab, digər uyğun materiallar",
-  "cautions": [
-    "Tibbi və peşəkar məlumat danışıqda deyildiyindən daha qəti formada verilmir."
-  ],
-  "theme_source": "derived from the colour family; brand colour = colour family (user rule 2026-10-31): nearby shades of the family are fine, no 'unconfirmed code' warning",
-  "theme": {
-    "primary": "#8E4F5F",
-    "primaryDeep": "#5E3240",
-    "accent": "#F6C9D3",
-    "accentSoft": "#F4ECE4",
-    "text": "#FFFFFF",
-    "onAccent": "#8E4F5F",
-    "cardAlpha": 0.94
+  {
+   "video": "sura-02: Ağlayan uşağı sakitləşdirmək",
+   "file": "projects/sura-02/renders/final_ig.mp4",
+   "style": {
+    "captions": "chip",
+    "pills": "side-tag",
+    "backdrop": "dots",
+    "pipShape": "circle",
+    "pipCorner": "br",
+    "pops": "light"
+   },
+   "theme_primary": "#B5476E",
+   "notes": "güzgü -> hflip; söz kəsilmədi, boşluqlar saxlandı; blur yox; qbox + poll, yan ikonlar, TİP 1-3"
   },
-  "style": {},
-  "history": []
+  {
+   "video": "sura-03: 2 yaşında danışmayan uşaq",
+   "file": "projects/sura-03/renders/final_ig.mp4",
+   "style": {
+    "captions": "chip",
+    "pills": "top-card",
+    "backdrop": "dots",
+    "pipShape": "circle",
+    "pipCorner": "br",
+    "pops": "light"
+   },
+   "theme_primary": "#A85C74",
+   "notes": "güzgü -> hflip; söz kəsilmədi, boşluqlar saxlandı; blur yox; sitat kartları, AMMA pill, SƏBƏB tip-ləri, SOS checklist, CTA 'Mütəxəssisə görünün'"
+  },
+  {
+   "video": "sura-04: Qatı qidaya keçid",
+   "file": "projects/sura-04/renders/final_ig.mp4",
+   "style": {
+    "captions": "stroke",
+    "pills": "top-card",
+    "backdrop": "dots",
+    "pipShape": "circle",
+    "pipCorner": "br",
+    "pops": "dark"
+   },
+   "theme_primary": "#D0638A",
+   "notes": "güzgü -> hflip; söz kəsilmədi, boşluqlar saxlandı; blur yox; qbox, 4–6 ay pill, TİP 1-4 (dadımlıq, tərəvəz, 3 gün, meyvə), reaksiya checklist"
+  },
+  {
+   "video": "sura-05: Qorxu ilə qərar verən ana",
+   "file": "projects/sura-05/renders/final_ig.mp4",
+   "style": {
+    "captions": "stroke",
+    "pills": "top-card",
+    "backdrop": "dots",
+    "pipShape": "circle",
+    "pipCorner": "br",
+    "pops": "type"
+   },
+   "theme_primary": "#8E3B5A",
+   "notes": "güzgü -> hflip; söz kəsilmədi, boşluqlar saxlandı; blur yox; stroke/type, mif xətləri"
+  },
+  {
+   "video": "sura-06: Uşağı hər səhvdə cəzalandırmaq? (4 s sual)",
+   "file": "projects/sura-06/renders/final_ig.mp4",
+   "style": {
+    "captions": "box",
+    "pills": "top-card",
+    "backdrop": "dots",
+    "pipShape": "circle",
+    "pipCorner": "br",
+    "pops": "dark"
+   },
+   "theme_primary": "#C9577D",
+   "notes": "güzgü -> hflip; söz kəsilmədi, boşluqlar saxlandı; blur yox; poll + şərh səhnəsi"
+  },
+  {
+   "video": "sura-07: Soyuq əl ≠ üşümək",
+   "file": "projects/sura-07/renders/final_ig.mp4",
+   "style": {
+    "captions": "chip",
+    "pills": "side-tag",
+    "backdrop": "dots",
+    "pipShape": "circle",
+    "pipCorner": "br",
+    "pops": "type"
+   },
+   "theme_primary": "#C76B8E",
+   "notes": "güzgü -> hflip; söz kəsilmədi, boşluqlar saxlandı; blur yox; sitat pop-lar, HƏQİQƏT pill, 'Buradan yoxla' checklist, 20–22 °C pill"
+  },
+  {
+   "video": "sura-08: Laktasiya məsləhətçiliyi təlimi (reklam)",
+   "file": "projects/sura-08/renders/final_ig.mp4",
+   "style": {
+    "captions": "stroke",
+    "pills": "side-tag",
+    "backdrop": "dots",
+    "pipShape": "circle",
+    "pipCorner": "br",
+    "pops": "light"
+   },
+   "theme_primary": "#C2507A",
+   "notes": "güzgü -> hflip; söz kəsilmədi, boşluqlar saxlandı; blur yox; 'Öyrənəcəksən' checklist top 1000 + caption_shift, İLK ADDIM pill"
+  },
+  {
+   "video": "sura-09: Yatan uşağı oyadaqmı?",
+   "file": "projects/sura-09/renders/final_ig.mp4",
+   "style": {
+    "captions": "box",
+    "pills": "side-tag",
+    "backdrop": "dots",
+    "pipShape": "circle",
+    "pipCorner": "br",
+    "pops": "type"
+   },
+   "theme_primary": "#B04A6F",
+   "notes": "güzgü -> hflip; söz kəsilmədi, boşluqlar saxlandı; blur yox; SARILIQ VARSA / HƏR ŞEY QAYDASINDADIRSA pill-ləri, 'Oyatmaq lazımdır' checklist"
+  }
+ ]
 }

@@ -1,14 +1,17 @@
 import React from "react";
 import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { FONT, clamp01 } from "./theme";
+import { FONT, T, clamp01 } from "./theme";
 
 // Instagram-style stickers over the speaker's chest (never the face): a question box and a poll.
 //   qbox: o.head (orange gradient header text), o.question (body text), o.top
 //   poll: o.question, o.options [{text, at}], o.pick (index) + o.pickAt: the picked option fills orange
 //         with a check, the others fade and get struck through
-const ORANGE = "#E0662A";
-const DEEP = "#B8460F";
-const INK = "#3A2418";
+// A theme may set sticker / stickerLight / stickerDeep / stickerInk to recolour the stickers (e.g. pink); default orange.
+const TH = T as any;
+const ORANGE = TH.sticker ?? "#E0662A";
+const LIGHT = TH.stickerLight ?? "#F2994A";
+const DEEP = TH.stickerDeep ?? "#B8460F";
+const INK = TH.stickerInk ?? "#3A2418";
 
 const useIn = (o: any) => {
   const frame = useCurrentFrame();
@@ -32,7 +35,7 @@ export const QBox: React.FC<{ o: any }> = ({ o }) => {
   const kb = interpolate(frame, [8, 18], [0, 1], clamp01);
   return (
     <Card o={o} k={k} exit={exit}>
-      <div style={{ background: `linear-gradient(120deg, ${ORANGE} 0%, #F2994A 100%)`, padding: "34px 44px 30px", textAlign: "center", fontFamily: FONT, fontWeight: 900, fontSize: o.headSize ?? 58, lineHeight: 1.1, color: "#FFFFFF" }}>{o.head}</div>
+      <div style={{ background: `linear-gradient(120deg, ${ORANGE} 0%, ${LIGHT} 100%)`, padding: "34px 44px 30px", textAlign: "center", fontFamily: FONT, fontWeight: 900, fontSize: o.headSize ?? 58, lineHeight: 1.1, color: "#FFFFFF" }}>{o.head}</div>
       {o.question && (
         <div style={{ padding: "30px 44px 36px", textAlign: "center", fontFamily: FONT, fontWeight: 800, fontSize: o.size ?? 46, lineHeight: 1.18, color: INK, opacity: kb }}>{o.question}</div>
       )}
@@ -55,7 +58,7 @@ export const Poll: React.FC<{ o: any }> = ({ o }) => {
           const fade = !picked && o.pick !== undefined ? pk : 0;
           return (
             <div key={i} style={{ position: "relative", height: o.optH ?? 112, borderRadius: 56, background: "#F4EEE8", overflow: "hidden", opacity: a * (1 - 0.5 * fade), transform: `translateX(${(1 - a) * 40}px)` }}>
-              <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${100 * fill}%`, background: `linear-gradient(90deg, ${ORANGE}, #F2994A)` }} />
+              <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${100 * fill}%`, background: `linear-gradient(90deg, ${ORANGE}, ${LIGHT})` }} />
               <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", gap: 16, fontFamily: FONT, fontWeight: 800, fontSize: op.text.length > 26 ? 38 : 44, color: fill > 0.5 ? "#FFFFFF" : INK }}>
                 {picked && fill > 0.3 && <span style={{ fontWeight: 900 }}>✓</span>}
                 <span style={{ position: "relative" }}>
@@ -77,7 +80,7 @@ export const Checklist: React.FC<{ o: any }> = ({ o }) => {
   const items: { text: string; at: number }[] = o.items ?? [];
   return (
     <Card o={{ ...o, rot: o.rot ?? 0 }} k={k} exit={exit}>
-      <div style={{ background: `linear-gradient(120deg, ${ORANGE} 0%, #F2994A 100%)`, padding: "24px 40px", fontFamily: FONT, fontWeight: 900, fontSize: o.headSize ?? 46, color: "#FFFFFF", textAlign: "center" }}>{o.title}</div>
+      <div style={{ background: `linear-gradient(120deg, ${ORANGE} 0%, ${LIGHT} 100%)`, padding: "24px 40px", fontFamily: FONT, fontWeight: 900, fontSize: o.headSize ?? 46, color: "#FFFFFF", textAlign: "center" }}>{o.title}</div>
       <div style={{ padding: "22px 40px 30px", display: "flex", flexDirection: "column", gap: 18 }}>
         {items.map((it, i) => {
           const a = interpolate(t, [it.at, it.at + 0.3], [0, 1], clamp01);
@@ -104,7 +107,7 @@ export const DM: React.FC<{ o: any }> = ({ o }) => {
     <Card o={{ ...o, rot: o.rot ?? 0 }} k={k} exit={exit}>
       <div style={{ padding: "26px 36px 10px", fontFamily: FONT, fontWeight: 800, fontSize: o.hintSize ?? 40, color: DEEP, textAlign: "center", lineHeight: 1.15 }}>{o.hint}</div>
       <div style={{ height: 130, position: "relative" }}>
-        <div style={{ position: "absolute", right: 40, top: 20, opacity: sent, transform: `translateY(${(1 - sent) * 40}px) scale(${0.8 + 0.2 * sent})`, transformOrigin: "100% 100%", background: `linear-gradient(120deg, ${ORANGE}, #F2994A)`, color: "#FFFFFF", borderRadius: "40px 40px 10px 40px", padding: "20px 40px", fontFamily: FONT, fontWeight: 900, fontSize: 56, letterSpacing: 2 }}>{word}</div>
+        <div style={{ position: "absolute", right: 40, top: 20, opacity: sent, transform: `translateY(${(1 - sent) * 40}px) scale(${0.8 + 0.2 * sent})`, transformOrigin: "100% 100%", background: `linear-gradient(120deg, ${ORANGE}, ${LIGHT})`, color: "#FFFFFF", borderRadius: "40px 40px 10px 40px", padding: "20px 40px", fontFamily: FONT, fontWeight: 900, fontSize: 56, letterSpacing: 2 }}>{word}</div>
       </div>
       <div style={{ margin: "0 30px 30px", height: 92, borderRadius: 46, border: "3px solid #E8DDD3", display: "flex", alignItems: "center", padding: "0 18px 0 34px", gap: 16 }}>
         <div style={{ flex: 1, fontFamily: FONT, fontWeight: 800, fontSize: 42, color: sent > 0.5 ? "#B9A99B" : INK }}>{sent > 0.5 ? "Mesaj yaz…" : word.slice(0, typed) || "Mesaj yaz…"}</div>
