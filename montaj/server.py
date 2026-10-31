@@ -469,8 +469,7 @@ def _frames(pid: str, project: dict[str, Any], aspect: str, hint: str, progress=
         return {}
     pdir = store.project_dir(pid)
     vids = [m for m in project["media"] if m.get("hasVideo")]
-    first = next((m for m in vids if not m.get("isImage")), vids[0] if vids else None)
-    _, out_h = reframe.output_size(first, aspect)
+    _, out_h = reframe.output_size(reframe.primary_video(project["media"]), aspect)
     res = {}
     for i, m in enumerate(vids):
         dur = 0.1 if m.get("isImage") else float(m["duration"])
@@ -485,29 +484,35 @@ def _frames(pid: str, project: dict[str, Any], aspect: str, hint: str, progress=
     return res
 
 
+def build_storyboard(pid: str, options: dict[str, Any], progress: Any = lambda _x: None) -> dict[str, Any]:
+    """Analiz + kadraj + storyboard qaralaması (server işi və sessiya CLI-si eyni koddan istifadə edir)."""
+    project = store.load(pid)
+    if not project["media"]:
+        raise UserError("Layihədə material yoxdur.", "Əvvəl video və ya şəkil əlavə edin.")
+    progress(0.05)
+    segs = _segments(pid, project, options, progress)
+    fmt = options.get("format") or []
+    hint = "product" if "product" in fmt else "event" if "event" in fmt else ""
+    frames = _frames(pid, project, options.get("aspect", "9:16"), hint, progress)
+    progress(0.92)
+    use_ai = options.get("useAi", True) and ai.key_present()
+    if use_ai:
+        sb = ai.ai_storyboard(store.project_dir(pid), project, segs, options, _brand(project))
+    else:
+        sb = analysis.rules_storyboard(project, segs, options)
+    sb.update(id="sb_" + uuid.uuid4().hex[:8], createdAt=time.time(), options=options, frames=frames,
+              candidates={mid: s for mid, s in segs.items()}, status="draft",
+              removed={mid: analysis.removed_ranges(next(m for m in project["media"] if m["id"] == mid), [
+                  c for c in sb["cards"] if c["mediaId"] == mid and c["include"]]) for mid in segs})
+    _draft_path(pid).write_text(json.dumps(sb, ensure_ascii=False), encoding="utf-8")
+    return sb
+
+
 def _start_storyboard(pid: str, params: dict[str, Any]) -> str:
     options = params.get("options") or {}
 
     def work(progress):
-        project = store.load(pid)
-        if not project["media"]:
-            raise UserError("Layihədə material yoxdur.", "Əvvəl video və ya şəkil əlavə edin.")
-        progress(0.05)
-        segs = _segments(pid, project, options, progress)
-        fmt = options.get("format") or []
-        hint = "product" if "product" in fmt else "event" if "event" in fmt else ""
-        frames = _frames(pid, project, options.get("aspect", "9:16"), hint, progress)
-        progress(0.92)
-        use_ai = options.get("useAi", True) and ai.key_present()
-        if use_ai:
-            sb = ai.ai_storyboard(store.project_dir(pid), project, segs, options, _brand(project))
-        else:
-            sb = analysis.rules_storyboard(project, segs, options)
-        sb.update(id="sb_" + uuid.uuid4().hex[:8], createdAt=time.time(), options=options, frames=frames,
-                  candidates={mid: s for mid, s in segs.items()}, status="draft",
-                  removed={mid: analysis.removed_ranges(next(m for m in project["media"] if m["id"] == mid), [
-                      c for c in sb["cards"] if c["mediaId"] == mid and c["include"]]) for mid in segs})
-        _draft_path(pid).write_text(json.dumps(sb, ensure_ascii=False), encoding="utf-8")
+        sb = build_storyboard(pid, options, progress)
         return {"storyboard": sb["id"], "generator": sb["generator"], "cards": len(sb["cards"])}
     return jobs.start("storyboard", pid, work, params, label="Storyboard")
 
@@ -587,8 +592,7 @@ async def reframe_clip(pid: str, request: Request) -> dict[str, Any]:
               "srcOut": float(body.get("srcOut", m["duration"]))}
 
     def work(progress):
-        first = next((x for x in project["media"] if x.get("hasVideo") and not x.get("isImage")), m)
-        _, out_h = reframe.output_size(first, aspect)
+        _, out_h = reframe.output_size(reframe.primary_video(project["media"]) or m, aspect)
         samples = reframe.detect_faces(store.project_dir(pid) / m["file"], params["srcIn"],
                                        params["srcOut"] if not m.get("isImage") else 0.1)
         progress(0.8)
@@ -599,9 +603,7 @@ async def reframe_clip(pid: str, request: Request) -> dict[str, Any]:
 @app.get("/api/projects/{pid}/output-size")
 def out_size(pid: str, aspect: str = "9:16") -> dict[str, Any]:
     project = _load(pid)
-    first = next((m for m in project["media"] if m.get("hasVideo") and not m.get("isImage")),
-                 next((m for m in project["media"] if m.get("hasVideo")), None))
-    w, h = reframe.output_size(first, aspect if aspect in reframe.ASPECTS else "source")
+    w, h = reframe.output_size(reframe.primary_video(project["media"]), aspect if aspect in reframe.ASPECTS else "source")
     return {"width": w, "height": h}
 
 

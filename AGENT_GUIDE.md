@@ -14,6 +14,13 @@ This skill teaches you to run discovery, classify the user's setup, present capa
 
 **Skip onboarding** when the user arrives with a specific, actionable request (e.g., "Make a 60-second explainer about black holes"). Go directly to Rule Zero.
 
+## Montaj Panel — Phone / Drive-link Session Entry Point
+
+When the user sends a Google Drive video link together with a montaj request for the
+`montaj/` panel (Azerbaijani phone workflow), read **`montaj/SESSIYA_TELIMATI.md`** and follow it.
+That workflow runs the panel's own code headlessly via `python -m montaj.session` and never
+enables paid services.
+
 ## Reference Video Entry Point
 
 When the user provides a **video URL or local video file as inspiration** — for example:

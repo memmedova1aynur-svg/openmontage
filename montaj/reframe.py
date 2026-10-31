@@ -165,6 +165,14 @@ def suggest(m: dict[str, Any], src_in: float, src_out: float, aspect: str, out_h
             "warnings": sorted(set(warnings))}
 
 
+def primary_video(media: list[dict[str, Any]]) -> dict[str, Any] | None:
+    """Çıxış ölçüsü üçün əsas mənbə: ən yüksək hündürlüklü video (şəkil yox)."""
+    vids = [m for m in media if m.get("hasVideo") and not m.get("isImage")]
+    if not vids:
+        vids = [m for m in media if m.get("hasVideo")]
+    return max(vids, key=lambda m: (int(m.get("height") or 0) * int(m.get("width") or 0)), default=None)
+
+
 def output_size(first_video: dict[str, Any] | None, aspect: str) -> tuple[int, int]:
     """Çıxış ölçüsü: mənbənin imkanından böyük deyil, cüt ədədlər."""
     if not first_video or aspect == "source":

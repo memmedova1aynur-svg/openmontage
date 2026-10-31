@@ -9,6 +9,15 @@ Son yeniləmə: v2 (telefon axını). Hər commit-də bu fayl yenilənir.
 
 Yoxlama əsası: `tests/montaj/` (Node 12, pytest 19) və brauzer testləri `e2e_flow.mjs`, `e2e_browser.mjs` (Chromium + iPhone ölçüsü emulyasiyası — real Safari deyil).
 
+## 0. Büdcə və telefon yolu (v3)
+| # | Tələb | Status | Qeyd |
+|---|---|---|---|
+| 0.1 | Əlavə ödənişli xidmət aktivləşdirilmir (VPS, API, hosting, saxlama) | ✅ | Heç biri aktiv deyil |
+| 0.2 | Yalnız iPhone ilə bir videonu başdan sona hazırlamaq | 🟡 | Seçilən yol: Claude Code sessiyası + `montaj.session` CLI (`BUDCE_YOLU.md`). Real iPhone və real video ilə yoxlanılmayıb |
+| 0.3 | Drive linkindən orijinal fayl (sessiyada) | 🟡 | Drive serverinə çıxış var; real paylaşımlı fayl ilə yoxlanılmayıb |
+| 0.4 | Sessiyada hazırlanmış plan panel layihə faylı kimi | ✅ | `export` panelin öz `montaj.json` formatını verir (test) |
+| 0.5 | Brauzerdə montaj paneli (redaktə) telefondan | ⛔ | Pulsuz daimi server yoxdur; panel sessiyada işləyir, amma xaricdən açılmır |
+
 ## 1. Telefondan açılan panel
 | # | Tələb | Status | Qeyd |
 |---|---|---|---|
@@ -18,7 +27,7 @@ Yoxlama əsası: `tests/montaj/` (Node 12, pytest 19) və brauzer testləri `e2e
 | 1.4 | Giriş qorunur | ✅ | Parol + HMAC imzalı HttpOnly/Secure cookie; bütün API və media qorunur |
 | 1.5 | Müştəri videoları və açarlar açıq yayımlanmır | ✅ | Media yalnız girişlə; açarlar yalnız mühit dəyişəni; status yalnız “var/yox” göstərir |
 | 1.6 | Telefon kilidlənsə iş davam edir; yenidən açanda vəziyyət bərpa olunur | ✅ | İş diskdə (test: restart təqlidi); storyboard düzəlişi səhifəni yenidən açanda qalır (brauzer testi). Real iPhone kilidi ilə yoxlanılmayıb. İşlər diskdə saxlanılır, panel açılanda aktiv işləri göstərir. Server restartında yarımçıq iş “dayandı — yenidən başlat” kimi görünür |
-| 1.7 | Hesab/ödəniş maneəsi, xidmət və xərc göstərilir | 🟡 | `deploy/README.md`; qiymətlər rəsmi səhifədən yoxlanmalıdır (bu sessiyada hetzner.com bağlı idi) |
+| 1.7 | Hesab/ödəniş maneəsi, xidmət və xərc göstərilir | 🟡 | `deploy/README.md` (VPS — hazırkı büdcəyə daxil deyil, aktivləşdirilməyib). Əlavə xərcsiz yol: `BUDCE_YOLU.md` |
 
 ## 2. Sadə istifadə axını
 | # | Tələb | Status | Qeyd |
@@ -53,7 +62,7 @@ Yoxlama əsası: `tests/montaj/` (Node 12, pytest 19) və brauzer testləri `e2e
 |---|---|---|---|
 | 5.1 | Kəsim rejimi: olduğu kimi / təklif et (standart) / avtomatik təmizlə | ✅ | |
 | 5.2 | Pauza, nəfəs, vurğu səssizliyi səhv sayılmır | 🟡 | Yalnız uzun (≥1,2 s) sükut namizəddir, 0,25 s nəfəs payı saxlanılır. Real danışıqla yoxlanılmayıb |
-| 5.3 | Söz və hecalar yarıda kəsilmir | 🟡 | Kəsim nöqtələri transkriptdəki söz sərhədlərinə çəkilir. Azərbaycan dilində real video ilə yoxlanılmayıb |
+| 5.3 | Söz və hecaların yarıda kəsilməməsi (hədəf) | 🟡 | ZƏMANƏT DEYİL: kəsim nöqtəsi Whisper-in söz vaxtlarına və səssizlik ölçüsünə görə seçilir. Whisper sözlərin sərhədini səhv verə və ya səssizlikdə söz uydura bilir (sintetik testdə görüldü). Real Azərbaycan danışığı ilə yoxlanılmayıb |
 | 5.4 | Avtomatik təmizləmə də storyboard təsdiqindən sonra | ✅ | |
 | 5.5 | Mənbə silinmir; kənarı uzadaraq geri qaytarmaq | ✅ | |
 | 5.6 | Video + öz səsi birlikdə | ✅ | |
@@ -74,7 +83,7 @@ Yoxlama əsası: `tests/montaj/` (Node 12, pytest 19) və brauzer testləri `e2e
 ## 7. Vizual storyboard və AI
 | # | Tələb | Status | Qeyd |
 |---|---|---|---|
-| 7.1 | Faktiki AI bağlantısı | 🟡 | Claude API (`claude-opus-5-5`) kodu hazırdır; `ANTHROPIC_API_KEY` yoxdur → real çağırış yoxlanılmayıb |
+| 7.1 | Faktiki AI bağlantısı | 🟡 | Claude API kodu hazırdır, amma API büdcəyə daxil deyil — açar yoxdur, aktivləşdirilməyəcək. Əlavə xərcsiz yolda plan istifadəçinin başlatdığı Claude Code sessiyasında hazırlanır (avtomatik/daimi bağlantı deyil) |
 | 7.2 | Səssizlik/doldurucu söz AI kimi təqdim edilmir | ✅ | Açar olmadan “qaydalara əsaslanan təklif” kimi işarələnir |
 | 7.3 | Real kadrlarla şəkilli storyboard: hissələr, açılış, mətn, qrafika/B-roll, musiqi, keçid | ✅ | |
 | 7.4 | Qısa hərəkətli önizləmə | 🟡 | “▶ Önizlə” kartın hissəsini oynadır; avtomatik testlə yoxlanılmayıb |

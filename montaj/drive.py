@@ -6,6 +6,7 @@ Dəstəklənmir (Google OAuth lazımdır): şəxsi fayllar, qovluq linkləri.
 
 from __future__ import annotations
 
+import os
 import re
 from pathlib import Path
 from typing import Callable
@@ -15,7 +16,7 @@ import requests
 
 from montaj.errors import UserError
 
-DOWNLOAD_URL = "https://drive.usercontent.google.com/download"
+DOWNLOAD_URL = os.environ.get("MONTAJ_DRIVE_URL", "https://drive.usercontent.google.com/download")
 _ID = re.compile(r"^[A-Za-z0-9_-]{20,}$")
 
 
@@ -46,10 +47,11 @@ def _filename(resp: requests.Response, fid: str) -> str:
 
 
 def download(link: str, dst_dir: Path, progress: Callable[[float], None] | None = None,
-             session: requests.Session | None = None, base_url: str = DOWNLOAD_URL,
+             session: requests.Session | None = None, base_url: str | None = None,
              max_bytes: int = 8 * 1024**3) -> tuple[Path, str]:
     fid = parse_link(link)["id"]
     s = session or requests.Session()
+    base_url = base_url or DOWNLOAD_URL
     params = {"id": fid, "export": "download", "confirm": "t"}
     try:
         r = s.get(base_url, params=params, stream=True, timeout=60)
