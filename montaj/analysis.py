@@ -27,11 +27,13 @@ def analysis_path(project_dir: Path, mid: str) -> Path:
 
 
 def analyze_media(project_dir: Path, m: dict[str, Any], language: str = "az",
-                  progress=None) -> dict[str, Any]:
+                  progress=None, hotwords: str | None = None) -> dict[str, Any]:
     """Transkript (varsa) + səssizlik. Nəticə diskdə keşlənir."""
     out = analysis_path(project_dir, m["id"])
     key = {"file": m["file"], "size": m.get("size"), "duration": m["duration"],
            "whisper": transcribe.DEFAULT_MODEL, "language": language, "v": 1}
+    if hotwords:
+        key["hotwords"] = hotwords
     if out.is_file():
         cached = json.loads(out.read_text(encoding="utf-8"))
         # mənbə və analiz parametrləri dəyişməyibsə — təkrar transkripsiya yoxdur
@@ -48,7 +50,7 @@ def analyze_media(project_dir: Path, m: dict[str, Any], language: str = "az",
             progress(0.2)
         if transcribe.available()["installed"]:
             try:
-                t = transcribe.transcribe(src, 0.0, float(m["duration"]), language)
+                t = transcribe.transcribe(src, 0.0, float(m["duration"]), language, hotwords)
                 res.update(words=t["words"], transcribed=True, language=t["language"],
                            languageProbability=t["languageProbability"], text=t["text"], model=t["model"])
             except Exception as e:  # noqa: BLE001

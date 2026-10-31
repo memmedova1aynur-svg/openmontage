@@ -5,7 +5,7 @@ yuvarlaqlaşdırılır, bağlı səs həmin başlanğıcı götürür — sürü
 
 Klip parametrləri (hamısı istəyə bağlı, yalnız istifadəçi seçəndə):
   frame  — kadraj (reframe.py), rotate — dərəcə
-  adjust — {mirror, brightness, contrast, saturation, vibrance, depth, temperature, soften, sharpen}
+  adjust — {mirror, brightness, contrast, saturation, vibrance, depth, temperature, soften, sharpen, denoise, shadows}
 Layihə parametrləri:
   aspect, mix {speech, music, sfx, voice, duck}, branding {logo, end}, mirrorAll
 """
@@ -141,9 +141,16 @@ HDR_TO_SDR = ("zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709,tonemap=t
 def color_filters(adj: dict[str, Any]) -> list[str]:
     """Rəng düzəlişi (ölçüdən əvvəl). Render və `session looks` eyni funksiyanı işlədir."""
     f: list[str] = []
+    dn = float(adj.get("denoise") or 0)
+    if dn > 0.01:  # ştativ çəkilişi: güclü zaman (kadrlar arası), yüngül məkan təmizləməsi — detal qorunur
+        f.append(f"hqdn3d=luma_spatial={2.2 * dn:.2f}:chroma_spatial={3.5 * dn:.2f}:luma_tmp={13 * dn:.2f}:chroma_tmp={15 * dn:.2f}")
+    sh = float(adj.get("shadows") or 0)
+    if sh > 0.01:  # qaranlıq hissələri yumşaq açır, işıqlı yerlər yanmır
+        f.append(f"curves=master='0/0 0.12/{0.12 + 0.07 * sh:.4f} 0.35/{0.35 + 0.08 * sh:.4f} 0.7/{0.7 + 0.03 * sh:.4f} 1/1'")
     b, ct, sat = float(adj.get("brightness") or 0), float(adj.get("contrast") or 1), float(adj.get("saturation") or 1)
-    if abs(b) > 1e-3 or abs(ct - 1) > 1e-3 or abs(sat - 1) > 1e-3:
-        f.append(f"eq=brightness={b:.3f}:contrast={ct:.3f}:saturation={sat:.3f}")
+    gm = float(adj.get("gamma") or 1)
+    if abs(b) > 1e-3 or abs(ct - 1) > 1e-3 or abs(sat - 1) > 1e-3 or abs(gm - 1) > 1e-3:
+        f.append(f"eq=brightness={b:.3f}:contrast={ct:.3f}:saturation={sat:.3f}" + (f":gamma={gm:.3f}" if abs(gm - 1) > 1e-3 else ""))
     depth = float(adj.get("depth") or 0)
     if depth > 0.01:  # qaranlıq və işıqlı hissələrə yüngül dərinlik (S-əyri)
         lo, hi = 0.05 - 0.015 * min(depth, 2), 0.95 + 0.015 * min(depth, 2)
@@ -456,6 +463,61 @@ def conversions(project: dict[str, Any]) -> list[str]:
     return out
 
 
+LOUDNESS_TARGET = -14.0   # LUFS (Instagram/Reels üçün geniş yayılmış hədəf); layihədə "loudnessTarget": null — söndürür
+TRUE_PEAK = -1.5
+
+
+def measure_loudness(path: Path, target: float = LOUDNESS_TARGET) -> dict[str, float] | None:
+    """EBU R128 ölçmə (loudnorm birinci keçid). Səs yoxdursa None."""
+    import json as _json
+
+    r = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", str(path), "-vn", "-af",
+                        f"loudnorm=I={target}:TP={TRUE_PEAK}:LRA=11:print_format=json", "-f", "null", "-"],
+                       capture_output=True, text=True)
+    txt = r.stderr
+    i, j = txt.rfind("{"), txt.rfind("}")
+    if r.returncode != 0 or i < 0 or j < i:
+        return None
+    try:
+        d = _json.loads(txt[i:j + 1])
+        return {k: float(d[k]) for k in ("input_i", "input_tp", "input_lra", "input_thresh", "target_offset")}
+    except (KeyError, ValueError):
+        return None
+
+
+def normalize_loudness(src: Path, dst: Path, target: float = LOUDNESS_TARGET) -> dict[str, Any]:
+    """Səsi hədəf səviyyəyə gətirir (xətti düzəliş, ikinci keçid). Video axını KOPYALANIR — təkrar kodlama yoxdur."""
+    m = measure_loudness(src, target)
+    if not m or m["input_i"] < -70:  # səssiz və ya ölçülmədi
+        shutil.copyfile(src, dst)
+        return {"applied": False}
+    af = (f"loudnorm=I={target}:TP={TRUE_PEAK}:LRA=11:measured_I={m['input_i']}:measured_TP={m['input_tp']}:"
+          f"measured_LRA={m['input_lra']}:measured_thresh={m['input_thresh']}:offset={m['target_offset']}:linear=true,"
+          # yumşaq limiter: AAC-dən sonra da pik −1.5 dBTP-dən aşağı qalsın (telefonda təhrif olmasın)
+          f"aresample=192000,alimiter=limit=0.78:attack=3:release=60:level=false,aresample=48000")
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(src), "-map", "0:v:0", "-map", "0:a:0", "-c:v", "copy",
+                    "-af", af, "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-movflags", "+faststart", str(dst)], check=True)
+    return {"applied": True, "before": round(m["input_i"], 1), "target": target}
+
+
+DELIVERY_CAP_MB = 40.0   # telefondan söhbətdən rahat endirilən ölçü
+
+
+def delivery_copy(src: Path, dst: Path, cap_mb: float = DELIVERY_CAP_MB) -> Path | None:
+    """Fayl həddən böyükdürsə, eyni ölçü/kadr tezliyində yüngül H.264 nüsxə (səs kopyalanır). Kiçikdirsə None."""
+    size_mb = src.stat().st_size / 1e6
+    if size_mb <= cap_mb:
+        return None
+    dur = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", str(src)],
+                               capture_output=True, text=True, check=True).stdout.strip())
+    kbps = int(cap_mb * 0.94 * 8000 / max(dur, 1) - 200)  # 6% ehtiyat, səs ~192k
+    kbps = max(1500, min(kbps, 16000))
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(src), "-map", "0:v:0", "-map", "0:a:0?", "-c:v", "libx264",
+                    "-preset", "medium", "-b:v", f"{kbps}k", "-maxrate", f"{int(kbps * 1.25)}k", "-bufsize", f"{kbps * 2}k",
+                    "-profile:v", "high", "-pix_fmt", "yuv420p", "-c:a", "copy", "-movflags", "+faststart", str(dst)], check=True)
+    return dst
+
+
 def render(project: dict[str, Any], media_root: Path, out: Path,
            on_progress: Callable[[float], None] | None = None, logo_path: Path | None = None) -> Path:
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -475,6 +537,11 @@ def render(project: dict[str, Any], media_root: Path, out: Path,
         err = proc.stderr.read() if proc.stderr else ""
         if proc.wait() != 0:
             raise RuntimeError(f"FFmpeg render xətası: {err.strip()[-1200:]}")
+        target = project.get("loudnessTarget", LOUDNESS_TARGET)
+        if target is not None:
+            norm = tmp_out.with_suffix(".norm.mp4")
+            normalize_loudness(tmp_out, norm, float(target))
+            norm.replace(tmp_out)
         tmp_out.replace(out)
         if on_progress:
             on_progress(1.0)

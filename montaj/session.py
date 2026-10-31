@@ -90,6 +90,9 @@ def cmd_new(a: argparse.Namespace) -> None:
         brand = {k: c.get(k) for k in ("id", "name", "field", "colors", "font", "logo", "preferences")}
     options = {"format": a.format or [], "goal": a.goal or [], "style": a.style or [], "extras": a.extras or [],
                "duration": a.duration, "cutMode": a.cut, "aspect": a.aspect, "language": "az", "useAi": False}
+    prof = expert_profile(a.client) if a.client else None
+    if prof and glossary_terms(prof):
+        options["hotwords"] = " ".join(glossary_terms(prof))  # Whisper-ə müştərinin terminləri
     proj = store.load(pid)
     proj = node_tl("migrate", proj)
     from montaj import reframe
@@ -256,6 +259,13 @@ def cmd_render(a: argparse.Namespace) -> None:
           f"{out.stat().st_size / 1e6:.1f} MB")
     for c in conversions(p):
         print("-", c)
+    from montaj.render import delivery_copy, measure_loudness
+    lo = measure_loudness(out)
+    if lo:
+        print(f"- səs: {lo['input_i']:.1f} LUFS, pik {lo['input_tp']:.1f} dBTP")
+    ig = delivery_copy(out, out.with_name(out.stem + "_ig.mp4"))
+    if ig:
+        print(f"telefon/Instagram nüsxəsi: {ig}  {ig.stat().st_size / 1e6:.1f} MB (eyni ölçü və kadr tezliyi)")
 
 
 EDITOR_TEMPLATE = Path(__file__).resolve().parent / "editor" / "editor.html"
@@ -384,6 +394,26 @@ def cmd_apply_edits(a: argparse.Namespace) -> None:
           + ("" if r["sameBase"] else " (redaktor köhnə versiyadan idi — yalnız dəyişməmiş elementlər tətbiq olundu)"))
 
 
+def glossary_terms(prof: dict[str, Any]) -> list[str]:
+    """Profilin söz lüğəti: "glossary": {"terms": [...], "fixes": [{"from", "to"}]} — düzgün yazılışlar."""
+    g = prof.get("glossary") or {}
+    terms = list(g.get("terms") or []) + [f["to"] for f in g.get("fixes") or []]
+    return list(dict.fromkeys(t for t in terms if t))
+
+
+def profile_path(name: str) -> Path | None:
+    import unicodedata
+
+    def norm(x: str) -> str:
+        x = x.lower().translate(str.maketrans("əöüğışç", "eougisc"))
+        return "".join(ch for ch in unicodedata.normalize("NFKD", x) if ch.isalnum())
+    d = Path(__file__).resolve().parent.parent / "templates" / "expert-reels" / "experts"
+    for f in sorted(d.glob("*.json")):
+        if not f.name.startswith("_") and norm(json.loads(f.read_text(encoding="utf-8")).get("name", "")) == norm(name):
+            return f
+    return None
+
+
 def expert_profile(name: str) -> dict[str, Any] | None:
     """templates/expert-reels/experts/ içində YALNIZ adı uyğun gələn profili oxuyur."""
     import unicodedata
@@ -449,9 +479,11 @@ LOOKS: dict[str, dict[str, float]] = {
     "A": {"contrast": 1.03, "saturation": 1.03, "vibrance": 0.04},
     "B": {"brightness": 0.012, "contrast": 0.98, "saturation": 1.04, "vibrance": 0.03, "temperature": 6100},
     "C": {"contrast": 1.04, "saturation": 0.98, "depth": 0.6, "temperature": 6700},
+    "D": {"denoise": 1.0, "shadows": 1.0, "gamma": 1.35, "saturation": 1.05, "vibrance": 0.03},  # zəif işıq (kafe və s.)
 }
-LOOK_LABELS = {"A": "orijinala yaxın, təbii", "B": "yumşaq və isti", "C": "təmiz və neytral"}
-LOOK_KEYS = ("brightness", "contrast", "saturation", "vibrance", "depth", "sharpen", "temperature")
+LOOK_LABELS = {"A": "orijinala yaxın, təbii", "B": "yumşaq və isti", "C": "təmiz və neytral", "D": "zəif işıq: dən azalır, kölgə açılır"}
+LOOK_KEYS = ("brightness", "contrast", "saturation", "vibrance", "depth", "sharpen", "temperature", "denoise", "shadows", "gamma")
+DARK_LUMA = 85  # 8-bit orta parlaqlıq bundan aşağıdırsa — zəif işıq (D variantı təklif olunur)
 DEFAULT_LOOK = "A"
 
 
@@ -485,7 +517,11 @@ def cmd_looks(a: argparse.Namespace) -> None:
         frames = [(m0, float(t)) for t in a.t]
     font = render._font()
     o = out_dir(a.pid)
-    cols = ["orijinal", *LOOKS]
+    from montaj import quality
+    lum = [quality.mean_luma(store.project_dir(a.pid) / m["file"], t) for m, t in frames]
+    lum = [x for x in lum if x is not None]
+    dark = bool(lum) and sum(lum) / len(lum) < DARK_LUMA
+    cols = ["orijinal", *[k for k in LOOKS if k != "D" or dark or a.all]]
     tiles: list[Path] = []
     for r, (m, t) in enumerate(frames):
         src = store.project_dir(a.pid) / m["file"]
@@ -512,6 +548,8 @@ def cmd_looks(a: argparse.Namespace) -> None:
     for x in tiles:
         x.unlink()
     print("kadrlar:", ", ".join(f"{m.get('name')} {t:.1f} s" for m, t in frames))
+    if lum:
+        print(f"orta parlaqlıq: {sum(lum) / len(lum):.0f}/255" + (" — zəif işıq: D variantı təklif olunur" if dark else ""))
     print(sheet)
 
 
@@ -723,8 +761,12 @@ def apply_plan(pid: str, p: dict[str, Any], plan: dict[str, Any], plan_name: str
         q = node_tl("setSubtitleStyle", q, plan["captions"].get("style") or {})
         q["subtitles"]["enabled"] = plan["captions"].get("enabled", True)
         q["clips"] = [c for c in q["clips"] if not (c["track"] == "t1" and c.get("origin") == "ai")] if plan.get("dropStoryboardText") else q["clips"]
-    for c in plan.get("corrections") or []:
-        q = node_tl("replaceEverywhere", q, c["from"], c["to"])["project"]
+    br = q.get("brand") or {}
+    prof = expert_profile(br["name"]) if br.get("name") else None
+    fixes = ((prof or {}).get("glossary") or {}).get("fixes") or []
+    for c in [*fixes, *(plan.get("corrections") or [])]:  # müştəri lüğəti + plan düzəlişləri
+        if q.get("subtitles"):
+            q = node_tl("replaceEverywhere", q, c["from"], c["to"])["project"]
     for z in plan.get("zooms") or []:  # punch-in: klip zaman xəttində bölünür, ortadakı hissə yaxınlaşdırılır
         for t in (z["to"], z["from"]):
             seg = next((c for c in node_tl("videoClips", q)
@@ -1061,12 +1103,126 @@ def cmd_words(a: argparse.Namespace) -> None:
         print(f"{_tc(w['t'])}  “{w['word']}”  ({w['context']})")
 
 
+KEEP_SOURCES = ("generated", "synth", "music", "artifact-asset")  # kiçik/yenidən yaradıla bilməyən media paketə düşür
+
+
+def cmd_save(a: argparse.Namespace) -> None:
+    """Layihə paketi (orijinal videolar OLMADAN): montaj qərarları, analiz, tarixçə, qaralama, Claude-un B-rollu,
+    musiqi, yoxlama hesabatları. Orijinal Drive linkindən bərpa olunur. Şəxsi saxlama üçündür — public repoya qoyma."""
+    import tarfile
+
+    pdir = store.project_dir(a.pid)
+    p = store.load(a.pid)
+    keep_media = {m["file"] for m in p["media"] if (m.get("source") or {}).get("type") in KEEP_SOURCES}
+    dst = Path(a.out) if a.out else out_dir(a.pid) / f"{a.pid}_layihe.tar.gz"
+    with tarfile.open(dst, "w:gz") as tar:
+        for f in sorted(pdir.rglob("*")):
+            rel = f.relative_to(pdir).as_posix()
+            if f.is_dir() or rel.startswith("media/derived/") or (rel.startswith("media/originals/") and rel not in keep_media):
+                continue
+            tar.add(f, arcname=f"{a.pid}/{rel}")
+        for f in sorted(out_dir(a.pid).glob("*.json")) + sorted(out_dir(a.pid).glob("*.md")):
+            tar.add(f, arcname=f"{a.pid}/_out/{f.name}")
+    missing = [m for m in p["media"] if m["file"] not in keep_media]
+    print(dst, f"{dst.stat().st_size / 1e6:.1f} MB")
+    for m in missing:
+        src = m.get("source") or {}
+        how = f"Drive {src['id']}" if src.get("type") == "drive" else "fayl yenidən verilməlidir"
+        print(f"- paketdə deyil: {m['name']} ({how})")
+
+
+def cmd_restore(a: argparse.Namespace) -> None:
+    """Paketdən bərpa: layihə fayllarını qaytarır, orijinal videoları Drive-dan yenidən endirir (və ya --file mid=yol)."""
+    import tarfile
+
+    files = dict(x.split("=", 1) for x in (a.file or []))
+    with tarfile.open(a.pack) as tar:
+        names = tar.getnames()
+        pid = names[0].split("/")[0]
+        for mem in tar.getmembers():
+            if mem.name.startswith("/") or ".." in Path(mem.name).parts or not mem.name.startswith(pid + "/"):
+                raise UserError("Paket etibarsızdır.", "Yalnız `session save` ilə hazırlanmış paket işlədin.")
+        if store.project_dir(pid).exists() and not a.force:
+            raise UserError(f"Layihə artıq var: {pid}", "Üzərinə yazmaq üçün --force.")
+        dest = store.project_dir(pid).parent
+        for mem in tar.getmembers():
+            rel = mem.name.split("/", 1)[1] if "/" in mem.name else ""
+            if rel.startswith("_out/"):
+                target = out_dir(pid) / rel[5:]
+            else:
+                target = dest / mem.name
+            if mem.isfile():
+                target.parent.mkdir(parents=True, exist_ok=True)
+                with tar.extractfile(mem) as fsrc:
+                    target.write_bytes(fsrc.read())
+    p = store.load(pid)
+    for m in p["media"]:
+        f = store.project_dir(pid) / m["file"]
+        if f.is_file():
+            continue
+        src = m.get("source") or {}
+        f.parent.mkdir(parents=True, exist_ok=True)
+        if m["id"] in files:
+            shutil.copyfile(files[m["id"]], f)
+        elif src.get("type") == "drive" and src.get("id"):
+            tmp, _name = drive.download(f"https://drive.google.com/file/d/{src['id']}/view", store.originals_dir(pid), lambda x: None)
+            tmp.replace(f)
+        else:
+            print(f"! çatışmır: {m['name']} — `restore ... --file {m['id']}=<yol>` ilə verin")
+            continue
+        if m.get("size") and f.stat().st_size != m["size"]:
+            print(f"! {m['name']}: ölçü fərqlidir ({f.stat().st_size} ≠ {m['size']}) — başqa fayl ola bilər, yoxlayın")
+        print(f"bərpa: {m['name']}")
+    print(f"layihə: {pid}, versiya {p['revision']}")
+
+
+def cmd_retakes(a: argparse.Namespace) -> None:
+    """Təkrar və yarımçıq cümlələr: hər biri üçün hazır `cut` təklifi (sonrakı, tam cəhd saxlanılır)."""
+    from montaj import quality
+
+    p = store.load(a.pid)
+    corr = ((p.get("subtitles") or {}).get("corrections") or [])
+    found = 0
+    for mid, an in _analyses(a.pid, p).items():
+        words = [dict(w) for w in an.get("words") or []]
+        for w in words:
+            for c in corr:
+                if transcribe_norm(w["w"]) == transcribe_norm(c["from"]):
+                    w["w"] = c["to"]
+        for r in quality.find_retakes(words):
+            found += 1
+            d, k = r["drop"], r["keep"]
+            print(f"{'yarımçıq' if r['kind'] == 'restart' else 'təkrar'} ({r['ratio']}): {d['s']:.2f}–{d['e']:.2f} “{d['text'][:70]}”")
+            print(f"   saxlanılan: {k['s']:.2f}–{k['e']:.2f} “{k['text'][:70]}”")
+            print(f"   təklif: cut {a.pid} {mid}:{d['s']:.2f}-{d['e'] - 0.02:.2f}")
+    if not found:
+        print("təkrar/yarımçıq cümlə tapılmadı")
+
+
+def transcribe_norm(w: str) -> str:
+    from montaj import transcribe
+    return transcribe.norm_word(w)
+
+
 def cmd_fix_word(a: argparse.Namespace) -> None:
     """Sözü layihənin hər yerində düzəldir və yadda saxlayır (təkrar analiz/render onu geri qaytarmır)."""
     p = store.load(a.pid)
     r = node_tl("replaceEverywhere", node_tl("migrate", p), a.wrong, a.right)
     saved = store.save(a.pid, r["project"], p["revision"])
     print(f"“{a.wrong}” → “{a.right}”: {r.get('count', '?')} yer; versiya {saved['revision']}")
+    if a.remember:
+        name = (p.get("brand") or {}).get("name")
+        f = profile_path(name) if name else None
+        if not f:
+            raise UserError("Müştəri profili tapılmadı — söz yalnız bu layihədə düzəldi.", "set-client ilə müştərini təyin edin.")
+        prof = json.loads(f.read_text(encoding="utf-8"))
+        g = prof.setdefault("glossary", {"terms": [], "fixes": []})
+        g.setdefault("fixes", [])
+        g["fixes"] = [x for x in g["fixes"] if x["from"].lower() != a.wrong.lower()] + [{"from": a.wrong, "to": a.right}]
+        f.write_text(json.dumps(prof, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        root = Path(__file__).resolve().parent.parent
+        shown = f.relative_to(root) if f.resolve().is_relative_to(root) else f
+        print(f"müştəri lüğətinə yazıldı: {shown} (növbəti videolarda avtomatik)")
 
 
 def cmd_variants(a: argparse.Namespace) -> None:
@@ -1202,6 +1358,7 @@ def main(argv: list[str] | None = None) -> int:
     lk.add_argument("pid")
     lk.add_argument("--frames", type=int, default=3)
     lk.add_argument("--t", type=float, action="append", help="mənbə videoda kadrın saniyəsi (təkrarlana bilər)")
+    lk.add_argument("--all", action="store_true", help="D (zəif işıq) variantını həmişə göstər")
     sub.add_parser("scenes", help="Claude-un B-roll səhnələri (kataloq)")
     mb = sub.add_parser("make-broll", help="səhnəni render edib B-roll kimi əlavə et")
     mb.add_argument("pid")
@@ -1226,6 +1383,15 @@ def main(argv: list[str] | None = None) -> int:
     vf.add_argument("pid")
     vf.add_argument("--mp4")
     vf.add_argument("--no-asr", action="store_true")
+    sv = sub.add_parser("save", help="layihə paketi (orijinal videolar olmadan)")
+    sv.add_argument("pid")
+    sv.add_argument("--out")
+    rs = sub.add_parser("restore", help="paketdən bərpa (orijinal Drive-dan)")
+    rs.add_argument("pack")
+    rs.add_argument("--file", action="append", help="mid=yol (Drive mənbəyi olmayan media üçün)")
+    rs.add_argument("--force", action="store_true")
+    rt = sub.add_parser("retakes", help="təkrar/yarımçıq cümlələr və cut təklifi")
+    rt.add_argument("pid")
     wd = sub.add_parser("words", help="şübhəli tanınmış sözlər")
     wd.add_argument("pid")
     wd.add_argument("--threshold", type=float, default=0.6)
@@ -1233,6 +1399,7 @@ def main(argv: list[str] | None = None) -> int:
     fw.add_argument("pid")
     fw.add_argument("wrong")
     fw.add_argument("right")
+    fw.add_argument("--remember", action="store_true", help="müştərinin profil lüğətinə də yaz (növbəti videolar üçün)")
     vr = sub.add_parser("variants", help="2–3 storyboard variantının önizləməsi (layihə dəyişmir)")
     vr.add_argument("pid")
     vr.add_argument("plans", nargs="+")
@@ -1270,7 +1437,7 @@ def main(argv: list[str] | None = None) -> int:
         {"new": cmd_new, "storyboard": cmd_storyboard, "edit": cmd_edit, "apply": cmd_apply,
          "render": cmd_render, "export": cmd_export, "editor": cmd_editor,
          "apply-edits": cmd_apply_edits, "set-client": cmd_set_client, "plan": cmd_plan, "looks": cmd_looks,
-         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "fix-word": cmd_fix_word,
+         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "fix-word": cmd_fix_word,
          "variants": cmd_variants, "choose": cmd_choose, "music-preview": cmd_music_preview}[a.cmd](a)
     except UserError as err:
         print(f"XƏTA: {err.message}\nNƏ ETMƏLİ: {err.hint}", file=sys.stderr)
