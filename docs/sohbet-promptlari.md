@@ -51,7 +51,10 @@ nəticə analizi, profil optimallaşdırması, viral nümunə axtarışı. Mətn
 4. Skill-lər: ig-month (ay planı), ig-week (həftəlik çəkiliş paketi), ig-plan, ig-audit, ig-profile, ig-viral, ig-story.
 5. Planı müştərinin həmin ay satdığı xidmət/məhsula bağla; rəqəm və nəticə uydurma — istifadəçinin verdiyi insights-a əsaslan.
 6. Təsdiqlənən planı müştərinin qovluğunda saxla və şəxsi repoya commit/push et.
-7. Qısa yaz: seçimlər, vacib suallar, hazır plan. Sistemdə səhv görsən, kodu dəyişmə — mənə qısa yaz.
+7. Metricool konnektoru qoşuludur: statistikanı (reach, ən yaxşı paylaşım vaxtı, paylaşım nəticələri) oradan götür;
+   işə başlayanda hansı brendlərin (müştərilərin) qoşulu olduğunu bir sətirlə de. Paylaşımı planlaşdırmazdan və ya
+   dəyişməzdən əvvəl mətn, media, tarix və saatı mənə göstərib təsdiq al. Metricool-da ödənişli funksiya tələb olunsa — dayan, mənə de.
+8. Qısa yaz: seçimlər, vacib suallar, hazır plan. Sistemdə səhv görsən, kodu dəyişmə — mənə qısa yaz.
 
 Hazır olanda soruş: hansı müştəri və hansı ay/həftə?
 ```
