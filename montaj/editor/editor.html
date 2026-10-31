@@ -31,9 +31,10 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .stage { display: grid; justify-items: center; }
 .frame { position: relative; overflow: hidden; background: #000; border-radius: 8px; max-width: 100%; touch-action: none; }
 .frame video { position: absolute; max-width: none; }
-.txt { position: absolute; transform: translate(-50%, -50%); max-width: 92%; text-align: center; color: #fff; font-weight: 700; line-height: 1.2;
-  background: rgba(0,0,0,.55); padding: .15em .45em; border-radius: 4px; white-space: pre-wrap; touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; }
+.txt { position: absolute; transform: translate(-50%, -50%); text-align: center; color: #fff; font-weight: 700; line-height: 1.2;
+  background: rgba(0,0,0,.55); padding: .25em; white-space: pre; font-family: "DejaVu Sans", var(--font); touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; }
 .txt.sel { outline: 2px dashed #ffd54f; outline-offset: 3px; }
+.txt.over { outline: 2px solid #ef4444; }
 .txt.dragging { cursor: grabbing; opacity: .9; }
 .pick { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 16px; color: #e9ebef; background: rgba(0,0,0,.72); }
 .pick label { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 18px; border-radius: 10px; background: var(--accent); color: var(--accent-fg); font-weight: 600; }
@@ -41,11 +42,18 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .tc { font: 13px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
 .spacer { flex: 1; }
 .tl { position: relative; overflow-x: auto; overflow-y: hidden; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; touch-action: pan-x; }
-.tl-inner { position: relative; height: 128px; }
+.tl-inner { position: relative; height: 176px; }
 .lane { position: absolute; left: 0; right: 0; }
 .lane.v { top: 22px; height: 52px; }
 .lane.t { top: 82px; height: 18px; }
 .lane.s { top: 104px; height: 16px; }
+.lane.m { top: 126px; height: 20px; }
+.lane.x { top: 150px; height: 18px; }
+.aclip { position: absolute; top: 0; bottom: 0; border-radius: 4px; background: #2f9e6f; color: #fff; font-size: 11px; overflow: visible; touch-action: none; }
+.aclip.sfx { background: #d9822b; }
+.aclip.sel { box-shadow: 0 0 0 2px var(--accent); z-index: 2; }
+.aclip .lbl { position: absolute; left: 6px; top: 2px; pointer-events: none; white-space: nowrap; }
+.lanelbl { position: absolute; left: 4px; font-size: 10px; color: var(--muted); pointer-events: none; }
 .ruler { position: absolute; top: 0; left: 0; right: 0; height: 18px; font: 10px var(--mono); color: var(--muted); }
 .ruler span { position: absolute; top: 2px; border-left: 1px solid var(--line); padding-left: 3px; }
 .clip { position: absolute; top: 0; bottom: 0; background: var(--clip); border-radius: 6px; color: #fff; font-size: 12px; overflow: visible; }
@@ -56,6 +64,18 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .h::after { content: ""; width: 8px; height: 60%; border-radius: 4px; background: #fff; box-shadow: 0 0 0 2px var(--accent); }
 .h.in { left: -15px; } .h.out { right: -15px; }
 .tclip { position: absolute; top: 0; bottom: 0; border-radius: 4px; background: var(--text-clip); opacity: .9; }
+.tclip.sel { outline: 2px solid var(--accent); opacity: 1; }
+.sw { width: 34px; height: 34px; min-height: 34px; padding: 0; border-radius: 8px; border: 2px solid var(--line); }
+.sw.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+select, input[type=range] { font: inherit; min-height: 40px; }
+select { background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; padding: 0 8px; }
+input[type=range] { flex: 1; min-width: 120px; }
+.ta { width: 100%; min-height: 64px; font: 15px var(--font); background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; padding: 8px; }
+.seg { display: flex; gap: 6px; flex-wrap: wrap; }
+.seg button.on { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+.btnlike { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); cursor: pointer; }
+.tabs { display: flex; gap: 6px; overflow-x: auto; }
+.tabs button.on { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
 .tclip.sub { background: var(--sub-clip); opacity: .7; }
 .tclip.hid { opacity: .25; }
 .ph { position: absolute; top: 0; bottom: 0; width: 2px; background: #ef4444; pointer-events: none; z-index: 4; }
@@ -107,6 +127,8 @@ textarea { width: 100%; min-height: 90px; font: 12px var(--mono); background: va
     <div class="lane v" id="laneV"></div>
     <div class="lane t" id="laneT"></div>
     <div class="lane s" id="laneS"></div>
+    <div class="lane m" id="laneM"></div>
+    <div class="lane x" id="laneX"></div>
     <div class="ph" id="ph"></div>
   </div></div>
 
@@ -136,6 +158,12 @@ textarea { width: 100%; min-height: 90px; font: 12px var(--mono); background: va
   const el = (tag, attrs = {}, ...kids) => { const n = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) { if (k === 'class') n.className = v; else if (k.startsWith('on')) n.addEventListener(k.slice(2), v); else if (v != null && v !== false) n.setAttribute(k, v === true ? '' : v); } for (const k of kids.flat()) if (k != null && k !== false) n.append(k.nodeType ? k : String(k)); return n; };
 
   $('#title').textContent = BASE.title || 'Montaj';
+  // şriftlər (render ilə eyni fayllar)
+  const fcss = (DATA.fonts || []).filter((f) => f.url).map((f) => `@font-face{font-family:"${f.family}";font-weight:${f.weight};font-display:swap;src:url("${f.url}") format("woff2");unicode-range:${f.range}}`).join('\n');
+  if (fcss) document.head.append(el('style', {}, fcss));
+  const FONTS = ['Montserrat', 'Caveat', 'DejaVu Sans'];
+  const BRAND = (DATA.brandColors || []);
+  const SWATCH = [...new Set(['#FFFFFF', '#000000', ...BRAND, '#F2C94C', '#E53935'])];
 
   // --- yerli qaralama (bu brauzerdə) ---
   try {
@@ -191,14 +219,27 @@ textarea { width: 100%; min-height: 90px; font: 12px var(--mono); background: va
     const m = MEDIA[clip.media] || {}; const fr = $('#frame');
     const bw = fr.clientWidth, bh = fr.clientHeight, sw = m.width || 16, sh = m.height || 9; const f = clip.frame || {};
     let w, h, l, t;
-    if ((f.mode === 'auto' || f.mode === 'manual') && f.keys) {
+    if (!S.orig && (f.mode === 'auto' || f.mode === 'manual') && f.keys) {
       const cw = (f.baseW || 1) * (f.s || 1), ch = (f.baseH || 1) * (f.s || 1); let { cx, cy } = lerpKeys(f.keys, srcT);
       cx = Math.max(cw / 2, Math.min(1 - cw / 2, cx)); cy = Math.max(ch / 2, Math.min(1 - ch / 2, cy));
       const k = bw / (cw * sw); w = sw * k; h = sh * k; l = -(cx - cw / 2) * sw * k; t = -(cy - ch / 2) * sh * k;
     } else { const k = Math.min(bw / sw, bh / sh); w = sw * k; h = sh * k; l = (bw - w) / 2; t = (bh - h) / 2; }
     Object.assign(vid.style, { width: `${w}px`, height: `${h}px`, left: `${l}px`, top: `${t}px` });
-    const mir = Boolean((clip.adjust || {}).mirror) !== Boolean(P().mirrorAll);
-    vid.style.transform = mir ? 'scaleX(-1)' : '';
+    const adj = clip.adjust || {};
+    const mir = Boolean(adj.mirror) !== Boolean(P().mirrorAll);
+    vid.style.transform = S.orig ? '' : (mir ? 'scaleX(-1)' : '');
+    vid.style.filter = S.orig ? '' : cssFilter(adj);
+  }
+
+  function cssFilter(adj) {
+    const f = []; const b = Number(adj.brightness || 0), c = Number(adj.contrast ?? 1), sa = Number(adj.saturation ?? 1), t = Number(adj.temperature || 6500);
+    if (b) f.push(`brightness(${(1 + b * 1.6).toFixed(3)})`);
+    if (c !== 1) f.push(`contrast(${c})`);
+    if (sa !== 1) f.push(`saturate(${sa})`);
+    if (t < 6450) f.push(`sepia(${Math.min(0.6, (6500 - t) / 6500 * 1.2).toFixed(3)})`);
+    else if (t > 6550) f.push(`hue-rotate(${(-(t - 6500) / 6500 * 25).toFixed(1)}deg)`);
+    if (adj.soften) f.push(`blur(${(0.8 * adj.soften).toFixed(2)}px)`);
+    return f.join(' ');
   }
 
   // --- oynatma ---
@@ -218,7 +259,26 @@ textarea { width: 100%; min-height: 90px; font: 12px var(--mono); background: va
         if (S.playing && vid.paused) vid.play().catch(() => {});
       }
     } else { curClip = null; vid.style.opacity = 0; if (!vid.paused) vid.pause(); }
+    syncAudio(a);
     drawTexts(a.text);
+  }
+  const auds = new Map();
+  function syncAudio(a) {
+    const p = P(); const mx = { ...TL.DEFAULT_MIX, ...(p.mix || {}) }; const want = new Set();
+    const speech = a.audio.some((x) => TL.trackKind(p, x.clip) === 'speech');
+    if (curClip) { const pa = TL.partnerOf(p, curClip); vid.muted = !(pa && pa.linkedTo === curClip.id); vid.volume = pa ? Math.min(1, (pa.volume ?? 1) * mx.speech) : 0; }
+    for (const x of a.audio) {
+      if (x.clip.linkedTo) continue;
+      const url = urlFor(x.clip.media); if (!url) continue;
+      want.add(x.clip.id);
+      let au = auds.get(x.clip.id); if (!au) { au = new Audio(); au.preload = 'auto'; auds.set(x.clip.id, au); }
+      if (au.dataset.src !== url) { au.dataset.src = url; au.src = url; }
+      const k = TL.trackKind(p, x.clip);
+      au.volume = Math.min(1, (x.clip.volume ?? 1) * (k === 'music' ? mx.music : k === 'sfx' ? mx.sfx : mx.speech) * (k === 'music' && mx.duck && speech ? 0.3 : 1));
+      if (Math.abs(au.currentTime - x.local) > (S.playing ? 0.2 : 0.02)) { try { au.currentTime = x.local; } catch { /* */ } }
+      if (S.playing && au.paused) au.play().catch(() => {}); if (!S.playing && !au.paused) au.pause();
+    }
+    for (const [id, au] of auds) if (!want.has(id)) au.pause();
   }
   function tick() {
     if (!S.playing) return;
@@ -230,11 +290,11 @@ textarea { width: 100%; min-height: 90px; font: 12px var(--mono); background: va
       wall = performance.now(); t0 = S.t;
     } else { S.t = t0 + (performance.now() - wall) / 1000; const a = TL.activeAt(p, S.t); if (!a.video || !curClip || a.video.clip.id !== curClip.id) sync(true); }
     if (S.t >= total) { S.t = total; pause(); }
-    drawTexts(TL.activeAt(p, S.t).text); drawPlayhead();
+    const act = TL.activeAt(p, S.t); drawTexts(act.text); if ((tick.n = (tick.n || 0) + 1) % 15 === 0) syncAudio(act); drawPlayhead();
     raf = requestAnimationFrame(tick);
   }
   function play() { const total = TL.duration(P()); if (S.t >= total - 0.05) S.t = 0; S.playing = true; wall = performance.now(); t0 = S.t; $('#play').textContent = '❚❚'; sync(true); cancelAnimationFrame(raf); raf = requestAnimationFrame(tick); }
-  function pause() { S.playing = false; $('#play').textContent = '▶'; cancelAnimationFrame(raf); vid.pause(); }
+  function pause() { S.playing = false; $('#play').textContent = '▶'; cancelAnimationFrame(raf); vid.pause(); for (const au of auds.values()) au.pause(); }
   function seek(t) { S.t = Math.max(0, Math.min(TL.duration(P()), t)); wall = performance.now(); t0 = S.t; drawPlayhead(); sync(true); }
   $('#play').onclick = () => (S.playing ? pause() : play());
 
@@ -252,8 +312,7 @@ textarea { width: 100%; min-height: 90px; font: 12px var(--mono); background: va
       const c0 = defaultCenter(clip, fr);
       const n = el('div', { class: 'txt' + (S.selText === clip.id ? ' sel' : ''), 'data-id': clip.id, role: 'button', 'aria-label': `Yazı: ${clip.text}` }, clip.text || '');
       n.style.left = `${c0.x * 100}%`; n.style.top = `${c0.y * 100}%`; n.style.fontSize = `${Math.max(9, fh * (clip.size || 0.06))}px`;
-      if (clip.color) n.style.color = clip.color;
-      if (clip.bg) n.style.background = clip.bg.split('@')[0];
+      styleText(n, clip, fh);
       n.addEventListener('pointerdown', (e) => startTextDrag(e, clip.id, n));
       return n;
     }));
@@ -264,10 +323,37 @@ textarea { width: 100%; min-height: 90px; font: 12px var(--mono); background: va
     const fr = $('#frame'); const W = fr.clientWidth, H = fr.clientHeight;
     for (const n of document.querySelectorAll('#texts .txt')) {
       const w = n.offsetWidth, h = n.offsetHeight;
-      const cx = parseFloat(n.style.left) / 100 * W, cy = parseFloat(n.style.top) / 100 * H;
+      const clip = TL.clipById(P(), n.dataset.id) || {};
+      let cy = parseFloat(n.style.top) / 100 * H;
+      if (clip.x == null) {
+        // render formulu: yuxarı — yazının üstü 0.08h; aşağı — yazının altı 0.88h; çərçivə ölçüsün 1/4-i qədər
+        const pad = H * (clip.size || 0.06) / 4;
+        const pos = clip.position || 'bottom';
+        if (pos === 'top') cy = 0.08 * H - pad + h / 2;
+        else if (pos === 'bottom') cy = 0.88 * H + pad - h / 2;
+        else cy = H / 2;
+      }
+      const cx = parseFloat(n.style.left) / 100 * W;
+      n.classList.toggle('over', w > W);
+      n.title = w > W ? 'Yazı kadra sığmır — Enter ilə sətrə bölün və ya ölçünü kiçildin' : '';
       n.style.left = `${Math.max(w / 2, Math.min(W - w / 2, cx))}px`;
       n.style.top = `${Math.max(h / 2, Math.min(H - h / 2, cy))}px`;
     }
+  }
+  function bgCss(bg) {
+    if (!bg) return 'rgba(0,0,0,.55)';
+    if (bg === 'none') return 'transparent';
+    const [hex, a] = bg.split('@'); const al = a == null ? 1 : Number(a);
+    const h = hex.replace('#', ''); const r = parseInt(h.slice(0, 2), 16), g = parseInt(h.slice(2, 4), 16), b = parseInt(h.slice(4, 6), 16);
+    return `rgba(${r},${g},${b},${al})`;
+  }
+  function styleText(n, clip, fh) {
+    n.style.fontSize = `${Math.max(9, fh * (clip.size || 0.06))}px`;
+    n.style.color = clip.color || '#fff';
+    n.style.background = bgCss(clip.bg);
+    n.style.textShadow = clip.bg === 'none' ? '2px 2px 0 rgba(0,0,0,.7)' : 'none';
+    if (clip.font) n.style.fontFamily = `"${clip.font}", "DejaVu Sans", sans-serif`;
+    n.style.fontWeight = clip.weight || (clip.font ? 700 : 700);
   }
   function startTextDrag(e, id, n) {
     e.preventDefault(); pause();
@@ -317,9 +403,18 @@ textarea { width: 100%; min-height: 90px; font: 12px var(--mono); background: va
       return nodes;
     }));
     const tx = (track, cls) => p.clips.filter((c) => c.track === track).map((c) => {
-      const l = lay.get(c.id); const n = el('div', { class: `tclip ${cls}${c.hidden ? ' hid' : ''}`, title: c.text || '' });
+      const l = lay.get(c.id); const n = el('div', { class: `tclip ${cls}${c.hidden ? ' hid' : ''}${S.selText === c.id ? ' sel' : ''}`, title: c.text || '', 'data-tid': c.id });
       n.style.left = `${l.start * S.pps}px`; n.style.width = `${Math.max(3, (l.end - l.start) * S.pps)}px`; return n;
     });
+    const ax = (track, cls) => p.clips.filter((c) => c.track === track).map((c) => {
+      const l = lay.get(c.id); const m = MEDIA[c.media] || {};
+      const n = el('div', { class: `aclip ${cls}${S.selAudio === c.id ? ' sel' : ''}`, 'data-aid': c.id }, el('span', { class: 'lbl' }, m.name || ''));
+      n.style.left = `${l.start * S.pps}px`; n.style.width = `${Math.max(6, (l.end - l.start) * S.pps)}px`;
+      if (S.selAudio === c.id) n.append(el('div', { class: 'h in', 'data-edge': 'in' }), el('div', { class: 'h out', 'data-edge': 'out' }));
+      return n;
+    });
+    $('#laneM').replaceChildren(...(p.clips.some((c) => c.track === 'm1') ? ax('m1', '') : [el('span', { class: 'lanelbl' }, 'Musiqi')]));
+    $('#laneX').replaceChildren(...(p.clips.some((c) => c.track === 's1') ? ax('s1', 'sfx') : [el('span', { class: 'lanelbl' }, 'Səs effekti')]));
     $('#laneT').replaceChildren(...tx('t1', ''));
     $('#laneS').replaceChildren(...tx('c1', 'sub'));
     drawPlayhead();
@@ -331,9 +426,16 @@ textarea { width: 100%; min-height: 90px; font: 12px var(--mono); background: va
   tl.addEventListener('pointerdown', (e) => {
     const h = e.target.closest('.h'); const clipN = e.target.closest('.clip');
     const r = $('#tli').getBoundingClientRect(); const tAt = (x) => (x - r.left) / S.pps;
-    if (h) { startTrim(e, h.parentElement.dataset.id, h.dataset.edge); return; }
-    if (clipN) { pause(); S.sel = clipN.dataset.id; S.selText = null; seek(tAt(e.clientX)); renderTimeline(); renderSel(); return; }
-    if (e.target.closest('.ruler') || e.target === $('#tli') || e.target.closest('.lane')) { pause(); seek(tAt(e.clientX)); }
+    if (h) { startTrim(e, h.parentElement.dataset.id || h.parentElement.dataset.aid, h.dataset.edge); return; }
+    const an = e.target.closest('.aclip');
+    if (an) { pause(); const id = an.dataset.aid; if (S.selAudio === id) { startMove(e, id); return; } S.selAudio = id; S.sel = null; S.selText = null; renderTimeline(); renderSel(); return; }
+    const tn = e.target.closest('.tclip');
+    if (tn) { pause(); S.selText = tn.dataset.tid; S.sel = null; S.selAudio = null; const l = TL.layout(P()).get(S.selText); seek(l.start + 0.01); renderTimeline(); renderSel(); return; }
+    if (clipN) { pause(); S.sel = clipN.dataset.id; S.selText = null; S.selAudio = null; seek(tAt(e.clientX)); renderTimeline(); renderSel(); return; }
+    if (e.target.closest('.ruler') || e.target === $('#tli') || e.target.closest('.lane')) {
+      pause(); seek(tAt(e.clientX));
+      if (!e.target.closest('.ruler')) { S.sel = null; S.selText = null; S.selAudio = null; renderTimeline(); renderSel(); }
+    }
   });
   function startTrim(e, id, edge) {
     e.preventDefault(); e.stopPropagation(); pause();
@@ -358,22 +460,116 @@ textarea { width: 100%; min-height: 90px; font: 12px var(--mono); background: va
     window.addEventListener('pointermove', move); window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
   }
 
+  function startMove(e, id) {
+    e.preventDefault();
+    const base = S.hist.present; const c = TL.clipById(base, id); const x0 = e.clientX; const pid = e.pointerId; let moved = false;
+    const move = (ev) => { if (ev.pointerId !== pid) return; const dt = (ev.clientX - x0) / S.pps; if (!moved && Math.abs(ev.clientX - x0) < 4) return; moved = true;
+      try { S.draft = TL.moveFree(base, id, (c.start || 0) + dt); renderTimeline(); } catch { /* */ } };
+    const up = (ev) => { if (ev.pointerId !== pid) return; window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); window.removeEventListener('pointercancel', up);
+      const next = S.draft; S.draft = null; if (moved && next) commit(next, 'Səs klipinin yeri dəyişdi'); else renderTimeline(); };
+    window.addEventListener('pointermove', move); window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
+  }
+
+  // --- səs: yükləmə, səviyyələr ---
+  let assetsApi = null;
+  async function addAudioFile(file, track) {
+    const probe = new Audio(); const url = URL.createObjectURL(file); probe.src = url;
+    const dur = await new Promise((r) => { probe.onloadedmetadata = () => r(probe.duration); probe.onerror = () => r(0); });
+    if (!(dur > 0)) { flash('Bu səs faylı oxunmadı', true); return; }
+    if (!assetsApi) { flash('Səs faylını yükləmək üçün səhifəni claude.ai-da öz hesabınızla açın', true); return; }
+    flash('Fayl yüklənir…');
+    try {
+      const up = await assetsApi.upload(file);
+      const mid = `as_${up.id}`;
+      MEDIA[mid] = { url: up.url, name: file.name, duration: dur, hasAudio: true };
+      S.blobs[mid] = url;
+      const media = { id: mid, asset: up.id, name: file.name, duration: Math.round(dur * 1000) / 1000, hasAudio: true, hasVideo: false };
+      const before = new Set(S.hist.present.clips.map((x) => x.id));
+      const q = TL.addMedia(S.hist.present, media, { targetTrack: track, at: track === 'm1' ? 0 : S.t });
+      S.selAudio = q.clips.find((x) => !before.has(x.id)).id; S.sel = null; S.selText = null;
+      commit(q, track === 'm1' ? 'Musiqi əlavə olundu' : 'Səs effekti əlavə olundu');
+    } catch (err) { flash(`Yüklənmədi: ${err && err.message ? err.message : 'xəta'}`, true); }
+  }
+  function mixPanel(p) {
+    const mx = { ...TL.DEFAULT_MIX, ...(p.mix || {}) };
+    const sl = (k, label) => { const i = el('input', { type: 'range', min: 0, max: 2, step: 0.05, value: mx[k], 'aria-label': label });
+      i.onchange = () => commit(TL.patchProject(S.hist.present, 'mix', { [k]: Number(i.value) }), `${label}: ${Math.round(i.value * 100)}%`);
+      return el('div', { class: 'row' }, el('span', { class: 'k' }, label), i, el('span', { class: 'nums' }, `${Math.round(mx[k] * 100)}%`)); };
+    const duck = el('input', { type: 'checkbox', checked: !!mx.duck, id: 'duck' });
+    duck.onchange = () => commit(TL.patchProject(S.hist.present, 'mix', { duck: duck.checked }), duck.checked ? 'Danışıqda musiqi azalır' : 'Musiqi azalması söndü');
+    const fm = el('input', { type: 'file', accept: 'audio/*', hidden: true, id: 'addMusic' }); fm.onchange = () => { const f = fm.files[0]; fm.value = ''; if (f) addAudioFile(f, 'm1'); };
+    const fx = el('input', { type: 'file', accept: 'audio/*', hidden: true, id: 'addSfx' }); fx.onchange = () => { const f = fx.files[0]; fx.value = ''; if (f) addAudioFile(f, 's1'); };
+    return [el('h2', {}, 'Səs'), sl('speech', 'Danışıq'), sl('music', 'Musiqi'), sl('sfx', 'Səs effekti'),
+      el('div', { class: 'row' }, duck, el('label', { for: 'duck' }, 'Danışıq zamanı musiqini azalt')),
+      el('div', { class: 'row' }, el('label', { for: 'addMusic', class: 'btnlike' }, '＋ Musiqi'), fm, el('label', { for: 'addSfx', class: 'btnlike' }, '＋ Səs effekti'), fx),
+      el('p', { class: 'hint' }, 'Hazır musiqi kitabxanası yoxdur — öz faylınızı seçin (istifadə hüququ sizdədir).')];
+  }
+  function audioPanel(p) {
+    const c = TL.clipById(p, S.selAudio);
+    if (!c) { S.selAudio = null; return mixPanel(p); }
+    const m = MEDIA[c.media] || {}; const l = TL.layout(p).get(c.id);
+    const vol = el('input', { type: 'range', min: 0, max: 2, step: 0.05, value: c.volume ?? 1, 'aria-label': 'Bu klipin səsi' });
+    vol.onchange = () => commit(TL.setVolume(S.hist.present, c.id, Number(vol.value)), 'Səs səviyyəsi dəyişdi');
+    const nb = (lbl, fn, aria) => el('button', { onclick: () => { try { commit(fn()); } catch (e) { flash(e.message, true); } }, 'aria-label': aria }, lbl);
+    return [el('h2', {}, c.track === 'm1' ? 'Musiqi' : 'Səs effekti'), el('p', {}, m.name || ''),
+      el('div', { class: 'row' }, el('span', { class: 'k' }, 'Vaxt'), el('span', { class: 'nums' }, `${fmt(l.start)} – ${fmt(l.end)} (faylın ${fmt(c.srcIn)}–${fmt(c.srcOut)} hissəsi)`)),
+      el('div', { class: 'row' }, el('span', { class: 'k' }, 'Yer'), nb('◀ 0.5', () => TL.moveFree(S.hist.present, c.id, (c.start || 0) - 0.5), 'Əvvələ'), nb('0.5 ▶', () => TL.moveFree(S.hist.present, c.id, (c.start || 0) + 0.5), 'Sonraya')),
+      el('div', { class: 'row' }, el('span', { class: 'k' }, 'Səs'), vol),
+      el('p', { class: 'hint' }, 'Klipi yenidən toxunub sürüşdürün — yeri dəyişir. Kənar tutacaqları ilə faylın hansı hissəsinin səslənəcəyini seçin.'),
+      el('div', { class: 'row' }, el('button', { onclick: () => { const q = TL.deleteClip(S.hist.present, c.id); S.selAudio = null; commit(q, 'Silindi'); } }, 'Sil'))];
+  }
+
   // --- seçilmiş element paneli ---
+  const PRESETS = [['Təbii', {}], ['İsti', { temperature: 5400, saturation: 1.08 }], ['Soyuq', { temperature: 7600 }],
+    ['Canlı', { saturation: 1.3, contrast: 1.08 }], ['Yumşaq işıq', { brightness: 0.04, contrast: 0.92 }], ['Ağ-qara', { saturation: 0 }]];
+  const ADJ_KEYS = ['brightness', 'contrast', 'saturation', 'temperature'];
+  function visualPanel(p, c) {
+    const m = MEDIA[c.media] || {}; const fr = c.frame || null; const adj = c.adjust || {};
+    const ar = (p.width || 9) / (p.height || 16); const sw = m.width || 9, sh = m.height || 16;
+    const base = sw / sh > ar ? { baseW: ar * sh / sw, baseH: 1 } : { baseW: 1, baseH: (sw / ar) / sh };
+    const local = (TL.activeAt(p, S.t).video || {}).local ?? c.srcIn;
+    const key = fr && fr.keys ? fr.keys.reduce((a, k) => (k.t <= local ? k : a), fr.keys[0]) : { cx: 0.5, cy: 0.5 };
+    const setFrame = (patch) => op(() => TL.setFrame(S.hist.present, c.id, { aspect: p.aspect || 'source', rotate: fr?.rotate || 0, ...base, mode: 'manual',
+      s: patch.s ?? fr?.s ?? 1, keys: [{ t: c.srcIn, cx: patch.cx ?? key.cx, cy: patch.cy ?? key.cy }], warnings: [] }), 'Kadr dəyişdi');
+    const rng = (label, val, min, max, step, fn, show) => { const i = el('input', { type: 'range', min, max, step, value: val, 'aria-label': label }); const o = el('span', { class: 'nums' }, show(Number(val)));
+      i.oninput = () => { o.textContent = show(Number(i.value)); }; i.onchange = () => fn(Number(i.value)); return el('div', { class: 'row' }, el('span', { class: 'k' }, label), i, o); };
+    const setAdj = (patch, msg) => op(() => TL.setAdjust(S.hist.present, c.id, patch, { all: !!S.adjAll }), msg);
+    const all = el('input', { type: 'checkbox', id: 'adjAll', checked: !!S.adjAll }); all.onchange = () => { S.adjAll = all.checked; };
+    const mirAll = el('input', { type: 'checkbox', id: 'mirAll', checked: !!p.mirrorAll }); mirAll.onchange = () => op(() => TL.setProjectField(S.hist.present, 'mirrorAll', mirAll.checked), mirAll.checked ? 'Bütün çəkiliş güzgüləndi' : 'Güzgü söndü');
+    const mir = el('input', { type: 'checkbox', id: 'mirClip', checked: !!adj.mirror }); mir.onchange = () => setAdj({ mirror: mir.checked }, 'Güzgü');
+    const orig = el('button', {}, 'Orijinala bax (basılı saxla)');
+    const on = () => { S.orig = true; sync(true); }, off = () => { S.orig = false; sync(true); };
+    orig.addEventListener('pointerdown', on); orig.addEventListener('pointerup', off); orig.addEventListener('pointerleave', off); orig.addEventListener('pointercancel', off);
+    return [el('h2', {}, 'Görüntü'),
+      rng('Yaxınlaşma', 1 / (fr?.s || 1), 1, 2, 0.02, (v) => setFrame({ s: 1 / v }), (v) => `${v.toFixed(2)}x`),
+      rng('Üfüqi yer', key.cx, 0, 1, 0.01, (v) => setFrame({ cx: v }), (v) => `${Math.round(v * 100)}%`),
+      rng('Şaquli yer', key.cy, 0, 1, 0.01, (v) => setFrame({ cy: v }), (v) => `${Math.round(v * 100)}%`),
+      el('div', { class: 'row' }, mir, el('label', { for: 'mirClip' }, 'Bu klipi güzgülə'), mirAll, el('label', { for: 'mirAll' }, 'Bütün çəkilişi')),
+      el('p', { class: 'hint' }, 'Güzgü yazıları və altyazıları çevirmir.'),
+      el('div', { class: 'row' }, all, el('label', { for: 'adjAll' }, 'Rəng dəyişikliyini bütün kliplərə tətbiq et')),
+      el('div', { class: 'seg' }, ...PRESETS.map(([n, v]) => el('button', { onclick: () => setAdj({ ...Object.fromEntries(ADJ_KEYS.map((k) => [k, null])), ...v }, `Filtr: ${n}`) }, n))),
+      rng('İşıq', adj.brightness || 0, -0.3, 0.3, 0.01, (v) => setAdj({ brightness: v }), (v) => v.toFixed(2)),
+      rng('Kontrast', adj.contrast ?? 1, 0.5, 1.5, 0.01, (v) => setAdj({ contrast: v }), (v) => v.toFixed(2)),
+      rng('Doyumluluq', adj.saturation ?? 1, 0, 2, 0.01, (v) => setAdj({ saturation: v }), (v) => v.toFixed(2)),
+      rng('Temperatur', adj.temperature || 6500, 3000, 10000, 100, (v) => setAdj({ temperature: v }), (v) => `${v}K`),
+      rng('Yumşaltma', adj.soften || 0, 0, 1, 0.05, (v) => setAdj({ soften: v || null }), (v) => (v ? `${Math.round(v * 100)}%` : 'yox')),
+      el('p', { class: 'hint' }, 'Yumşaltma bütün kadra tətbiq olunur (kənarları qoruyur); üzü ayrıca seçən retuş yoxdur. Rəng və yumşaltmanın önizləməsi təxminidir, dəqiq nəticə MP4-dədir.'),
+      el('div', { class: 'row' }, orig, el('button', { onclick: () => op(() => TL.setFrame(TL.resetAdjust(S.hist.present, c.id, { all: !!S.adjAll }), c.id, null), 'Kadr və rəng sıfırlandı') }, 'Sıfırla'))];
+  }
+  function op(fn, msg) { try { commit(fn(), msg); } catch (e) { flash(e.message, true); } }
   function nudge(id, edge, d) {
     const c = TL.clipById(S.hist.present, id);
     try { commit(TL.trimSettled(S.hist.present, id, edge, (edge === 'in' ? c.srcIn : c.srcOut) + d)); } catch (e) { flash(e.message, true); }
   }
   function renderSel() {
     const box = $('#sel'); const p = P();
-    if (S.selText) {
-      const c = TL.clipById(p, S.selText);
-      box.replaceChildren(el('h2', {}, 'Yazı'), el('p', {}, c ? `“${c.text}”` : ''),
-        el('p', { class: 'hint' }, 'Yazını kadrda barmağınızla istədiyiniz yerə çəkin. Yalnız bu yazı dəyişir.'),
-        c && c.x != null ? el('button', { onclick: () => { const q = TL.clone(S.hist.present); const x = TL.clipById(q, c.id); delete x.x; delete x.y; commit(q, 'Yazı ilkin yerinə qaytarıldı'); } }, 'İlkin yerinə qaytar') : null);
-      return;
-    }
+    if (S.selText) { box.replaceChildren(...textPanel(p)); return; }
+    if (S.selAudio) { box.replaceChildren(...audioPanel(p)); return; }
     const c = S.sel && TL.clipById(p, S.sel);
-    if (!c) { box.replaceChildren(el('h2', {}, 'Necə düzəltmək olar'), el('p', { class: 'hint' }, 'Yazını dəyişmək: kadrdakı yazını barmaqla sürüşdürün. Klipi uzatmaq: aşağıda klipə toxunun, kənarındakı ağ tutacağı çəkin — kəsilmiş hissə geri qayıdır. Video öz səsi ilə birlikdə uzanır.')); return; }
+    if (!c) { box.replaceChildren(el('div', { class: 'row' }, el('button', { onclick: () => { try { const before = new Set(S.hist.present.clips.map((x) => x.id)); const q = TL.addText(S.hist.present, { start: S.t, dur: 3, text: 'Yeni yazı' }); S.selText = q.clips.find((x) => !before.has(x.id)).id; commit(q, 'Yazı əlavə olundu'); } catch (e) { flash(e.message, true); } } }, '＋ Yazı əlavə et'),
+        P().subtitles ? el('button', { onclick: () => { const sub = P().clips.find((x) => x.track === 'c1' && !x.hidden); if (sub) { S.selText = sub.id; renderSel(); renderTimeline(); } else { S.selText = null; box.replaceChildren(...allSubsPanel(P())); } } }, 'Altyazı üslubu') : null),
+        ...mixPanel(P()),
+        el('h2', {}, 'Necə düzəltmək olar'), el('p', { class: 'hint' }, 'Yazını dəyişmək: kadrdakı yazını barmaqla sürüşdürün. Klipi uzatmaq: aşağıda klipə toxunun, kənarındakı ağ tutacağı çəkin — kəsilmiş hissə geri qayıdır. Video öz səsi ilə birlikdə uzanır.')); return; }
     const m = MEDIA[c.media] || {}; const i = TL.videoClips(p).findIndex((x) => x.id === c.id) + 1;
     box.replaceChildren(el('h2', {}, `Klip #${i}`),
       el('div', { class: 'row' }, el('span', { class: 'k' }, 'Mənbədə'), el('span', { class: 'nums' }, `${fmt(c.srcIn)} – ${fmt(c.srcOut)} (${(c.srcOut - c.srcIn).toFixed(1)} s)`)),
@@ -384,12 +580,73 @@ textarea { width: 100%; min-height: 90px; font: 12px var(--mono); background: va
       el('div', { class: 'row' }, el('span', { class: 'k' }, 'Son'),
         el('button', { onclick: () => nudge(c.id, 'out', -0.1), 'aria-label': 'Sonu 0.1 s əvvələ' }, '◀ 0.1'),
         el('button', { onclick: () => nudge(c.id, 'out', 0.1), 'aria-label': 'Sonu 0.1 s sonraya' }, '0.1 ▶')),
-      el('p', { class: 'hint' }, 'Sonrakı kliplər, bağlı yazılar və subtitrlər avtomatik sürüşür.'));
+      el('div', { class: 'row' }, el('span', { class: 'k' }, 'Klip'),
+        el('button', { onclick: () => op(() => TL.split(S.hist.present, c.id, S.t), 'Oynatma xəttində bölündü') }, '✂ Böl'),
+        el('button', { onclick: () => op(() => TL.moveVideo(S.hist.present, c.id, i - 2), 'Sola keçdi'), disabled: i === 1, 'aria-label': 'Sola' }, '◀ Sola'),
+        el('button', { onclick: () => op(() => TL.moveVideo(S.hist.present, c.id, i), 'Sağa keçdi'), disabled: i === TL.videoClips(p).length, 'aria-label': 'Sağa' }, 'Sağa ▶'),
+        el('button', { onclick: () => { op(() => TL.deleteClip(S.hist.present, c.id), 'Klip silindi (orijinal qalır)'); S.sel = null; } }, 'Sil')),
+      TL.partnerOf(p, c) ? (() => { const a = TL.partnerOf(p, c); const v = el('input', { type: 'range', min: 0, max: 2, step: 0.05, value: a.volume ?? 1, 'aria-label': 'Klipin öz səsi' });
+        v.onchange = () => commit(TL.setVolume(S.hist.present, a.id, Number(v.value)), 'Klipin səsi dəyişdi'); return el('div', { class: 'row' }, el('span', { class: 'k' }, 'Öz səsi'), v); })() : null,
+      el('p', { class: 'hint' }, 'Sonrakı kliplər, bağlı yazılar və altyazılar avtomatik sürüşür. Bölmək üçün əvvəl oynatma xəttini istədiyiniz yerə qoyun.'),
+      ...visualPanel(p, c));
+  }
+
+  // --- yazı / altyazı paneli ---
+  function opText(patch, msg) { try { commit(TL.setTextProps(S.hist.present, S.selText, patch), msg); } catch (e) { flash(e.message, true); } }
+  function opSubs(patch, msg) { try { commit(TL.setSubtitleStyle(S.hist.present, patch), msg); } catch (e) { flash(e.message, true); } }
+  function styleControls(cur, set) {
+    const fam = el('select', { 'aria-label': 'Şrift' }, ...FONTS.map((f) => el('option', { value: f, selected: (cur.font || 'DejaVu Sans') === f }, f)));
+    fam.onchange = () => set({ font: fam.value === 'DejaVu Sans' ? null : fam.value });
+    const wt = el('select', { 'aria-label': 'Qalınlıq' }, ...[[400, 'Normal'], [600, 'Yarımqalın'], [700, 'Qalın'], [800, 'Çox qalın']].map(([w, n]) => el('option', { value: w, selected: Number(cur.weight || 700) === w }, n)));
+    wt.onchange = () => set({ weight: Number(wt.value) });
+    const size = el('input', { type: 'range', min: 0.025, max: 0.12, step: 0.002, value: cur.size || 0.06, 'aria-label': 'Ölçü' });
+    size.onchange = () => set({ size: Number(size.value) });
+    const colors = el('div', { class: 'seg' }, ...SWATCH.map((col) => { const b = el('button', { class: 'sw' + ((cur.color || '#FFFFFF').toUpperCase() === col ? ' on' : ''), 'aria-label': `Rəng ${col}`, onclick: () => set({ color: col }) }); b.style.background = col; return b; }),
+      (() => { const i = el('input', { type: 'color', value: cur.color || '#ffffff', 'aria-label': 'Başqa rəng' }); i.onchange = () => set({ color: i.value.toUpperCase() }); return i; })());
+    const [bhex, balpha] = (cur.bg && cur.bg !== 'none' ? cur.bg : '#000000@0.55').split('@');
+    const bgs = el('div', { class: 'seg' }, el('button', { class: cur.bg === 'none' ? 'on' : '', onclick: () => set({ bg: 'none' }) }, 'Fonsuz'),
+      ...SWATCH.map((col) => { const b = el('button', { class: 'sw' + (cur.bg && cur.bg !== 'none' && bhex.toUpperCase() === col ? ' on' : ''), 'aria-label': `Fon ${col}`, onclick: () => set({ bg: `${col}@${balpha || 0.85}` }) }); b.style.background = col; return b; }));
+    const alpha = el('input', { type: 'range', min: 0.2, max: 1, step: 0.05, value: balpha || 0.85, 'aria-label': 'Fonun şəffaflığı', disabled: cur.bg === 'none' });
+    alpha.onchange = () => set({ bg: `${bhex}@${alpha.value}` });
+    const pos = el('div', { class: 'seg' }, ...[['top', 'Yuxarı', 0.12], ['center', 'Orta', 0.5], ['bottom', 'Aşağı', 0.85]].map(([k, n, y]) => el('button', { onclick: () => set({ x: 0.5, y }) }, n)));
+    return [el('div', { class: 'row' }, el('span', { class: 'k' }, 'Şrift'), fam, wt),
+      el('div', { class: 'row' }, el('span', { class: 'k' }, 'Ölçü'), size),
+      el('div', { class: 'row' }, el('span', { class: 'k' }, 'Rəng'), colors),
+      el('div', { class: 'row' }, el('span', { class: 'k' }, 'Fon'), bgs),
+      el('div', { class: 'row' }, el('span', { class: 'k' }, 'Fon şəffaflığı'), alpha),
+      el('div', { class: 'row' }, el('span', { class: 'k' }, 'Yer'), pos)];
+  }
+  function textPanel(p) {
+    const c = TL.clipById(p, S.selText);
+    if (!c) { S.selText = null; return [el('p', { class: 'hint' }, 'Yazı seçilməyib.')]; }
+    const lay = TL.layout(p).get(c.id);
+    const isSub = c.track === 'c1';
+    const ta = el('textarea', { class: 'ta', 'aria-label': 'Mətn' }, c.text || '');
+    ta.onchange = () => opText({ text: ta.value }, 'Mətn dəyişdi');
+    const tbtn = (lbl, fn, aria) => el('button', { onclick: fn, 'aria-label': aria }, lbl);
+    const out = [el('h2', {}, isSub ? 'Altyazı (yalnız bu)' : 'Yazı'),
+      ta, el('p', { class: 'hint' }, 'Yeni sətir üçün Enter. Yazını kadrda barmaqla da çəkə bilərsiniz. Qırmızı çərçivə — yazı kadra sığmır.'),
+      ...styleControls(c, (patch) => opText(patch)),
+      el('div', { class: 'row' }, el('span', { class: 'k' }, 'Başlayır'), el('span', { class: 'nums' }, fmt(lay.start)),
+        tbtn('◀ 0.1', () => opText({ start: lay.start - 0.1 }), 'Başlanğıcı 0.1 s əvvələ'), tbtn('0.1 ▶', () => opText({ start: lay.start + 0.1 }), 'Başlanğıcı 0.1 s sonraya')),
+      el('div', { class: 'row' }, el('span', { class: 'k' }, 'Müddət'), el('span', { class: 'nums' }, `${(lay.end - lay.start).toFixed(1)} s`),
+        tbtn('− 0.1', () => opText({ dur: lay.end - lay.start - 0.1 }), 'Müddəti azalt'), tbtn('+ 0.1', () => opText({ dur: lay.end - lay.start + 0.1 }), 'Müddəti artır'), tbtn('+ 1', () => opText({ dur: lay.end - lay.start + 1 }), 'Müddəti 1 s artır')),
+      el('div', { class: 'row' }, el('button', { onclick: () => { try { const q = TL.deleteClip(S.hist.present, c.id); S.selText = null; commit(q, isSub ? 'Altyazı silindi' : 'Yazı silindi'); } catch (e) { flash(e.message, true); } } }, 'Sil'),
+        c.x != null ? el('button', { onclick: () => opText({ x: null, y: null }, 'İlkin yerinə qaytarıldı') }, 'İlkin yerinə qaytar') : null)];
+    if (isSub) out.push(...allSubsPanel(p));
+    return out;
+  }
+  function allSubsPanel(p) {
+    if (!p.subtitles) return [];
+    const st = { ...(p.subtitles.style || {}) };
+    const tog = el('button', { onclick: () => { try { commit(TL.setSubtitlesEnabled(S.hist.present, !p.subtitles.enabled)); } catch (e) { flash(e.message, true); } } }, p.subtitles.enabled ? 'Altyazını söndür' : 'Altyazını yandır');
+    return [el('h2', {}, 'Bütün altyazılar'), el('p', { class: 'hint' }, 'Bu üslub ayrıca dəyişdirmədiyiniz bütün altyazılara tətbiq olunur.'),
+      ...styleControls(st, (patch) => opSubs(patch, 'Altyazı üslubu dəyişdi')), el('div', { class: 'row' }, tog)];
   }
 
   // --- tarixçə və saxlama ---
   function flash(msg, bad) { const s = $('#save'); s.textContent = msg; s.classList.toggle('err', !!bad); }
-  function edits() { return { ...TL.diffEdits(BASE, S.hist.present), savedAt: new Date().toISOString(), editor: DATA.build }; }
+  function edits() { return { ...TL.editorState(BASE, S.hist.present), savedAt: new Date().toISOString(), editor: DATA.build }; }
   function refreshButtons() { $('#undo').disabled = !S.hist.canUndo; $('#redo').disabled = !S.hist.canRedo; $('#editsOut').value = JSON.stringify(edits(), null, 1); }
   function commit(next, msg) { S.hist.commit(next); keepLocal(); refreshButtons(); renderTimeline(); renderSel(); sync(true); scheduleSave(); if (msg) flash(msg); }
   $('#undo').onclick = () => { if (S.hist.undo()) { keepLocal(); refreshButtons(); renderTimeline(); renderSel(); sync(true); scheduleSave(); } };
@@ -417,6 +674,7 @@ textarea { width: 100%; min-height: 90px; font: 12px var(--mono); background: va
   flash(S.hist.canUndo ? 'Qaralama bərpa olundu' : '');
   (async () => {
     try { db = window.claude && window.claude.use ? await window.claude.use('db') : null; } catch { db = null; }
+    try { assetsApi = window.claude && window.claude.use ? await window.claude.use('assets') : null; } catch { assetsApi = null; }
     if (db && S.hist.canUndo) saveNow();
     if (!db) $('#saveHint').textContent = 'Bu baxışda avtomatik saxlama işləmir. Bitirəndə “Düzəlişi kopyala” düyməsinə toxunub mətni Claude sessiyasına yapışdırın.';
   })();

@@ -23,6 +23,13 @@ Yoxlama əsası: `tests/montaj/` (Node 12, pytest 19) və brauzer testləri `e2e
 | 0.9 | Düzəlişlər sabit ID və layihə versiyası ilə; köhnə/yanlış layihə aşkarlanır; undo/redo; qaralama saxlanılır | ✅ | |
 | 0.10 | Düzəlişi Claude sessiyasına qaytarmaq | ✅ | Avtomatik (artifact db) və ya “Düzəlişi kopyala” |
 | 0.11 | Analiz keşi (mənbə + parametrlər dəyişməyibsə təkrar transkripsiya yoxdur) | ✅ | |
+| 0.13 | Müştəri profili (expert-reels `experts/*.json`) montaja tətbiq olunur | ✅ | Yalnız seçilən müştərinin faylı oxunur; törəmə rənglər “təsdiqlənməyib” kimi qeyd olunur |
+| 0.14 | Redaktor: başlıq/altyazının mətni, şrifti (Montserrat, Caveat — OFL), ölçüsü, rəngi, fonu, yeri, vaxtı; bütün altyazıların ümumi üslubu | ✅ | Real layihədə emulyasiya + render müqayisəsi |
+| 0.15 | Redaktor: klipi bölmək, uzatmaq, silmək, sırasını dəyişmək; öz səsi və altyazılar uyğunlaşır | ✅ | Altyazı ID-ləri bölmədən sonra sabit qalır (sərhəddəki biri istisna) |
+| 0.16 | Redaktor: musiqi/səs effekti faylı əlavə etmək, yeri, hissəsi, səsi; danışıq/musiqi/effekt səviyyələri; danışıqda musiqinin azalması | 🟡 | Real səhifədə asset yükləmə sınaq əvəzi ilə yoxlanılıb; iPhone-da fayl seçimi yoxlanılmayıb. Lisenziyalı musiqi kitabxanası ⛔ |
+| 0.17 | Redaktor: kadr, yaxınlaşma, güzgü (yazıları çevirmir), işıq, kontrast, doyumluluq, temperatur, filtr şablonları | ✅ | Rəng önizləməsi təxminidir |
+| 0.18 | Yüngül yumşaltma (bütün kadr, kənarları qoruyur) | ✅ | Üzü ayrıca seçən retuş ⛔ — düymə qoyulmayıb |
+| 0.19 | Altyazı sətri kadra sığır, cümlə/vergüldən keçmir | ✅ | ffmpeg mətni bölmədiyi üçün simvol limiti |
 | 0.12 | Token istifadəsinin ölçülməsi | ⛔ | Bu sessiyadan token sayğacına giriş yoxdur — ölçülmür |
 
 ## 1. Telefondan açılan panel

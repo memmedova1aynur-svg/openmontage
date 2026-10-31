@@ -281,7 +281,16 @@ def editor_data(pid: str, assets: dict[str, str]) -> dict[str, Any]:
     media = {m["id"]: {"url": assets.get(m["id"]), "name": m["name"], "duration": m["duration"],
                        "width": m.get("width"), "height": m.get("height")} for m in p["media"]}
     build = hashlib.sha1((EDITOR_TEMPLATE.read_text() + UI.read_text()).encode()).hexdigest()[:10]
-    return {"project": proj, "media": media, "build": build}
+    from montaj import fonts
+
+    fl = [{"family": fam, "weight": w, "sub": sub, "range": fonts.RANGES[sub], "url": assets.get(f"font:{f.name}")}
+          for fam, w, sub, f in fonts.editor_font_files()]
+    brand = p.get("brand") or {}
+    th = brand.get("theme") or {}
+    colors = [c for c in [th.get("primary"), th.get("accent"), th.get("accentSoft"), th.get("primaryDeep")] if c] or (brand.get("colors") or [])
+    proj["media"] = proj["media"]
+    return {"project": proj, "media": media, "build": build, "fonts": fl, "brandColors": colors,
+            "brandName": brand.get("name")}
 
 
 def make_preview(src: Path, dst: Path, hdr: bool) -> None:
@@ -300,7 +309,12 @@ def cmd_editor(a: argparse.Namespace) -> None:
     d.mkdir(exist_ok=True)
     assets = json.loads(Path(a.assets).read_text()) if a.assets else {}
     if a.local:
+        from montaj import fonts
+
         assets = {m["id"]: f"preview_{m['id']}.mp4" for m in p["media"]}
+        for _fam, _w, _sub, f in fonts.editor_font_files():
+            shutil.copyfile(f, d / f.name)
+            assets[f"font:{f.name}"] = f.name
     if True:
         for m in p["media"]:
             if m.get("hasVideo") and not m.get("isImage"):
@@ -320,6 +334,42 @@ def cmd_apply_edits(a: argparse.Namespace) -> None:
     edits = json.loads(Path(a.edits).read_text(encoding="utf-8"))
     edits = edits.get("data", edits)  # ArtifactData sənədi və ya xam fayl
     p = store.load(a.pid)
+    if edits.get("schema") == 2:
+        from montaj import media as mediautil
+
+        adir = Path(a.assets_dir) if a.assets_dir else out_dir(a.pid) / "assets"
+        missing = []
+        for m in edits.get("newMedia") or []:
+            if not m.get("asset") or any(x["id"] == m["id"] for x in p["media"]):
+                continue
+            found = sorted(adir.glob(f"{m['asset']}*")) if adir.is_dir() else []
+            if not found:
+                missing.append(m["asset"])
+                continue
+            ext = Path(m.get("name") or "").suffix.lower()[:8] or found[0].suffix or ".bin"
+            dst = store.originals_dir(a.pid) / f"{m['id']}{ext}"
+            if not dst.exists():
+                shutil.copyfile(found[0], dst)
+                os.chmod(dst, 0o444)
+            info = mediautil.probe(dst)
+            m.update(info, file=f"media/originals/{dst.name}", size=dst.stat().st_size, source={"type": "artifact-asset", "id": m["asset"]})
+        if missing:
+            raise UserError("Redaktorda əlavə olunmuş fayllar hələ endirilməyib.",
+                            f"Artifact read path=<id> out_dir={adir} ilə endirin: " + ", ".join(missing))
+        r = node_tl("applyEditorState", p, edits)
+        durs = {m["id"]: float(m["duration"]) for m in r["project"]["media"]}
+        for c in r["project"]["clips"]:  # brauzerin ölçdüyü müddət probe-dan bir az fərqli ola bilər
+            if c.get("media") in durs and c["srcOut"] > durs[c["media"]]:
+                c["srcOut"] = round(durs[c["media"]], 3)
+        cur_rev = p["revision"]
+        for m in edits.get("newMedia") or []:  # media qeydləri yalnız serverin probe nəticəsi ilə əlavə olunur
+            if m.get("file") and not any(x["id"] == m["id"] for x in p["media"]):
+                cur_rev = store.add_media_record(a.pid, {k: v for k, v in m.items() if k != "asset"})["revision"]
+        saved = store.save(a.pid, r["project"], cur_rev)
+        print(f"tətbiq olundu: {len(r['changed'])} dəyişən, {len(r['removed'])} silinən element; versiya {p['revision']} -> {saved['revision']}")
+        if r["changed"] or r["removed"]:
+            print("dəyişən:", ", ".join(r["changed"][:20]), "| silinən:", ", ".join(r["removed"][:20]))
+        return
     r = node_tl("applyEdits", p, edits)
     if not r["applied"] and not r["rejected"]:
         print(f"dəyişiklik yoxdur: {len(r['already'])} element artıq tətbiq olunub; versiya {p['revision']}")
@@ -329,6 +379,37 @@ def cmd_apply_edits(a: argparse.Namespace) -> None:
     saved = store.save(a.pid, r["project"], p["revision"])
     print(f"tətbiq olundu: {len(r['applied'])} element; rədd: {r['rejected']}; versiya {p['revision']} -> {saved['revision']}"
           + ("" if r["sameBase"] else " (redaktor köhnə versiyadan idi — yalnız dəyişməmiş elementlər tətbiq olundu)"))
+
+
+def expert_profile(name: str) -> dict[str, Any] | None:
+    """templates/expert-reels/experts/ içində YALNIZ adı uyğun gələn profili oxuyur."""
+    import unicodedata
+
+    def norm(x: str) -> str:
+        x = x.lower().translate(str.maketrans("əöüğışç", "eougisc"))
+        return "".join(ch for ch in unicodedata.normalize("NFKD", x) if ch.isalnum())
+    d = Path(__file__).resolve().parent.parent / "templates" / "expert-reels" / "experts"
+    want = norm(name)
+    for f in sorted(d.glob("*.json")):
+        if f.name.startswith("_"):
+            continue
+        prof = json.loads(f.read_text(encoding="utf-8"))
+        if norm(prof.get("name", "")) == want:
+            return prof
+    return None
+
+
+def cmd_set_client(a: argparse.Namespace) -> None:
+    prof = expert_profile(a.client)
+    if not prof:
+        raise UserError(f"Profil tapılmadı: {a.client}", "Adı profildəki kimi yazın.")
+    p = store.load(a.pid)
+    p["brand"] = {"name": prof["name"], "field": prof.get("activity", ""), "theme": prof.get("theme"),
+                  "colors": [v for k, v in (prof.get("theme") or {}).items() if isinstance(v, str) and v.startswith("#")],
+                  "colorsConfirmed": "derived" not in (prof.get("theme_source") or ""), "palette": prof.get("palette"),
+                  "fonts": prof.get("fonts"), "cautions": prof.get("cautions") or [], "source": "expert-reels profil"}
+    saved = store.save(a.pid, p, p["revision"])
+    print(f"müştəri: {prof['name']}; rənglər təsdiqlənib: {p['brand']['colorsConfirmed']}; versiya {saved['revision']}")
 
 
 def cmd_export(a: argparse.Namespace) -> None:
@@ -364,14 +445,18 @@ def main(argv: list[str] | None = None) -> int:
     ed.add_argument("pid")
     ed.add_argument("--assets", help="JSON: media id -> artifact asset url")
     ed.add_argument("--local", action="store_true", help="önizləmələrə nisbi yol (yerli sınaq)")
+    sc = sub.add_parser("set-client")
+    sc.add_argument("pid")
+    sc.add_argument("--client", required=True)
     ae = sub.add_parser("apply-edits")
     ae.add_argument("pid")
     ae.add_argument("edits")
+    ae.add_argument("--assets-dir", help="redaktorun yüklədiyi faylların endirildiyi qovluq")
     a = ap.parse_args(argv)
     try:
         {"new": cmd_new, "storyboard": cmd_storyboard, "edit": cmd_edit, "apply": cmd_apply,
          "render": cmd_render, "export": cmd_export, "editor": cmd_editor,
-         "apply-edits": cmd_apply_edits}[a.cmd](a)
+         "apply-edits": cmd_apply_edits, "set-client": cmd_set_client}[a.cmd](a)
     except UserError as err:
         print(f"XƏTA: {err.message}\nNƏ ETMƏLİ: {err.hint}", file=sys.stderr)
         return 2

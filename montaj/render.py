@@ -152,6 +152,10 @@ def video_chain(c: dict[str, Any], m: dict[str, Any], W: int, H: int, fps_str: s
     b, ct, sat = float(adj.get("brightness") or 0), float(adj.get("contrast") or 1), float(adj.get("saturation") or 1)
     if abs(b) > 1e-3 or abs(ct - 1) > 1e-3 or abs(sat - 1) > 1e-3:
         f.append(f"eq=brightness={b:.3f}:contrast={ct:.3f}:saturation={sat:.3f}")
+    soft = float(adj.get("soften") or 0)
+    if soft > 0.01:
+        # yüngül yumşaltma: kənarları qoruyur, bütün kadra tətbiq olunur (üz seçilmir)
+        f.append(f"smartblur=lr=2.0:ls={min(1.0, 0.2 + 0.6 * soft):.2f}:lt=8")
     temp = float(adj.get("temperature") or 6500)
     if abs(temp - 6500) > 50:
         f.append(f"colortemperature=temperature={temp:.0f}")
@@ -206,7 +210,9 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
     for i, t in enumerate(plan["text"]):
         c = t["clip"]
         text = (c.get("text") or "").strip()
-        if not text or not font:
+        from montaj import fonts as _fonts
+        cfont = _fonts.ttf_path(c.get("font"), c.get("weight")) if c.get("font") else font
+        if not text or not cfont:
             continue
         tf = workdir / f"text_{i}.txt"
         tf.write_text(text, encoding="utf-8")
@@ -219,10 +225,12 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
             xexpr = f"max(0\\,min(w-text_w\\,w*{float(c['x']):.4f}-text_w/2))"
             y = f"max(0\\,min(h-text_h\\,h*{float(c['y']):.4f}-text_h/2))"
         color = (c.get("color") or "white").replace("#", "0x")
-        box = (c.get("bg") or "black@0.55").replace("#", "0x")
+        bg = c.get("bg") or "black@0.55"
+        boxopt = ("box=0:shadowcolor=black@0.7:shadowx=2:shadowy=2" if bg == "none"
+                  else f"box=1:boxcolor={bg.replace('#', '0x')}:boxborderw={max(6, size // 4)}")
         filters.append(
-            f"[{cur}]drawtext=fontfile='{font}':textfile='{tf}':fontsize={size}:fontcolor={color}:"
-            f"box=1:boxcolor={box}:boxborderw={max(6, size // 4)}:line_spacing={size // 5}:"
+            f"[{cur}]drawtext=fontfile='{cfont}':textfile='{tf}':fontsize={size}:fontcolor={color}:"
+            f"{boxopt}:line_spacing={size // 5}:"
             f"x={xexpr}:y={y}:enable='between(t,{t['start']:.3f},{t['end']:.3f})'[vt{i}]")
         cur = f"vt{i}"
 
