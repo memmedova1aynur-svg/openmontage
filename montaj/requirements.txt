@@ -7,3 +7,6 @@ pydantic>=2.0
 anthropic>=0.80          # panel daxilindəki AI (Claude API); açar olmasa da quraşdırılır
 faster-whisper>=1.0      # yerli transkripsiya (model ilk istifadədə endirilir)
 mediapipe>=0.10          # üz aşkarlanması (kadraj); libegl1 + libgles2 sistem paketi lazımdır
+Pillow>=10               # altyazı trekinin kadr kompoziti (graphics.py)
+fonttools>=4.40          # woff2 → TTF (ffmpeg drawtext üçün, fonts.py)
+brotli>=1.0              # fonttools-un woff2 oxuması üçün
