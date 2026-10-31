@@ -99,7 +99,10 @@ def base_project(media: list[dict]) -> dict:
 
 @pytest.fixture()
 def tmp_projects(tmp_path, monkeypatch):
+    monkeypatch.setenv("MONTAJ_DATA_DIR", str(tmp_path / "data"))
     monkeypatch.setenv("MONTAJ_PROJECTS_DIR", str(tmp_path / "projects"))
+    monkeypatch.setenv("MONTAJ_AUTH", "off")
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
     return tmp_path / "projects"
 
 

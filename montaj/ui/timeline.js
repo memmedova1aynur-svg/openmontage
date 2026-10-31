@@ -22,7 +22,10 @@ export const TRACKS = [
   { id: 'm1', kind: 'music', name: 'Musiqi' },
   { id: 's1', kind: 'sfx', name: 'Səs effekti' },
   { id: 't1', kind: 'text', name: 'Mətn' },
+  { id: 'c1', kind: 'text', name: 'Subtitr' },
 ];
+
+export const IMAGE_SECONDS = 3;
 
 const EPS = 1e-6;
 const round = (x) => Math.round(x * 1000) / 1000;
@@ -153,14 +156,15 @@ export function addMedia(p0, media, { targetTrack = null, at = 0 } = {}) {
   const dur = media.duration;
   if (!(dur > 0)) fail('Media müddəti məlum deyil');
   if (media.hasVideo) {
-    if (videoClips(p).length === 0 && media.width && media.height) {
+    if (videoClips(p).length === 0 && media.width && media.height && !media.isImage) {
       p.width = media.width;
       p.height = media.height;
-      if (media.fps && media.fps > 0 && media.fps <= 60) p.fps = Math.round(media.fps);
+      if (media.fps && media.fps > 0 && media.fps <= 120) p.fps = Math.round(media.fps);
+      if (media.fpsRate) p.fpsRate = media.fpsRate;
     }
     const vid = uid('v');
     p.clips.push({
-      id: vid, track: 'v1', media: media.id, srcIn: 0, srcOut: round(dur),
+      id: vid, track: 'v1', media: media.id, srcIn: 0, srcOut: round(media.isImage ? IMAGE_SECONDS : dur),
       order: videoClips(p).length, origin: 'import', manual: false,
     });
     if (media.hasAudio) {
@@ -547,4 +551,134 @@ export function activeAt(p, t) {
     else res.audio.push({ clip: c, start, end, local });
   }
   return res;
+}
+
+// ---------------------------------------------------------------------------
+// Köhnə layihələri yeni sahələrlə tamamlamaq
+// ---------------------------------------------------------------------------
+
+export const DEFAULT_MIX = { speech: 1, music: 1, sfx: 1, voice: 1, duck: false };
+
+export function migrate(p0) {
+  const p = clone(p0);
+  for (const t of TRACKS) if (!p.tracks.some((x) => x.id === t.id)) p.tracks.push(clone(t));
+  p.mix = { ...DEFAULT_MIX, ...(p.mix || {}) };
+  p.branding = p.branding || { logo: { enabled: false, position: 'top-right', size: 0.18, opacity: 1 }, end: { enabled: false, duration: 3, showLogo: true, cta: '', contact: '', bg: '#000000', color: '#FFFFFF' } };
+  p.options = p.options || null;
+  p.aspect = p.aspect || 'source';
+  p.proposals = p.proposals || [];
+  return p;
+}
+
+// ---------------------------------------------------------------------------
+// Layihə parametrləri (undo/redo ilə)
+// ---------------------------------------------------------------------------
+
+export function setProjectField(p0, key, value) {
+  const p = clone(p0);
+  p[key] = clone(value);
+  return p;
+}
+
+export function patchProject(p0, key, patch) {
+  const p = clone(p0);
+  p[key] = { ...(p[key] || {}), ...clone(patch) };
+  return p;
+}
+
+/** Kadraj (klip + bağlı səs dəyişmir). manual=true -> AI dəyişmir. */
+export function setFrame(p0, clipId, frame, { manual = true } = {}) {
+  const p = clone(p0);
+  const c = mustClip(p, clipId);
+  if (trackKind(p, c) !== 'video') fail('Kadraj yalnız video klipə aiddir');
+  if (frame == null) delete c.frame;
+  else c.frame = clone(frame);
+  if (manual) markManual(c, partnerOf(p, c));
+  return p;
+}
+
+/** Rəng/güzgü düzəlişi. `all=true` -> bütün video kliplərə eyni dəyər. */
+export function setAdjust(p0, clipId, patch, { all = false } = {}) {
+  const p = clone(p0);
+  const targets = all ? videoClips(p) : [mustClip(p, clipId)];
+  for (const c of targets) {
+    c.adjust = { ...(c.adjust || {}), ...clone(patch) };
+    for (const [k, v] of Object.entries(c.adjust)) if (v === null) delete c.adjust[k];
+  }
+  return p;
+}
+
+export function resetAdjust(p0, clipId, { all = false } = {}) {
+  const p = clone(p0);
+  const targets = all ? videoClips(p) : [mustClip(p, clipId)];
+  for (const c of targets) delete c.adjust;
+  return p;
+}
+
+// ---------------------------------------------------------------------------
+// Storyboard -> montaj (yalnız təsdiqdən sonra çağırılır)
+// ---------------------------------------------------------------------------
+
+function subtitleChunks(words, maxWords = 4, maxDur = 1.8) {
+  const out = [];
+  let cur = [];
+  for (const w of words || []) {
+    if (cur.length && (cur.length >= maxWords || w.e - cur[0].s > maxDur)) { out.push(cur); cur = []; }
+    cur.push(w);
+  }
+  if (cur.length) out.push(cur);
+  return out.map((ws) => ({ s: ws[0].s, e: ws[ws.length - 1].e, text: ws.map((w) => w.w).join(' ').trim() }));
+}
+
+export function applyStoryboard(p0, sb, { frames = {}, brand = null } = {}) {
+  let p = migrate(p0);
+  const cards = (sb.cards || []).filter((c) => c.include);
+  const mediaIds = [...new Set(cards.map((c) => c.mediaId))];
+  const skipped = [];
+  const protectedMedia = new Set();
+  for (const mid of mediaIds) {
+    const manual = p.clips.find((c) => c.media === mid && trackKind(p, c) === 'video' && c.manual);
+    if (manual) { protectedMedia.add(mid); skipped.push({ mediaId: mid, reason: 'əl ilə düzəldilmiş kliplər qorunur' }); }
+  }
+  const touched = new Set(mediaIds.filter((m) => !protectedMedia.has(m)));
+  // köhnə avtomatik klipləri (əl ilə olmayan) çıxar
+  const drop = new Set();
+  for (const c of p.clips) {
+    if (c.manual) continue;
+    if (touched.has(c.media) && (trackKind(p, c) === 'video' || c.linkedTo)) drop.add(c.id);
+    if (trackKind(p, c) === 'text' && c.origin === 'ai') drop.add(c.id);
+  }
+  p.clips = p.clips.filter((c) => !drop.has(c.id));
+  normalizeOrder(p);
+  const media = new Map(p.media.map((m) => [m.id, m]));
+  let order = videoClips(p).length;
+  const created = [];
+  for (const card of cards) {
+    if (protectedMedia.has(card.mediaId)) continue;
+    const m = media.get(card.mediaId);
+    if (!m) continue;
+    const v = { id: uid('v'), track: 'v1', media: m.id, srcIn: round(card.srcIn), srcOut: round(card.srcOut), order: order++, origin: 'ai', manual: false, cardId: card.id };
+    if (frames[m.id]) v.frame = clone(frames[m.id]);
+    p.clips.push(v);
+    if (m.hasAudio) p.clips.push({ id: uid('a'), track: 'a1', media: m.id, srcIn: v.srcIn, srcOut: v.srcOut, linkedTo: v.id, volume: 1, origin: 'ai', manual: false });
+    created.push({ card, v });
+  }
+  const lay = layout(p);
+  const color = brand && brand.colors && brand.colors[0] ? brand.colors[0] : null;
+  for (const { card, v } of created) {
+    const l = lay.get(v.id);
+    if (card.onScreenText && card.onScreenText.trim()) {
+      p.clips.push({ id: uid('t'), track: 't1', media: null, srcIn: 0, srcOut: round(Math.min(3, l.end - l.start)), start: l.start, text: card.onScreenText.trim(), size: 0.055, position: 'top', bg: color ? `${color}@0.85` : null, origin: 'ai', manual: false });
+    }
+    if (sb.subtitles) {
+      for (const ch of subtitleChunks(card.words)) {
+        const s = l.start + (ch.s - v.srcIn);
+        const e = l.start + (ch.e - v.srcIn);
+        if (e - s < MIN_CLIP || ch.s < v.srcIn - 0.01 || ch.e > v.srcOut + 0.01) continue;
+        p.clips.push({ id: uid('t'), track: 'c1', media: null, srcIn: 0, srcOut: round(e - s), start: round(s), text: ch.text, size: 0.045, position: 'bottom', origin: 'ai', manual: false });
+      }
+    }
+  }
+  p.storyboard = { ...clone(sb), status: 'approved', approvedAt: Date.now() };
+  return { project: p, applied: created.length, skipped };
 }
