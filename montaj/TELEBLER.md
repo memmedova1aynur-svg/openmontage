@@ -177,3 +177,4 @@ real danışıqda səs sinxronu və görünən keyfiyyət, iPhone Safari, Instag
 | 14.5 | Şübhəli sözlər siyahısı (vaxtla), düzəlişlərin yadda qalması | ✅ | `words`, `fix-word` (subtitles.corrections) |
 | 14.6 | Dəqiq transkripsiya | ✅ | `large-v3-turbo` standart: Günel videosunda “small”-ın səhvləri (enişək, terəpiyası, məlim…) düzgün tanındı; 35 s səs ~18 s |
 | 14.7 | Musiqi: dinləmə nümunələri, planla əlavə (fade, ducking) | 🟡 | Kod və test hazır; hüququ məlum musiqi kitabxanası ⛔ — istifadəçi faylı lazımdır |
+| 14.8 | Kadraj düzəlişi hər videoda: əyrilik (fon xətləri, Hough) + üz ortalama, yaxınlaşma ≤1.12x; punch-in-də saxlanılır | ✅ | `test_framefix_tilt_and_center` (sintetik) + Günel videosu: -1.5° əyrilik tapılıb düzəldilib, üz ortalanıb. Stabilizasiya yoxdur |

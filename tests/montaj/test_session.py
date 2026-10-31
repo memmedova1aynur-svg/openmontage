@@ -249,3 +249,25 @@ def test_variants_and_choose(tmp_path, monkeypatch):
     assert session.main(["choose", pid, str(b)]) == 0
     p = store.load(pid)
     assert any(c.get("type") == "card" for c in p["clips"]) and p["planApplied"]["look"] == "C"
+
+
+def test_framefix_tilt_and_center(tmp_path):
+    """Əyrilik fondakı xətlərdən ölçülür (işarə ffmpeg rotate ilə uyğun); ortalama pəncərəsi həddi aşmır."""
+    import subprocess
+
+    from montaj import framefix
+
+    src = tmp_path / "xetler.mp4"  # üfüqi zolaqlar, 2.5° saat əqrəbi istiqamətində fırladılmış
+    vf = ("drawbox=y=500:w=iw:h=6:color=white:t=fill,drawbox=y=900:w=iw:h=6:color=white:t=fill,"
+          "drawbox=y=1300:w=iw:h=6:color=white:t=fill,rotate=2.5*PI/180:ow=iw:oh=ih:c=gray")
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-f", "lavfi", "-i", "color=c=gray:s=1080x1920:d=2", "-vf", vf,
+                    "-c:v", "libx264", "-pix_fmt", "yuv420p", str(src)], check=True)
+    t = framefix.detect_tilt(src, 0, 2)
+    assert t["angle"] is not None and 2.0 < t["angle"] < 3.0, t
+    flat = tmp_path / "duz.mp4"
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-f", "lavfi", "-i", "color=c=gray:s=1080x1920:d=2", "-c:v", "libx264",
+                    "-pix_fmt", "yuv420p", str(flat)], check=True)
+    assert framefix.detect_tilt(flat, 0, 2)["angle"] is None, "xətt yoxdursa bucaq uydurulmur"
+    s, cx, cy = framefix.center_window(0.62, 0.2, 1.12)
+    assert s >= 1 / 1.12 - 1e-6 and cx > 0.5 and abs(cx - 0.62) < 0.08, "qismən ortalama, yaxınlaşma həddində"
+    assert framefix.center_window(0.51, 0.2, 1.12)[0] == 1.0, "artıq ortadadırsa yaxınlaşma yoxdur"

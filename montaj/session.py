@@ -564,9 +564,13 @@ def apply_plan(pid: str, p: dict[str, Any], plan: dict[str, Any], plan_name: str
                 q = node_tl("split", q, seg["id"], t)
         mid = next(c for c in node_tl("videoClips", q) if abs(_start(q, c["id"]) - z["from"]) < 0.05)
         m = next(x for x in q["media"] if x["id"] == mid["media"])
-        fr = {"aspect": q.get("aspect") or "source", "mode": "auto", "s": round(1 / float(z.get("scale", 1.12)), 4),
-              "baseW": 1, "baseH": 1, "keys": [{"t": mid["srcIn"], "cx": z.get("cx", 0.5), "cy": z.get("cy", 0.45)}],
-              "rotate": 0, "warnings": [], "planZoom": True}
+        cur = mid.get("frame") or {}  # avtomatik kadraj düzəlişi (fırlatma, ortalama) punch-in-də də qalır
+        base_s = float(cur.get("s") or 1) if cur.get("mode") in ("auto", "manual") else 1.0
+        k0 = (cur.get("keys") or [{}])[0] if cur.get("mode") in ("auto", "manual") else {}
+        fr = {"aspect": q.get("aspect") or "source", "mode": "auto", "s": round(base_s / float(z.get("scale", 1.12)), 4),
+              "baseW": cur.get("baseW", 1) if k0 else 1, "baseH": cur.get("baseH", 1) if k0 else 1,
+              "keys": [{"t": mid["srcIn"], "cx": z.get("cx", k0.get("cx", 0.5)), "cy": z.get("cy", k0.get("cy", 0.45))}],
+              "rotate": cur.get("rotate", 0), "warnings": [], "planZoom": True}
         if m.get("width") and q.get("width") and abs(m["width"] / m["height"] - q["width"] / q["height"]) > 0.02:
             raise UserError("Punch-in yalnız eyni ölçülü kadrda avtomatik qurulur.", "Kadrajı redaktorda əl ilə edin.")
         q = node_tl("setFrame", q, mid["id"], fr, {"manual": False})
@@ -659,6 +663,51 @@ def _latest_render(pid: str) -> Path:
     if not mp4s:
         raise UserError("Render tapılmadı.", f"Əvvəlcə `render {pid}`.")
     return mp4s[-1]
+
+
+def cmd_framefix(a: argparse.Namespace) -> None:
+    """Hər video mənbə üçün kadraj düzəlişi (əyrilik + ortalama) storyboard qaralamasına yazılır;
+    `kadraj.jpg`: orijinal / düzəldilmiş. Təsdiqə qədər layihə dəyişmir."""
+    from montaj import framefix, render
+
+    p = store.load(a.pid)
+    sb = _load_draft(a.pid)
+    W, H = int(p["width"]), int(p["height"])
+    o = out_dir(a.pid)
+    tiles = []
+    font = render._font()
+    for m in p["media"]:
+        if not m.get("hasVideo") or m.get("isImage"):
+            continue
+        cards = [c for c in sb["cards"] if c["mediaId"] == m["id"] and c.get("include", True)]
+        a0 = min((c["srcIn"] for c in cards), default=0.0)
+        b0 = max((c["srcOut"] for c in cards), default=float(m["duration"]))
+        src = store.project_dir(a.pid) / m["file"]
+        r = framefix.suggest_fix(src, m, a0, b0, W, H)
+        sb.setdefault("frames", {})[m["id"]] = r["frame"]
+        print(f"{m.get('name')}: " + "; ".join(r["notes"]))
+        t = (a0 + b0) / 2
+        for label, fr in (("Orijinal", None), ("Düzəldilmiş", r["frame"])):
+            clip = {"id": "x", "media": m["id"], "srcIn": t, "srcOut": t + 0.1, "frame": fr}
+            if fr and fr.get("keys"):
+                clip["frame"] = {**fr, "keys": [{**k, "t": t} for k in fr["keys"]]}
+            vf = render.video_chain(clip, m, W, H, "30", False, 1) + ",scale=360:-2"
+            if font:
+                vf += f",drawbox=y=0:w=iw:h=32:color=black@0.65:t=fill,drawtext=fontfile={font}:text='{label}':x=8:y=7:fontsize=17:fontcolor=white"
+            if fr is not None:  # köməkçi şəbəkə: üfüq və orta xətt
+                vf += ",drawgrid=w=iw/2:h=ih/3:t=1:c=white@0.35"
+            tile = o / f"kadraj_{len(tiles)}.png"
+            subprocess.run(["ffmpeg", "-y", "-v", "error", "-ss", f"{t:.3f}", "-i", str(src), "-frames:v", "1",
+                            "-vf", vf, str(tile)], check=True)
+            tiles.append(tile)
+    _save_draft(a.pid, sb)
+    if tiles:
+        sheet = o / "kadraj.jpg"
+        ins = sum((["-i", str(x)] for x in tiles), [])
+        subprocess.run(["ffmpeg", "-y", "-v", "error", *ins, "-filter_complex", f"hstack={len(tiles)}", "-q:v", "3", str(sheet)], check=True)
+        for x in tiles:
+            x.unlink()
+        print(sheet)
 
 
 def cmd_cut(a: argparse.Namespace) -> None:
@@ -870,6 +919,8 @@ def main(argv: list[str] | None = None) -> int:
     lk.add_argument("pid")
     lk.add_argument("--frames", type=int, default=3)
     lk.add_argument("--t", type=float, action="append", help="mənbə videoda kadrın saniyəsi (təkrarlana bilər)")
+    ff = sub.add_parser("framefix", help="kadraj düzəlişi (əyrilik + ortalama) qaralamaya")
+    ff.add_argument("pid")
     ct = sub.add_parser("cut", help="qaralamadan mənbə aralığını çıxar: [media:]başla-son")
     ct.add_argument("pid")
     ct.add_argument("ranges", nargs="+")
@@ -921,7 +972,7 @@ def main(argv: list[str] | None = None) -> int:
         {"new": cmd_new, "storyboard": cmd_storyboard, "edit": cmd_edit, "apply": cmd_apply,
          "render": cmd_render, "export": cmd_export, "editor": cmd_editor,
          "apply-edits": cmd_apply_edits, "set-client": cmd_set_client, "plan": cmd_plan, "looks": cmd_looks,
-         "cut": cmd_cut, "verify": cmd_verify, "words": cmd_words, "fix-word": cmd_fix_word,
+         "cut": cmd_cut, "framefix": cmd_framefix, "verify": cmd_verify, "words": cmd_words, "fix-word": cmd_fix_word,
          "variants": cmd_variants, "choose": cmd_choose, "music-preview": cmd_music_preview}[a.cmd](a)
     except UserError as err:
         print(f"XƏTA: {err.message}\nNƏ ETMƏLİ: {err.hint}", file=sys.stderr)
