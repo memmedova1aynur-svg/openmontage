@@ -409,7 +409,7 @@ def cmd_set_client(a: argparse.Namespace) -> None:
     p = store.load(a.pid)
     p["brand"] = {"name": prof["name"], "field": prof.get("activity", ""), "theme": prof.get("theme"),
                   "colors": [v for k, v in (prof.get("theme") or {}).items() if isinstance(v, str) and v.startswith("#")],
-                  "colorsConfirmed": "derived" not in (prof.get("theme_source") or ""), "palette": prof.get("palette"),
+                  "colorsConfirmed": not any(w in (prof.get("theme_source") or "").lower() for w in ("derived", "chosen by us", "colour family")), "palette": prof.get("palette"),
                   "fonts": prof.get("fonts"), "cautions": prof.get("cautions") or [], "source": "expert-reels profil"}
     saved = store.save(a.pid, p, p["revision"])
     kind = "müştərinin kodları" if p["brand"]["colorsConfirmed"] else "rəng ailəsi (yaxın çalarlar olar)"
@@ -652,6 +652,11 @@ def _apply_broll(pid: str, q: dict[str, Any], b: dict[str, Any]) -> dict[str, An
     mode="insert": araya kadr — əsas video ən yaxın təbii pauzada dayanır, kadr öz səsi ilə oynayır, sonra davam edir."""
     import uuid as _uuid
 
+    if b.get("make"):  # Claude-un hazırladığı səhnə (render keşlənir)
+        rec = _make_broll_media(pid, q, b["make"], float(b.get("dur", 2.5)))
+        if not any(x["id"] == rec["id"] for x in q["media"]):
+            q["media"].append(rec)
+        b = {**b, "media": rec["id"]}
     m = _find_media(q, b)
     W, H = int(q["width"]), int(q["height"])
     dur = float(b.get("dur", 2.5))
@@ -830,6 +835,56 @@ def _latest_render(pid: str) -> Path:
     if not mp4s:
         raise UserError("Render tapılmadı.", f"Əvvəlcə `render {pid}`.")
     return mp4s[-1]
+
+
+DEFAULT_SCENE_THEME = {"primary": "#2E3A4F", "primaryDeep": "#1C2433", "accent": "#F2C94C", "accentSoft": "#F4ECE4",
+                       "text": "#FFFFFF", "onAccent": "#1C2433", "cardAlpha": 0.94}
+
+
+def _project_theme(p: dict[str, Any]) -> dict[str, Any]:
+    """Layihənin müştəri rəngi: brand.theme, yoxdursa ad ilə expert profili, yoxdursa neytral tema."""
+    br = p.get("brand") or {}
+    if br.get("theme"):
+        return br["theme"]
+    prof = expert_profile(br["name"]) if br.get("name") else None
+    return (prof or {}).get("theme") or DEFAULT_SCENE_THEME
+
+
+def _make_broll_media(pid: str, p: dict[str, Any], spec: dict[str, Any], dur: float) -> dict[str, Any]:
+    """Claude-un hazırladığı B-roll (şablon səhnəsi) — render (keş) + layihəyə B-roll mediası kimi (təkrarsız)."""
+    from montaj import sceneclip, server
+
+    kind = spec["kind"]
+    props = spec.get("props") or {}
+    d = float(spec.get("dur", dur))
+    clip = sceneclip.render(kind, props, d, spec.get("theme") or _project_theme(p), out_dir(pid) / "scenes", spec.get("style"))
+    have = next((m for m in store.load(pid)["media"] if (m.get("source") or {}).get("file") == clip.name), None)
+    if have:
+        return have
+    tmp = store.originals_dir(pid) / f".gen_{clip.name}.part"
+    shutil.copyfile(clip, tmp)
+    rec = server._register(pid, tmp, f"{kind}.mp4", {"type": "generated", "kind": kind, "file": clip.name})["media"]
+    store.update_media_record(pid, rec["id"], {"role": "broll"})
+    return {**rec, "role": "broll"}
+
+
+def cmd_scenes(a: argparse.Namespace) -> None:
+    """Claude-un B-roll üçün istifadə edə biləcəyi səhnələr (şablondan, props ilə)."""
+    from montaj import sceneclip
+
+    for k, v in sceneclip.catalog().items():
+        print(f"{k:16s} [{v['group']}] props: {', '.join(v['props']) or '—'}" + (f"  | {v['doc'][:140]}" if v["doc"] else ""))
+
+
+def cmd_make_broll(a: argparse.Namespace) -> None:
+    """Səhnəni render edib layihəyə B-roll kimi əlavə edir (plan-da "name" və ya "media" ilə işlədilir)."""
+    p = store.load(a.pid)
+    m = _make_broll_media(a.pid, p, {"kind": a.kind, "props": json.loads(a.props or "{}"), "dur": a.dur}, a.dur)
+    print(f"b-roll: {m['id']}  {m['name']}  {m['duration']:.1f} s (Claude-un hazırladığı səhnə: {a.kind})")
+    if a.still:
+        from montaj import sceneclip
+        png = sceneclip.render(a.kind, json.loads(a.props or "{}"), a.dur, _project_theme(p), out_dir(a.pid) / "scenes", still=True)
+        print(f"önizləmə: {png}")
 
 
 def cmd_voice_clean(a: argparse.Namespace) -> None:
@@ -1147,6 +1202,13 @@ def main(argv: list[str] | None = None) -> int:
     lk.add_argument("pid")
     lk.add_argument("--frames", type=int, default=3)
     lk.add_argument("--t", type=float, action="append", help="mənbə videoda kadrın saniyəsi (təkrarlana bilər)")
+    sub.add_parser("scenes", help="Claude-un B-roll səhnələri (kataloq)")
+    mb = sub.add_parser("make-broll", help="səhnəni render edib B-roll kimi əlavə et")
+    mb.add_argument("pid")
+    mb.add_argument("--kind", required=True)
+    mb.add_argument("--props", help="JSON")
+    mb.add_argument("--dur", type=float, default=3.0)
+    mb.add_argument("--still", action="store_true", help="önizləmə kadrı da (PNG)")
     vc = sub.add_parser("voice-clean", help="arxa səsin təmizlənməsi (danışığı qoruyaraq)")
     vc.add_argument("pid")
     vc.add_argument("--mode", choices=["auto", "on", "off"], default="auto")
@@ -1208,7 +1270,7 @@ def main(argv: list[str] | None = None) -> int:
         {"new": cmd_new, "storyboard": cmd_storyboard, "edit": cmd_edit, "apply": cmd_apply,
          "render": cmd_render, "export": cmd_export, "editor": cmd_editor,
          "apply-edits": cmd_apply_edits, "set-client": cmd_set_client, "plan": cmd_plan, "looks": cmd_looks,
-         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "verify": cmd_verify, "words": cmd_words, "fix-word": cmd_fix_word,
+         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "fix-word": cmd_fix_word,
          "variants": cmd_variants, "choose": cmd_choose, "music-preview": cmd_music_preview}[a.cmd](a)
     except UserError as err:
         print(f"XƏTA: {err.message}\nNƏ ETMƏLİ: {err.hint}", file=sys.stderr)
