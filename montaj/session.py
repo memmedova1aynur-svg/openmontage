@@ -97,6 +97,8 @@ def cmd_new(a: argparse.Namespace) -> None:
     proj = node_tl("migrate", proj)
     from montaj import reframe
     w, h = reframe.output_size(reframe.primary_video(proj["media"]), a.aspect if a.aspect in reframe.ASPECTS else "source")
+    if a.size:  # məs. 16:9 seminar → 9:16: kəsim kiçik olur; istəyə görə 1080x1920-yə böyüdülür (yumşalma açıq bildirilir)
+        w, h = (int(x) // 2 * 2 for x in a.size.lower().split("x"))
     proj.update(options=options, aspect=a.aspect, width=w, height=h, brand=brand, clientId=brand and brand["id"])
     store.save(pid, proj, proj["revision"])
     print(f"layihə: {pid}  çıxış: {w}x{h}")
@@ -1181,6 +1183,79 @@ def cmd_ad_plan(a: argparse.Namespace) -> None:
         print(" -", line)
 
 
+def cmd_highlights(a: argparse.Namespace) -> None:
+    """Uzun videodan (seminar, çıxış) müstəqil qısa Reels hissələri: bal, səbəb, hazır `extract` əmri.
+    Təklifdir — transkripti oxu, kontekstsiz anlaşılmayan hissəni seçmə."""
+    from montaj import seminar
+
+    p = store.load(a.pid)
+    words = _ad_words(a.pid, p)
+    by_media: dict[str, list[dict[str, Any]]] = {}
+    for w in words:
+        by_media.setdefault(w["media"], []).append(w)
+    n = 0
+    for mid, ws in by_media.items():
+        for c in seminar.highlights(ws, a.min, a.max, a.top):
+            n += 1
+            print(f"{n}. {c['s'] // 60:.0f}:{c['s'] % 60:04.1f}–{c['e'] // 60:.0f}:{c['e'] % 60:04.1f} ({c['dur']} s, bal {c['score']}): "
+                  f"“{c['start_text'][:70]}” … “{c['end_text'][-60:]}”")
+            if c["why"]:
+                print("   " + "; ".join(c["why"]))
+            print(f"   extract {a.pid} {mid}:{c['s']:.2f}-{c['e']:.2f} --title '<ad>'")
+    if not n:
+        print("uyğun hissə tapılmadı (müddət həddlərini --min/--max ilə dəyiş)")
+
+
+def cmd_extract(a: argparse.Namespace) -> None:
+    """Hissəni ayrıca layihəyə çıxarır: eyni orijinal (hard link — surət yox), eyni analiz (təkrar transkripsiya yox),
+    müştəri/rəng/format ana layihədən. Sonra adi iş axını: retakes/cut, framefix, voice-clean, plan..."""
+    import os as _os
+
+    parent = store.load(a.pid)
+    mid, _, rng = a.range.rpartition(":")
+    s, _, e = rng.partition("-")
+    s, e = float(s), float(e)
+    m = next((x for x in parent["media"] if x["id"] == mid), None) if mid else next(
+        (x for x in parent["media"] if x.get("hasVideo") and x.get("role") != "broll"), None)
+    if not m:
+        raise UserError("Media tapılmadı.", "highlights çıxışındakı əmri olduğu kimi işlədin.")
+    base = node_tl("migrate", node_tl("newProject", {"id": "tmp", "title": a.title}))
+    child = store.create(a.title, base)
+    cid = child["id"]
+    src = store.project_dir(a.pid) / m["file"]
+    dst = store.project_dir(cid) / m["file"]
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        _os.link(src, dst)  # eyni fayl, əlavə disk yoxdur
+    except OSError:
+        shutil.copyfile(src, dst)
+    store.add_media_record(cid, dict(m))
+    an = analysis.analysis_path(store.project_dir(a.pid), m["id"])
+    words: list[dict[str, Any]] = []
+    if an.is_file():
+        dst_an = analysis.analysis_path(store.project_dir(cid), m["id"])
+        dst_an.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(an, dst_an)
+        words = [w for w in json.loads(an.read_text(encoding="utf-8")).get("words") or [] if w["s"] >= s - 0.02 and w["e"] <= e + 0.05]
+    proj = store.load(cid)
+    for k in ("brand", "clientId", "options", "aspect", "width", "height", "fps", "fpsRate"):
+        if parent.get(k) is not None:
+            proj[k] = parent[k]
+    proj["parent"] = {"id": a.pid, "media": m["id"], "range": [s, e]}
+    store.save(cid, proj, proj["revision"])
+    try:
+        psb = _load_draft(a.pid)
+    except Exception:  # noqa: BLE001
+        psb = {}
+    card = {"id": "c1", "mediaId": m["id"], "srcIn": round(s, 3), "srcOut": round(e, 3), "include": True,
+            "words": [{"w": w["w"], "s": w["s"], "e": w["e"]} for w in words], "text": " ".join(w["w"] for w in words)}
+    _save_draft(cid, {"generator": "rules", "musicMood": "", "musicNote": "", "overallNote": "", "removed": {},
+                      "subtitles": True, "candidates": {m["id"]: [{"words": words}]}, "cards": [card],
+                      "frames": {k: v for k, v in (psb.get("frames") or {}).items() if k == m["id"]},
+                      "status": "draft", "options": proj.get("options") or {}})
+    print(f"layihə: {cid}  ({e - s:.1f} s, ana layihə {a.pid}) — sonra: retakes/cut, framefix, voice-clean, looks, variants")
+
+
 def cmd_save(a: argparse.Namespace) -> None:
     """Layihə paketi (orijinal videolar OLMADAN): montaj qərarları, analiz, tarixçə, qaralama, Claude-un B-rollu,
     musiqi, yoxlama hesabatları. Orijinal Drive linkindən bərpa olunur. Şəxsi saxlama üçündür — public repoya qoyma."""
@@ -1425,6 +1500,7 @@ def main(argv: list[str] | None = None) -> int:
     n.add_argument("--aspect", default="9:16")
     n.add_argument("--cut", default="suggest", choices=["keep", "suggest", "auto"])
     n.add_argument("--duration", type=float)
+    n.add_argument("--size", help="çıxış ölçüsü, məs. 1080x1920 (kiçik kəsim böyüdülür — standart: böyütmə yoxdur)")
     for k in ("format", "goal", "style", "extras"):
         n.add_argument(f"--{k}", action="append")
     for name in ("storyboard", "apply", "render", "export"):
@@ -1458,6 +1534,15 @@ def main(argv: list[str] | None = None) -> int:
     vf.add_argument("pid")
     vf.add_argument("--mp4")
     vf.add_argument("--no-asr", action="store_true")
+    hl = sub.add_parser("highlights", help="uzun videodan müstəqil qısa hissələr (seminar)")
+    hl.add_argument("pid")
+    hl.add_argument("--min", type=float, default=20)
+    hl.add_argument("--max", type=float, default=75)
+    hl.add_argument("--top", type=int, default=8)
+    ex = sub.add_parser("extract", help="hissəni ayrıca layihəyə çıxar ([media:]başla-son)")
+    ex.add_argument("pid")
+    ex.add_argument("range")
+    ex.add_argument("--title", required=True)
     asn = sub.add_parser("ad-scan", help="reklam faktları (qiymət, tarix, çağırış, faydalar)")
     asn.add_argument("pid")
     apl = sub.add_parser("ad-plan", help="reklam üçün 3 storyboard variantı (plan faylları)")
@@ -1516,7 +1601,7 @@ def main(argv: list[str] | None = None) -> int:
         {"new": cmd_new, "storyboard": cmd_storyboard, "edit": cmd_edit, "apply": cmd_apply,
          "render": cmd_render, "export": cmd_export, "editor": cmd_editor,
          "apply-edits": cmd_apply_edits, "set-client": cmd_set_client, "plan": cmd_plan, "looks": cmd_looks,
-         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "fix-word": cmd_fix_word,
+         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "highlights": cmd_highlights, "extract": cmd_extract, "fix-word": cmd_fix_word,
          "variants": cmd_variants, "choose": cmd_choose, "music-preview": cmd_music_preview}[a.cmd](a)
     except UserError as err:
         print(f"XƏTA: {err.message}\nNƏ ETMƏLİ: {err.hint}", file=sys.stderr)

@@ -520,3 +520,36 @@ def test_ad_scan_plan_variants(tmp_path, monkeypatch, capsys):
     assert session.main(["choose", pid, str(o / "plan_A.json")]) == 0
     assert session.main(["render", pid]) == 0
     assert any(c.get("type") == "offer" for c in store.load(pid)["clips"])
+
+
+def test_seminar_highlights_extract(tmp_path, monkeypatch, capsys):
+    """Seminar: müstəqil hissələr (təşkilati/asılı başlanğıc seçilmir), hissə ayrıca layihəyə çıxır —
+    orijinal hard link (surət yox), analiz təkrar istifadə olunur, kart aralığı düzgündür."""
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import analysis, seminar, session, store
+
+    def W(txt, t0):
+        return [{"w": w, "s": round(t0 + i * 0.35, 2), "e": round(t0 + i * 0.35 + 0.3, 2), "p": 0.9} for i, w in enumerate(txt.split())]
+    words, t = [], 0.0
+    for s in ["Salam, xoş gəlmisiniz.", "Niyə uşaq ağlayanda onu susdurmaq səhvdir?", "Çünki hissini tanımır.",
+              "Yəni, ən vacib addım hissi tanımaqdır.", "Kimin sualı var?", "Bu barədə sonra danışarıq."]:
+        ws = W(s, t); words += ws; t = ws[-1]["e"] + 0.9
+    hs = seminar.highlights(words, min_s=3, max_s=12)
+    assert hs and hs[0]["start_text"].startswith("Niyə") and hs[0]["end_text"].endswith("tanımaqdır.")
+    assert not any(h["start_text"].startswith(("Salam", "Kimin", "Bu")) for h in hs)
+
+    p = store.load(pid)
+    m = p["media"][0]
+    f = analysis.analysis_path(store.project_dir(pid), m["id"])
+    f.parent.mkdir(parents=True, exist_ok=True)
+    f.write_text(json.dumps({"mediaId": m["id"], "words": [dict(w, s=w["s"] + 0.5, e=w["e"] + 0.5) for w in words], "model": "test"}))
+    assert session.main(["highlights", pid, "--min", "3", "--max", "12"]) == 0
+    assert "extract" in capsys.readouterr().out
+    assert session.main(["extract", pid, f"{m['id']}:2.0-6.5", "--title", "Hissə bir"]) == 0
+    c = store.load("hisse-bir")
+    assert c["parent"]["id"] == pid and c["width"] == p["width"] and [x["id"] for x in c["media"]] == [m["id"]]
+    a_src, a_dst = store.project_dir(pid) / m["file"], store.project_dir("hisse-bir") / m["file"]
+    assert a_dst.stat().st_ino == a_src.stat().st_ino or a_dst.read_bytes() == a_src.read_bytes()
+    assert analysis.analysis_path(store.project_dir("hisse-bir"), m["id"]).is_file(), "analiz təkrar istifadə olunur"
+    card = session._load_draft("hisse-bir")["cards"][0]
+    assert (card["srcIn"], card["srcOut"]) == (2.0, 6.5) and all(2.0 - 0.02 <= w["s"] and w["e"] <= 6.55 for w in card["words"])

@@ -90,6 +90,17 @@ def suggest_fix(src: Path, m: dict[str, Any], src_in: float, src_out: float, out
         notes.append(f"əyrilik ölçülmədi: {tilt['why']}")
     zr = rotation_zoom(rot, sw, sh) if rot else 1.0
     samples = reframe.detect_faces(src, src_in, src_out, step=max(0.5, (src_out - src_in) / 8))
+    # bir neçə nəfər kadrdadırsa — danışan şəxs (ağız nahiyəsindəki hərəkətdən); kadraj ona görə qurulur
+    if max((len(x["faces"]) for x in samples), default=0) > 1:
+        from montaj import seminar
+
+        sp = seminar.active_speaker(src, src_in, min(src_out, src_in + 20))
+        if sp["speaker"] is not None:
+            scx = sp["faces"][sp["speaker"]]["cx"]
+            samples = [{**x, "faces": sorted(x["faces"], key=lambda f: abs(f["x"] + f["w"] / 2 - scx))[:1]} for x in samples]
+            notes.append(f"kadrda {len(sp['faces'])} nəfər — kadraj danışan şəxsə görə")
+        else:
+            notes.append(f"kadrda {len(sp['faces'])} nəfər — danışan aydın deyil, hamısı kadra salınır")
     faces = [f for x in samples for f in x["faces"][:1]]
     if not same:
         aspect = next((k for k, v in reframe.ASPECTS.items() if abs(v - out_w / out_h) < 0.02), "9:16")
