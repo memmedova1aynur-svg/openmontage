@@ -97,7 +97,11 @@ Key capability families to look for in the output:
 
 | Skill | File | Trigger | Agent Skills (Layer 3) |
 |-------|------|---------|----------------------|
-| Video Editing | `creative/video-editing.md` | Cut decisions, pacing, rhythm | `ffmpeg`, `video-toolkit` |
+| **Editing Craft** | `creative/editing-craft.md` | **Read before every edit/compose.** Cut grammar, rhythm, attention curve, transitions, finishing — shared by all formats | `ffmpeg`, `gsap` |
+| Video Editing (talking head) | `creative/video-editing.md` | Paper edit, filler/dead-air cuts, punch-ins, B-roll cover, captions, dialogue sound | `ffmpeg`, `video-toolkit` |
+| Ad Editing | `creative/ad-editing.md` | Commercial structures, 3-second hooks, product hero shots, supers, cut-downs and aspect versions | `ffmpeg` |
+| Faceless Explainer Editing | `creative/faceless-explainer-editing.md` | Beat sheet → picture, build-don't-present, match cuts, SFX choreography for animated/narrated videos | `gsap`, `hyperframes` |
+| VO Production | `creative/vo-production.md` | Writing for the ear, directing TTS, take verification by transcription, `vo_master` finishing chain, mixing against music | `elevenlabs`, `text-to-speech` |
 | Enhancement Strategy | `creative/enhancement-strategy.md` | Overlay placement and density | `ffmpeg` |
 | Data Visualization | `creative/data-visualization.md` | Chart type selection, animation, label placement | `d3-viz`, `remotion-best-practices` |
 | Video Stitching | `creative/video-stitching.md` | Multi-clip assembly, AI clip chaining, spatial composition | `ffmpeg`, `video-toolkit` |
@@ -289,6 +293,7 @@ Cross-cutting skills that apply to all pipelines:
 |-------|------|---------|
 | Onboarding | `meta/onboarding.md` | First-interaction greeting, capability discovery, starter prompts |
 | Reviewer | `meta/reviewer.md` | Self-review protocol after every stage |
+| **Editor QC** | `meta/editor-qc.md` | **Mandatory final pass before any render is presented/published**: `delivery_qc` measurements + senior-editor rubric |
 | Checkpoint Protocol | `meta/checkpoint-protocol.md` | When/how to checkpoint and request human approval |
 | Skill Creator | `meta/skill-creator.md` | Dynamically create new skills during pipeline runs |
 | Animation Runtime Selector | `meta/animation-runtime-selector.md` | Choose render runtime + animation library per scene |

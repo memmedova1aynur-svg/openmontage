@@ -313,6 +313,9 @@ Run at **compose** and **publish** stages. Ensures the agent reviewed the actual
 4. **Promise preservation**: If `promise_preservation.silent_downgrade_detected` is true: **CRITICAL** — "Self-review detected silent downgrade from motion-led to still-led."
 
 ### At publish stage:
+
+- Confirm `meta/editor-qc.md` ran on the exact file being delivered: `delivery_qc` verdict has no `fail`, every `warn` fixed or justified, rubric ≥ 4 on all dimensions.
+
 1. Verify that `final_review` was passed through as a required artifact
 2. If `final_review.status` is not `pass`: **CRITICAL** — "Cannot publish with a non-passing self-review"
 3. If `final_review.issues_found` is non-empty and `recommended_action` is not `present_to_user`: **SUGGESTION** — "Self-review found issues; verify they were resolved before publishing"

@@ -76,6 +76,13 @@ When the user asks to make, create, produce, or generate any video content — a
 
 The intelligence is in the skills, not in improvised code. An agent that reads the director skills and Layer 3 knowledge will produce significantly better output than one that calls tools directly with generic prompts.
 
+## Professional Finish — Editing Craft and Editor QC (Binding)
+
+Every production, in every pipeline, is edited and finished to a professional editor's standard:
+
+1. **Before the edit/assembly/compose stage**, read `skills/creative/editing-craft.md` and the playbook for the format: `creative/video-editing.md` (talking head), `creative/ad-editing.md` (ads/promos), `creative/faceless-explainer-editing.md` (animated/narrated). With narration, also read `creative/vo-production.md`.
+2. **Before presenting any final render** to the user, run `skills/meta/editor-qc.md`: the `delivery_qc` tool (loudness, true peak, black/frozen frames, dead air, shot rhythm, bitrate) plus the 8-dimension rubric. A render with a `fail` is not delivered; report the measurements and scores with the video.
+
 ## What OpenMontage Is
 
 OpenMontage is an instruction-driven video production system. The AI agent IS the intelligence — it reads instructions (pipeline manifests + stage director skills + meta skills) and drives the pipeline using tools.

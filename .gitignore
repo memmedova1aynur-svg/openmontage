@@ -114,3 +114,8 @@ brand_profiles/**/assets/
 # Montaj paneli yerləşdirmə sirləri
 deploy/.env
 .montaj/
+
+# Client data is private: keep it out of this public fork
+instagram-clients/*
+!instagram-clients/README.md
+!instagram-clients/_template/

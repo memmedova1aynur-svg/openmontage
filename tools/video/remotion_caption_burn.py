@@ -133,6 +133,13 @@ class RemotionCaptionBurn(BaseTool):
                     "See asset_manifest overlays from the asset-director."
                 ),
             },
+            "caption_bottom_offset": {
+                "type": "integer",
+                "description": (
+                    "Caption distance from the bottom edge in px (default 80). "
+                    "Use ~500 for 1080x1920 reels so Instagram's UI does not cover them."
+                ),
+            },
             "force_ffmpeg": {
                 "type": "boolean",
                 "default": False,
@@ -273,6 +280,7 @@ class RemotionCaptionBurn(BaseTool):
         font_size: int,
         highlight_color: str,
         overlays: list[dict] | None = None,
+        caption_bottom_offset: int | None = None,
     ) -> ToolResult:
         root = self._find_remotion_root()
         if root is None:
@@ -319,6 +327,8 @@ class RemotionCaptionBurn(BaseTool):
             "fontSize": font_size,
             "highlightColor": highlight_color,
         }
+        if caption_bottom_offset is not None:
+            props["captionBottomOffset"] = caption_bottom_offset
         props_dir = root / "public" / "demo-props"
         props_dir.mkdir(parents=True, exist_ok=True)
         props_file = props_dir / f"caption-burn-{Path(input_path).stem}.json"
@@ -480,6 +490,7 @@ class RemotionCaptionBurn(BaseTool):
                 input_path, output_path, captions,
                 words_per_page, font_size, highlight_color,
                 overlays=overlays,
+                caption_bottom_offset=inputs.get("caption_bottom_offset"),
             )
         else:
             result = self._render_ffmpeg(input_path, output_path, captions)

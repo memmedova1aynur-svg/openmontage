@@ -10,6 +10,63 @@ description: >-
 
 # ig-repurpose
 
+## Which client
+
+This project runs several clients' Instagram accounts. Every per-account file
+lives in `instagram-clients/<client>/` at the project root, where `<client>` is
+the client's folder name (lowercase, hyphens). These paths are relative to
+the project root, so when a script in this folder takes an output path, pass
+it the absolute one.
+
+Client folders are private and are NOT committed to this repo (it is a public
+fork; see `.gitignore`). The copy that persists is the `instagram-clients`
+folder in the user's Google Drive, one subfolder per client. If
+`instagram-clients/<client>/` is missing locally, download it from Drive
+first. After you create or change a client file, upload it back to the same
+Drive subfolder, updating the existing file rather than adding a duplicate.
+On Drive each file is a Google Doc, written in Azerbaijani so the agency can
+read it, and named in Azerbaijani: `voice.md` is "Səs profili", `audit.md` is
+"Analiz", `profile-rewrite.md` is "Profil yenidən yazılışı". Upload markdown
+with conversion on (not raw `.md`, which Drive cannot preview), and replace
+emoji outside the Basic Multilingual Plane (e.g. U+1F447) with plain symbols
+or words: the converter corrupts them.
+
+Draft in the chat first. Scripts, captions, plans and other drafts are
+discussed and revised in the conversation; only what the user approves is saved
+to the client's Drive folder. Never upload a draft the user has not approved.
+This includes the voice profile: keep it updated locally as facts change, but
+upload it to Drive only when the user explicitly says to.
+
+Agency rules, for every client, overriding anything below that conflicts:
+- No agitation. Never show the expert's struggles, fears or private life.
+  Present them professionally: decisions, knowledge, growth.
+- One video, one topic. No jumping between events or subjects in one reel.
+- Every video stands alone. No "part 1" or cliffhangers unless the user asks
+  for a series.
+- Always write the full spoken text of every video: conversational
+  Azerbaijani in short lines, no bookish phrasing. Do not label scripts
+  "prompter" or "directions"; the team decides on set whether to read it from
+  the teleprompter, say it from memory or speak freely. Experts shoot 5-10
+  videos in one 1-2 hour session. Facts only the expert knows (their story,
+  program details, their own methods) go in as [square-bracket blanks]; never
+  invent them. Methodology advice is phrased as advice ("do X"), not as the
+  expert's personal habit, unless the expert has confirmed it. Documents sent
+  to the expert hold only what they say; montage plans go to the team
+  separately.
+- Follow the positioning section of the client's voice profile above all.
+- Carousels are 5-6 slides at most. Vary the cover between consecutive
+  carousels (renderer variants light / dark / split, different icons) while
+  staying inside the client's brand colours and fonts.
+
+1. Work out which client this is for. If the user has not named one and the
+   conversation has not already settled it, list the folders in
+   `instagram-clients/` and ask. Never guess, and never carry one client's
+   voice, numbers or plans into another client's work.
+2. If the client has no folder yet, copy `instagram-clients/_template/` to
+   `instagram-clients/<client>/` and fill in what you know.
+3. Read `instagram-clients/<client>/voice.md` before writing anything, and
+   write in the content language it names.
+
 One good long asset contains four to six posts. Most people extract one and
 throw the rest away.
 
