@@ -439,12 +439,114 @@ def _sfx_media(pid: str, kind: str) -> dict[str, Any]:
     return rec
 
 
-def cmd_plan(a: argparse.Namespace) -> None:
-    """Təsdiqlənmiş storyboard planını (JSON məlumat) layihəyə tətbiq edir — hər video üçün kod yazılmır."""
-    plan = json.loads(Path(a.plan).read_text(encoding="utf-8"))
-    for s in plan.get("sfx") or []:
-        _sfx_media(a.pid, s["kind"])
+# Rəng korreksiyası şablonları — hamısı yüngül; dəri rəngi və detal qorunur; süni kəskinlik/"4K effekti" yoxdur.
+# Hər video üçün `looks` əmri orijinal + A/B/C müqayisə şəklini bir neçə təmsilçi kadrda hazırlayır,
+# istifadəçi seçir, seçim plan.json-da "look" ilə verilir ("look": null — rəng düzəlişi yoxdur).
+LOOKS: dict[str, dict[str, float]] = {
+    "A": {"contrast": 1.03, "saturation": 1.03, "vibrance": 0.04},
+    "B": {"brightness": 0.012, "contrast": 0.98, "saturation": 1.04, "vibrance": 0.03, "temperature": 6100},
+    "C": {"contrast": 1.04, "saturation": 0.98, "depth": 0.6, "temperature": 6700},
+}
+LOOK_LABELS = {"A": "orijinala yaxın, təbii", "B": "yumşaq və isti", "C": "təmiz və neytral"}
+LOOK_KEYS = ("brightness", "contrast", "saturation", "vibrance", "depth", "sharpen", "temperature")
+DEFAULT_LOOK = "A"
+
+
+def _rep_frames(p: dict[str, Any], n: int = 3) -> list[tuple[dict[str, Any], float]]:
+    """Təmsilçi kadrlar: fərqli kliplərdən / videonun fərqli hissələrindən (mənbə vaxtı ilə)."""
+    media = {m["id"]: m for m in p["media"]}
+    vids = [c for c in p["clips"] if c["track"] == "v1" and media.get(c.get("media"), {}).get("hasVideo")
+            and not media[c["media"]].get("isImage")]
+    if vids:
+        vids = sorted(vids, key=lambda c: -(c["srcOut"] - c["srcIn"]))[:n]
+        if len(vids) < n:  # az klip — ən uzun klipin içindən əlavə kadr
+            c = vids[0]
+            extra = [(c, c["srcIn"] + (c["srcOut"] - c["srcIn"]) * k / (n + 1)) for k in range(1, n + 1)]
+            return [(media[c["media"]], t) for c, t in extra][:n]
+        return [(media[c["media"]], (c["srcIn"] + c["srcOut"]) / 2) for c in vids]
+    m = next((x for x in p["media"] if x.get("hasVideo") and not x.get("isImage")), None)
+    if not m:
+        raise UserError("Layihədə video yoxdur.", "Əvvəlcə `new` ilə video əlavə edin.")
+    d = float(m.get("duration") or 3)
+    return [(m, d * k / (n + 1)) for k in range(1, n + 1)]
+
+
+def cmd_looks(a: argparse.Namespace) -> None:
+    """Rəng variantları: sətirlər — təmsilçi kadrlar, sütunlar — Orijinal, A, B, C (render ilə eyni filtrlər)."""
+    from montaj import render
+
     p = store.load(a.pid)
+    frames = _rep_frames(p, a.frames)
+    if a.t:
+        m0 = frames[0][0]
+        frames = [(m0, float(t)) for t in a.t]
+    font = render._font()
+    o = out_dir(a.pid)
+    cols = ["orijinal", *LOOKS]
+    tiles: list[Path] = []
+    for r, (m, t) in enumerate(frames):
+        src = store.project_dir(a.pid) / m["file"]
+        for name in cols:
+            label = "Orijinal" if name == "orijinal" else f"{name}: {LOOK_LABELS[name]}"
+            adj = {} if name == "orijinal" else LOOKS[name]
+            f = ([render.HDR_TO_SDR] if m.get("hdr") else []) + render.color_filters(adj) + render.sharpen_filter(adj)
+            f.append("scale=360:-2:flags=lanczos")
+            if font and r == 0:
+                esc = label.replace("\\", "").replace(":", "\\:").replace("'", "")
+                f.append(f"drawbox=y=0:w=iw:h=34:color=black@0.65:t=fill,drawtext=fontfile={font}:text='{esc}':x=8:y=8:fontsize=17:fontcolor=white")
+            tile = o / f"reng_{r}_{name}.png"
+            subprocess.run(["ffmpeg", "-y", "-v", "error", "-ss", f"{t:.3f}", "-i", str(src), "-frames:v", "1",
+                            "-vf", ",".join(f), str(tile)], check=True)
+            tiles.append(tile)
+    k = len(cols)
+    ins = sum((["-i", str(x)] for x in tiles), [])
+    rows = "".join(f"{''.join(f'[{r * k + i}]' for i in range(k))}hstack={k}[r{r}];" for r in range(len(frames)))
+    fc = rows + ("".join(f"[r{r}]" for r in range(len(frames))) + f"vstack={len(frames)}" if len(frames) > 1 else "").rstrip(";")
+    if len(frames) == 1:
+        fc = rows.rstrip(";").replace("[r0]", "")
+    sheet = o / "reng_variantlari.jpg"
+    subprocess.run(["ffmpeg", "-y", "-v", "error", *ins, "-filter_complex", fc, "-q:v", "3", str(sheet)], check=True)
+    for x in tiles:
+        x.unlink()
+    print("kadrlar:", ", ".join(f"{m.get('name')} {t:.1f} s" for m, t in frames))
+    print(sheet)
+
+
+def _music_media(pid: str, src: Path) -> dict[str, Any]:
+    """İstifadəçinin verdiyi musiqi faylını layihəyə media kimi əlavə edir (orijinal dəyişmir)."""
+    import hashlib
+
+    from montaj import media as mediautil
+
+    src = Path(src)
+    if not src.is_file():
+        raise UserError(f"Musiqi faylı tapılmadı: {src}", "Faylı söhbətə əlavə edin və ya linkini verin.")
+    h = hashlib.sha1(src.read_bytes()).hexdigest()[:10]
+    mid = f"music_{h}"
+    have = next((m for m in store.load(pid)["media"] if m["id"] == mid), None)
+    if have:
+        return have
+    dst = store.originals_dir(pid) / f"{mid}{src.suffix.lower() or '.m4a'}"
+    shutil.copyfile(src, dst)
+    os.chmod(dst, 0o444)
+    rec = {"id": mid, "name": src.name, "file": f"media/originals/{dst.name}", "size": dst.stat().st_size,
+           "source": {"type": "music", "name": src.name}, **mediautil.probe(dst)}
+    rec.update(hasVideo=False, isImage=False)  # üz qabığı şəkli olan fayllar da yalnız səs kimi
+    if not rec.get("hasAudio"):
+        raise UserError("Musiqi faylında səs yoxdur.", "Başqa fayl verin.")
+    store.add_media_record(pid, rec)
+    return rec
+
+
+def apply_plan(pid: str, p: dict[str, Any], plan: dict[str, Any], plan_name: str = "plan.json") -> dict[str, Any]:
+    """Planı layihənin SURƏTİNƏ tətbiq edir və nəticəni qaytarır (saxlamır). Storyboard variantlarının
+    önizləməsi və `plan` əmri eyni funksiyanı işlədir."""
+    from montaj import quality
+
+    for s in plan.get("sfx") or []:
+        _sfx_media(pid, s["kind"])
+    mus = plan.get("music")
+    mus_rec = _music_media(pid, Path(mus["file"])) if mus else None
     q = node_tl("migrate", p)
     was_manual = {c["id"] for c in q["clips"] if c.get("manual")}
     q["clips"] = [c for c in q["clips"] if not (c.get("origin") == "plan" and not c.get("manual"))]
@@ -470,8 +572,28 @@ def cmd_plan(a: argparse.Namespace) -> None:
         q = node_tl("setFrame", q, mid["id"], fr, {"manual": False})
     for g in plan.get("graphics") or []:
         q = node_tl("addGraphic", q, {**g, "origin": "plan"})
+
+    # rəng: plan şablonu ("look" işarəsi olan) yenilənir, əl ilə dəyişdirilmiş rəngə toxunulmur
+    look_name = plan.get("look", DEFAULT_LOOK)
+    if look_name and look_name not in LOOKS:
+        raise UserError(f"Naməlum rəng şablonu: {look_name}", "Mövcud: " + ", ".join(LOOKS))
+    vids = [c for c in q["clips"] if c["track"] == "v1"]
+    owned = [c for c in vids if not any(k in (c.get("adjust") or {}) for k in LOOK_KEYS) or (c.get("adjust") or {}).get("look")]
+    expo = quality.exposure_offsets(owned, {m["id"]: m for m in q["media"]}, store.project_dir(pid)) \
+        if look_name and plan.get("matchExposure", True) else {}
+    for c in owned:
+        adj = {k: v for k, v in (c.get("adjust") or {}).items() if k not in LOOK_KEYS and k != "look"}
+        if look_name:
+            adj.update(LOOKS[look_name], look=look_name)
+            if c["id"] in expo:
+                adj["brightness"] = round(adj.get("brightness", 0) + expo[c["id"]], 3)
+        if adj:
+            c["adjust"] = adj
+        else:
+            c.pop("adjust", None)
+
     for s in plan.get("sfx") or []:
-        med = next(x for x in store.load(a.pid)["media"] if x["id"] == f"sfx_{s['kind']}")
+        med = next(x for x in store.load(pid)["media"] if x["id"] == f"sfx_{s['kind']}")
         if not any(x["id"] == med["id"] for x in q["media"]):
             q["media"].append(med)
         q = node_tl("addMedia", {**q, "media": [x for x in q["media"] if x["id"] != med["id"]]}, med,
@@ -479,14 +601,35 @@ def cmd_plan(a: argparse.Namespace) -> None:
         new = q["clips"][-1]
         new["volume"] = s.get("vol", 0.3)
         new["origin"] = "plan"
+    if mus_rec:  # musiqi: m1 trekində, yumşaq giriş/çıxış, danışıqda azalır
+        q["clips"] = [c for c in q["clips"] if not (c["track"] == "m1" and c.get("origin") == "plan")]
+        total = sum(c["srcOut"] - c["srcIn"] for c in node_tl("videoClips", q))
+        at = float(mus.get("start", 0))
+        q = node_tl("addMedia", {**q, "media": [x for x in q["media"] if x["id"] != mus_rec["id"]]}, mus_rec,
+                    {"targetTrack": "m1", "at": at})
+        new = q["clips"][-1]
+        src_in = float(mus.get("from", 0))
+        new.update(srcIn=round(src_in, 3), srcOut=round(min(float(mus_rec["duration"]), src_in + max(0.5, total - at)), 3),
+                   volume=float(mus.get("volume", 0.12)), fadeIn=float(mus.get("fadeIn", 1.2)),
+                   fadeOut=float(mus.get("fadeOut", 2.0)), origin="plan")
+        q.setdefault("mix", {})["duck"] = bool(mus.get("duck", True))
     for c in q["clips"]:  # plan qərarları "əl ilə" sayılmır
         if c["id"] not in was_manual and c.get("origin") in ("plan", "ai", "import", "auto", None):
             c["manual"] = False
-    q["planApplied"] = {"at": __import__("time").time(), "file": Path(a.plan).name}
+    q["planApplied"] = {"at": __import__("time").time(), "file": plan_name, "look": look_name}
+    return q
+
+
+def cmd_plan(a: argparse.Namespace) -> None:
+    """Təsdiqlənmiş storyboard planını (JSON məlumat) layihəyə tətbiq edir — hər video üçün kod yazılmır."""
+    plan = json.loads(Path(a.plan).read_text(encoding="utf-8"))
+    p = store.load(a.pid)
+    q = apply_plan(a.pid, p, plan, Path(a.plan).name)
     cur = store.load(a.pid)
     saved = store.save(a.pid, q, cur["revision"])
     print(f"plan tətbiq olundu: {len(plan.get('graphics') or [])} qrafika, {len(plan.get('zooms') or [])} yaxınlaşma, "
-          f"{len(plan.get('sfx') or [])} səs effekti, {len(plan.get('corrections') or [])} düzəliş; versiya {saved['revision']}")
+          f"{len(plan.get('sfx') or [])} səs effekti, {len(plan.get('corrections') or [])} düzəliş, "
+          f"rəng: {q['planApplied']['look'] or 'yox'}, musiqi: {'var' if plan.get('music') else 'yox'}; versiya {saved['revision']}")
 
 
 def _start(q: dict[str, Any], cid: str) -> float:
@@ -496,6 +639,209 @@ def _start(q: dict[str, Any], cid: str) -> float:
             return t
         t += c["srcOut"] - c["srcIn"]
     return t
+
+
+def _analyses(pid: str, p: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    out = {}
+    for m in p["media"]:
+        f = analysis.analysis_path(store.project_dir(pid), m["id"])
+        if f.is_file():
+            out[m["id"]] = json.loads(f.read_text(encoding="utf-8"))
+    return out
+
+
+def _tc(t: float | None) -> str:
+    return "—" if t is None else f"{int(t // 60)}:{t % 60:04.1f}"
+
+
+def _latest_render(pid: str) -> Path:
+    mp4s = sorted(out_dir(pid).glob(f"{pid}_r*.mp4"), key=lambda x: int(x.stem.rsplit("_r", 1)[1]))
+    if not mp4s:
+        raise UserError("Render tapılmadı.", f"Əvvəlcə `render {pid}`.")
+    return mp4s[-1]
+
+
+def cmd_cut(a: argparse.Namespace) -> None:
+    """Storyboard qaralamasında mənbə aralığını çıxarır (təkrar/alınmayan cümlə). Sərhədlər orijinal səsin
+    ən sakit yerinə çəkilir; söz kəsilmir; şübhəli sərhəddə material saxlanılır. Təsdiqə qədər yalnız qaralamadır."""
+    from montaj import media as mediautil
+    from montaj import quality
+
+    sb = _load_draft(a.pid)
+    p = store.load(a.pid)
+    media = {m["id"]: m for m in p["media"]}
+    ans = _analyses(a.pid, p)
+    for spec in a.ranges:
+        mid, _, rng = spec.rpartition(":")
+        x, _, y = rng.partition("-")
+        x, y = float(x), float(y)
+        cands = [c for c in sb["cards"] if (not mid or c["mediaId"] == mid) and c["srcIn"] < y and c["srcOut"] > x]
+        if not cands:
+            raise UserError(f"{spec}: bu aralıqda hissə yoxdur.", "Mənbə saniyələrini storyboard.md-dən götürün.")
+        mid = cands[0]["mediaId"]
+        rms = quality.frame_rms(mediautil.read_mono(store.project_dir(a.pid) / media[mid]["file"], quality.SR))
+        ref = quality.speech_level(rms)
+        words = (ans.get(mid) or {}).get("words") or []
+        out_t, ok1 = quality.safe_boundary(rms, x, "out", words, ref)
+        in_t, ok2 = quality.safe_boundary(rms, y, "in", words, ref)
+        new_cards = []
+        for c in sb["cards"]:
+            if c not in cands:
+                new_cards.append(c)
+                continue
+            if c["srcIn"] < out_t - 0.3:
+                new_cards.append({**c, "srcOut": round(min(c["srcOut"], out_t), 3),
+                                  "words": [w for w in c.get("words", []) if w["e"] <= out_t + 1e-6]})
+            if c["srcOut"] > in_t + 0.3:
+                new_cards.append({**c, "id": c["id"] + "b" if c["srcIn"] < out_t - 0.3 else c["id"], "srcIn": round(max(c["srcIn"], in_t), 3),
+                                  "words": [w for w in c.get("words", []) if w["s"] >= in_t - 1e-6]})
+        for c in new_cards:
+            c["text"] = " ".join(w["w"] for w in c.get("words", [])).strip()
+        sb["cards"] = new_cards
+        flag = "" if ok1 and ok2 else "  ŞÜBHƏLİ: sakit yer tapılmadı, material saxlanıldı — dinləyib yoxlayın"
+        print(f"çıxarıldı {mid} {x:.2f}–{y:.2f} → {out_t:.2f}–{in_t:.2f}{flag}")
+    _save_draft(a.pid, sb)
+    o = out_dir(a.pid)
+    contact_sheet(a.pid, sb, o / "storyboard.jpg")
+    (o / "storyboard.md").write_text(summary(a.pid, sb), encoding="utf-8")
+
+
+def cmd_verify(a: argparse.Namespace) -> None:
+    """Yekun render yoxlaması: kəsim sərhədləri, səs/görüntü, kliklər, yekun səsin yenidən tanınması."""
+    from montaj import quality
+
+    p = store.load(a.pid)
+    mp4 = Path(a.mp4) if a.mp4 else _latest_render(a.pid)
+    rep = quality.verify(p, store.project_dir(a.pid), mp4, _analyses(a.pid, p), asr=not a.no_asr)
+    (out_dir(a.pid) / f"{mp4.stem}_yoxlama.json").write_text(json.dumps(rep, ensure_ascii=False, indent=1), encoding="utf-8")
+    for c in rep["checks"]:
+        print("✓", c)
+    for x in rep["problems"]:
+        print("!", _tc(x["t"]), x["what"])
+    for u in rep["unverified"]:
+        print("?", "yoxlanılmayıb:", u)
+    print("problem yoxdur" if not rep["problems"] else f"{len(rep['problems'])} yer yoxlanmalıdır")
+
+
+def cmd_words(a: argparse.Namespace) -> None:
+    """Montajda qalan şübhəli tanınmış sözlər (vaxt ilə) — istifadəçiyə qısa siyahı."""
+    from montaj import quality
+
+    p = store.load(a.pid)
+    ws = quality.suspicious_words(p, _analyses(a.pid, p), a.threshold)
+    if not ws:
+        print("şübhəli söz yoxdur")
+    for w in ws:
+        print(f"{_tc(w['t'])}  “{w['word']}”  ({w['context']})")
+
+
+def cmd_fix_word(a: argparse.Namespace) -> None:
+    """Sözü layihənin hər yerində düzəldir və yadda saxlayır (təkrar analiz/render onu geri qaytarmır)."""
+    p = store.load(a.pid)
+    r = node_tl("replaceEverywhere", node_tl("migrate", p), a.wrong, a.right)
+    saved = store.save(a.pid, r["project"], p["revision"])
+    print(f"“{a.wrong}” → “{a.right}”: {r.get('count', '?')} yer; versiya {saved['revision']}")
+
+
+def cmd_variants(a: argparse.Namespace) -> None:
+    """3 storyboard variantının önizləməsi: hər plan qaralamanın SURƏTİNƏ tətbiq olunur, yüngül (540p)
+    önizləmə render edilir, əsas anlardan kadrlar götürülür. Layihə dəyişmir."""
+    import copy
+    import tempfile
+
+    from montaj import render
+    from montaj.server import _project_logo
+
+    base = store.load(a.pid)
+    sb = _load_draft(a.pid)
+    font = render._font()
+    o = out_dir(a.pid)
+    rows = []
+    for k, plan_file in enumerate(a.plans):
+        letter = "ABCDEF"[k]
+        plan = json.loads(Path(plan_file).read_text(encoding="utf-8"))
+        sbv = copy.deepcopy(sb)
+        ov = plan.get("storyboard") or {}
+        for n in ov.get("exclude", []):
+            sbv["cards"][n - 1]["include"] = False
+        for n in ov.get("include", []):
+            sbv["cards"][n - 1]["include"] = True
+        for n, txt in (ov.get("text") or {}).items():
+            sbv["cards"][int(n) - 1]["onScreenText"] = txt
+        if ov.get("order"):
+            cards = sbv["cards"]
+            sbv["cards"] = [cards[n - 1] for n in ov["order"]] + [c for i, c in enumerate(cards) if i + 1 not in ov["order"]]
+        r = node_tl("applyStoryboard", node_tl("migrate", copy.deepcopy(base)), sbv,
+                    {"frames": sbv.get("frames") or {}, "brand": base.get("brand")})
+        q = apply_plan(a.pid, r["project"], plan, Path(plan_file).name)
+        q["width"], q["height"] = 540, int(round(540 * base["height"] / base["width"] / 2) * 2)
+        mp4 = o / f"variant_{letter}.mp4"
+        render.render(q, store.project_dir(a.pid), mp4, lambda x: None, logo_path=_project_logo(q, a.pid))
+        total = sum(c["srcOut"] - c["srcIn"] for c in node_tl("videoClips", q))
+        lay_t = sorted({round(float(g.get("start", 0)) + min(1.0, (g["srcOut"] - g["srcIn"]) / 2), 2)
+                        for g in q["clips"] if g["track"] == "t1"})
+        times = sorted({0.8, *lay_t[:3], max(0.5, total - 1.0)})[:5]
+        tiles = []
+        for i, t in enumerate(times):
+            tile = Path(tempfile.mkstemp(suffix=".png")[1])
+            vf = "scale=270:-2"
+            if font and i == 0:
+                title = f"{letter}: {plan.get('title', '')}"[:38].replace(":", "\\:").replace("'", "")
+                vf += f",drawbox=y=0:w=iw:h=30:color=black@0.7:t=fill,drawtext=fontfile={font}:text='{title}':x=6:y=7:fontsize=15:fontcolor=white"
+            subprocess.run(["ffmpeg", "-y", "-v", "error", "-ss", f"{t:.2f}", "-i", str(mp4), "-frames:v", "1", "-vf", vf, str(tile)], check=True)
+            tiles.append(tile)
+        row = o / f"variant_{letter}.jpg"
+        ins = sum((["-i", str(x)] for x in tiles), [])
+        subprocess.run(["ffmpeg", "-y", "-v", "error", *ins, "-filter_complex", f"hstack={len(tiles)}" if len(tiles) > 1 else "null",
+                        "-q:v", "3", str(row)], check=True)
+        for x in tiles:
+            x.unlink()
+        rows.append(row)
+        print(f"{letter}: {plan.get('title', '')} — {total:.1f} s, kadrlar {', '.join(f'{t:.1f}' for t in times)} s; önizləmə {mp4}")
+    sheet = o / "storyboard_variantlari.jpg"
+    ins = sum((["-i", str(x)] for x in rows), [])
+    w = max(int(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "stream=width", "-of", "csv=p=0", str(x)],
+                               capture_output=True, text=True).stdout.strip() or 0) for x in rows)
+    pads = "".join(f"[{i}]pad={w}:ih:0:0:color=white[p{i}];" for i in range(len(rows)))
+    subprocess.run(["ffmpeg", "-y", "-v", "error", *ins, "-filter_complex",
+                    pads + "".join(f"[p{i}]" for i in range(len(rows))) + f"vstack={len(rows)}" if len(rows) > 1 else "null",
+                    "-q:v", "3", str(sheet)], check=True)
+    print(sheet)
+
+
+def cmd_choose(a: argparse.Namespace) -> None:
+    """İstifadəçinin seçdiyi storyboard variantını tətbiq edir: qaralama düzəlişləri → apply → plan."""
+    plan = json.loads(Path(a.plan).read_text(encoding="utf-8"))
+    sb = _load_draft(a.pid)
+    ov = plan.get("storyboard") or {}
+    for n in ov.get("exclude", []):
+        sb["cards"][n - 1]["include"] = False
+    for n in ov.get("include", []):
+        sb["cards"][n - 1]["include"] = True
+    for n, txt in (ov.get("text") or {}).items():
+        sb["cards"][int(n) - 1]["onScreenText"] = txt
+    if ov.get("order"):
+        cards = sb["cards"]
+        sb["cards"] = [cards[n - 1] for n in ov["order"]] + [c for i, c in enumerate(cards) if i + 1 not in ov["order"]]
+    _save_draft(a.pid, sb)
+    cmd_apply(argparse.Namespace(pid=a.pid))
+    cmd_plan(argparse.Namespace(pid=a.pid, plan=a.plan))
+
+
+def cmd_music_preview(a: argparse.Namespace) -> None:
+    """Hər musiqi faylı üçün qısa dinləmə nümunəsi: danışığın başlanğıcı + musiqi (danışıqda azalır)."""
+    from montaj import quality
+
+    p = store.load(a.pid)
+    try:
+        speech = _latest_render(a.pid)
+    except UserError:
+        m = next(x for x in p["media"] if x.get("hasAudio") and x.get("hasVideo"))
+        speech = store.project_dir(a.pid) / m["file"]
+    for i, f in enumerate(a.files, 1):
+        out = out_dir(a.pid) / f"musiqi_{i}.m4a"
+        quality.music_preview(speech, Path(f), out, a.seconds, a.volume)
+        print(f"{i}: {Path(f).name} → {out}")
 
 
 def cmd_export(a: argparse.Namespace) -> None:
@@ -520,6 +866,35 @@ def main(argv: list[str] | None = None) -> int:
         n.add_argument(f"--{k}", action="append")
     for name in ("storyboard", "apply", "render", "export"):
         sub.add_parser(name).add_argument("pid")
+    lk = sub.add_parser("looks", help="rəng variantları (orijinal + A/B/C) bir neçə kadrda")
+    lk.add_argument("pid")
+    lk.add_argument("--frames", type=int, default=3)
+    lk.add_argument("--t", type=float, action="append", help="mənbə videoda kadrın saniyəsi (təkrarlana bilər)")
+    ct = sub.add_parser("cut", help="qaralamadan mənbə aralığını çıxar: [media:]başla-son")
+    ct.add_argument("pid")
+    ct.add_argument("ranges", nargs="+")
+    vf = sub.add_parser("verify", help="yekun render yoxlaması")
+    vf.add_argument("pid")
+    vf.add_argument("--mp4")
+    vf.add_argument("--no-asr", action="store_true")
+    wd = sub.add_parser("words", help="şübhəli tanınmış sözlər")
+    wd.add_argument("pid")
+    wd.add_argument("--threshold", type=float, default=0.6)
+    fw = sub.add_parser("fix-word", help="sözü hər yerdə düzəlt və yadda saxla")
+    fw.add_argument("pid")
+    fw.add_argument("wrong")
+    fw.add_argument("right")
+    vr = sub.add_parser("variants", help="2–3 storyboard variantının önizləməsi (layihə dəyişmir)")
+    vr.add_argument("pid")
+    vr.add_argument("plans", nargs="+")
+    ch = sub.add_parser("choose", help="seçilmiş variantı tətbiq et (qaralama → apply → plan)")
+    ch.add_argument("pid")
+    ch.add_argument("plan")
+    mp = sub.add_parser("music-preview", help="musiqi dinləmə nümunələri")
+    mp.add_argument("pid")
+    mp.add_argument("files", nargs="+")
+    mp.add_argument("--seconds", type=float, default=20)
+    mp.add_argument("--volume", type=float, default=0.12)
     e = sub.add_parser("edit")
     e.add_argument("pid")
     e.add_argument("--exclude")
@@ -545,7 +920,9 @@ def main(argv: list[str] | None = None) -> int:
     try:
         {"new": cmd_new, "storyboard": cmd_storyboard, "edit": cmd_edit, "apply": cmd_apply,
          "render": cmd_render, "export": cmd_export, "editor": cmd_editor,
-         "apply-edits": cmd_apply_edits, "set-client": cmd_set_client, "plan": cmd_plan}[a.cmd](a)
+         "apply-edits": cmd_apply_edits, "set-client": cmd_set_client, "plan": cmd_plan, "looks": cmd_looks,
+         "cut": cmd_cut, "verify": cmd_verify, "words": cmd_words, "fix-word": cmd_fix_word,
+         "variants": cmd_variants, "choose": cmd_choose, "music-preview": cmd_music_preview}[a.cmd](a)
     except UserError as err:
         print(f"XƏTA: {err.message}\nNƏ ETMƏLİ: {err.hint}", file=sys.stderr)
         return 2

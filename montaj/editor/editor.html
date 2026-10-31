@@ -245,6 +245,8 @@ textarea { width: 100%; min-height: 90px; font: 12px var(--mono); background: va
     if (b) f.push(`brightness(${(1 + b * 1.6).toFixed(3)})`);
     if (c !== 1) f.push(`contrast(${c})`);
     if (sa !== 1) f.push(`saturate(${sa})`);
+    if (adj.vibrance) f.push(`saturate(${(1 + Number(adj.vibrance)).toFixed(3)})`); // təxmini
+    if (adj.depth) f.push(`contrast(${(1 + 0.03 * Number(adj.depth)).toFixed(3)})`); // təxmini
     if (t < 6450) f.push(`sepia(${Math.min(0.6, (6500 - t) / 6500 * 1.2).toFixed(3)})`);
     else if (t > 6550) f.push(`hue-rotate(${(-(t - 6500) / 6500 * 25).toFixed(1)}deg)`);
     if (adj.soften) f.push(`blur(${(0.8 * adj.soften).toFixed(2)}px)`);
@@ -548,9 +550,12 @@ textarea { width: 100%; min-height: 90px; font: 12px var(--mono); background: va
   }
 
   // --- seçilmiş element paneli ---
-  const PRESETS = [['Təbii', {}], ['İsti', { temperature: 5400, saturation: 1.08 }], ['Soyuq', { temperature: 7600 }],
-    ['Canlı', { saturation: 1.3, contrast: 1.08 }], ['Yumşaq işıq', { brightness: 0.04, contrast: 0.92 }], ['Ağ-qara', { saturation: 0 }]];
-  const ADJ_KEYS = ['brightness', 'contrast', 'saturation', 'temperature'];
+  // A/B/C = session.LOOKS (montaj/session.py) — eyni dəyərlər
+  const PRESETS = [['Orijinal', {}], ['A: təbii', { contrast: 1.03, saturation: 1.03, vibrance: 0.04, look: 'A' }],
+    ['B: yumşaq-isti', { brightness: 0.012, contrast: 0.98, saturation: 1.04, vibrance: 0.03, temperature: 6100, look: 'B' }],
+    ['C: təmiz-neytral', { contrast: 1.04, saturation: 0.98, depth: 0.6, temperature: 6700, look: 'C' }],
+    ['İsti', { temperature: 5400, saturation: 1.08 }], ['Soyuq', { temperature: 7600 }], ['Ağ-qara', { saturation: 0 }]];
+  const ADJ_KEYS = ['brightness', 'contrast', 'saturation', 'temperature', 'sharpen', 'vibrance', 'depth', 'look'];
   function visualPanel(p, c) {
     const m = MEDIA[c.media] || {}; const fr = c.frame || null; const adj = c.adjust || {};
     const ar = (p.width || 9) / (p.height || 16); const sw = m.width || 9, sh = m.height || 16;
@@ -561,7 +566,8 @@ textarea { width: 100%; min-height: 90px; font: 12px var(--mono); background: va
       s: patch.s ?? fr?.s ?? 1, keys: [{ t: c.srcIn, cx: patch.cx ?? key.cx, cy: patch.cy ?? key.cy }], warnings: [] }), 'Kadr dəyişdi');
     const rng = (label, val, min, max, step, fn, show) => { const i = el('input', { type: 'range', min, max, step, value: val, 'aria-label': label }); const o = el('span', { class: 'nums' }, show(Number(val)));
       i.oninput = () => { o.textContent = show(Number(i.value)); }; i.onchange = () => fn(Number(i.value)); return el('div', { class: 'row' }, el('span', { class: 'k' }, label), i, o); };
-    const setAdj = (patch, msg) => op(() => TL.setAdjust(S.hist.present, c.id, patch, { all: !!S.adjAll }), msg);
+    // əl ilə dəyişiklik plan şablonunun işarəsini (look) silir — plan yenidən tətbiq olunanda toxunulmur
+    const setAdj = (patch, msg) => op(() => TL.setAdjust(S.hist.present, c.id, { look: null, ...patch }, { all: !!S.adjAll }), msg);
     const all = el('input', { type: 'checkbox', id: 'adjAll', checked: !!S.adjAll }); all.onchange = () => { S.adjAll = all.checked; };
     const mirAll = el('input', { type: 'checkbox', id: 'mirAll', checked: !!p.mirrorAll }); mirAll.onchange = () => op(() => TL.setProjectField(S.hist.present, 'mirrorAll', mirAll.checked), mirAll.checked ? 'Bütün çəkiliş güzgüləndi' : 'Güzgü söndü');
     const mir = el('input', { type: 'checkbox', id: 'mirClip', checked: !!adj.mirror }); mir.onchange = () => setAdj({ mirror: mir.checked }, 'Güzgü');
@@ -580,8 +586,9 @@ textarea { width: 100%; min-height: 90px; font: 12px var(--mono); background: va
       rng('Kontrast', adj.contrast ?? 1, 0.5, 1.5, 0.01, (v) => setAdj({ contrast: v }), (v) => v.toFixed(2)),
       rng('Doyumluluq', adj.saturation ?? 1, 0, 2, 0.01, (v) => setAdj({ saturation: v }), (v) => v.toFixed(2)),
       rng('Temperatur', adj.temperature || 6500, 3000, 10000, 100, (v) => setAdj({ temperature: v }), (v) => `${v}K`),
+      rng('Kəskinlik', adj.sharpen || 0, 0, 1, 0.05, (v) => setAdj({ sharpen: v || null }), (v) => (v ? `${Math.round(v * 100)}%` : 'yox')),
       rng('Yumşaltma', adj.soften || 0, 0, 1, 0.05, (v) => setAdj({ soften: v || null }), (v) => (v ? `${Math.round(v * 100)}%` : 'yox')),
-      el('p', { class: 'hint' }, 'Yumşaltma bütün kadra tətbiq olunur (kənarları qoruyur); üzü ayrıca seçən retuş yoxdur. Rəng və yumşaltmanın önizləməsi təxminidir, dəqiq nəticə MP4-dədir.'),
+      el('p', { class: 'hint' }, 'Yumşaltma bütün kadra tətbiq olunur (kənarları qoruyur); üzü ayrıca seçən retuş yoxdur. Rəng və yumşaltmanın önizləməsi təxminidir, kəskinlik önizləmədə görünmür — dəqiq nəticə MP4-dədir.'),
       el('div', { class: 'row' }, orig, el('button', { onclick: () => op(() => TL.setFrame(TL.resetAdjust(S.hist.present, c.id, { all: !!S.adjAll }), c.id, null), 'Kadr və rəng sıfırlandı') }, 'Sıfırla'))];
   }
   function op(fn, msg) { try { commit(fn(), msg); } catch (e) { flash(e.message, true); } }

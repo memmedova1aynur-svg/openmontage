@@ -45,11 +45,11 @@ if ! ldconfig -p 2>/dev/null | grep -q libEGL.so.1 && command -v apt-get >/dev/n
 fi
 
 if [ "${MONTAJ_PREFETCH_WHISPER:-1}" = "1" ]; then
-  echo "[setup] Whisper modeli əvvəlcədən endirilir (${MONTAJ_WHISPER_MODEL:-small})"
+  echo "[setup] Whisper modeli əvvəlcədən endirilir (${MONTAJ_WHISPER_MODEL:-large-v3-turbo})"
   python3 - <<'PY' || echo "[setup] Model endirilmədi — ilk transkripsiyada yenidən cəhd olunacaq" >&2
 import os
 from faster_whisper import WhisperModel
-WhisperModel(os.environ.get("MONTAJ_WHISPER_MODEL", "small"), device="cpu", compute_type="int8")
+WhisperModel(os.environ.get("MONTAJ_WHISPER_MODEL", "large-v3-turbo"), device="cpu", compute_type="int8")
 print("[setup] model hazırdır")
 PY
 fi

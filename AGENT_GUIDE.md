@@ -16,8 +16,10 @@ This skill teaches you to run discovery, classify the user's setup, present capa
 
 ## Montaj Panel — Phone / Drive-link Session Entry Point
 
-When the user sends a Google Drive video link together with a montaj request for the
-`montaj/` panel (Azerbaijani phone workflow), read **`montaj/SESSIYA_TELIMATI.md`** and follow it.
+When the user sends a Google Drive video link together with a montaj request (Azerbaijani phone
+workflow), read **`montaj/IS_AXINI.md`** first — it is the primary, user-approved workflow (short survey BEFORE the Drive link →
+3 visual storyboards → colour/music choice → final MP4, no editor panel unless asked) — and use
+`montaj/SESSIYA_TELIMATI.md` for command details.
 That workflow runs the panel's own code headlessly via `python -m montaj.session` and never
 enables paid services.
 
