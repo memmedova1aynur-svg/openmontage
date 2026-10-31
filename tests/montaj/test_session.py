@@ -104,8 +104,8 @@ def test_editor_page_and_edits_roundtrip(tmp_path, monkeypatch):
     assert len(fl) == 8 and max(abs(a - b) for a, b in zip(fl, bp)) <= 1 / 30 + 0.005
 
 
-def test_plan_default_look_and_sharpen(tmp_path, monkeypatch):
-    """Standart rəng (C) planla tətbiq olunur, əl ilə rəngə toxunmur, "look": null ilə götürülür; render kəskinlik əlavə edir."""
+
+def _fixture(tmp_path, monkeypatch):
     import sys
     from pathlib import Path
 
@@ -113,52 +113,139 @@ def test_plan_default_look_and_sharpen(tmp_path, monkeypatch):
     from tests.montaj import editor_fixture
 
     monkeypatch.setenv("MONTAJ_OUT_DIR", str(tmp_path / "out"))
-    pid = editor_fixture.make(tmp_path / "data", tmp_path)
+    return editor_fixture.make(tmp_path / "data", tmp_path)
+
+
+def _draft_and_analysis(pid):
+    """Fixture-in saxta söz vaxtları ilə storyboard qaralaması və analiz faylı (Whisper işlədilmir)."""
+    from montaj import analysis, session, store
+    from tests.montaj.editor_fixture import WORDS
+
+    p = store.load(pid)
+    mid = p["media"][0]["id"]
+    f = analysis.analysis_path(store.project_dir(pid), mid)
+    f.parent.mkdir(parents=True, exist_ok=True)
+    f.write_text(json.dumps({"mediaId": mid, "words": [dict(w, p=0.4 if w["w"] == "üç" else 0.95) for w in WORDS],
+                             "model": "test"}), encoding="utf-8")
+    frame = next(c["frame"] for c in p["clips"] if c["track"] == "v1")
+    cards = [{"id": f"c{i + 1}", "mediaId": mid, "srcIn": a, "srcOut": b, "include": True,
+              "words": [w for w in WORDS if a <= w["s"] and w["e"] <= b]} for i, (a, b) in enumerate([(0.5, 3.6), (6.5, 9.6)])]
+    for c in cards:
+        c["text"] = " ".join(w["w"] for w in c["words"])
+    session._save_draft(pid, {"generator": "rules", "musicMood": "", "musicNote": "", "overallNote": "", "removed": {},
+                              "subtitles": True, "candidates": {mid: [{"words": WORDS}]}, "cards": cards,
+                              "frames": {mid: frame}, "status": "draft", "options": {}})
+    return mid
+
+
+def test_plan_look_choice_and_manual_color_kept(tmp_path, monkeypatch):
+    """Rəng: standart A; seçilən şablon (C) render filtrinə düşür; əl ilə rəngə toxunulmur; "look": null götürür."""
+    pid = _fixture(tmp_path, monkeypatch)
     from montaj import render, session, store
 
     plan = tmp_path / "plan.json"
     plan.write_text(json.dumps({"captions": {"enabled": True, "style": {"type": "caption"}}}))
     assert session.main(["plan", pid, str(plan)]) == 0
     vids = [c for c in store.load(pid)["clips"] if c["track"] == "v1"]
-    assert vids and all({k: c["adjust"][k] for k in session.LOOKS["C"]} == session.LOOKS["C"] for c in vids)
-    chain = render.video_chain(vids[0], {"width": 202, "height": 360}, 202, 360, "30", False, 30)
-    assert "unsharp=5:5:0.25:5:5:0" in chain and "eq=brightness=0.010:contrast=1.040:saturation=1.050" in chain
-    assert chain.index("scale=202:360") < chain.index("unsharp"), "kəskinlik çıxış ölçüsündə"
+    assert vids and all(c["adjust"]["look"] == "A" for c in vids), "standart: A (təbii)"
+    plan.write_text(json.dumps({"look": "C"}))
+    assert session.main(["plan", pid, str(plan)]) == 0
+    v = next(c for c in store.load(pid)["clips"] if c["track"] == "v1")
+    chain = render.video_chain(v, {"width": 202, "height": 360}, 202, 360, "30", False, 30)
+    assert "curves=master=" in chain and "colortemperature=temperature=6700" in chain
+    assert "unsharp" not in chain, "süni kəskinlik yoxdur"
 
-    p = store.load(pid)  # bir klipin rəngi əl ilə dəyişdirilir
+    p = store.load(pid)  # bir klipin rəngi əl ilə dəyişdirilir (look işarəsi yoxdur)
     p["clips"] = [dict(c, adjust={"contrast": 1.2, "mirror": True}) if c["id"] == vids[0]["id"] else c for c in p["clips"]]
     store.save(pid, p, p["revision"])
-    plan.write_text(json.dumps({"captions": {"enabled": True, "style": {"type": "caption"}}, "look": None}))
+    plan.write_text(json.dumps({"look": None}))
     assert session.main(["plan", pid, str(plan)]) == 0
     after = {c["id"]: c.get("adjust") for c in store.load(pid)["clips"] if c["track"] == "v1"}
     assert after[vids[0]["id"]] == {"contrast": 1.2, "mirror": True}, "əl ilə rəng qorunur"
     assert all(after[c["id"]] is None for c in vids[1:]), "plan şablonu götürülür"
-    no = render.video_chain(vids[1] | {"adjust": {}}, {"width": 202, "height": 360}, 202, 360, "30", False, 30)
-    assert "unsharp" not in no and "eq=" not in no
+    plan.write_text(json.dumps({"look": "Z"}))
+    assert session.main(["plan", pid, str(plan)]) == 2
 
 
-def test_looks_sheet_and_plan_choice(tmp_path, monkeypatch):
-    """`looks` A–D müqayisə şəklini hazırlayır; plan-da seçilən şablon (D) render filtrinə düşür."""
-    import sys
-    from pathlib import Path
-
-    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-    from tests.montaj import editor_fixture
-
-    monkeypatch.setenv("MONTAJ_OUT_DIR", str(tmp_path / "out"))
-    pid = editor_fixture.make(tmp_path / "data", tmp_path)
-    from montaj import media, render, session, store
+def test_looks_sheet(tmp_path, monkeypatch):
+    """`looks`: 3 kadr × (Orijinal, A, B, C) müqayisə şəkli; aralıq fayllar silinir."""
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import media, session
 
     assert session.main(["looks", pid]) == 0
     sheet = tmp_path / "out" / pid / "reng_variantlari.jpg"
     info = media.probe(sheet)
-    assert sheet.stat().st_size > 5000 and info["width"] == 3 * 540, "orijinal + A–D, 2 sıra × 3"
-    assert not list((tmp_path / "out" / pid).glob("reng_*.png")), "aralıq fayllar silinir"
+    assert info["width"] == 4 * 360 and info["height"] == 3 * 202, "3 sətir (640x360 mənbə → 360x202)"
+    assert not list((tmp_path / "out" / pid).glob("reng_*.png"))
+
+
+def test_cut_safe_boundary_keeps_words(tmp_path, monkeypatch, capsys):
+    """`cut`: aralıq qaralamadan çıxarılır, sərhəd söz içinə düşmür; layihə təsdiqsiz dəyişmir."""
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import session, store
+    from tests.montaj.editor_fixture import WORDS
+
+    _draft_and_analysis(pid)
+    rev = store.load(pid)["revision"]
+    assert session.main(["cut", pid, "1.45-1.95"]) == 0  # "iki" (2.0–2.4) saxlanmalı: aralıq onun yanındadır
+    assert session.main(["cut", pid, "1.50-2.95"]) == 0  # "iki" çıxarılır
+    d = session._load_draft(pid)["cards"]
+    for c in d:
+        for t in (c["srcIn"], c["srcOut"]):
+            assert not any(w["s"] + 0.01 < t < w["e"] - 0.01 for w in WORDS), f"kəsim sözün içində: {t}"
+    kept = [w["w"] for c in d for w in c["words"]]
+    assert "iki" not in kept and "bir" in kept and "üç" in kept, kept
+    assert len(d) == 3, "birinci kart iki yerə bölünür"
+    assert store.load(pid)["revision"] == rev, "storyboard təsdiqlənmədən montaj dəyişmir"
+
+
+def test_music_plan_preview_verify_words(tmp_path, monkeypatch, capsys):
+    """Musiqi: plan ilə m1 trekinə (yumşaq giriş/çıxış, ducking); dinləmə nümunəsi; render yoxlaması; şübhəli sözlər."""
+    import subprocess
+
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import media, session, store
+
+    mus = tmp_path / "sinaq_musiqi.m4a"  # yalnız test üçün sintez səs
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-f", "lavfi", "-i", "sine=f=220:d=20", "-c:a", "aac", str(mus)], check=True)
     plan = tmp_path / "plan.json"
-    plan.write_text(json.dumps({"look": "D"}))
+    plan.write_text(json.dumps({"look": None, "music": {"file": str(mus), "volume": 0.1}}))
     assert session.main(["plan", pid, str(plan)]) == 0
-    v = next(c for c in store.load(pid)["clips"] if c["track"] == "v1")
-    chain = render.video_chain(v, {"width": 202, "height": 360}, 202, 360, "30", False, 30)
-    assert "curves=master=" in chain and "vibrance=intensity=0.070" in chain and "unsharp=5:5:0.20" in chain
-    plan.write_text(json.dumps({"look": "Z"}))
-    assert session.main(["plan", pid, str(plan)]) == 2
+    p = store.load(pid)
+    m1 = [c for c in p["clips"] if c["track"] == "m1"]
+    assert len(m1) == 1 and m1[0]["volume"] == 0.1 and m1[0]["fadeIn"] > 0 and m1[0]["fadeOut"] > 0 and p["mix"]["duck"]
+    assert session.main(["plan", pid, str(plan)]) == 0
+    assert len([c for c in store.load(pid)["clips"] if c["track"] == "m1"]) == 1, "təkrar plan musiqini ikiləşdirmir"
+    assert session.main(["music-preview", pid, str(mus), "--seconds", "5"]) == 0
+    prev = tmp_path / "out" / pid / "musiqi_1.m4a"
+    assert media.probe(prev)["hasAudio"] and 4.5 < media.probe(prev)["duration"] < 5.6
+    assert session.main(["render", pid]) == 0
+    _draft_and_analysis(pid)
+    capsys.readouterr()
+    assert session.main(["verify", pid, "--no-asr"]) == 0
+    out = capsys.readouterr().out
+    assert "kəsim sərhədi" in out and "səs/görüntü uzunluğu" in out and "yoxlanılmayıb" in out
+    assert session.main(["words", pid]) == 0
+    assert "“üç”" in capsys.readouterr().out, "aşağı əminlikli söz siyahıda"
+
+
+def test_variants_and_choose(tmp_path, monkeypatch):
+    """2 storyboard variantı önizlənir (layihə dəyişmir); seçilən variant tətbiq olunur."""
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import media, session, store
+
+    _draft_and_analysis(pid)
+    rev = store.load(pid)["revision"]
+    a = tmp_path / "A.json"
+    b = tmp_path / "B.json"
+    a.write_text(json.dumps({"title": "Sakit", "look": "A", "graphics": [{"type": "title", "text": "Başlıq A", "start": 0.2, "dur": 2}]}))
+    b.write_text(json.dumps({"title": "Dinamik", "look": "C", "storyboard": {"order": [2, 1]},
+                             "graphics": [{"type": "card", "heading": "Kart", "text": "B", "start": 1, "dur": 2}]}))
+    assert session.main(["variants", pid, str(a), str(b)]) == 0
+    o = tmp_path / "out" / pid
+    assert media.probe(o / "storyboard_variantlari.jpg")["height"] > 400
+    assert media.probe(o / "variant_B.mp4")["width"] == 540
+    assert store.load(pid)["revision"] == rev, "önizləmə layihəni dəyişmir"
+    assert session.main(["choose", pid, str(b)]) == 0
+    p = store.load(pid)
+    assert any(c.get("type") == "card" for c in p["clips"]) and p["planApplied"]["look"] == "C"

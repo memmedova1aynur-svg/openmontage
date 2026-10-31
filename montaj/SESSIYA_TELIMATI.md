@@ -1,5 +1,8 @@
 # Sessiya təlimatı: istifadəçi Drive linki göndərəndə (montaj paneli, əlavə xərcsiz yol)
 
+> **Əsas iş axını `IS_AXINI.md`-dədir** (sorğu → 3 storyboard → rəng/musiqi seçimi → MP4; panel linki
+> yalnız istəyəndə). Bu fayl əmrlərin təfərrüatı və panel yolu üçündür; ziddiyyətdə `IS_AXINI.md` keçərlidir.
+
 Bu təlimat Claude Code sessiyasındakı agent üçündür. İstifadəçi iPhone-dan Drive linki
 və qısa istək göndərir; montaj bu sessiyanın konteynerində `montaj.session` ilə aparılır.
 
@@ -23,7 +26,7 @@ Addımlar:
 7. Təsdiqdən sonra: `apply <pid>`, `render <pid>`, `export <pid>`.
 8. MP4-ü özün yoxla: ölçü/fps, səs-görüntü, kəsim nöqtələrinin yaxınlığında sözlər
    (transkriptə bax), bir neçə kadr. Problemləri açıq yaz.
-9. **Əl düzəlişi üçün telefon redaktoru** (istifadəçi istəsə və ya hər montajdan sonra):
+9. **Əl düzəlişi üçün telefon redaktoru** (YALNIZ istifadəçi istəyəndə):
    - `python -m montaj.session editor <pid>` → `out/<pid>/editor/index.html` + `preview_<mid>.mp4` (540p, yalnız baxış üçün).
    - Artifact tool ilə `index.html`-i dərc et: `capabilities: {"db": {}, "assets": {}, "user": {}}`, `icon: "film"`. Şəxsi (yalnız sahibi açır).
    - Bulud sessiyasında `publish_files`/`upload_asset` yalnız repo qovluğundakı faylları qəbul edir (`/tmp` və `/mnt/user-data` rədd olunur):

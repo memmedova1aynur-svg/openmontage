@@ -115,7 +115,7 @@ Yoxlama əsası: `tests/montaj/` (Node 12, pytest 19) və brauzer testləri `e2e
 | 8.5 | Arxa fon bulanıqlığı | ⛔ | Seqmentasiya ilə kadr-kadr render keçidi yazılmayıb — düymə qoyulmayıb |
 | 8.6 | Parlaqlıq, kontrast, temperatur, doyumluluq | ✅ | Render-də FFmpeg; önizləmədə CSS (temperatur önizləmədə təxminidir) |
 | 8.7 | Əvvəl/sonra, sıfırlama | ✅ | |
-| 8.8 | Rəng korreksiyası: hər video üçün `session looks <pid>` orijinal + A–D müqayisə şəklini (render ilə eyni filtrlər) hazırlayır, istifadəçi seçir, `plan.json`-da `"look": "A"|"B"|"C"|"D"` (standart C, `null` — yoxdur). Ölçü/fps dəyişmir; əl ilə dəyişdirilmiş rəngə toxunulmur; redaktorda A–D şablonları və “Kəskinlik” sürgüsü | ✅ | Testlər: `test_plan_default_look_and_sharpen`, `test_looks_sheet_and_plan_choice`. Kəskinlik/dərinlik/canlılıq önizləmədə təxmini, dəqiq nəticə MP4-də. Kəskinlik fayl həcmini bir az artırır (Günel, C: 26,3 → 30,9 MB) |
+| 8.8 | Rəng korreksiyası: `session looks` 3 təmsilçi kadr × (Orijinal, A təbii, B yumşaq-isti, C təmiz-neytral), render ilə eyni filtrlər; seçim planda `look`; fərqli işıqlı kliplər yaxınlaşdırılır; əl ilə rəngə toxunulmur; süni kəskinlik yoxdur | ✅ | Testlər: `test_plan_look_choice_and_manual_color_kept`, `test_looks_sheet`. Günel videosunda vizual yoxlanıb |
 
 ## 9. Musiqi, effektlər, qrafika, sonluq
 | # | Tələb | Status | Qeyd |
@@ -166,3 +166,14 @@ real danışıqda səs sinxronu və görünən keyfiyyət, iPhone Safari, Instag
 | 13.6 | Telefondan musiqi | 🟡 | Yalnız .m4a/.mp4 (artifakt mp3/wav qəbul etmir) |
 | 13.7 | “Dataclone 3” motion qrafikası | ⛔ | Repoda tapılmadı |
 | 13.8 | Üz/məhsul üçün avtomatik yer qoruyucusu, smooth push-zoom, PIP | ⛔ | Hələ köçürülməyib |
+
+## 14. Əsas iş axını (IS_AXINI.md) — panelsiz
+| # | Tələb | Status | Qeyd |
+|---|---|---|---|
+| 14.1 | Bir qısa sorğu (yalnız çatışmayan sahələr) | 🟡 | Sessiyadakı `AskUserQuestion` ilə; real istifadədə yoxlanılmayıb |
+| 14.2 | 3 vizual storyboard variantı (real kadrlar + qrafika, 540p önizləmə), layihə dəyişmir; `choose` ilə tətbiq | ✅ | `test_variants_and_choose` (sintetik). Variantların yaradıcı fərqi hər video üçün sessiyadakı Claude-un işidir |
+| 14.3 | Təkrar/alınmayan hissənin çıxarılması: sərhəd səsin ən sakit yerinə, söz kəsilmir, şübhədə material saxlanır | ✅ | `test_cut_safe_boundary_keeps_words` (sintetik). Real danışıqla yoxlanılmayıb |
+| 14.4 | Yekun render yoxlaması: kəsim sərhədləri (enerji + söz), səs/görüntü, kliklər, kəsim yanındakı sözlərin yenidən tanınması | ✅ | Günel videosunda işlədildi; qulaqla dinləmə əvəz etmir (hesabatda yazılır) |
+| 14.5 | Şübhəli sözlər siyahısı (vaxtla), düzəlişlərin yadda qalması | ✅ | `words`, `fix-word` (subtitles.corrections) |
+| 14.6 | Dəqiq transkripsiya | ✅ | `large-v3-turbo` standart: Günel videosunda “small”-ın səhvləri (enişək, terəpiyası, məlim…) düzgün tanındı; 35 s səs ~18 s |
+| 14.7 | Musiqi: dinləmə nümunələri, planla əlavə (fade, ducking) | 🟡 | Kod və test hazır; hüququ məlum musiqi kitabxanası ⛔ — istifadəçi faylı lazımdır |

@@ -13,7 +13,8 @@ import os
 from pathlib import Path
 from typing import Any
 
-DEFAULT_MODEL = os.environ.get("MONTAJ_WHISPER_MODEL", "small")
+# large-v3-turbo: Azərbaycan dilində "small"-dan xeyli dəqiqdir (Günel videosunda sınaqdan keçib), CPU-da ~0.5x real vaxt
+DEFAULT_MODEL = os.environ.get("MONTAJ_WHISPER_MODEL", "large-v3-turbo")
 
 # Azərbaycan dilində tipik pauza/doldurucu sözlər (kiçik hərflə, durğu işarəsiz).
 AZ_FILLERS = {"ee", "eee", "eeee", "ə", "əə", "əəə", "ıı", "ııı", "hmm", "hm", "mm", "mmm", "ah", "eh", "ım", "ıı"}
