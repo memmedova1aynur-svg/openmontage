@@ -40,9 +40,15 @@ Hədəf: video ilk dəfədən hazır olsun, əlavə düzəliş tələb etməsin.
      Fərqli işıqlanan kliplər avtomatik yaxınlaşdırılır (`"matchExposure": true`, ±0.04).
      Dəri rəngi və detal qorunur; güclü doyumluluq, kəskinləşdirmə, “4K effekti” yoxdur;
      retuş/gözəlləşdirmə yalnız ayrıca istəklə.
-   - Musiqi: repoda hüququ təsdiqlənmiş musiqi kitabxanası **yoxdur**. Məqsədə və ritmə uyğun üslubu təklif et
-     və istifadəçidən fayl/link istə (və ya trend musiqini Instagram-da paylaşarkən əlavə etməyi məsləhət gör).
-     Musiqini əlavə etmiş kimi göstərmə. Fayl gələndə: `music-preview <pid> f1 f2 f3` → 20 s-lik dinləmə
+   - Musiqi (özün tap, 2–3 namizəd təklif et), lisenziya kommersiya istifadəsinə uyğun olmalıdır:
+     1) **Freesound** (`tools/audio/freesound_music.py`, `FREESOUND_API_KEY` mühit dəyişəni, pulsuz açar) —
+        yalnız **CC0** (müəllif qeydi tələb etmir). Açar yoxdursa bu yol bağlıdır.
+     2) **Incompetech** (Kevin MacLeod, incompetech.com) — açarsız yüklənir, lisenziya **CC BY 4.0**:
+        caption-a qeyd mütləqdir: “Music: <Ad> — Kevin MacLeod (incompetech.com), CC BY 4.0”. İstifadəçiyə bunu de.
+     3) İstifadəçinin öz faylı/linki.
+     ccMixter yükləmələri bu mühitdə bloklanır (403); Pixabay Music da (403); NC (qeyri-kommersiya) lisenziyalı
+     musiqi müştəri reklamında işlədilmir. Mənbə, müəllif və lisenziyanı layihədə və istifadəçiyə yaz;
+     musiqini əlavə etmiş kimi göstərmə. Namizədlər üçün `music-preview <pid> f1 f2 f3` → 20 s-lik dinləmə
      nümunələri (`musiqi_N.m4a`); seçim planda `"music": {"file": "..", "volume": 0.12, "from": 0}`
      (yumşaq giriş/çıxış, danışıqda azalma avtomatik).
    - SFX məqsədli və ölçülü (whoosh/pop sintez, `sfx`).
