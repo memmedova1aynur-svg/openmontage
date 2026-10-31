@@ -708,12 +708,14 @@ def _apply_broll(pid: str, q: dict[str, Any], b: dict[str, Any]) -> dict[str, An
         raise UserError(f"{m.get('name')}: B-roll çox qısadır.", "dur və from dəyərlərini yoxlayın.")
     mode = b.get("mode", "cover")
     frame = _cover_frame(m, W, H) if mode != "pip" else None
-    if mode in ("cover", "pip"):
+    if mode in ("cover", "pip", "cover_pip"):
         clip = {"id": "b_" + _uuid.uuid4().hex[:10], "track": "v2", "media": m["id"], "srcIn": round(src_in, 3),
                 "srcOut": round(src_in + dur, 3), "start": round(float(b["at"]), 3), "mode": mode,
                 "origin": "plan", "manual": False}
         if frame:
             clip["frame"] = frame
+        if mode == "cover_pip":  # danışan küncdə dairədə qalır
+            clip["pip"] = {"size": float(b.get("size", 0.3)), "x": float(b.get("x", 0.07)), "y": float(b.get("y", 0.6))}
         if mode == "pip":
             sc = float(b.get("scale", 0.42))
             if b.get("x") is not None and b.get("y") is not None:
@@ -724,7 +726,7 @@ def _apply_broll(pid: str, q: dict[str, Any], b: dict[str, Any]) -> dict[str, An
         q["clips"].append(clip)
         return q
     if mode != "insert":
-        raise UserError(f"Naməlum B-roll rejimi: {mode}", "cover, pip və ya insert yazın.")
+        raise UserError(f"Naməlum B-roll rejimi: {mode}", "cover, cover_pip, pip və ya insert yazın.")
     c, cut = _insert_point(pid, q, float(b["at"]))
     lay = {x["id"]: s for x, s in zip(node_tl("videoClips", q), np.cumsum([0] + [y["srcOut"] - y["srcIn"] for y in node_tl("videoClips", q)])[:-1])}
     if lay[c["id"]] + 0.12 < cut < lay[c["id"]] + (c["srcOut"] - c["srcIn"]) - 0.12:
@@ -1183,6 +1185,19 @@ def cmd_ad_plan(a: argparse.Namespace) -> None:
         print(" -", line)
 
 
+def cmd_mg_scan(a: argparse.Namespace) -> None:
+    """Motion graphics üçün: danışıqdakı rəqəmlər (vaxtla) və uyğun qrafik səhnə təklifi (mg_*)."""
+    from montaj import ad
+
+    p = store.load(a.pid)
+    found = ad.scan_numbers(_ad_words(a.pid, p))
+    for f in found:
+        nums = ", ".join(f"{n['value']}{(' ' + n['unit']) if n['unit'] and n['unit'] != '%' else n['unit']}" for n in f["numbers"])
+        print(f"{f['t']:6.2f} s  {nums:28s} → {f['suggest']}  | “{f['text'][:80]}”")
+    if not found:
+        print("danışıqda rəqəm yoxdur — rəqəmsiz səhnələr işlət (mg_steps, mg_code, checklist, timeline); rəqəm uydurma")
+
+
 def cmd_highlights(a: argparse.Namespace) -> None:
     """Uzun videodan (seminar, çıxış) müstəqil qısa Reels hissələri: bal, səbəb, hazır `extract` əmri.
     Təklifdir — transkripti oxu, kontekstsiz anlaşılmayan hissəni seçmə."""
@@ -1534,6 +1549,8 @@ def main(argv: list[str] | None = None) -> int:
     vf.add_argument("pid")
     vf.add_argument("--mp4")
     vf.add_argument("--no-asr", action="store_true")
+    mgs = sub.add_parser("mg-scan", help="danışıqdakı rəqəmlər və qrafik səhnə təklifi (motion graphics)")
+    mgs.add_argument("pid")
     hl = sub.add_parser("highlights", help="uzun videodan müstəqil qısa hissələr (seminar)")
     hl.add_argument("pid")
     hl.add_argument("--min", type=float, default=20)
@@ -1601,7 +1618,7 @@ def main(argv: list[str] | None = None) -> int:
         {"new": cmd_new, "storyboard": cmd_storyboard, "edit": cmd_edit, "apply": cmd_apply,
          "render": cmd_render, "export": cmd_export, "editor": cmd_editor,
          "apply-edits": cmd_apply_edits, "set-client": cmd_set_client, "plan": cmd_plan, "looks": cmd_looks,
-         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "highlights": cmd_highlights, "extract": cmd_extract, "fix-word": cmd_fix_word,
+         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "highlights": cmd_highlights, "extract": cmd_extract, "mg-scan": cmd_mg_scan, "fix-word": cmd_fix_word,
          "variants": cmd_variants, "choose": cmd_choose, "music-preview": cmd_music_preview}[a.cmd](a)
     except UserError as err:
         print(f"XƏTA: {err.message}\nNƏ ETMƏLİ: {err.hint}", file=sys.stderr)

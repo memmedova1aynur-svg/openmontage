@@ -253,7 +253,34 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
 
     font = _font()
     cur = "vbase"
-    # B-roll / PIP: əsas videonun üstündə, yazı və altyazının altında; səsi əsas danışığı əvəz etmir
+    # B-roll / PIP: əsas videonun üstündə, yazı və altyazının altında; səsi əsas danışığı əvəz etmir.
+    # cover_pip: səhnə bütün kadrı tutur, danışan isə küncdə dairədə qalır (motion graphics videoları)
+    cpips = [o for o in plan["overlay"] if o["clip"].get("mode") == "cover_pip"]
+    spk_labels: list[str] = []
+    if cpips:
+        from PIL import Image, ImageDraw
+
+        D = _even(W * float(cpips[0]["clip"].get("pip", {}).get("size", 0.3)))
+        mask = Image.new("L", (D, D), 0)
+        ImageDraw.Draw(mask).ellipse((0, 0, D - 1, D - 1), fill=255)
+        mask.save(workdir / "pip_mask.png")
+        ring = Image.new("RGBA", (D + 12, D + 12), (0, 0, 0, 0))
+        ImageDraw.Draw(ring).ellipse((2, 2, D + 9, D + 9), outline=(255, 255, 255, 235), width=6)
+        ring.save(workdir / "pip_ring.png")
+        n = len(cpips)
+        filters.append(f"[{cur}]split=2[vb_main][vb_spk]")
+        filters.append(f"[vb_spk]split={n}" + "".join(f"[spk{i}]" for i in range(n)) if n > 1 else "[vb_spk]null[spk0]")
+        cur = "vb_main"
+        args.extend(["-loop", "1", "-i", str(workdir / "pip_mask.png")])
+        mi = idx
+        idx += 1
+        filters.append(f"[{mi}:v]format=gray,split={n}" + "".join(f"[pm{i}]" for i in range(n)) if n > 1 else f"[{mi}:v]format=gray[pm0]")
+        args.extend(["-loop", "1", "-i", str(workdir / "pip_ring.png")])
+        ri = idx
+        idx += 1
+        filters.append(f"[{ri}:v]format=rgba,split={n}" + "".join(f"[pr{i}]" for i in range(n)) if n > 1 else f"[{ri}:v]format=rgba[pr0]")
+        spk_labels = [f"spk{i}" for i in range(n)]
+    cp_i = 0
     for i, o in enumerate(plan["overlay"]):
         c = o["clip"]
         m = media[c["media"]]
@@ -274,9 +301,21 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
             chain = video_chain(c, m, W, H, fps_str, False, o["frames"])
             x = y = "0"
         filters.append(f"[{k}:v]{chain},setpts=PTS+{o['start']:.4f}/TB[ov{i}]")
-        filters.append(f"[{cur}][ov{i}]overlay=x={x}:y={y}:eof_action=pass:"
-                       f"enable='between(t,{o['start']:.4f},{o['start'] + o['dur'] - 0.5 / fps:.4f})'[vo{i}]")
+        a_t, b_t = o["start"], o["start"] + o["dur"] - 0.5 / fps
+        filters.append(f"[{cur}][ov{i}]overlay=x={x}:y={y}:eof_action=pass:enable='between(t,{a_t:.4f},{b_t:.4f})'[vo{i}]")
         cur = f"vo{i}"
+        if c.get("mode") == "cover_pip":  # danışan: kadrın üz hissəsi dairədə, sol-aşağıda (sağda Reels düymələri var)
+            pp = c.get("pip") or {}
+            D = _even(W * float(pp.get("size", 0.3)))
+            px = int(W * float(pp.get("x", 0.07)))
+            py = int(H * float(pp.get("y", 0.6)) - D / 2)
+            j = cp_i
+            cp_i += 1
+            filters.append(f"[{spk_labels[j]}]crop=iw*0.62:iw*0.62:iw*0.19:max(0\\,ih*0.36-iw*0.31),scale={D}:{D},format=rgba[sq{j}];"
+                           f"[sq{j}][pm{j}]alphamerge[pc{j}]")
+            filters.append(f"[{cur}][pc{j}]overlay=x={px}:y={py}:enable='between(t,{a_t:.4f},{b_t:.4f})'[vp{j}];"
+                           f"[vp{j}][pr{j}]overlay=x={px - 6}:y={py - 6}:enable='between(t,{a_t:.4f},{b_t:.4f})'[vr{j}]")
+            cur = f"vr{j}"
     from montaj import graphics as G
 
     gfx = [t for t in plan["text"] if G.is_graphic(t["clip"])]

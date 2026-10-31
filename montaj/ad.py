@@ -173,3 +173,55 @@ def plans(scan_res: dict[str, Any], tm: list[tuple[str, float, float, float]], t
     for p in (A, B, C):
         p["_review"] = review + [f"vurğu/siyahı mətni danışıqdan avtomatik qısaldılıb — yoxla: {', '.join(short(b['value'], 6) for b in bens)}"] if bens else list(review)
     return {"A": A, "B": B, "C": C}
+
+
+# ---------------------------------------------------------------------------
+# Motion graphics: danışıqdakı rəqəmlər (qrafika yalnız deyilən rəqəmlərlə qurulur)
+# ---------------------------------------------------------------------------
+
+UNITS = {"faiz": "%", "%": "%", "nəfər": "nəfər", "il": "il", "ay": "ay", "gün": "gün", "saat": "saat", "dəqiqə": "dəqiqə",
+         "dəfə": "dəfə", "manat": "AZN", "azn": "AZN", "min": "min", "milyon": "milyon", "addım": "addım", "qayda": "qayda"}
+
+
+def scan_numbers(words: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Danışıqdakı rəqəm + vahid (vaxtla) və uyğun səhnə təklifi. Rəqəm deyilməyibsə qrafika rəqəmsiz olmalıdır."""
+    ss = quality.sentences(words)
+    out = []
+    for s in ss:
+        # "2022-ci", "2023-də", "5-ci" → rəqəm (Azərbaycanca şəkilçi defislə)
+        raw = [re.sub(r"^(\d+)-[^\d\s]+$", r"\1", w["w"].strip(".,!?;:()")) for w in s["words"]]
+        toks = [_norm(w["w"]) for w in s["words"]]
+        nums = []
+        i = 0
+        while i < len(raw):
+            j = i
+            if re.fullmatch(r"\d+([.,]\d+)?%?", raw[i]):  # rəqəm — tək söz
+                j = i + 1
+            else:  # say sözləri ardıcıllığı: "iki yüz əlli"
+                while j < len(raw) and (toks[j] in NUM_WORDS or (toks[j] in ("yüz", "min") and j > i)):
+                    j += 1
+            if j > i:
+                tokens = [raw[k] if re.fullmatch(r"\d+([.,]\d+)?%?", raw[k]) else toks[k] for k in range(i, j)]
+                pct = tokens[-1].endswith("%")
+                val = _parse_number([t.rstrip("%").replace(",", ".").split(".")[0] for t in tokens])
+                unit = "%" if pct else next((UNITS[t2] for t2 in toks[j:j + 2] if t2 in UNITS), "")
+                if val is not None:
+                    nums.append({"value": val, "unit": unit, "t": s["words"][i]["s"]})
+                i = j
+            else:
+                i += 1
+        if not nums:
+            continue
+        low = s["text"].lower()
+        if any(n["unit"] == "%" for n in nums) and len(nums) == 1:
+            kind = "mg_donut"
+        elif len(nums) == 2 and re.search(r"(əvəzinə|yerinə|qarşı|müqayisə|əvvəl|indi|isə)", low):
+            kind = "mg_compare"
+        elif sum(1 for n in nums if 1900 < n["value"] < 2100) >= 3:
+            kind = "mg_line (il → dəyər)"
+        elif len(nums) >= 2:
+            kind = "mg_bar və ya mg_kpi"
+        else:
+            kind = "mg_kpi (tək rəqəm) və ya bg_number"
+        out.append({"t": s["s"], "text": s["text"], "numbers": nums, "suggest": kind})
+    return out

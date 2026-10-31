@@ -43,6 +43,14 @@ Ara düzəliş raundları təklif etmə.
    Orijinal dəyişmir; yalnız danışıq qatı təmizlənmiş nüsxəni işlədir (musiqi, SFX, B-roll səsi toxunulmaz).
    Təmizlənibsə `ses_evvel_sonra.m4a`-nı qərar mesajına əlavə et. Yaxında danışan başqa adamın səsi də danışıqdır —
    tam silinmir, bunu de. Model (DeepFilterNet3) internetdən endirildiyi üçün ilk işə salmada icazə soruşula bilər.
+2e. **Motion graphics** (data, IT, analitika — qrafika ağırlıqlı):
+   - Qrafik səhnələr (`session scenes`, `mg_*`): `mg_bar` (sütun), `mg_line` (zaman üzrə xətt), `mg_donut` (faiz),
+     `mg_compare` (iki dəyər), `mg_steps` (proses/yol xəritəsi), `mg_code` (kod/terminal), `mg_kpi` (2–4 rəqəm). Müştəri rəngində,
+     rəqəmlər Azərbaycan yazılışı ilə (1 200; 4,5).
+   - `mg-scan <pid>`: danışıqdakı rəqəmlər (vaxtla, "2022-ci", "iyirmi beş" də) və uyğun səhnə təklifi. **Qrafikada yalnız
+     danışıqda deyilən rəqəmlər** — rəqəm yoxdursa rəqəmsiz səhnə (mg_steps, mg_code, checklist, timeline).
+   - Rejim `"mode": "cover_pip"`: səhnə bütün kadrı tutur, danışan sol-aşağıda dairədə qalır (üz hissəsi), danışıq və altyazı
+     davam edir (`size`, `x`, `y` ilə dəyişmək olar). Motion graphics variantında səhnələr ardıcıl gəlir, aralarda danışan tam kadrda.
 2d. **Seminar və uzun çıxış** (VIDEO_TYPES.md, növ 4 — hissə kontekstsiz anlaşılmalı, səbəb əlaqəsi təhrif olunmur):
    - `highlights <pid> [--min 20 --max 75 --top 8]`: müstəqil qısa hissə namizədləri — cümlə başında başlayır, fikir sonunda bitir;
      əvvəlki kontekstə bağlı ("bu", "ona görə", "yəni"…) və təşkilati (salam, sual-cavaba keçid, "sonra danışarıq") başlanğıclar
