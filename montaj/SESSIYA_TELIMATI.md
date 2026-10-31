@@ -26,6 +26,10 @@ Addımlar:
 9. **Əl düzəlişi üçün telefon redaktoru** (istifadəçi istəsə və ya hər montajdan sonra):
    - `python -m montaj.session editor <pid>` → `out/<pid>/editor/index.html` + `preview_<mid>.mp4` (540p, yalnız baxış üçün).
    - Artifact tool ilə `index.html`-i dərc et: `capabilities: {"db": {}, "assets": {}, "user": {}}`, `icon: "film"`. Şəxsi (yalnız sahibi açır).
+   - Bulud sessiyasında `publish_files`/`upload_asset` yalnız repo qovluğundakı faylları qəbul edir (`/tmp` və `/mnt/user-data` rədd olunur):
+     faylları gitignore-dakı `.montaj/` qovluğuna köçür. Capabilities `declare_capabilities` ilə verilir:
+     `{"db": {"rules": [{"path": "edits", "read": "owner", "write": "owner"}]}, "assets": {}, "user": {}}`.
+   - Şriftlər də asset kimi yüklənir və `--assets` JSON-da `"font:<fayl>.woff2": "/_blob/<id>"` açarı ilə verilir (`fonts.editor_font_files()`).
    - Hər `preview_*.mp4`-ü `asset: true` ilə həmin artifact-a yüklə (fayl başına ≤15 MB); `{mid: "/_blob/<id>"}` JSON-u yaz.
    - `editor <pid> --assets <json>` ilə yenidən qur və eyni fayl yolu ilə yenidən dərc et (URL dəyişmir).
    - Linki istifadəçiyə ver. Önizləmə yüklənməsə, səhifə “Videonu telefondan seç” təklif edir (fayl telefonda qalır, müddət yoxlanır).

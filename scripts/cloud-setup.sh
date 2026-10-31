@@ -40,6 +40,7 @@ python3 -m pip install -q -r requirements-dev.txt || true
 echo "[setup] Montaj paneli asılılıqları (faster-whisper, mediapipe, anthropic)"
 python3 -m pip install -q -r montaj/requirements.txt || echo "[setup] bəzi montaj asılılıqları quraşdırılmadı" >&2
 if ! ldconfig -p 2>/dev/null | grep -q libEGL.so.1 && command -v apt-get >/dev/null 2>&1; then
+  (apt-get update -qq >/dev/null 2>&1 || true)
   apt-get install -y -qq libegl1 libgles2 >/dev/null 2>&1 || echo "[setup] libegl1 quraşdırılmadı — avtomatik kadraj işləməyəcək" >&2
 fi
 
