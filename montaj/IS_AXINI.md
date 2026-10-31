@@ -51,6 +51,10 @@ Ara düzəliş raundları təklif etmə.
    - Müştəri brendi (`brand.theme`), məqsəd və əvvəl bəyənilən montajlar: profildəki üslub qeydləri,
      `templates/expert-reels/` (README, VIDEO_TYPES, AUDIT), `instagram-ops/edit-references/`.
      Talking-head, reklam, seminar, motion graphics üçün eyni şablonu məcburi işlətmə.
+   - **Brend rəngi = rəng AİLƏSİ, tək kod deyil** (istifadəçi qərarı). Profildəki `palette.family` və `theme`
+     istiqamətdir: həmin ailənin yaxın çalarlarından videoya uyğun seçmək olar (məs. Nilufar — bənövşəyi ailəsi).
+     “Kod təsdiqlənməyib” xəbərdarlığı vermə. Ailədən kənar rəng işlətmə; bir müştərinin rəngini başqasına keçirmə.
+     Loqo yoxdursa loqo uydurma; istifadəçi loqo versə sonluqda/küncdə işlət.
    - **Storyboard təsdiqlənmədən yekun montaj qərarı tətbiq edilmir** (`variants` layihəni dəyişmir).
 5. **Rəng və musiqi — storyboard ilə EYNİ qərar mesajında.**
    - Rəng: `looks <pid>` → `reng_variantlari.jpg` (3 təmsilçi kadr × Orijinal, A təbii, B yumşaq-isti,
