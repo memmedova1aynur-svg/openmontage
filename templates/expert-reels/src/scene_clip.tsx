@@ -16,6 +16,7 @@ import { CARDS } from "./cards";
 import { ACADEMIC } from "./academic";
 import { STUDIO } from "./studio";
 import { Backdrop, SCENES } from "./scenes";
+import { MG } from "./mg";
 import { FPS, useFonts } from "./theme";
 
 type Input = { kind: string; props?: Record<string, any>; dur?: number };
@@ -23,7 +24,7 @@ const IN = getInputProps() as Input;
 
 export const REGISTRIES: Record<string, Record<string, React.FC<any>>> = {
   scenes: SCENES, rahime: RAHIME, broll: BROLL, blueprint: BLUEPRINT, sheet: SHEET, cards: CARDS,
-  academic: ACADEMIC, studio: STUDIO, cartoon: CARTOON, sketch: SKETCH, paper: PAPER, illustrated: ILLUSTRATED,
+  academic: ACADEMIC, studio: STUDIO, cartoon: CARTOON, sketch: SKETCH, paper: PAPER, illustrated: ILLUSTRATED, mg: MG,
 };
 
 const find = (kind: string): React.FC<any> | undefined => {

@@ -197,3 +197,6 @@ real danışıqda səs sinxronu və görünən keyfiyyət, iPhone Safari, Instag
 | 16.2 | `extract` — hissə ayrıca layihə (hard link, analiz təkrar istifadə) | ✅ | Eyni inode, təkrar transkripsiya yoxdur |
 | 16.3 | Danışan şəxs (ağız hərəkəti, əlavə model yox) → `framefix` kadrajı ona qurur | ✅ | İki nəfərli 16:9 sınaq: hərəkət 17.4 vs 0.002, kadraj danışana |
 | 16.4 | `new --size 1080x1920` — 16:9 → 9:16 kəsimi istəyə görə böyütmək | ✅ | Standart: böyütmə yoxdur |
+| 17.1 | Motion graphics səhnələri: mg_bar, mg_line, mg_donut, mg_compare, mg_steps, mg_code, mg_kpi (müştəri rəngi, az yazılışı) | ✅ | 7-si də render olunur; Data Clone Academy rəngində vizual yoxlama |
+| 17.2 | `cover_pip`: səhnə tam kadr, danışan dairədə (sol-aşağı) | ✅ | `test_motion_graphics_scenes_scan_cover_pip` (kadr piksel yoxlaması) + Günel videosunda vizual |
+| 17.3 | `mg-scan`: danışıqdakı rəqəmlər + səhnə təklifi (il şəkilçisi, say sözləri; rəqəmlər birləşmir) | ✅ | Unit test |

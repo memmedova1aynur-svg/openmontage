@@ -553,3 +553,54 @@ def test_seminar_highlights_extract(tmp_path, monkeypatch, capsys):
     assert analysis.analysis_path(store.project_dir("hisse-bir"), m["id"]).is_file(), "analiz təkrar istifadə olunur"
     card = session._load_draft("hisse-bir")["cards"][0]
     assert (card["srcIn"], card["srcOut"]) == (2.0, 6.5) and all(2.0 - 0.02 <= w["s"] and w["e"] <= 6.55 for w in card["words"])
+
+
+def test_motion_graphics_scenes_scan_cover_pip(tmp_path, monkeypatch):
+    """Motion graphics: 7 qrafik səhnə render olunur; danışıqdakı rəqəmlər tapılır (birləşmir); cover_pip-də
+    səhnə kadrı tutur, danışan isə dairədə görünür. Remotion yoxdursa atlanır."""
+    import subprocess
+
+    import numpy as np
+
+    from montaj import ad, sceneclip
+    if not sceneclip.NODE_MODULES.is_dir():
+        pytest.skip("remotion-composer/node_modules yoxdur")
+
+    def W(txt, t0=0):
+        return [{"w": w, "s": round(t0 + i * 0.35, 2), "e": round(t0 + i * 0.35 + 0.3, 2)} for i, w in enumerate(txt.split())]
+    r = ad.scan_numbers(W("2022-ci ildə 120, 2023-də 260, 2024-də 410.") + W("Əvvəl 8 saat, indi isə 1 saat.", 6) + W("Bu gün hava gözəldir.", 10))
+    assert [n["value"] for n in r[0]["numbers"]] == [2022, 120, 2023, 260, 2024, 410] and r[0]["suggest"].startswith("mg_line")
+    assert r[1]["suggest"] == "mg_compare" and len(r) == 2, "rəqəmsiz cümlə siyahıya düşmür"
+
+    cat = sceneclip.catalog()
+    mg = {"mg_bar": {"items": [{"label": "A", "value": 3}]}, "mg_line": {"points": [{"label": "1", "value": 1}, {"label": "2", "value": 2}]},
+          "mg_donut": {"value": 50}, "mg_compare": {"a": {"label": "A", "value": 1}, "b": {"label": "B", "value": 2}},
+          "mg_steps": {"steps": ["bir", "iki"]}, "mg_code": {"lines": ["print(1)"]}, "mg_kpi": {"items": [{"value": 1200, "label": "x"}]}}
+    assert set(mg) <= set(cat)
+    th = {"primary": "#203040", "primaryDeep": "#101820", "accent": "#F2C94C", "accentSoft": "#DDDDDD", "text": "#FFFFFF", "onAccent": "#101820", "cardAlpha": 0.94}
+    for k, props in mg.items():
+        png = sceneclip.render(k, props, 2.0, th, tmp_path / "scenes", still=True)
+        assert png.stat().st_size > 10000, k
+
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import session, store
+
+    plan = tmp_path / "plan.json"
+    plan.write_text(json.dumps({"look": None, "broll": [{"make": {"kind": "mg_donut", "props": {"value": 50}}, "mode": "cover_pip", "at": 0.5, "dur": 2.0}]}))
+    assert session.main(["plan", pid, str(plan)]) == 0
+    assert session.main(["render", pid]) == 0
+    mp4 = sorted((tmp_path / "out" / pid).glob(f"{pid}_r*.mp4"))[-1]
+    q = store.load(pid)
+    Wd, Hd = q["width"], q["height"]
+    raw = subprocess.run(["ffmpeg", "-v", "error", "-ss", "1.5", "-i", str(mp4), "-frames:v", "1", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
+                         capture_output=True, check=True).stdout
+    fr = np.frombuffer(raw, np.uint8).reshape(Hd, Wd, 3).astype(int)
+    D = int(Wd * 0.3) // 2 * 2
+    cx, cy = int(Wd * 0.07) + D // 2, int(Hd * 0.6)
+    inside = fr[cy - D // 6: cy + D // 6, cx - D // 6: cx + D // 6]
+    scene_bg = fr[int(Hd * 0.08), Wd // 2]
+    assert np.abs(inside.mean(axis=(0, 1)) - scene_bg).sum() > 30, "dairədə danışanın görüntüsü olmalıdır (səhnə fonu deyil)"
+    th0 = session.DEFAULT_SCENE_THEME  # fixture-də müştəri yoxdur → neytral tema; fon primary → primaryDeep qradiyenti
+    hexrgb = lambda h: np.array([int(h[i:i + 2], 16) for i in (1, 3, 5)])
+    px = fr[int(Hd * 0.3), int(Wd * 0.9)]
+    assert min(np.abs(px - hexrgb(th0["primary"])).sum(), np.abs(px - hexrgb(th0["primaryDeep"])).sum()) < 45, "dairədən kənarda səhnə kadrı tutur"
