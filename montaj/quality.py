@@ -404,21 +404,35 @@ def layout_check(project: dict[str, Any], project_dir: Path, workdir: Path) -> l
         tl = pts[-1] if len(pts) > 1 else (float(c["srcOut"]) - float(c["srcIn"])) / 2
         name = f"chk_{c['id']}"
         items.append((name, dict(c, _start=t["start"]), tl))
-        meta[name] = (c, t["start"] + min(tl + 0.05, float(c["srcOut"]) - float(c["srcIn"]) - 0.05))
+        meta[name] = (c, t["start"] + min(tl + 0.05, float(c["srcOut"]) - float(c["srcIn"]) - 0.05), t["start"], t["end"])
     if not items:
         return []
     workdir.mkdir(parents=True, exist_ok=True)
     rast = G.rasterize(items, W, H, (project.get("brand") or {}).get("theme"), workdir)
     out = []
     covers = [(o["start"], o["start"] + o["dur"]) for o in plan["overlay"] if o["clip"].get("mode") != "pip"]
-    for name, (c, t_abs) in meta.items():
+    boxes = {}
+    for name, (c, t_abs, a0, b0) in meta.items():
         info = rast.get(name)
-        if not info:
+        if info:
+            bx = _alpha_box(info["file"], W, H, *G.pos(c))
+            if bx:
+                boxes[name] = (c, a0, b0, bx)
+    # qrafikalar bir-birini örtürmü (eyni anda görünənlər); altyazı bir nümunə ilə bütün vaxt üçün yoxlanır
+    cap_box = next((v[3] for v in boxes.values() if v[0]["type"] == "caption"), None)
+    gl = [(n, v) for n, v in boxes.items() if v[0]["type"] != "caption"]
+    for i, (n1, (c1, a1, b1, x1)) in enumerate(gl):
+        others = [(c2, a2, b2, x2) for _n2, (c2, a2, b2, x2) in gl[i + 1:]]
+        if cap_box and project.get("subtitles", {}).get("enabled"):
+            others.append(({"type": "caption", "text": "altyazı"}, a1, b1, cap_box))
+        for c2, a2, b2, x2 in others:
+            if min(b1, b2) - max(a1, a2) > 0.2 and _inter(x1, x2) / max(1e-6, min((x1[2] - x1[0]) * (x1[3] - x1[1]), (x2[2] - x2[0]) * (x2[3] - x2[1]))) > 0.08:
+                lab2 = "altyazı" if c2["type"] == "caption" else f"{c2['type']} “{str(c2.get('text') or c2.get('heading') or c2.get('price') or '')[:24]}”"
+                out.append({"t": round(max(a1, a2), 2), "what": f"{c1['type']} “{str(c1.get('text') or c1.get('heading') or c1.get('price') or '')[:24]}” və {lab2} üst-üstə düşür"})
+    for name, (c, t_abs, _a0, _b0) in meta.items():
+        if name not in boxes:
             continue
-        cx, cy = G.pos(c)
-        box = _alpha_box(info["file"], W, H, cx, cy)
-        if not box:
-            continue
+        box = boxes[name][3]
         label = "altyazı" if c["type"] == "caption" else f"{c['type']} “{str(c.get('text') or c.get('heading') or '')[:30]}”"
         area = max(1e-6, (box[2] - box[0]) * (box[3] - box[1]))
         for zname, z in SAFE_ZONES.items():
@@ -441,3 +455,32 @@ def layout_check(project: dict[str, Any], project_dir: Path, workdir: Path) -> l
             if ov > 0.12:
                 out.append({"t": round(t_abs, 2), "what": f"{label} üzü {ov * 100:.0f}% örtür — yerini dəyiş"})
     return out
+
+
+CAPTION_TOP = 0.715  # altyazının yuxarı kənarı (standart y=0.74)
+EST_H = {"offer": 0.235, "cta": 0.215, "badge": 0.07, "card": 0.2, "list": 0.25, "title": 0.08, "emphasis": 0.07}
+
+
+def place_below_face(project_dir: Path, media: dict[str, Any], frame: dict[str, Any] | None, src_t: float, kind: str,
+                     default_y: float) -> tuple[float, float, str]:
+    """Kartın yeri (mərkəz y) və ölçü əmsalı: üzün (çənənin) altında, altyazının üstündə; yer azdırsa kart kiçilir
+    (≥65%); yenə sığmırsa başın üstünə. Nəticə: (y, scale, izah)."""
+    h = EST_H.get(kind, 0.15)
+    face = _face_in_output(project_dir, media, {"frame": frame} if frame else {}, src_t)
+    if not face:
+        return default_y, 1.0, "üz tapılmadı — standart yer"
+    fh = face[3] - face[1]
+    chin = face[3] + fh * 0.12
+    band = CAPTION_TOP - 0.005 - (chin + 0.01)  # çənə ilə altyazı arasındakı boş zolaq
+    if band >= h:
+        y = max(default_y, chin + 0.01 + h / 2)
+        return round(min(y, CAPTION_TOP - 0.005 - h / 2), 3), 1.0, "üzün altında"
+    if band >= 0.65 * h:
+        sc = band / h
+        return round(chin + 0.01 + band / 2, 3), round(sc, 2), f"üzün altında, kart {sc * 100:.0f}% ölçüdə"
+    head_top = face[1] - fh * 0.3  # saç
+    room = head_top - 0.01 - 0.09  # Instagram yuxarı zonasından aşağı
+    if room >= 0.65 * h:
+        sc = min(1.0, room / h)
+        return round(head_top - 0.01 - h * sc / 2, 3), round(sc, 2), "başın üstündə" + (f", kart {sc * 100:.0f}% ölçüdə" if sc < 1 else "")
+    return default_y, 1.0, "boş yer tapılmadı — verify ilə yoxla"

@@ -43,6 +43,16 @@ Ara düzəliş raundları təklif etmə.
    Orijinal dəyişmir; yalnız danışıq qatı təmizlənmiş nüsxəni işlədir (musiqi, SFX, B-roll səsi toxunulmaz).
    Təmizlənibsə `ses_evvel_sonra.m4a`-nı qərar mesajına əlavə et. Yaxında danışan başqa adamın səsi də danışıqdır —
    tam silinmir, bunu de. Model (DeepFilterNet3) internetdən endirildiyi üçün ilk işə salmada icazə soruşula bilər.
+2c. **Reklam videoları** (xidmət, təlim, məhsul) — `templates/expert-reels/VIDEO_TYPES.md` → "Reklam üçün ayrıca qayda":
+   - `ad-scan <pid>`: danışıqdan təklif faktları (təklif növü, qiymət — köhnə/yeni, endirim, tarix, yer sayı, çağırış və açar söz,
+     faydalar) vaxtla. Danışıqda olmayan heç nə əlavə edilmir (qiymət/tarix/nəticə/çağırış UYDURULMUR).
+   - `ad-plan <pid>`: 3 variant (`ad_plan_A/B/C.json`): A təmiz + vurğu (M01+M02), B qrafik izah — fayda siyahısı (M03),
+     C dinamik — Claude-un B-rollu + punch-in (M04). Ortaq: qiymət kartı (`offer`), nişan (`badge`: tarix/yer), çağırış (`cta`:
+     "Şərhlərdə yazın" + açar söz). Kartlar avtomatik **üzün altına** yerləşir (yer azdırsa kiçilir, sığmırsa başın üstünə).
+   - **Cümlə ardıcıllığı dəyişmir**, hook əvvələ çıxarılmır; struktur dəyişikliyi yalnız ayrıca təklif + təsdiqlə.
+   - Plan fayllarındakı `_review` siyahısını yoxla: avtomatik qısaldılmış mətnləri danışığa sadiq qalaraq redaktə et, sonra `variants`.
+   - Qrafika növləri planda da işlədilə bilər: `{"type": "offer", "heading", "oldPrice", "price", "note"}`,
+     `{"type": "cta", "text", "keyword", "sub"}`, `{"type": "badge", "text"}`.
 2b. **Claude-un hazırladığı B-roll** (istifadəçi material göndərmir — hamısını Claude hazırlayır):
    `scenes` — şablondakı animasiyalı səhnələr (siyahı, statistika, chat, zaman xətti, telefon, eskiz, illüstrasiya,
    kollaj və s., ~40). Planda: `{"make": {"kind": "checklist", "props": {...}}, "mode": "cover"|"insert", "at": .., "dur": ..}`
@@ -98,8 +108,8 @@ Ara düzəliş raundları təklif etmə.
      sərhədi genişləndir, yenidən render). Yoxlanılmayan hissəni yoxlanılmış kimi təqdim etmə.
    - `render` səsi **−14 LUFS**-a gətirir (pik ≤ −1.5 dBTP, video təkrar kodlanmır); fayl 40 MB-dan böyükdürsə
      `_ig.mp4` yüngül nüsxə də yaranır (eyni ölçü/fps) — telefona onu göndər.
-   - `verify` kartın/başlığın **üzü örtməsini** və mətnin **Reels interfeysi zonalarına** (yuxarı ad, aşağı caption, sağ düymələr)
-     düşməsini də yoxlayır — `!` varsa yeri dəyiş, yenidən render.
+   - `verify` kartın/başlığın **üzü örtməsini**, qrafikaların **bir-birini örtməsini** və mətnin **Reels interfeysi zonalarına**
+     (yuxarı ad, aşağı caption, sağ düymələr) düşməsini də yoxlayır — `!` varsa yeri dəyiş, yenidən render.
    - `words`: şübhəli tanınmış sözlər vaxtla — istifadəçiyə **bir qısa siyahı**. Mənanı dəyişən təxmin etmə.
      İstifadəçinin düzəlişi: `fix-word <pid> səhv düzgün` (layihədə yadda qalır); müştəriyə aid termin/ad isə
      `--remember` ilə profilin lüğətinə də yazılır (növbəti videolarda avtomatik) — profil faylını commit et (yalnız experts/*.json).

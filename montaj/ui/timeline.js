@@ -969,7 +969,7 @@ function retimeWords(oldWords, text, dur) {
   return toks.map((w) => { const d = (b - a) * (w.length + 1) / total; const x = { w, s: round(t), e: round(t + d) }; t += d; return x; });
 }
 
-const GFX_KEYS = ['heading', 'items', 'anim', 'activeColor', 'stroke', 'rot', 'headColor', 'accent'];
+const GFX_KEYS = ['heading', 'items', 'anim', 'activeColor', 'stroke', 'rot', 'headColor', 'accent', 'price', 'oldPrice', 'note', 'priceColor', 'keyword', 'sub'];
 
 /** Mətni dəyişir; altyazıda söz vaxtları uyğunlaşdırılır, səs və video dəyişmir. */
 export function setCaptionText(p0, clipId, text) {
