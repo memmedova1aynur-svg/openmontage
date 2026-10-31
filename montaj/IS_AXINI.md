@@ -1,6 +1,6 @@
 # Əsas iş axını: Drive linki → yekun MP4 (davamlı təlimat)
 
-Bu fayl istifadəçinin təsdiqlədiyi **əsas** iş axınıdır və `SESSIYA_TELIMATI.md`-dən üstündür.
+Bu fayl istifadəçinin təsdiqlədiyi **əsas** iş axınıdır (sorğu → Drive linki → analiz → 3 storyboard → rəng/musiqi → MP4) və `SESSIYA_TELIMATI.md`-dən üstündür.
 Redaktor paneli (artifact) saxlanılır, amma əsas axında **tələb edilmir və linki göndərilmir** —
 yalnız istifadəçi açıq istəyəndə (`SESSIYA_TELIMATI.md`, 9-cu addım).
 
@@ -8,13 +8,14 @@ Hədəf: video ilk dəfədən hazır olsun, əlavə düzəliş tələb etməsin.
 
 ## Addımlar
 
-1. **Drive linki gəlir.** Asılılıqlar yoxdursa `bash scripts/cloud-setup.sh`.
+1. **Əvvəl qısa sorğu — Drive linkindən ÖNCƏ.** İstifadəçi yeni video istəyəndə (və ya link sorğusuz gəlsə)
+   **bir** sorğu aç (`AskUserQuestion`): müştəri, məqsəd, format (talking-head / reklam: xidmət, təlim, məhsul /
+   seminar / motion graphics / başqa), arzu olunan müddət, xüsusi istək. Yalnız məlum olmayan sahələri soruş.
+   - Profil adlarını `ls templates/expert-reels/experts/` ilə gör; yalnız seçilən müştərinin faylını oxu
+     (profildə olan məlumatı yenidən soruşma). Müddət verilməyibsə — danışığa görə özün təyin et.
+   - Sorğudan sonra Drive linkini istə.
+2. **Drive linki gəlir.** Asılılıqlar yoxdursa `bash scripts/cloud-setup.sh`.
    `export MONTAJ_DATA_DIR=$HOME/montaj-data MONTAJ_OUT_DIR=$HOME/montaj-data/out`
-2. **Müştəri profili və qısa sorğu.**
-   - Profil adlarını `ls templates/expert-reels/experts/` ilə gör; yalnız seçilən müştərinin faylını oxu.
-   - **Bir** qısa sorğu (`AskUserQuestion`) — yalnız məlum olmayan vacib sahələr: müştəri, məqsəd,
-     format (talking-head / reklam: xidmət, təlim, məhsul / seminar / motion graphics / başqa), arzu olunan müddət,
-     xüsusi istək. Məlum olanı yenidən soruşma. Müddət verilməyibsə — danışığa görə özün təyin et.
 3. **Analiz.** `python -m montaj.session new --title "<ad>" --link "<link>" --client "<profil>" [--goal ...] [--format ...]`
    → `storyboard <pid>`. Transkripsiya yerli faster-whisper `large-v3-turbo` ilə, nəticə keşlənir
    (mənbə/parametr dəyişməyibsə təkrarlanmır). Ölçü, kodek, HDR-i qısa qeyd et.
