@@ -153,3 +153,15 @@ Yoxlama əsası: `tests/montaj/` (Node 12, pytest 19) və brauzer testləri `e2e
 ## 12. Real material ilə təsdiq tələb edən yoxlamalar (hamısı ⛔ — material yoxdur)
 Azərbaycan dilində transkripsiya, yarımçıq sözlər, real üz kadrajı, real iPhone HEVC/HDR,
 real danışıqda səs sinxronu və görünən keyfiyyət, iPhone Safari, Instagram/TikTok qəbulu.
+
+## 13. Peşəkar montaj qatı (istinad layihələrdən: expert-reels profilləri)
+| # | Tələb | Status | Qeyd |
+|---|---|---|---|
+| 13.1 | Söz-söz altyazı, aktiv söz vurğu rəngində | ✅ | `graphics.js` (önizləmə) = Chromium rasterizasiya (render) |
+| 13.2 | Hook başlıq, bölmə, vurğu, siyahı (maddələr vaxtla), məlumat kartı | ✅ | Hər biri ayrıca redaktə: mətn, şrift, ölçü, rəng, fon, yer, vaxt, animasiya |
+| 13.3 | Ölçülü zoom, sintez SFX (whoosh/pop), musiqi/SFX fade | ✅ | `session plan`; B-roll yoxdur (material yoxdur) |
+| 13.4 | Altyazı: söz düzəlişi, layihədə hər yerdə dəyiş, böl, birləşdir | ✅ | Səs/video dəyişmir; manual mətn avtomatik analizlə yazılmır |
+| 13.5 | Redaktordakı dəyişiklik MP4-ə keçir, qalan montaj saxlanır | ✅ | `e2e_editor_gfx.mjs` + render yoxlanıldı (Chromium emulyasiyası, real Safari deyil) |
+| 13.6 | Telefondan musiqi | 🟡 | Yalnız .m4a/.mp4 (artifakt mp3/wav qəbul etmir) |
+| 13.7 | “Dataclone 3” motion qrafikası | ⛔ | Repoda tapılmadı |
+| 13.8 | Üz/məhsul üçün avtomatik yer qoruyucusu, smooth push-zoom, PIP | ⛔ | Hələ köçürülməyib |

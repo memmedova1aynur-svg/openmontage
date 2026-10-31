@@ -43,3 +43,9 @@ Token qənaəti (bu qaydalara əməl et):
 - Konkret düzəliş istəyində yalnız həmin elementi dəyiş (`edit` / `apply-edits`), bütün planı yenidən qurma.
 - Render təsdiqlənmiş layihədən deterministikdir; ixracda yaradıcı qərarı təkrarlama.
 - Dəyişikliyə uyğun testləri işlət, hamısını yox.
+
+## Peşəkar montaj planı (token qənaəti)
+- Təsdiqlənmiş storyboard-dan sonra bir `plan.json` yaz (captions üslubu, graphics: title/section/emphasis/list/card,
+  zooms, sfx) və `python -m montaj.session plan <pid> plan.json` ilə tətbiq et. Redaktor kodunu yenidən yaratma.
+- Qrafika həm önizləmədə, həm renderdə eyni `montaj/editor/graphics.js` ilə çəkilir.
+- Müştəri rənglərini yalnız həmin müştərinin brand.theme-dən götür; mənanı dəyişmə, fakt uydurma.

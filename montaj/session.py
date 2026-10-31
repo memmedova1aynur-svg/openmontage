@@ -289,7 +289,7 @@ def editor_data(pid: str, assets: dict[str, str]) -> dict[str, Any]:
     th = brand.get("theme") or {}
     colors = [c for c in [th.get("primary"), th.get("accent"), th.get("accentSoft"), th.get("primaryDeep")] if c] or (brand.get("colors") or [])
     proj["media"] = proj["media"]
-    return {"project": proj, "media": media, "build": build, "fonts": fl, "brandColors": colors,
+    return {"project": proj, "media": media, "build": build, "fonts": fl, "brandColors": colors, "theme": th,
             "brandName": brand.get("name")}
 
 
@@ -324,7 +324,8 @@ def cmd_editor(a: argparse.Namespace) -> None:
                 print(f"önizləmə: {dst}  {dst.stat().st_size / 1e6:.1f} MB")
     data = json.dumps(editor_data(a.pid, assets), ensure_ascii=False).replace("</", "<\\/")
     html = EDITOR_TEMPLATE.read_text(encoding="utf-8")
-    html = html.replace("/*__DATA__*/", data, 1).replace("/*__TIMELINE__*/", inline_timeline(), 1)
+    html = (html.replace("/*__DATA__*/", data, 1).replace("/*__TIMELINE__*/", inline_timeline(), 1)
+            .replace("/*__GRAPHICS__*/", (EDITOR_TEMPLATE.parent / "graphics.js").read_text(encoding="utf-8"), 1))
     (d / "index.html").write_text(html, encoding="utf-8")
     print(d / "index.html")
 
@@ -412,6 +413,91 @@ def cmd_set_client(a: argparse.Namespace) -> None:
     print(f"müştəri: {prof['name']}; rənglər təsdiqlənib: {p['brand']['colorsConfirmed']}; versiya {saved['revision']}")
 
 
+def _sfx_media(pid: str, kind: str) -> dict[str, Any]:
+    """expert-reels-in sintez edilmiş (müəllif hüququ olmayan) səs effektini layihəyə media kimi əlavə edir."""
+    import importlib.util
+
+    from montaj import media as mediautil
+
+    mid = f"sfx_{kind}"
+    p = store.load(pid)
+    have = next((m for m in p["media"] if m["id"] == mid), None)
+    if have:
+        return have
+    lib = data_dir() / "sfx"
+    if not (lib / f"{kind}.wav").is_file():
+        spec = importlib.util.spec_from_file_location(
+            "build_edit", Path(__file__).resolve().parent.parent / "templates" / "expert-reels" / "scripts" / "build_edit.py")
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        mod.synth_sfx(lib)
+    dst = store.originals_dir(pid) / f"{mid}.wav"
+    shutil.copyfile(lib / f"{kind}.wav", dst)
+    rec = {"id": mid, "name": f"{kind}.wav (sintez)", "file": f"media/originals/{dst.name}", "size": dst.stat().st_size,
+           "source": {"type": "synth", "kind": kind}, **mediautil.probe(dst)}
+    store.add_media_record(pid, rec)
+    return rec
+
+
+def cmd_plan(a: argparse.Namespace) -> None:
+    """Təsdiqlənmiş storyboard planını (JSON məlumat) layihəyə tətbiq edir — hər video üçün kod yazılmır."""
+    plan = json.loads(Path(a.plan).read_text(encoding="utf-8"))
+    for s in plan.get("sfx") or []:
+        _sfx_media(a.pid, s["kind"])
+    p = store.load(a.pid)
+    q = node_tl("migrate", p)
+    was_manual = {c["id"] for c in q["clips"] if c.get("manual")}
+    q["clips"] = [c for c in q["clips"] if not (c.get("origin") == "plan" and not c.get("manual"))]
+    if plan.get("captions") and q.get("subtitles"):
+        q = node_tl("setSubtitleStyle", q, plan["captions"].get("style") or {})
+        q["subtitles"]["enabled"] = plan["captions"].get("enabled", True)
+        q["clips"] = [c for c in q["clips"] if not (c["track"] == "t1" and c.get("origin") == "ai")] if plan.get("dropStoryboardText") else q["clips"]
+    for c in plan.get("corrections") or []:
+        q = node_tl("replaceEverywhere", q, c["from"], c["to"])["project"]
+    for z in plan.get("zooms") or []:  # punch-in: klip zaman xəttində bölünür, ortadakı hissə yaxınlaşdırılır
+        for t in (z["to"], z["from"]):
+            seg = next((c for c in node_tl("videoClips", q)
+                        if _start(q, c["id"]) + 0.15 < t < _start(q, c["id"]) + c["srcOut"] - c["srcIn"] - 0.15), None)
+            if seg:
+                q = node_tl("split", q, seg["id"], t)
+        mid = next(c for c in node_tl("videoClips", q) if abs(_start(q, c["id"]) - z["from"]) < 0.05)
+        m = next(x for x in q["media"] if x["id"] == mid["media"])
+        fr = {"aspect": q.get("aspect") or "source", "mode": "auto", "s": round(1 / float(z.get("scale", 1.12)), 4),
+              "baseW": 1, "baseH": 1, "keys": [{"t": mid["srcIn"], "cx": z.get("cx", 0.5), "cy": z.get("cy", 0.45)}],
+              "rotate": 0, "warnings": [], "planZoom": True}
+        if m.get("width") and q.get("width") and abs(m["width"] / m["height"] - q["width"] / q["height"]) > 0.02:
+            raise UserError("Punch-in yalnız eyni ölçülü kadrda avtomatik qurulur.", "Kadrajı redaktorda əl ilə edin.")
+        q = node_tl("setFrame", q, mid["id"], fr, {"manual": False})
+    for g in plan.get("graphics") or []:
+        q = node_tl("addGraphic", q, {**g, "origin": "plan"})
+    for s in plan.get("sfx") or []:
+        med = next(x for x in store.load(a.pid)["media"] if x["id"] == f"sfx_{s['kind']}")
+        if not any(x["id"] == med["id"] for x in q["media"]):
+            q["media"].append(med)
+        q = node_tl("addMedia", {**q, "media": [x for x in q["media"] if x["id"] != med["id"]]}, med,
+                    {"targetTrack": "s1", "at": s["t"]})
+        new = q["clips"][-1]
+        new["volume"] = s.get("vol", 0.3)
+        new["origin"] = "plan"
+    for c in q["clips"]:  # plan qərarları "əl ilə" sayılmır
+        if c["id"] not in was_manual and c.get("origin") in ("plan", "ai", "import", "auto", None):
+            c["manual"] = False
+    q["planApplied"] = {"at": __import__("time").time(), "file": Path(a.plan).name}
+    cur = store.load(a.pid)
+    saved = store.save(a.pid, q, cur["revision"])
+    print(f"plan tətbiq olundu: {len(plan.get('graphics') or [])} qrafika, {len(plan.get('zooms') or [])} yaxınlaşma, "
+          f"{len(plan.get('sfx') or [])} səs effekti, {len(plan.get('corrections') or [])} düzəliş; versiya {saved['revision']}")
+
+
+def _start(q: dict[str, Any], cid: str) -> float:
+    t = 0.0
+    for c in node_tl("videoClips", q):
+        if c["id"] == cid:
+            return t
+        t += c["srcOut"] - c["srcIn"]
+    return t
+
+
 def cmd_export(a: argparse.Namespace) -> None:
     p = store.load(a.pid)
     dst = out_dir(a.pid) / f"{a.pid}.montaj.json"
@@ -445,6 +531,9 @@ def main(argv: list[str] | None = None) -> int:
     ed.add_argument("pid")
     ed.add_argument("--assets", help="JSON: media id -> artifact asset url")
     ed.add_argument("--local", action="store_true", help="önizləmələrə nisbi yol (yerli sınaq)")
+    pl = sub.add_parser("plan")
+    pl.add_argument("pid")
+    pl.add_argument("plan")
     sc = sub.add_parser("set-client")
     sc.add_argument("pid")
     sc.add_argument("--client", required=True)
@@ -456,7 +545,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         {"new": cmd_new, "storyboard": cmd_storyboard, "edit": cmd_edit, "apply": cmd_apply,
          "render": cmd_render, "export": cmd_export, "editor": cmd_editor,
-         "apply-edits": cmd_apply_edits, "set-client": cmd_set_client}[a.cmd](a)
+         "apply-edits": cmd_apply_edits, "set-client": cmd_set_client, "plan": cmd_plan}[a.cmd](a)
     except UserError as err:
         print(f"XƏTA: {err.message}\nNƏ ETMƏLİ: {err.hint}", file=sys.stderr)
         return 2

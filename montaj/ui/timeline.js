@@ -720,7 +720,7 @@ function subStyle(p) {
   const st = (p.subtitles && p.subtitles.style) || {};
   return { size: st.size ?? (p.subtitles && p.subtitles.size) ?? 0.045, position: st.position || 'bottom',
     font: st.font ?? null, weight: st.weight ?? null, color: st.color ?? null, bg: st.bg ?? null,
-    x: st.x ?? null, y: st.y ?? null };
+    x: st.x ?? null, y: st.y ?? null, activeColor: st.activeColor ?? null, stroke: st.stroke ?? null, type: st.type ?? null };
 }
 
 function rebuildSubtitles(p, lay = layout(p)) {
@@ -737,11 +737,12 @@ function rebuildSubtitles(p, lay = layout(p)) {
     const inside = (w) => w.s >= v.srcIn - 0.01 && w.e <= v.srcOut + 0.01;
     const chunks = [];
     // ffmpeg yazını sətrə bölmür: sətir kadrın ~90%-nə sığsın (orta hərf eni ≈ 0.58 × şrift ölçüsü)
-    const maxChars = Math.max(8, Math.floor((0.9 * (p.width || 1080)) / ((style.size || 0.045) * (p.height || 1920) * 0.58)));
-    for (const ch of subtitleChunks(st.words[v.media] || [], 4, 1.8, maxChars)) {
+    const glyph = (style.weight || 700) >= 700 ? 0.68 : 0.58; // qalın şriftdə hərf daha enlidir
+    const maxChars = Math.max(8, Math.floor((0.88 * (p.width || 1080)) / ((style.size || 0.045) * (p.height || 1920) * glyph)));
+    for (const ch of subtitleChunks(correctWords(st.words[v.media] || [], st.corrections), 4, 1.8, maxChars)) {
       const ws = ch.words.filter(inside);
       if (!ws.length) continue;
-      chunks.push(ws.length === ch.words.length ? ch : { s: ws[0].s, e: ws[ws.length - 1].e, text: ws.map((w) => w.w).join(' ').trim() });
+      chunks.push(ws.length === ch.words.length ? ch : { s: ws[0].s, e: ws[ws.length - 1].e, text: ws.map((w) => w.w).join(' ').trim(), words: ws });
     }
     for (const ch of chunks) {
       // sabit ID: mənbə + sözün vaxtı (klip bölünəndə də dəyişmir)
@@ -760,8 +761,11 @@ function rebuildSubtitles(p, lay = layout(p)) {
         old.src = { clip: v.id, s: ch.s };
         continue;
       }
-      p.clips.push({ id, track: 'c1', media: null, srcIn: 0, srcOut: dur, start, text: ch.text, ...style,
-        origin: 'auto', autoSub: true, manual: false, src: { clip: v.id, s: ch.s } });
+      const cl = { id, track: 'c1', media: null, srcIn: 0, srcOut: dur, start, text: ch.text, ...style,
+        origin: 'auto', autoSub: true, manual: false, src: { clip: v.id, s: ch.s } };
+      if (style.type === 'caption') cl.words = (ch.words || []).map((w) => ({ w: w.w, s: round(w.s - ch.s), e: round(w.e - ch.s) }));
+      for (const k of Object.keys(cl)) if (cl[k] === null) delete cl[k];
+      p.clips.push(cl);
     }
   }
   // əl ilə dəyişdiyiniz altyazının sözü kəsilibsə — gizlədilir (silinmir, geri qayıda bilər)
@@ -855,6 +859,7 @@ export function setTextProps(p0, clipId, patch) {
   const c = mustClip(p, clipId);
   if (trackKind(p, c) !== 'text') fail('Bu element yazı deyil');
   for (const k of TEXT_KEYS) if (k in patch) { if (patch[k] === null) delete c[k]; else c[k] = patch[k]; }
+  if ('text' in patch && c.type === 'caption') c.words = retimeWords(c.words, c.text, clipDur(c));
   if (typeof c.text === 'string' && !c.text.trim()) fail('Yazı boş ola bilməz — silmək üçün “Sil” düyməsini istifadə edin');
   if ('start' in patch || 'dur' in patch) {
     const lay = layout(p);
@@ -907,7 +912,7 @@ export function editorState(base, cur) {
   const newMedia = cur.media.filter((m) => !base.media.some((x) => x.id === m.id));
   const state = {};
   for (const k of EDITABLE) state[k] = clone(cur[k] ?? null);
-  state.subtitles = cur.subtitles ? { enabled: cur.subtitles.enabled, style: clone(cur.subtitles.style || {}), removed: clone(cur.subtitles.removed || []) } : null;
+  state.subtitles = cur.subtitles ? { enabled: cur.subtitles.enabled, style: clone(cur.subtitles.style || {}), removed: clone(cur.subtitles.removed || []), corrections: clone(cur.subtitles.corrections || []) } : null;
   return { schema: 2, projectId: base.id, baseRevision: base.revision, state, newMedia: clone(newMedia), changed, removed };
 }
 
@@ -925,8 +930,135 @@ export function applyEditorState(p0, ed) {
     p.subtitles.enabled = ed.state.subtitles.enabled;
     p.subtitles.style = clone(ed.state.subtitles.style || {});
     p.subtitles.removed = clone(ed.state.subtitles.removed || []);
+    p.subtitles.corrections = clone(ed.state.subtitles.corrections || []);
   }
   const ids = new Set(p.media.map((m) => m.id));
   for (const c of p.clips) if (c.media && !ids.has(c.media)) fail(`Naməlum media: ${c.media}`);
   return { project: settle(p), changed: ed.changed || [], removed: ed.removed || [] };
+}
+
+// ---------------------------------------------------------------------------
+// Altyazı düzəlişləri və qrafika elementləri
+// ---------------------------------------------------------------------------
+
+const norm = (w) => String(w).toLocaleLowerCase('az').replace(/[^\p{L}\p{N}-]/gu, '');
+
+function correctWords(words, corrections) {
+  if (!corrections || !corrections.length) return words;
+  return words.map((w) => {
+    let t = w.w;
+    for (const c of corrections) {
+      if (norm(t) === norm(c.from)) {
+        const tail = String(t).match(/[^\p{L}\p{N}-]+$/u);
+        t = c.to + (tail && !/[^\p{L}\p{N}-]$/u.test(c.to) ? tail[0] : '');
+      }
+    }
+    return t === w.w ? w : { ...w, w: t };
+  });
+}
+
+/** Söz sayı dəyişəndə vaxtı həmin ifadənin intervalında hərflərin uzunluğuna görə bölür. */
+function retimeWords(oldWords, text, dur) {
+  const toks = String(text).trim().split(/\s+/).filter(Boolean);
+  if (oldWords && oldWords.length === toks.length) return oldWords.map((w, i) => ({ ...w, w: toks[i] }));
+  const a = oldWords && oldWords.length ? oldWords[0].s : 0;
+  const b = oldWords && oldWords.length ? oldWords[oldWords.length - 1].e : dur;
+  const total = toks.reduce((n, t) => n + t.length + 1, 0) || 1;
+  let t = a;
+  return toks.map((w) => { const d = (b - a) * (w.length + 1) / total; const x = { w, s: round(t), e: round(t + d) }; t += d; return x; });
+}
+
+const GFX_KEYS = ['heading', 'items', 'anim', 'activeColor', 'stroke', 'rot', 'headColor', 'accent'];
+
+/** Mətni dəyişir; altyazıda söz vaxtları uyğunlaşdırılır, səs və video dəyişmir. */
+export function setCaptionText(p0, clipId, text) {
+  const p = clone(p0);
+  const c = mustClip(p, clipId);
+  if (!String(text).trim()) fail('Yazı boş ola bilməz — silmək üçün “Sil” düyməsini istifadə edin');
+  c.text = String(text);
+  if (c.type === 'caption') c.words = retimeWords(c.words, c.text, clipDur(c));
+  c.manual = true;
+  return settle(p);
+}
+
+/** Bütün layihədə eyni sözü dəyişir (sonrakı avtomatik altyazılara da tətbiq olunur). */
+export function replaceEverywhere(p0, from, to) {
+  const p = clone(p0);
+  if (!String(from).trim() || !String(to).trim()) fail('Hər iki söz yazılmalıdır');
+  if (!p.subtitles) fail('Bu layihədə altyazı yoxdur');
+  p.subtitles.corrections = [...(p.subtitles.corrections || []).filter((c) => norm(c.from) !== norm(from)), { from, to }];
+  let n = 0;
+  for (const c of p.clips) {
+    if (c.track !== 'c1' || !c.manual) continue;
+    const ws = correctWords((c.words || String(c.text).split(/\s+/).map((w) => ({ w, s: 0, e: 0 }))), [{ from, to }]);
+    const txt = ws.map((w) => w.w).join(' ');
+    if (txt !== c.text) { n += 1; c.text = txt; if (c.words) c.words = ws; }
+  }
+  const before = p0.clips.filter((c) => c.track === 'c1' && !c.manual && (c.words || []).some((w) => norm(w.w) === norm(from))).length;
+  settle(p);
+  return { project: p, count: n + before };
+}
+
+/** Altyazı blokunu söz sərhədində ikiyə bölür. */
+export function splitCaption(p0, clipId, wordIndex) {
+  let p = clone(p0);
+  const c = mustClip(p, clipId);
+  const ws = c.words || retimeWords(null, c.text, clipDur(c));
+  if (wordIndex <= 0 || wordIndex >= ws.length) fail('Bölmək üçün ən azı iki söz lazımdır');
+  const lay = layout(p).get(c.id);
+  const cut = ws[wordIndex].s;
+  const right = { ...clone(c), id: `${c.id}_${Math.round(cut * 1000)}`, autoSub: false, manual: true,
+    words: ws.slice(wordIndex).map((w) => ({ ...w, s: round(w.s - cut), e: round(w.e - cut) })), srcIn: 0,
+    srcOut: round(Math.max(MIN_CLIP, clipDur(c) - cut)), start: round(lay.start + cut) };
+  right.text = right.words.map((w) => w.w).join(' ');
+  const vid = c.src ? c.src.clip : (c.anchor && c.anchor.clip);
+  if (vid) { const vl = layout(p).get(vid); if (vl) right.anchor = { clip: vid, offset: round(right.start - vl.start) }; }
+  delete right.src; delete right.timeShift; delete right.durSet;
+  c.words = ws.slice(0, wordIndex); c.text = c.words.map((w) => w.w).join(' ');
+  c.srcIn = 0; c.srcOut = round(Math.max(MIN_CLIP, cut)); c.durSet = true; c.manual = true;
+  p.clips.push(right);
+  return settle(p);
+}
+
+/** Altyazını növbəti altyazı ilə birləşdirir. */
+export function mergeCaption(p0, clipId) {
+  let p = clone(p0);
+  const c = mustClip(p, clipId);
+  const lay = layout(p);
+  const a = lay.get(c.id);
+  const next = p.clips.filter((x) => x.track === 'c1' && !x.hidden && lay.get(x.id).start > a.start).sort((x, y) => lay.get(x.id).start - lay.get(y.id).start)[0];
+  if (!next) fail('Sonrakı altyazı yoxdur');
+  const b = lay.get(next.id);
+  const off = b.start - a.start;
+  const w1 = c.words || retimeWords(null, c.text, a.end - a.start);
+  const w2 = (next.words || retimeWords(null, next.text, b.end - b.start)).map((w) => ({ ...w, s: round(w.s + off), e: round(w.e + off) }));
+  c.words = [...w1, ...w2]; c.text = c.words.map((w) => w.w).join(' ');
+  c.srcIn = 0; c.srcOut = round(b.end - a.start); c.durSet = true; c.manual = true;
+  p = deleteClip(p, next.id);
+  return settle(p);
+}
+
+/** Qrafika elementi əlavə edir (başlıq, bölmə, vurğu, siyahı, kart) — oynatma anındakı klipə bağlanır. */
+export function addGraphic(p0, spec) {
+  const p = clone(p0);
+  const lay = layout(p);
+  const start = round(Math.max(0, spec.start || 0));
+  const v = videoClips(p).find((c) => { const l = lay.get(c.id); return start >= l.start && start < l.end; });
+  const g = { id: spec.id || uid('g'), track: 't1', media: null, srcIn: 0, srcOut: round(Math.max(MIN_CLIP, spec.dur || 3)), start,
+    type: spec.type || 'title', text: spec.text || '', x: spec.x ?? 0.5, y: spec.y ?? 0.5, anim: spec.anim || { in: 'pop', out: 'fade' },
+    origin: spec.origin || 'manual', manual: spec.origin !== 'plan' };
+  for (const k of [...GFX_KEYS, 'size', 'font', 'weight', 'color', 'bg']) if (spec[k] !== undefined) g[k] = clone(spec[k]);
+  if (v) g.anchor = { clip: v.id, offset: round(start - lay.get(v.id).start) };
+  p.clips.push(g);
+  return settle(p);
+}
+
+export function setGraphicProps(p0, clipId, patch) {
+  let p = clone(p0);
+  const c = mustClip(p, clipId);
+  for (const k of GFX_KEYS) if (k in patch) { if (patch[k] === null) delete c[k]; else c[k] = clone(patch[k]); }
+  c.manual = true;
+  const rest = {};
+  for (const [k, v] of Object.entries(patch)) if (!GFX_KEYS.includes(k)) rest[k] = v;
+  return Object.keys(rest).length ? setTextProps(p, clipId, rest) : settle(p);
 }

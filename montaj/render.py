@@ -101,6 +101,18 @@ def render_plan(project: dict[str, Any]) -> dict[str, Any]:
             "main": round(main, 3), "endCard": ec, "total": round(total, 3)}
 
 
+def _afades(c: dict[str, Any], dur: float) -> str:
+    """Yumşaq səs giriş-çıxışı (klipin fadeIn/fadeOut saniyələri)."""
+    out = ""
+    fi = float(c.get("fadeIn") or 0)
+    fo = float(c.get("fadeOut") or 0)
+    if fi > 0:
+        out += f",afade=t=in:st=0:d={min(fi, dur):.3f}"
+    if fo > 0:
+        out += f",afade=t=out:st={max(0.0, dur - fo):.3f}:d={min(fo, dur):.3f}"
+    return out
+
+
 def output_dims(project: dict[str, Any]) -> tuple[int, int]:
     return _even(project.get("width") or 1280), _even(project.get("height") or 720)
 
@@ -207,8 +219,13 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
 
     font = _font()
     cur = "vbase"
+    from montaj import graphics as G
+
+    gfx = [t for t in plan["text"] if G.is_graphic(t["clip"])]
     for i, t in enumerate(plan["text"]):
         c = t["clip"]
+        if G.is_graphic(c):
+            continue
         text = (c.get("text") or "").strip()
         from montaj import fonts as _fonts
         cfont = _fonts.ttf_path(c.get("font"), c.get("weight")) if c.get("font") else font
@@ -233,6 +250,34 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
             f"{boxopt}:line_spacing={size // 5}:"
             f"x={xexpr}:y={y}:enable='between(t,{t['start']:.3f},{t['end']:.3f})'[vt{i}]")
         cur = f"vt{i}"
+
+    if gfx:
+        theme = (project.get("brand") or {}).get("theme") or {}
+        items, caps, others = [], [], []
+        for t in gfx:
+            c = dict(t["clip"], _start=t["start"])
+            for k, ptime in enumerate(G.state_points(c)):
+                items.append((f"{c['id']}__{k}", c, ptime))
+            (caps if c["type"] == "caption" else others).append(c)
+        rast = G.rasterize(items, W, H, theme, workdir)
+        for c in others:  # kartlar, başlıqlar, vurğular — animasiya ilə
+            pts = G.state_points(c)
+            dur = float(c["srcOut"]) - float(c["srcIn"])
+            for k, ptime in enumerate(pts):
+                a = c["_start"] + ptime
+                b = c["_start"] + (pts[k + 1] if k + 1 < len(pts) else dur)
+                info = rast[f"{c['id']}__{k}"]
+                args.extend(["-loop", "1", "-framerate", fps_str, "-t", f"{b - a + 0.1:.4f}", "-i", info["file"]])
+                nxt = f"vg{idx}"
+                filters.append(G.overlay_chain(c, k, len(pts), a, b, W, H, fps_str, idx, cur, nxt))
+                idx += 1
+                cur = nxt
+        track = G.caption_track(caps, W, H, fps, main, rast, workdir)
+        if track:
+            args.extend(["-i", str(track)])
+            filters.append(f"[{idx}:v]format=rgba[capt];[{cur}][capt]overlay=0:0:eof_action=pass[vcap]")
+            idx += 1
+            cur = "vcap"
 
     logo = ((project.get("branding") or {}).get("logo") or {})
     if logo.get("enabled") and logo_path and logo_path.is_file():
@@ -283,7 +328,7 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
         bus = "voice" if c.get("role") == "voiceover" else a["kind"]
         vol = float(c.get("volume", 1) if c.get("volume") is not None else 1) * float(mix.get(bus, 1))
         filters.append(f"[{k}:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo,"
-                       f"asetpts=PTS-STARTPTS,atrim=0:{a['dur']:.4f},volume={vol:.3f},adelay=delays={ms}:all=1[a{i}]")
+                       f"asetpts=PTS-STARTPTS,atrim=0:{a['dur']:.4f},volume={vol:.3f}{_afades(c, a['dur'])},adelay=delays={ms}:all=1[a{i}]")
         buses.setdefault(bus, []).append(f"[a{i}]")
     bus_out = []
     for bus, labs in buses.items():
