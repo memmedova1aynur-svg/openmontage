@@ -193,3 +193,7 @@ real danışıqda səs sinxronu və görünən keyfiyyət, iPhone Safari, Instag
 | 15.3 | Yeni qrafikalar: `offer` (qiymət), `cta` (çağırış + açar söz), `badge` (nişan) — önizləmə = render | ✅ | Günel videosunda vizual yoxlama |
 | 15.4 | Kartın avtomatik yeri: üzün altında (kiçilir ≥65%) / başın üstündə; plan qrafikasının standart yeri (əvvəl 0.5 idi) | ✅ | Günel: qiymət 79%, çağırış 84% ölçüdə, verify təmiz |
 | 15.5 | `verify`: qrafikaların bir-birini örtməsi | ✅ | Nişan + başlıq toqquşması tapıldı və düzəldildi |
+| 16.1 | Seminar: `highlights` — müstəqil hissələr (asılı və təşkilati başlanğıclar seçilmir, fikir sonunda bitir), bal + səbəb | ✅ | `test_seminar_highlights_extract`; sintetik seminar mətnində düzgün 2 hissə |
+| 16.2 | `extract` — hissə ayrıca layihə (hard link, analiz təkrar istifadə) | ✅ | Eyni inode, təkrar transkripsiya yoxdur |
+| 16.3 | Danışan şəxs (ağız hərəkəti, əlavə model yox) → `framefix` kadrajı ona qurur | ✅ | İki nəfərli 16:9 sınaq: hərəkət 17.4 vs 0.002, kadraj danışana |
+| 16.4 | `new --size 1080x1920` — 16:9 → 9:16 kəsimi istəyə görə böyütmək | ✅ | Standart: böyütmə yoxdur |

@@ -43,6 +43,17 @@ Ara düzəliş raundları təklif etmə.
    Orijinal dəyişmir; yalnız danışıq qatı təmizlənmiş nüsxəni işlədir (musiqi, SFX, B-roll səsi toxunulmaz).
    Təmizlənibsə `ses_evvel_sonra.m4a`-nı qərar mesajına əlavə et. Yaxında danışan başqa adamın səsi də danışıqdır —
    tam silinmir, bunu de. Model (DeepFilterNet3) internetdən endirildiyi üçün ilk işə salmada icazə soruşula bilər.
+2d. **Seminar və uzun çıxış** (VIDEO_TYPES.md, növ 4 — hissə kontekstsiz anlaşılmalı, səbəb əlaqəsi təhrif olunmur):
+   - `highlights <pid> [--min 20 --max 75 --top 8]`: müstəqil qısa hissə namizədləri — cümlə başında başlayır, fikir sonunda bitir;
+     əvvəlki kontekstə bağlı ("bu", "ona görə", "yəni"…) və təşkilati (salam, sual-cavaba keçid, "sonra danışarıq") başlanğıclar
+     seçilmir; bal və səbəb göstərilir. **Təklifdir** — transkripti oxu, istifadəçiyə 3–6 hissəni qısa izahla təklif et.
+   - `extract <pid> <media>:<başla>-<son> --title ".."`: seçilən hissə ayrıca layihə olur (eyni orijinal — hard link, eyni analiz —
+     təkrar transkripsiya yox, müştəri/rəng/format ana layihədən). Sonra hər hissəyə adi iş axını (retakes/cut, framefix,
+     voice-clean, looks, variants, render).
+   - Kadrda bir neçə nəfər varsa `framefix` **danışan şəxsi** (ağız nahiyəsindəki hərəkət) tapıb kadrajı ona qurur; aydın deyilsə
+     hamısını kadra salır və bunu deyir.
+   - 16:9 çəkilişdən 9:16 kəsim kiçik ölçü verir (1080p → 608x1080). Standart: böyütmə yoxdur. İstifadəçi istəsə
+     `new ... --size 1080x1920` (yumşalma `render` çıxışında bildirilir). Mümkünsə 4K və ya şaquli çəkiliş məsləhət gör.
 2c. **Reklam videoları** (xidmət, təlim, məhsul) — `templates/expert-reels/VIDEO_TYPES.md` → "Reklam üçün ayrıca qayda":
    - `ad-scan <pid>`: danışıqdan təklif faktları (təklif növü, qiymət — köhnə/yeni, endirim, tarix, yer sayı, çağırış və açar söz,
      faydalar) vaxtla. Danışıqda olmayan heç nə əlavə edilmir (qiymət/tarix/nəticə/çağırış UYDURULMUR).
