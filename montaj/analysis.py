@@ -30,9 +30,14 @@ def analyze_media(project_dir: Path, m: dict[str, Any], language: str = "az",
                   progress=None) -> dict[str, Any]:
     """Transkript (varsa) + səssizlik. Nəticə diskdə keşlənir."""
     out = analysis_path(project_dir, m["id"])
+    key = {"file": m["file"], "size": m.get("size"), "duration": m["duration"],
+           "whisper": transcribe.DEFAULT_MODEL, "language": language, "v": 1}
     if out.is_file():
-        return json.loads(out.read_text(encoding="utf-8"))
-    res: dict[str, Any] = {"mediaId": m["id"], "duration": m["duration"], "words": [], "silences": [],
+        cached = json.loads(out.read_text(encoding="utf-8"))
+        # mənbə və analiz parametrləri dəyişməyibsə — təkrar transkripsiya yoxdur
+        if cached.get("key") == key:
+            return cached
+    res: dict[str, Any] = {"mediaId": m["id"], "key": key, "duration": m["duration"], "words": [], "silences": [],
                            "transcribed": False, "language": None}
     if m.get("isImage"):
         res["duration"] = IMAGE_SECONDS

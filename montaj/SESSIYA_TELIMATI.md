@@ -23,5 +23,23 @@ Addımlar:
 7. Təsdiqdən sonra: `apply <pid>`, `render <pid>`, `export <pid>`.
 8. MP4-ü özün yoxla: ölçü/fps, səs-görüntü, kəsim nöqtələrinin yaxınlığında sözlər
    (transkriptə bax), bir neçə kadr. Problemləri açıq yaz.
-9. MP4 və `*.montaj.json` faylını göndər. İstifadəçiyə Drive paylaşımını yenidən “Məhdud”
+9. **Əl düzəlişi üçün telefon redaktoru** (istifadəçi istəsə və ya hər montajdan sonra):
+   - `python -m montaj.session editor <pid>` → `out/<pid>/editor/index.html` + `preview_<mid>.mp4` (540p, yalnız baxış üçün).
+   - Artifact tool ilə `index.html`-i dərc et: `capabilities: {"db": {}, "assets": {}, "user": {}}`, `icon: "film"`. Şəxsi (yalnız sahibi açır).
+   - Hər `preview_*.mp4`-ü `asset: true` ilə həmin artifact-a yüklə (fayl başına ≤15 MB); `{mid: "/_blob/<id>"}` JSON-u yaz.
+   - `editor <pid> --assets <json>` ilə yenidən qur və eyni fayl yolu ilə yenidən dərc et (URL dəyişmir).
+   - Linki istifadəçiyə ver. Önizləmə yüklənməsə, səhifə “Videonu telefondan seç” təklif edir (fayl telefonda qalır, müddət yoxlanır).
+10. İstifadəçi “düzəlişləri götür” deyəndə: `ArtifactData get` (collection `edits`, doc_id `<pid>`, `out_dir`) →
+    `python -m montaj.session apply-edits <pid> <fayl>` → `render <pid>`. Və ya istifadəçinin yapışdırdığı JSON-u fayla yaz.
+    Köhnə/yanlış layihə və başqa yerdə dəyişmiş elementlər avtomatik rədd olunur; təkrar tətbiq zərərsizdir.
+11. MP4 və `*.montaj.json` faylını göndər. İstifadəçiyə Drive paylaşımını yenidən “Məhdud”
    etməyi xatırlat.
+
+Token qənaəti (bu qaydalara əməl et):
+- Kod yazma: hər video üçün yalnız yuxarıdakı əmrləri işlət. Redaktor şablondur (`montaj/editor/editor.html`).
+- Yalnız seçilmiş müştərinin profilini oxu (`--client`); bütün depo və təlimatları oxuma.
+- Transkript/səssizlik `analysis/<mid>.json`-da keşlənir (açar: fayl, ölçü, müddət, Whisper modeli, dil). Yenidən analiz etmə.
+- Əl düzəlişləri (yazının yeri, klip kənarı) AI tələb etmir: `apply-edits` deterministikdir.
+- Konkret düzəliş istəyində yalnız həmin elementi dəyiş (`edit` / `apply-edits`), bütün planı yenidən qurma.
+- Render təsdiqlənmiş layihədən deterministikdir; ixracda yaradıcı qərarı təkrarlama.
+- Dəyişikliyə uyğun testləri işlət, hamısını yox.

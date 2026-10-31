@@ -208,3 +208,49 @@ test('applyStoryboard: yalnız təsdiqdə tətbiq olunur, əl ilə düzəldilmi�
   const back = TL.trim(r.project, ai[0].id, 'in', 0);
   assert.equal(TL.clipById(back, ai[0].id).srcIn, 0);
 });
+
+test('redaktor düzəlişləri: yazı yeri, klip uzatma, bağlı subtitrlər, köhnə/yanlış layihə', () => {
+  const words = ['bir', 'iki', 'üç', 'dörd', 'beş', 'altı', 'yeddi', 'səkkiz'].map((w, i) => ({ w, s: i + 1, e: i + 1.4 }));
+  let p = TL.migrate(TL.newProject({ id: 'pr', title: 'x' }));
+  p = TL.addMedia(p, media('A', 10));
+  p.clips = [];
+  p.revision = 5;
+  const sb = { subtitles: true, candidates: { A: [{ words }] }, cards: [
+    { id: 'c1', mediaId: 'A', srcIn: 0.5, srcOut: 3.6, include: true, onScreenText: 'Başlıq' },
+    { id: 'c2', mediaId: 'A', srcIn: 6.5, srcOut: 9.6, include: true },
+  ] };
+  const base = TL.applyStoryboard(p, sb).project;
+  base.revision = 5;
+  const [v1, v2] = TL.videoClips(base);
+  const txt = base.clips.find((c) => c.track === 't1');
+  const sub2 = base.clips.find((c) => c.track === 'c1' && c.src.clip === v2.id);
+  // yazını çəkmək yalnız onu dəyişir
+  const moved = TL.setTextPos(base, txt.id, 0.3, 0.6);
+  assert.deepEqual(moved.clips.filter((c) => c.id !== txt.id), base.clips.filter((c) => c.id !== txt.id));
+  // klipi uzatmaq: səs sinxron, sonrakı klip və onun subtitrləri sürüşür, geri gələn sözlərin subtitri yaranır
+  const ext = TL.trim(moved, v1.id, 'out', 5.5);
+  const lay = TL.layout(ext);
+  assert.equal(TL.partnerOf(ext, TL.clipById(ext, v1.id)).srcOut, 5.5);
+  assert.equal(lay.get(v2.id).start, 5.0);
+  const s2 = ext.clips.find((c) => c.id === sub2.id);
+  assert.equal(s2.start, lay.get(v2.id).start + (sub2.src.s - v2.srcIn));
+  assert.ok(ext.clips.some((c) => c.track === 'c1' && /dörd/.test(c.text)));
+  assert.equal(ext.clips.find((c) => c.id === txt.id).x, 0.3, 'yazının yeri qorunur');
+  // düzəliş faylı -> tətbiq
+  const edits = TL.diffEdits(base, ext);
+  assert.deepEqual(Object.keys(edits.clips), [v1.id]);
+  assert.deepEqual(Object.keys(edits.texts), [txt.id]);
+  const r = TL.applyEdits(base, edits);
+  assert.deepEqual(r.rejected, []);
+  assert.equal(TL.clipById(r.project, v1.id).srcOut, 5.5);
+  // təkrar tətbiq — dəyişiklik yoxdur
+  const again = TL.applyEdits({ ...r.project, revision: 6 }, edits);
+  assert.equal(again.applied.length, 0);
+  assert.equal(again.already.length, 2);
+  // başqa yerdə dəyişmiş element rədd olunur
+  const other = TL.trim({ ...base, revision: 6 }, v1.id, 'out', 3.0);
+  const st = TL.applyEdits(other, edits);
+  assert.ok(st.rejected.some((x) => x.id === v1.id));
+  // yanlış layihə
+  assert.throws(() => TL.applyEdits({ ...base, id: 'basqa' }, edits), /başqa layihəyə/);
+});

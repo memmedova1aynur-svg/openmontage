@@ -16,7 +16,14 @@ Yoxlama əsası: `tests/montaj/` (Node 12, pytest 19) və brauzer testləri `e2e
 | 0.2 | Yalnız iPhone ilə bir videonu başdan sona hazırlamaq | 🟡 | Seçilən yol: Claude Code sessiyası + `montaj.session` CLI (`BUDCE_YOLU.md`). Real iPhone və real video ilə yoxlanılmayıb |
 | 0.3 | Drive linkindən orijinal fayl (sessiyada) | 🟡 | Drive serverinə çıxış var; real paylaşımlı fayl ilə yoxlanılmayıb |
 | 0.4 | Sessiyada hazırlanmış plan panel layihə faylı kimi | ✅ | `export` panelin öz `montaj.json` formatını verir (test) |
-| 0.5 | Brauzerdə montaj paneli (redaktə) telefondan | ⛔ | Pulsuz daimi server yoxdur; panel sessiyada işləyir, amma xaricdən açılmır |
+| 0.5 | Brauzerdə tam montaj paneli telefondan | ⛔ | Pulsuz daimi server yoxdur. Yerinə: telefon redaktoru (0.6) |
+| 0.6 | Telefonda interaktiv redaktor (claude.ai artifact, sessiyadan dərc olunur) | 🟡 | Dərc olundu, önizləmə videosu artifact-ın şəxsi asset yerində; səhifənin db-yə yazdığı düzəliş sessiyada oxunub tətbiq olundu (cihaz məlum deyil). Real iPhone Safari/Claude tətbiqində təsdiqlənməyib |
+| 0.7 | Yazını barmaqla başqa yerə çəkmək; yalnız o yazı dəyişir; render-də eyni yer | ✅ | Emulyasiya + render testi |
+| 0.8 | Klipin başlanğıc/sonunu uzadıb kəsilmiş hissəni qaytarmaq; öz səsi sinxron; sonrakı kliplər, bağlı yazı və subtitrlər uyğunlaşır | ✅ | Emulyasiya + render sinxron testi (0 ms) |
+| 0.9 | Düzəlişlər sabit ID və layihə versiyası ilə; köhnə/yanlış layihə aşkarlanır; undo/redo; qaralama saxlanılır | ✅ | |
+| 0.10 | Düzəlişi Claude sessiyasına qaytarmaq | ✅ | Avtomatik (artifact db) və ya “Düzəlişi kopyala” |
+| 0.11 | Analiz keşi (mənbə + parametrlər dəyişməyibsə təkrar transkripsiya yoxdur) | ✅ | |
+| 0.12 | Token istifadəsinin ölçülməsi | ⛔ | Bu sessiyadan token sayğacına giriş yoxdur — ölçülmür |
 
 ## 1. Telefondan açılan panel
 | # | Tələb | Status | Qeyd |

@@ -226,7 +226,7 @@ export function splitAt(p0, clipId, t) {
       created.get(g.id).linkedTo = created.get(g.linkedTo).id;
     }
   }
-  return normalizeOrder(p);
+  return settle(normalizeOrder(p));
 }
 
 /** Mətn klipi üçün bölmə ayrıca: müddət əsaslıdır. */
@@ -241,7 +241,7 @@ export function splitText(p0, clipId, t) {
   c.srcIn = 0;
   markManual(c, right);
   p.clips.push(right);
-  return p;
+  return settle(p);
 }
 
 export function split(p, clipId, t) {
@@ -256,7 +256,7 @@ export function deleteClip(p0, clipId) {
   const partner = partnerOf(p, c);
   const kill = new Set([c.id, partner?.id].filter(Boolean));
   p.clips = p.clips.filter((x) => !kill.has(x.id));
-  return normalizeOrder(p);
+  return settle(normalizeOrder(p));
 }
 
 /** Video klipinin sırasını dəyişir (bağlı səs onunla birlikdə gedir). */
@@ -271,7 +271,7 @@ export function moveVideo(p0, clipId, newIndex) {
     x.order = i;
   });
   markManual(c, partnerOf(p, c));
-  return p;
+  return settle(p);
 }
 
 /** Sərbəst klipi (musiqi, effekt, mətn, ayrılmış səs) yeni vaxta aparır. */
@@ -283,7 +283,7 @@ export function moveFree(p0, clipId, start) {
   if (c.linkedTo) fail('Bağlı səs videoya bağlıdır — əvvəl ayırın');
   c.start = round(Math.max(0, start));
   markManual(c);
-  return p;
+  return settle(p);
 }
 
 /** Sərbəst klipi başqa uyğun qata keçirir (məs. danışıq -> səs effekti). */
@@ -354,7 +354,7 @@ export function trim(p0, clipId, edge, value) {
     }
   }
   markManual(...group);
-  return p;
+  return settle(p);
 }
 
 /** Videonu öz səsindən ayırır — səs klipi sərbəst olur, eyni yerdə qalır. */
@@ -368,7 +368,7 @@ export function unlink(p0, clipId) {
   audio.start = lay.get(audio.id).start;
   delete audio.linkedTo;
   markManual(c, partner);
-  return p;
+  return settle(p);
 }
 
 export function setVolume(p0, clipId, volume) {
@@ -668,17 +668,135 @@ export function applyStoryboard(p0, sb, { frames = {}, brand = null } = {}) {
   for (const { card, v } of created) {
     const l = lay.get(v.id);
     if (card.onScreenText && card.onScreenText.trim()) {
-      p.clips.push({ id: uid('t'), track: 't1', media: null, srcIn: 0, srcOut: round(Math.min(3, l.end - l.start)), start: l.start, text: card.onScreenText.trim(), size: 0.055, position: 'top', bg: color ? `${color}@0.85` : null, origin: 'ai', manual: false });
-    }
-    if (sb.subtitles) {
-      for (const ch of subtitleChunks(card.words)) {
-        const s = l.start + (ch.s - v.srcIn);
-        const e = l.start + (ch.e - v.srcIn);
-        if (e - s < MIN_CLIP || ch.s < v.srcIn - 0.01 || ch.e > v.srcOut + 0.01) continue;
-        p.clips.push({ id: uid('t'), track: 'c1', media: null, srcIn: 0, srcOut: round(e - s), start: round(s), text: ch.text, size: 0.045, position: 'bottom', origin: 'ai', manual: false });
-      }
+      p.clips.push({ id: `txt_${v.id}`, track: 't1', media: null, srcIn: 0, srcOut: round(Math.min(3, l.end - l.start)), start: l.start, text: card.onScreenText.trim(), size: 0.055, position: 'top', bg: color ? `${color}@0.85` : null, origin: 'ai', manual: false, anchor: { clip: v.id, offset: 0 } });
     }
   }
+  // Subtitrlər söz vaxtlarından yaradılır və klip dəyişəndə yenidən hesablanır
+  const words = {};
+  for (const [mid, segs] of Object.entries(sb.candidates || {})) {
+    words[mid] = segs.flatMap((sg) => sg.words || []).map((w) => ({ w: w.w, s: w.s, e: w.e }));
+  }
+  for (const card of cards) if (!words[card.mediaId] && card.words) words[card.mediaId] = card.words.map((w) => ({ w: w.w, s: w.s, e: w.e }));
+  p.subtitles = { enabled: !!sb.subtitles, words, size: 0.045, position: 'bottom' };
   p.storyboard = { ...clone(sb), status: 'approved', approvedAt: Date.now() };
-  return { project: p, applied: created.length, skipped };
+  return { project: settle(p), applied: created.length, skipped };
+}
+
+// ---------------------------------------------------------------------------
+// Bağlı mətnlər və avtomatik subtitrlər (klip dəyişəndə uyğunlaşır)
+// ---------------------------------------------------------------------------
+
+/** Anchor-lu mətnləri klipinə görə yerləşdirir, avtomatik subtitrləri söz vaxtlarından yenidən qurur. */
+export function settle(p) {
+  const lay = layout(p);
+  for (const c of p.clips) {
+    if (!c.anchor) continue;
+    const l = lay.get(c.anchor.clip);
+    if (!l) { c.hidden = true; continue; }
+    c.hidden = false;
+    c.start = round(l.start + (c.anchor.offset || 0));
+    c.srcOut = round(Math.max(MIN_CLIP, Math.min(c.srcOut, l.end - c.start)));
+  }
+  rebuildSubtitles(p, lay);
+  return p;
+}
+
+function rebuildSubtitles(p, lay = layout(p)) {
+  const st = p.subtitles;
+  if (!st || !st.enabled) return;
+  const keepManual = new Map(p.clips.filter((c) => c.track === 'c1' && c.autoSub && c.manual).map((c) => [c.id, c]));
+  p.clips = p.clips.filter((c) => !(c.track === 'c1' && c.autoSub && !c.manual));
+  const seen = new Set();
+  for (const v of videoClips(p)) {
+    const ws = (st.words[v.media] || []).filter((w) => w.s >= v.srcIn - 0.01 && w.e <= v.srcOut + 0.01);
+    const l = lay.get(v.id);
+    for (const ch of subtitleChunks(ws)) {
+      const id = `sub_${v.id}_${Math.round(ch.s * 1000)}`;
+      seen.add(id);
+      const start = round(l.start + (ch.s - v.srcIn));
+      const dur = round(Math.max(MIN_CLIP, ch.e - ch.s));
+      const old = keepManual.get(id);
+      if (old) { old.start = start; old.srcIn = 0; old.srcOut = dur; old.hidden = false; continue; }
+      p.clips.push({ id, track: 'c1', media: null, srcIn: 0, srcOut: dur, start, text: ch.text, size: st.size || 0.045,
+        position: st.position || 'bottom', origin: 'auto', autoSub: true, manual: false, src: { clip: v.id, s: ch.s } });
+    }
+  }
+  // əl ilə yerini dəyişdiyiniz subtitrin sözü kəsilibsə — gizlədilir (silinmir, geri qayıda bilər)
+  for (const [id, c] of keepManual) if (!seen.has(id)) c.hidden = true;
+}
+
+/** Yazının ekrandakı yerini dəyişir (normallaşdırılmış mərkəz 0..1). Yalnız bu element dəyişir. */
+export function setTextPos(p0, clipId, x, y) {
+  const p = clone(p0);
+  const c = mustClip(p, clipId);
+  if (trackKind(p, c) !== 'text') fail('Bu element yazı deyil');
+  c.x = round(Math.max(0.02, Math.min(0.98, x)));
+  c.y = round(Math.max(0.02, Math.min(0.98, y)));
+  c.manual = true;
+  return p;
+}
+
+/** Klipin kənarını dəyişir + bağlı mətnləri və subtitrləri uyğunlaşdırır. */
+export function trimSettled(p0, clipId, edge, value) {
+  return settle(trim(p0, clipId, edge, value));
+}
+
+// ---------------------------------------------------------------------------
+// Düzəliş faylı: telefondakı redaktordan gələn dəyişikliklər
+// ---------------------------------------------------------------------------
+
+export const EDITS_SCHEMA = 1;
+
+/** Baza layihə ilə cari vəziyyət arasındakı əl düzəlişləri (yalnız dəyişən elementlər). */
+export function diffEdits(base, cur) {
+  const clips = {}; const texts = {};
+  for (const c of cur.clips) {
+    const b = clipById(base, c.id);
+    if (!b) continue;
+    const kind = trackKind(cur, c);
+    if (kind === 'video' && (b.srcIn !== c.srcIn || b.srcOut !== c.srcOut)) {
+      clips[c.id] = { srcIn: c.srcIn, srcOut: c.srcOut, base: { srcIn: b.srcIn, srcOut: b.srcOut } };
+    }
+    if (kind === 'text' && (b.x !== c.x || b.y !== c.y) && c.x != null) {
+      texts[c.id] = { x: c.x, y: c.y, base: { x: b.x ?? null, y: b.y ?? null } };
+    }
+  }
+  return { schema: EDITS_SCHEMA, projectId: base.id, baseRevision: base.revision, clips, texts };
+}
+
+/** Düzəliş faylını layihəyə tətbiq edir. Yanlış/köhnə layihə və dəyişmiş elementlər aşkarlanır. */
+export function applyEdits(p0, edits) {
+  if (!edits || edits.schema !== EDITS_SCHEMA) fail('Düzəliş faylının formatı tanınmadı');
+  if (edits.projectId !== p0.id) fail(`Bu düzəliş başqa layihəyə aiddir (${edits.projectId})`);
+  let p = clone(p0);
+  const applied = []; const rejected = []; const already = [];
+  const sameBase = Number(edits.baseRevision) === Number(p0.revision);
+  for (const [id, e] of Object.entries(edits.clips || {})) {
+    const c = clipById(p, id);
+    if (!c) { rejected.push({ id, reason: 'klip artıq yoxdur' }); continue; }
+    if (Math.abs(c.srcIn - e.srcIn) < 0.002 && Math.abs(c.srcOut - e.srcOut) < 0.002) { already.push(id); continue; }
+    if (!sameBase && (Math.abs(c.srcIn - e.base.srcIn) > 0.002 || Math.abs(c.srcOut - e.base.srcOut) > 0.002)) {
+      rejected.push({ id, reason: 'klip redaktordan sonra başqa yerdə dəyişib' }); continue;
+    }
+    try {
+      if (Math.abs(c.srcIn - e.srcIn) > 1e-4) p = trim(p, id, 'in', e.srcIn);
+      if (Math.abs(clipById(p, id).srcOut - e.srcOut) > 1e-4) p = trim(p, id, 'out', e.srcOut);
+      const now = clipById(p, id);
+      if (Math.abs(now.srcIn - e.srcIn) > 0.002 || Math.abs(now.srcOut - e.srcOut) > 0.002) {
+        rejected.push({ id, reason: `mənbə sərhədi: ${now.srcIn}–${now.srcOut}` });
+      } else applied.push(id);
+    } catch (err) { rejected.push({ id, reason: err.message }); }
+  }
+  p = settle(p);
+  for (const [id, e] of Object.entries(edits.texts || {})) {
+    const c = clipById(p, id);
+    if (!c) { rejected.push({ id, reason: 'yazı artıq yoxdur' }); continue; }
+    if (c.x === e.x && c.y === e.y) { already.push(id); continue; }
+    if (!sameBase && ((c.x ?? null) !== e.base.x || (c.y ?? null) !== e.base.y)) {
+      rejected.push({ id, reason: 'yazı redaktordan sonra başqa yerdə dəyişib' }); continue;
+    }
+    p = setTextPos(p, id, e.x, e.y);
+    applied.push(id);
+  }
+  return { project: p, applied, rejected, already, sameBase };
 }

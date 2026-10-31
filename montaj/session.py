@@ -256,6 +256,81 @@ def cmd_render(a: argparse.Namespace) -> None:
         print("-", c)
 
 
+EDITOR_TEMPLATE = Path(__file__).resolve().parent / "editor" / "editor.html"
+EDITOR_KEYS = ("id", "title", "revision", "width", "height", "fps", "fpsRate", "tracks", "clips", "subtitles", "mirrorAll")
+
+
+def inline_timeline() -> str:
+    """timeline.js-i (ES modul) adi skriptə çevirir: window.TL = {...}. Kod təkrarlanmır."""
+    import re
+
+    src = UI.read_text(encoding="utf-8")
+    names = re.findall(r"^export (?:async )?(?:function|const|class|let) (\w+)", src, flags=re.M)
+    body = re.sub(r"^export (?=(?:async )?(?:function|const|class|let) )", "", src, flags=re.M)
+    return "(() => {\n" + body + "\nwindow.TL = { " + ", ".join(names) + " };\n})();"
+
+
+def editor_data(pid: str, assets: dict[str, str]) -> dict[str, Any]:
+    """Redaktor üçün minimal layihə: Drive linki, fayl yolları, storyboard, brend və caption DAXİL DEYİL."""
+    import hashlib
+
+    p = store.load(pid)
+    proj = {k: p.get(k) for k in EDITOR_KEYS}
+    proj["media"] = [{k: m.get(k) for k in ("id", "name", "duration", "width", "height", "hasAudio", "hasVideo", "isImage")}
+                     for m in p["media"]]
+    media = {m["id"]: {"url": assets.get(m["id"]), "name": m["name"], "duration": m["duration"],
+                       "width": m.get("width"), "height": m.get("height")} for m in p["media"]}
+    build = hashlib.sha1((EDITOR_TEMPLATE.read_text() + UI.read_text()).encode()).hexdigest()[:10]
+    return {"project": proj, "media": media, "build": build}
+
+
+def make_preview(src: Path, dst: Path, hdr: bool) -> None:
+    """Telefonda baxış üçün yüngül nüsxə (qısa tərəf 540 px). Render bundan HAZIRLANMIR."""
+    tm = ("zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709,tonemap=tonemap=hable:desat=0,"
+          "zscale=t=bt709:m=bt709:r=tv,") if hdr else ""
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(src), "-map", "0:v:0", "-map", "0:a:0?",
+                    "-vf", tm + "scale='if(gt(iw,ih),-2,540)':'if(gt(iw,ih),540,-2)',format=yuv420p",
+                    "-c:v", "libx264", "-preset", "veryfast", "-crf", "30", "-g", "15", "-c:a", "aac", "-b:a", "96k",
+                    "-movflags", "+faststart", str(dst)], check=True, capture_output=True)
+
+
+def cmd_editor(a: argparse.Namespace) -> None:
+    p = store.load(a.pid)
+    d = out_dir(a.pid) / "editor"
+    d.mkdir(exist_ok=True)
+    assets = json.loads(Path(a.assets).read_text()) if a.assets else {}
+    if a.local:
+        assets = {m["id"]: f"preview_{m['id']}.mp4" for m in p["media"]}
+    if True:
+        for m in p["media"]:
+            if m.get("hasVideo") and not m.get("isImage"):
+                dst = d / f"preview_{m['id']}.mp4"
+                if not dst.is_file():
+                    make_preview(store.project_dir(a.pid) / m["file"], dst, bool(m.get("hdr")))
+                print(f"önizləmə: {dst}  {dst.stat().st_size / 1e6:.1f} MB")
+    data = json.dumps(editor_data(a.pid, assets), ensure_ascii=False).replace("</", "<\\/")
+    html = EDITOR_TEMPLATE.read_text(encoding="utf-8")
+    html = html.replace("/*__DATA__*/", data, 1).replace("/*__TIMELINE__*/", inline_timeline(), 1)
+    (d / "index.html").write_text(html, encoding="utf-8")
+    print(d / "index.html")
+
+
+def cmd_apply_edits(a: argparse.Namespace) -> None:
+    """Telefondakı redaktordan gələn düzəlişləri tətbiq edir (yalnız həmin elementlər dəyişir)."""
+    edits = json.loads(Path(a.edits).read_text(encoding="utf-8"))
+    edits = edits.get("data", edits)  # ArtifactData sənədi və ya xam fayl
+    p = store.load(a.pid)
+    r = node_tl("applyEdits", p, edits)
+    if not r["applied"] and not r["rejected"]:
+        print(f"dəyişiklik yoxdur: {len(r['already'])} element artıq tətbiq olunub; versiya {p['revision']}")
+        return
+    if not r["applied"] and r["rejected"]:
+        raise UserError("Heç bir düzəliş tətbiq olunmadı.", "; ".join(f"{x['id']}: {x['reason']}" for x in r["rejected"]))
+    saved = store.save(a.pid, r["project"], p["revision"])
+    print(f"tətbiq olundu: {len(r['applied'])} element; rədd: {r['rejected']}; versiya {p['revision']} -> {saved['revision']}"
+          + ("" if r["sameBase"] else " (redaktor köhnə versiyadan idi — yalnız dəyişməmiş elementlər tətbiq olundu)"))
+
+
 def cmd_export(a: argparse.Namespace) -> None:
     p = store.load(a.pid)
     dst = out_dir(a.pid) / f"{a.pid}.montaj.json"
@@ -285,10 +360,18 @@ def main(argv: list[str] | None = None) -> int:
     e.add_argument("--text", action="append")
     e.add_argument("--order")
     e.add_argument("--subtitles", choices=["on", "off"])
+    ed = sub.add_parser("editor")
+    ed.add_argument("pid")
+    ed.add_argument("--assets", help="JSON: media id -> artifact asset url")
+    ed.add_argument("--local", action="store_true", help="önizləmələrə nisbi yol (yerli sınaq)")
+    ae = sub.add_parser("apply-edits")
+    ae.add_argument("pid")
+    ae.add_argument("edits")
     a = ap.parse_args(argv)
     try:
         {"new": cmd_new, "storyboard": cmd_storyboard, "edit": cmd_edit, "apply": cmd_apply,
-         "render": cmd_render, "export": cmd_export}[a.cmd](a)
+         "render": cmd_render, "export": cmd_export, "editor": cmd_editor,
+         "apply-edits": cmd_apply_edits}[a.cmd](a)
     except UserError as err:
         print(f"XƏTA: {err.message}\nNƏ ETMƏLİ: {err.hint}", file=sys.stderr)
         return 2

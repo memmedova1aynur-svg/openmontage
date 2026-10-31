@@ -90,6 +90,8 @@ def render_plan(project: dict[str, Any]) -> dict[str, Any]:
                 start, dur = lay[c["id"]][0], clip_dur(c)
             aplan.append({"clip": c, "kind": k, "start": start, "dur": dur})
         elif k == "text":
+            if c.get("hidden"):
+                continue
             s, e = lay[c["id"]]
             tplan.append({"clip": c, "start": s, "end": e})
     main = max([video_end] + [a["start"] + a["dur"] for a in aplan] + [t["end"] for t in tplan] + [0.0])
@@ -211,12 +213,17 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
         size = max(12, int(H * float(c.get("size") or 0.06)))
         pos = c.get("position") or "bottom"
         y = {"top": "h*0.08", "center": "(h-text_h)/2"}.get(pos, "h*0.88-text_h")
+        xexpr = "(w-text_w)/2"
+        if c.get("x") is not None and c.get("y") is not None:
+            # telefonda sürüşdürülmüş yer: mərkəz nöqtəsi (0..1), kadrdan çıxmasın
+            xexpr = f"max(0\\,min(w-text_w\\,w*{float(c['x']):.4f}-text_w/2))"
+            y = f"max(0\\,min(h-text_h\\,h*{float(c['y']):.4f}-text_h/2))"
         color = (c.get("color") or "white").replace("#", "0x")
         box = (c.get("bg") or "black@0.55").replace("#", "0x")
         filters.append(
             f"[{cur}]drawtext=fontfile='{font}':textfile='{tf}':fontsize={size}:fontcolor={color}:"
             f"box=1:boxcolor={box}:boxborderw={max(6, size // 4)}:line_spacing={size // 5}:"
-            f"x=(w-text_w)/2:y={y}:enable='between(t,{t['start']:.3f},{t['end']:.3f})'[vt{i}]")
+            f"x={xexpr}:y={y}:enable='between(t,{t['start']:.3f},{t['end']:.3f})'[vt{i}]")
         cur = f"vt{i}"
 
     logo = ((project.get("branding") or {}).get("logo") or {})
