@@ -5,7 +5,7 @@ yuvarlaqlaşdırılır, bağlı səs həmin başlanğıcı götürür — sürü
 
 Klip parametrləri (hamısı istəyə bağlı, yalnız istifadəçi seçəndə):
   frame  — kadraj (reframe.py), rotate — dərəcə
-  adjust — {mirror, brightness, contrast, saturation, temperature, soften, sharpen}
+  adjust — {mirror, brightness, contrast, saturation, vibrance, depth, temperature, soften, sharpen}
 Layihə parametrləri:
   aspect, mix {speech, music, sfx, voice, duck}, branding {logo, end}, mirrorAll
 """
@@ -131,13 +131,45 @@ def _lerp_expr(keys: list[dict[str, float]], field: str, t0: float) -> str:
     return f"if(lt(t,{ks[0]['t'] - t0:.3f}),{ks[0][field]:.5f},{expr})"
 
 
+HDR_TO_SDR = ("zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709,tonemap=tonemap=hable:desat=0,"
+              "zscale=t=bt709:m=bt709:r=tv,format=yuv420p")
+
+
+def color_filters(adj: dict[str, Any]) -> list[str]:
+    """Rəng düzəlişi (ölçüdən əvvəl). Render və `session looks` eyni funksiyanı işlədir."""
+    f: list[str] = []
+    b, ct, sat = float(adj.get("brightness") or 0), float(adj.get("contrast") or 1), float(adj.get("saturation") or 1)
+    if abs(b) > 1e-3 or abs(ct - 1) > 1e-3 or abs(sat - 1) > 1e-3:
+        f.append(f"eq=brightness={b:.3f}:contrast={ct:.3f}:saturation={sat:.3f}")
+    depth = float(adj.get("depth") or 0)
+    if depth > 0.01:  # qaranlıq və işıqlı hissələrə yüngül dərinlik (S-əyri)
+        lo, hi = 0.05 - 0.015 * min(depth, 2), 0.95 + 0.015 * min(depth, 2)
+        f.append(f"curves=master='0/0 0.05/{lo:.4f} 0.95/{hi:.4f} 1/1'")
+    vib = float(adj.get("vibrance") or 0)
+    if vib > 0.005:  # solğun rəngləri canlandırır, onsuz da doymuş rənglərə (dəriyə) az təsir edir
+        f.append(f"vibrance=intensity={min(vib, 1):.3f}")
+    soft = float(adj.get("soften") or 0)
+    if soft > 0.01:
+        # yüngül yumşaltma: kənarları qoruyur, bütün kadra tətbiq olunur (üz seçilmir)
+        f.append(f"smartblur=lr=2.0:ls={min(1.0, 0.2 + 0.6 * soft):.2f}:lt=8")
+    temp = float(adj.get("temperature") or 6500)
+    if abs(temp - 6500) > 50:
+        f.append(f"colortemperature=temperature={temp:.0f}")
+    return f
+
+
+def sharpen_filter(adj: dict[str, Any]) -> list[str]:
+    """Yüngül kəskinlik (yalnız parlaqlıq), çıxış ölçüsündə tətbiq olunur."""
+    sharp = float(adj.get("sharpen") or 0)
+    return [f"unsharp=5:5:{min(1.0, sharp):.2f}:5:5:0"] if sharp > 0.01 else []
+
+
 def video_chain(c: dict[str, Any], m: dict[str, Any], W: int, H: int, fps_str: str,
                 mirror_all: bool, frames: int) -> str:
     """Bir video klip üçün filtr zənciri (input → [W x H], yuv420p)."""
     f: list[str] = []
     if m.get("hdr"):
-        f.append("zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709,tonemap=tonemap=hable:desat=0,"
-                 "zscale=t=bt709:m=bt709:r=tv,format=yuv420p")
+        f.append(HDR_TO_SDR)
     fr = c.get("frame") or {}
     rot = float(fr.get("rotate") or 0)
     if abs(rot) > 0.05:
@@ -161,20 +193,9 @@ def video_chain(c: dict[str, Any], m: dict[str, Any], W: int, H: int, fps_str: s
     adj = c.get("adjust") or {}
     if bool(adj.get("mirror")) ^ bool(mirror_all):
         f.append("hflip")
-    b, ct, sat = float(adj.get("brightness") or 0), float(adj.get("contrast") or 1), float(adj.get("saturation") or 1)
-    if abs(b) > 1e-3 or abs(ct - 1) > 1e-3 or abs(sat - 1) > 1e-3:
-        f.append(f"eq=brightness={b:.3f}:contrast={ct:.3f}:saturation={sat:.3f}")
-    soft = float(adj.get("soften") or 0)
-    if soft > 0.01:
-        # yüngül yumşaltma: kənarları qoruyur, bütün kadra tətbiq olunur (üz seçilmir)
-        f.append(f"smartblur=lr=2.0:ls={min(1.0, 0.2 + 0.6 * soft):.2f}:lt=8")
-    temp = float(adj.get("temperature") or 6500)
-    if abs(temp - 6500) > 50:
-        f.append(f"colortemperature=temperature={temp:.0f}")
+    f += color_filters(adj)
     f.append(f"scale={W}:{H}:force_original_aspect_ratio=decrease:flags=lanczos")
-    sharp = float(adj.get("sharpen") or 0)
-    if sharp > 0.01:  # yüngül kəskinlik (yalnız parlaqlıq kanalı), çıxış ölçüsündə
-        f.append(f"unsharp=5:5:{min(1.0, sharp):.2f}:5:5:0")
+    f += sharpen_filter(adj)
     f.append(f"pad={W}:{H}:(ow-iw)/2:(oh-ih)/2:color=black,setsar=1,fps={fps_str}")
     f.append(f"setpts=PTS-STARTPTS,tpad=stop_mode=clone:stop_duration=1,trim=end_frame={frames},"
              f"setpts=PTS-STARTPTS,format=yuv420p")

@@ -115,7 +115,7 @@ Yoxlama əsası: `tests/montaj/` (Node 12, pytest 19) və brauzer testləri `e2e
 | 8.5 | Arxa fon bulanıqlığı | ⛔ | Seqmentasiya ilə kadr-kadr render keçidi yazılmayıb — düymə qoyulmayıb |
 | 8.6 | Parlaqlıq, kontrast, temperatur, doyumluluq | ✅ | Render-də FFmpeg; önizləmədə CSS (temperatur önizləmədə təxminidir) |
 | 8.7 | Əvvəl/sonra, sıfırlama | ✅ | |
-| 8.8 | Standart rəng korreksiyası “C” (az kontrast, bir az işıq, yüngül kəskinlik) — ölçü/fps dəyişmir; `session plan` avtomatik tətbiq edir (`"look": null` ilə söndürülür), əl ilə dəyişdirilmiş rəngə toxunmur; redaktorda “Peşəkar (C)” şablonu və “Kəskinlik” sürgüsü | ✅ | İstifadəçi 4 variantdan seçib (Günel videosu). Test: `test_plan_default_look_and_sharpen`. Kəskinlik önizləmədə görünmür, yalnız MP4-də. Fayl həcmi bir az artır (Günel: 26,3 → 30,9 MB) |
+| 8.8 | Rəng korreksiyası: hər video üçün `session looks <pid>` orijinal + A–D müqayisə şəklini (render ilə eyni filtrlər) hazırlayır, istifadəçi seçir, `plan.json`-da `"look": "A"|"B"|"C"|"D"` (standart C, `null` — yoxdur). Ölçü/fps dəyişmir; əl ilə dəyişdirilmiş rəngə toxunulmur; redaktorda A–D şablonları və “Kəskinlik” sürgüsü | ✅ | Testlər: `test_plan_default_look_and_sharpen`, `test_looks_sheet_and_plan_choice`. Kəskinlik/dərinlik/canlılıq önizləmədə təxmini, dəqiq nəticə MP4-də. Kəskinlik fayl həcmini bir az artırır (Günel, C: 26,3 → 30,9 MB) |
 
 ## 9. Musiqi, effektlər, qrafika, sonluq
 | # | Tələb | Status | Qeyd |

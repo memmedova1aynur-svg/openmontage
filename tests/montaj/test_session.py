@@ -135,3 +135,30 @@ def test_plan_default_look_and_sharpen(tmp_path, monkeypatch):
     assert all(after[c["id"]] is None for c in vids[1:]), "plan şablonu götürülür"
     no = render.video_chain(vids[1] | {"adjust": {}}, {"width": 202, "height": 360}, 202, 360, "30", False, 30)
     assert "unsharp" not in no and "eq=" not in no
+
+
+def test_looks_sheet_and_plan_choice(tmp_path, monkeypatch):
+    """`looks` A–D müqayisə şəklini hazırlayır; plan-da seçilən şablon (D) render filtrinə düşür."""
+    import sys
+    from pathlib import Path
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    from tests.montaj import editor_fixture
+
+    monkeypatch.setenv("MONTAJ_OUT_DIR", str(tmp_path / "out"))
+    pid = editor_fixture.make(tmp_path / "data", tmp_path)
+    from montaj import media, render, session, store
+
+    assert session.main(["looks", pid]) == 0
+    sheet = tmp_path / "out" / pid / "reng_variantlari.jpg"
+    info = media.probe(sheet)
+    assert sheet.stat().st_size > 5000 and info["width"] == 3 * 540, "orijinal + A–D, 2 sıra × 3"
+    assert not list((tmp_path / "out" / pid).glob("reng_*.png")), "aralıq fayllar silinir"
+    plan = tmp_path / "plan.json"
+    plan.write_text(json.dumps({"look": "D"}))
+    assert session.main(["plan", pid, str(plan)]) == 0
+    v = next(c for c in store.load(pid)["clips"] if c["track"] == "v1")
+    chain = render.video_chain(v, {"width": 202, "height": 360}, 202, 360, "30", False, 30)
+    assert "curves=master=" in chain and "vibrance=intensity=0.070" in chain and "unsharp=5:5:0.20" in chain
+    plan.write_text(json.dumps({"look": "Z"}))
+    assert session.main(["plan", pid, str(plan)]) == 2

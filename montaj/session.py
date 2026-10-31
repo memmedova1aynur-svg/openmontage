@@ -439,9 +439,61 @@ def _sfx_media(pid: str, kind: str) -> dict[str, Any]:
     return rec
 
 
-# İstifadəçinin seçdiyi standart rəng korreksiyası ("C": az kontrast, bir az işıq, yüngül kəskinlik).
-# Ölçü/format dəyişmir. Plan faylında "look": null olarsa tətbiq edilmir.
-LOOKS: dict[str, dict[str, float]] = {"C": {"brightness": 0.01, "contrast": 1.04, "saturation": 1.05, "sharpen": 0.25}}
+# Rəng korreksiyası şablonları (hamısı yüngül; ölçü/format dəyişmir). Hər video üçün `looks` əmri
+# A–D müqayisə şəklini hazırlayır, istifadəçi seçir, seçim plan.json-da "look" ilə verilir.
+# Standart "C"-dir (istifadəçinin ilk seçimi); "look": null — rəng düzəlişi yoxdur.
+LOOKS: dict[str, dict[str, float]] = {
+    "A": {"vibrance": 0.06},
+    "B": {"contrast": 1.03, "saturation": 1.04, "vibrance": 0.05},
+    "C": {"brightness": 0.01, "contrast": 1.04, "saturation": 1.05, "sharpen": 0.25},
+    "D": {"depth": 1.0, "vibrance": 0.07, "sharpen": 0.2},
+}
+LOOK_LABELS = {"A": "çox az canlılıq", "B": "az kontrast + az canlılıq",
+               "C": "az kontrast + bir az işıq + yüngül kəskinlik", "D": "dərinlik + az canlılıq + yüngül kəskinlik"}
+LOOK_KEYS = ("brightness", "contrast", "saturation", "vibrance", "depth", "sharpen")
+
+
+def cmd_looks(a: argparse.Namespace) -> None:
+    """Hər video üçün rəng variantları: orijinal + A–D, eyni kadrda (render ilə eyni filtrlər)."""
+    from montaj import render
+
+    p = store.load(a.pid)
+    vids = [c for c in p["clips"] if c["track"] == "v1" and c.get("media")]
+    media = {m["id"]: m for m in p["media"]}
+    if vids:
+        c = max(vids, key=lambda x: x["srcOut"] - x["srcIn"])
+        m, t = media[c["media"]], (c["srcIn"] + c["srcOut"]) / 2
+    else:
+        m = next((x for x in p["media"] if x.get("hasVideo") and not x.get("isImage")), None)
+        if not m:
+            raise UserError("Layihədə video yoxdur.", "Əvvəlcə `new` ilə video əlavə edin.")
+        t = float(m.get("duration") or 2) / 2
+    if a.t is not None:
+        t = a.t
+    src = store.project_dir(a.pid) / m["file"]
+    font = render._font()
+    o = out_dir(a.pid)
+    tiles = []
+    for name in ["orijinal", *LOOKS]:
+        label = "Orijinal" if name == "orijinal" else f"{name}: {LOOK_LABELS[name]}"
+        adj = {} if name == "orijinal" else LOOKS[name]
+        f = ([render.HDR_TO_SDR] if m.get("hdr") else []) + render.color_filters(adj) + render.sharpen_filter(adj)
+        f.append("scale=540:-2:flags=lanczos")
+        if font:
+            esc = label.replace("\\", "").replace(":", "\\:").replace("'", "")
+            f.append(f"drawbox=y=0:w=iw:h=40:color=black@0.65:t=fill,drawtext=fontfile={font}:text='{esc}':x=10:y=9:fontsize=20:fontcolor=white")
+        tile = o / f"reng_{name}.png"
+        subprocess.run(["ffmpeg", "-y", "-v", "error", "-ss", f"{t:.3f}", "-i", str(src), "-frames:v", "1",
+                        "-vf", ",".join(f), str(tile)], check=True)
+        tiles.append(tile)
+    sheet = o / "reng_variantlari.jpg"
+    ins = sum((["-i", str(x)] for x in [tiles[0], tiles[1], tiles[2], tiles[0], tiles[3], tiles[4]]), [])
+    subprocess.run(["ffmpeg", "-y", "-v", "error", *ins, "-filter_complex",
+                    "[0][1][2]hstack=3[t];[3][4][5]hstack=3[b];[t][b]vstack", "-q:v", "3", str(sheet)], check=True)
+    for x in tiles:
+        x.unlink()
+    print(f"kadr: {m.get('name')} {t:.1f} s")
+    print(sheet)
 
 
 def cmd_plan(a: argparse.Namespace) -> None:
@@ -478,7 +530,7 @@ def cmd_plan(a: argparse.Namespace) -> None:
     look_name = plan.get("look", "C")
     if look_name and look_name not in LOOKS:
         raise UserError(f"Naməlum rəng şablonu: {look_name}", "Mövcud: " + ", ".join(LOOKS))
-    keys = ("brightness", "contrast", "saturation", "sharpen")
+    keys = LOOK_KEYS
     for c in q["clips"]:  # rəngi əl ilə dəyişdirilmiş klipə toxunulmur; əvvəlki planın şablonu yenilənir
         if c["track"] != "v1":
             continue
@@ -545,6 +597,9 @@ def main(argv: list[str] | None = None) -> int:
         n.add_argument(f"--{k}", action="append")
     for name in ("storyboard", "apply", "render", "export"):
         sub.add_parser(name).add_argument("pid")
+    lk = sub.add_parser("looks", help="rəng variantları (orijinal + A–D) müqayisə şəkli")
+    lk.add_argument("pid")
+    lk.add_argument("--t", type=float, help="mənbə videoda kadrın saniyəsi")
     e = sub.add_parser("edit")
     e.add_argument("pid")
     e.add_argument("--exclude")
@@ -570,7 +625,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         {"new": cmd_new, "storyboard": cmd_storyboard, "edit": cmd_edit, "apply": cmd_apply,
          "render": cmd_render, "export": cmd_export, "editor": cmd_editor,
-         "apply-edits": cmd_apply_edits, "set-client": cmd_set_client, "plan": cmd_plan}[a.cmd](a)
+         "apply-edits": cmd_apply_edits, "set-client": cmd_set_client, "plan": cmd_plan, "looks": cmd_looks}[a.cmd](a)
     except UserError as err:
         print(f"XƏTA: {err.message}\nNƏ ETMƏLİ: {err.hint}", file=sys.stderr)
         return 2
