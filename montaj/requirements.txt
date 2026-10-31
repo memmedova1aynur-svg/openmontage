@@ -10,5 +10,5 @@ mediapipe>=0.10          # üz aşkarlanması (kadraj); libegl1 + libgles2 siste
 Pillow>=10               # altyazı trekinin kadr kompoziti (graphics.py)
 fonttools>=4.40          # woff2 → TTF (ffmpeg drawtext üçün, fonts.py)
 brotli>=1.0              # fonttools-un woff2 oxuması üçün
-# arxa səs təmizləmə (voiceclean.py): torch/torchaudio CPU — https://download.pytorch.org/whl/cpu indeksindən
-deepfilternet>=0.5.6
+# arxa səs təmizləmə (voiceclean.py): torch CPU + deepfilternet burada DEYİL — scripts/cloud-setup.sh ayrıca quraşdırır
+# (əvvəl torch CPU indeksdən, yoxsa pip böyük CUDA torch çəkir)
