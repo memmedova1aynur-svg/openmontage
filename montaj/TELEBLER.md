@@ -188,3 +188,8 @@ real danışıqda səs sinxronu və görünən keyfiyyət, iPhone Safari, Instag
 | 14.16 | Layihə paketi `save`/`restore` (orijinalsız ~1 MB; Drive-dan bərpa) | ✅ | Bərpa olunan layihənin renderi orijinalla piksel-bərabər (PSNR ∞) |
 | 14.17 | `verify`: kart üzü örtürmü + Reels təhlükəsiz zonaları | ✅ | Günel videosunda 2 siyahının yuxarı zonaya toxunduğu düzgün tapıldı |
 | 14.18 | Zəif işıq (D): zaman denoise (ştativ), kölgə qaldırma, gamma; qaranlıqda avtomatik təklif | ✅ | Süni qaranlıq+dən: parlaqlıq 51 → 95, nisbi dən 14.5% → 4.0%. Real kafe çəkilişi ilə yoxlanılmayıb |
+| 15.1 | Reklam: `ad-scan` (təklif növü, qiymət köhnə/yeni, endirim, tarix, yer, çağırış+açar söz, faydalar — danışıqdan, uydurulmur) | ✅ | `test_ad_scan_plan_variants`; Azərbaycanca say sözləri (iki yüz əlli) də tanınır |
+| 15.2 | Reklam: `ad-plan` — 3 variant (A M01+M02, B M03, C M04+punch-in), ardıcıllıq qorunur, `_review` siyahısı | ✅ | Test layihəsində plan → render |
+| 15.3 | Yeni qrafikalar: `offer` (qiymət), `cta` (çağırış + açar söz), `badge` (nişan) — önizləmə = render | ✅ | Günel videosunda vizual yoxlama |
+| 15.4 | Kartın avtomatik yeri: üzün altında (kiçilir ≥65%) / başın üstündə; plan qrafikasının standart yeri (əvvəl 0.5 idi) | ✅ | Günel: qiymət 79%, çağırış 84% ölçüdə, verify təmiz |
+| 15.5 | `verify`: qrafikaların bir-birini örtməsi | ✅ | Nişan + başlıq toqquşması tapıldı və düzəldildi |

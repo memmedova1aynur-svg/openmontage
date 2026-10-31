@@ -482,3 +482,41 @@ def test_glossary_save_restore_layout_lowlight(tmp_path, monkeypatch):
     r = store.load(pid)
     assert r["revision"] == q["revision"] and r["clips"] == q["clips"]
     assert (store.project_dir(pid) / m["file"]).read_bytes() == keep.read_bytes()
+
+
+def test_ad_scan_plan_variants(tmp_path, monkeypatch, capsys):
+    """Reklam: faktlar danışıqdan tapılır (qiymət, tarix, yer, çağırış, fayda), uydurulmur; 3 plan; plan render olunur."""
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import ad, analysis, graphics, session, store
+
+    def W(txt, t0):
+        return [{"w": w, "s": round(t0 + i * 0.3, 2), "e": round(t0 + i * 0.3 + 0.25, 2), "p": 0.9} for i, w in enumerate(txt.split())]
+    words = (W("Satışda çətinlik çəkirsiniz?", 0.5) + W("Təlimdə danışmağı öyrənəcəksiniz.", 1.6) + W("Qiyməti 250 manat.", 6.6)
+             + W("Cəmi 10 yer var.", 7.9) + W("Şərhlərdə SATIŞ yazın.", 9.0))
+    p = store.load(pid)
+    mid = p["media"][0]["id"]
+    f = analysis.analysis_path(store.project_dir(pid), mid)
+    f.parent.mkdir(parents=True, exist_ok=True)
+    f.write_text(json.dumps({"mediaId": mid, "words": words, "model": "test"}), encoding="utf-8")
+    frame = next(c["frame"] for c in p["clips"] if c["track"] == "v1")
+    cards = [{"id": "c1", "mediaId": mid, "srcIn": 0.3, "srcOut": 10.5, "include": True, "words": words, "text": ""}]
+    session._save_draft(pid, {"generator": "rules", "musicMood": "", "musicNote": "", "overallNote": "", "removed": {},
+                              "subtitles": True, "candidates": {mid: [{"words": words}]}, "cards": cards, "frames": {mid: frame},
+                              "status": "draft", "options": {}})
+    r = ad.scan(words)
+    kinds = {x["kind"]: x for x in r["facts"]}
+    assert r["offer"] == "təlim" and kinds["price"]["value"] == "250 AZN" and kinds["seats"]["value"] == "Son 10 yer"
+    assert kinds["cta"]["keyword"] == "SATIŞ" and "benefit" in kinds
+    assert ad.scan(W("Bu gün hava gözəldir.", 0))["facts"] == [], "fakt yoxdursa heç nə uydurulmur"
+    assert session.main(["ad-scan", pid]) == 0 and session.main(["ad-plan", pid]) == 0
+    o = tmp_path / "out" / pid
+    plans = {k: json.loads((o / f"ad_plan_{k}.json").read_text(encoding="utf-8")) for k in "ABC"}
+    types = {k: {g["type"] for g in v["graphics"]} for k, v in plans.items()}
+    assert all({"offer", "cta", "badge"} <= t for t in types.values()) and "list" in types["B"] and plans["C"]["broll"]
+    cta = next(g for g in plans["A"]["graphics"] if g["type"] == "cta")
+    assert cta["keyword"] == "SATIŞ" and abs(cta["start"] - (9.0 - 0.3)) < 0.05, "vaxt zaman xəttinə çevrilir"
+    assert {"offer", "cta", "badge"} <= graphics.TYPES
+    (o / "plan_A.json").write_text(json.dumps({k: v for k, v in plans["A"].items() if not k.startswith("_")}), encoding="utf-8")
+    assert session.main(["choose", pid, str(o / "plan_A.json")]) == 0
+    assert session.main(["render", pid]) == 0
+    assert any(c.get("type") == "offer" for c in store.load(pid)["clips"])

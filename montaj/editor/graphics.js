@@ -1,4 +1,4 @@
-// Montaj qrafikası: başlıq, bölmə, vurğu, siyahı, kart və söz-söz altyazı.
+// Montaj qrafikası: başlıq, bölmə, vurğu, siyahı, kart, söz-söz altyazı; reklam üçün qiymət (offer), çağırış (cta), nişan (badge).
 // EYNİ kod həm telefondakı redaktor önizləməsində, həm də yekun render üçün
 // sessiyadakı Chromium rasterizasiyasında işləyir (şrift, ölçü, yer eyni olsun).
 // Üslub expert-reels şablonundakı uğurlu qaydalardan götürülüb:
@@ -93,6 +93,27 @@
       });
       return card;
     }
+    if (type === 'offer') {  // qiymət kartı: başlıq, köhnə qiymət (üstündən xətt), yeni qiymət, qeyd — mətn yalnız danışıqdan
+      const card = node(doc, 'div', { ...base, padding: `${fs * 0.7}px ${fs * 1.0}px ${fs * 0.8}px`, borderRadius: `${fs * 0.5}px`, background: rgba(clip.bg, rgba(`${th.primary || '#222222'}@${th.cardAlpha ?? 0.94}`)), minWidth: `${H * 0.22}px` });
+      if (clip.heading) card.append(node(doc, 'div', { fontSize: `${fs * 0.72}px`, fontWeight: '700', letterSpacing: '0.04em', color: clip.headColor || th.accent || '#F2C94C', marginBottom: `${fs * 0.2}px` }, clip.heading));
+      if (clip.oldPrice) card.append(node(doc, 'div', { fontSize: `${fs * 0.95}px`, fontWeight: '600', opacity: '0.7', textDecoration: 'line-through', textDecorationThickness: `${Math.max(2, fs * 0.08)}px` }, clip.oldPrice));
+      card.append(node(doc, 'div', { fontSize: `${fs * 2.0}px`, fontWeight: '900', lineHeight: '1.05', color: clip.priceColor || clip.color || th.text || '#FFFFFF' }, clip.price || clip.text || ''));
+      if (clip.note) card.append(node(doc, 'div', { fontSize: `${fs * 0.68}px`, fontWeight: '600', marginTop: `${fs * 0.3}px`, opacity: '0.9' }, clip.note));
+      return card;
+    }
+    if (type === 'cta') {  // çağırış: "Şərhlərdə yazın" + açar söz böyük çipdə + əlaqə (istəyə görə)
+      const box = node(doc, 'div', { ...base, maxWidth: `${H * 0.46}px`, padding: `${fs * 0.55}px ${fs * 0.8}px ${fs * 0.65}px`, borderRadius: `${fs * 0.5}px`, background: rgba(clip.bg, rgba(`${th.primary || '#222222'}@${th.cardAlpha ?? 0.94}`)) });
+      if (clip.text) box.append(node(doc, 'div', { fontSize: `${fs * 0.85}px`, fontWeight: '700', marginBottom: `${fs * 0.35}px` }, clip.text));
+      if (clip.keyword) box.append(node(doc, 'div', { display: 'inline-block', fontSize: `${fs * 1.55}px`, fontWeight: '900', letterSpacing: '0.06em', padding: `${fs * 0.18}px ${fs * 0.7}px`, borderRadius: `${fs * 0.35}px`, background: clip.accent || th.accent || '#F2C94C', color: th.onAccent || '#222222' }, clip.keyword));
+      if (clip.sub) box.append(node(doc, 'div', { fontSize: `${fs * 0.62}px`, fontWeight: '600', marginTop: `${fs * 0.4}px`, opacity: '0.9' }, clip.sub));
+      return box;
+    }
+    if (type === 'badge') {  // qısa nişan: tarix, yer sayı, endirim
+      const b = node(doc, 'div', { ...base, display: 'inline-flex', alignItems: 'center', gap: `${fs * 0.4}px`, padding: `${fs * 0.3}px ${fs * 0.75}px`, borderRadius: '999px', background: rgba(clip.bg, rgba(`${th.primary || '#222222'}@${th.cardAlpha ?? 0.94}`)), border: `${Math.max(2, fs * 0.08)}px solid ${clip.accent || th.accent || '#F2C94C'}` });
+      b.append(node(doc, 'div', { width: `${fs * 0.45}px`, height: `${fs * 0.45}px`, borderRadius: '50%', background: clip.accent || th.accent || '#F2C94C', flex: '0 0 auto' }));
+      b.append(node(doc, 'div', {}, clip.text || ''));
+      return b;
+    }
     // sadə yazı (köhnə layihələr): drawtext ilə eyni görünüş
     return node(doc, 'div', { ...base, whiteSpace: 'pre', padding: '.25em', background: rgba(clip.bg, 'rgba(0,0,0,.55)'), textShadow: clip.bg === 'none' ? '2px 2px 0 rgba(0,0,0,.7)' : 'none' }, clip.text || '');
   }
@@ -105,6 +126,9 @@
       emphasis: { size: 0.034, weight: 800, color: th.onAccent || '#222222' },
       list: { size: 0.026, weight: 600, color: th.text || '#FFFFFF' },
       card: { size: 0.026, weight: 600, color: th.text || '#FFFFFF' },
+      offer: { size: 0.03, weight: 700, color: th.text || '#FFFFFF' },
+      cta: { size: 0.032, weight: 700, color: th.text || '#FFFFFF' },
+      badge: { size: 0.022, weight: 800, color: th.text || '#FFFFFF' },
     })[type] || { size: 0.06, weight: 700, color: '#FFFFFF' };
   }
 
@@ -116,7 +140,8 @@
   }
 
   // Standart yer (x, y mərkəz, 0..1) — render (graphics.py DEFAULT_XY) ilə eyni
-  const DEFAULT_XY = { caption: [0.5, 0.74], title: [0.5, 0.14], section: [0.5, 0.22], emphasis: [0.5, 0.62], list: [0.5, 0.42], card: [0.5, 0.42] };
+  const DEFAULT_XY = { caption: [0.5, 0.74], title: [0.5, 0.14], section: [0.5, 0.22], emphasis: [0.5, 0.62], list: [0.5, 0.42], card: [0.5, 0.42],
+    offer: [0.5, 0.58], cta: [0.5, 0.585], badge: [0.5, 0.215] };  // reklam kartları üzün altında, altyazının üstündə
   function pos(clip) { const d = DEFAULT_XY[clip.type] || [0.5, 0.5]; return [clip.x ?? d[0], clip.y ?? d[1]]; }
 
   root.MG = { ANIMS, animState, build, defaults, statePoints, rgba, pos, DEFAULT_XY };

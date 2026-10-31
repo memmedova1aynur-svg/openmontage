@@ -785,8 +785,10 @@ def apply_plan(pid: str, p: dict[str, Any], plan: dict[str, Any], plan_name: str
         if m.get("width") and q.get("width") and abs(m["width"] / m["height"] - q["width"] / q["height"]) > 0.02:
             raise UserError("Punch-in yalnız eyni ölçülü kadrda avtomatik qurulur.", "Kadrajı redaktorda əl ilə edin.")
         q = node_tl("setFrame", q, mid["id"], fr, {"manual": False})
+    from montaj.graphics import DEFAULT_XY
     for g in plan.get("graphics") or []:
-        q = node_tl("addGraphic", q, {**g, "origin": "plan"})
+        d = DEFAULT_XY.get(g.get("type"), (0.5, 0.5))  # yer verilməyibsə növün standart yeri (addGraphic 0.5 qoyurdu)
+        q = node_tl("addGraphic", q, {"x": d[0], "y": d[1], **g, "origin": "plan"})
 
     for b in plan.get("broll") or []:
         q = _apply_broll(pid, q, b)
@@ -1106,6 +1108,79 @@ def cmd_words(a: argparse.Namespace) -> None:
 KEEP_SOURCES = ("generated", "synth", "music", "artifact-asset")  # kiçik/yenidən yaradıla bilməyən media paketə düşür
 
 
+def _ad_words(pid: str, p: dict[str, Any]) -> list[dict[str, Any]]:
+    """Analiz sözləri (bütün danışıq mediaları, mənbə vaxtı ilə), layihə və müştəri lüğəti düzəlişləri tətbiq olunmuş."""
+    corr = list(((p.get("subtitles") or {}).get("corrections") or []))
+    br = p.get("brand") or {}
+    prof = expert_profile(br["name"]) if br.get("name") else None
+    corr += ((prof or {}).get("glossary") or {}).get("fixes") or []
+    out = []
+    for mid, an in _analyses(pid, p).items():
+        for w in an.get("words") or []:
+            w = dict(w, media=mid)
+            for c in corr:
+                if transcribe_norm(w["w"]) == transcribe_norm(c["from"]):
+                    w["w"] = c["to"]
+            out.append(w)
+    return out
+
+
+def cmd_ad_scan(a: argparse.Namespace) -> None:
+    """Reklam faktları danışıqdan: təklif növü, qiymət, endirim, tarix, yer sayı, çağırış, faydalar (vaxtla)."""
+    from montaj import ad
+
+    p = store.load(a.pid)
+    r = ad.scan(_ad_words(a.pid, p))
+    print(f"təklif növü: {r['offer'] or 'aydın deyil'}")
+    for f in r["facts"]:
+        extra = f" | açar söz: {f['keyword']}" if f.get("keyword") else ""
+        print(f"{f['t']:6.2f} s  {f['kind']:8s} {f['value'][:70]}{extra}")
+    missing = [k for k in ("price", "cta") if not any(f["kind"] == k for f in r["facts"])]
+    if missing:
+        print("danışıqda tapılmadı (uydurulmayacaq): " + ", ".join({"price": "qiymət", "cta": "çağırış"}[k] for k in missing))
+
+
+def cmd_ad_plan(a: argparse.Namespace) -> None:
+    """Reklam üçün 3 storyboard variantı (A təmiz+vurğu, B qrafik izah, C dinamik) — ardıcıllıq qorunur,
+    mətnlər danışıqdan. Faylları yoxla/redaktə et, sonra `variants`."""
+    from montaj import ad
+
+    p = store.load(a.pid)
+    sb = _load_draft(a.pid)
+    tm = ad.timeline_map(sb["cards"])
+    total = tm[-1][3] + tm[-1][2] - tm[-1][1] if tm else 0
+    res = ad.plans(ad.scan(_ad_words(a.pid, p)), tm, total)
+    # kartları üzün altına yerləşdir (mənbə kadrında üz → kadraj pəncərəsi ilə yekun kadra)
+    from montaj import quality
+    from montaj.graphics import DEFAULT_XY
+    media = {m["id"]: m for m in p["media"]}
+    placed: dict[tuple[str, float], tuple[float, str]] = {}
+    for plan in res.values():
+        for g in plan.get("graphics") or []:
+            if g["type"] not in ("offer", "cta") or "y" in g:
+                continue
+            key = (g["type"], g["start"])
+            if key not in placed:
+                src = next(((mid, a0 + (g["start"] + 0.5 - t0)) for mid, a0, b0, t0 in tm if t0 <= g["start"] + 0.5 < t0 + (b0 - a0)), None)
+                m = media.get(src[0]) if src else None
+                placed[key] = quality.place_below_face(store.project_dir(a.pid), m, (sb.get("frames") or {}).get(src[0]), src[1],
+                                                       g["type"], DEFAULT_XY[g["type"]][1]) if m and m.get("hasVideo") else (DEFAULT_XY[g["type"]][1], 1.0, "")
+            g["y"] = placed[key][0]
+            if placed[key][1] < 0.999:
+                g["size"] = round({"offer": 0.03, "cta": 0.032}[g["type"]] * placed[key][1], 4)
+    o = out_dir(a.pid)
+    for k, plan in res.items():
+        f = o / f"ad_plan_{k}.json"
+        f.write_text(json.dumps(plan, ensure_ascii=False, indent=1), encoding="utf-8")
+        print(f"{k}: {plan['title']} ({plan['approach']}) — {len(plan.get('graphics') or [])} qrafika, "
+              f"{len(plan.get('broll') or [])} B-roll, {len(plan.get('zooms') or [])} zoom → {f}")
+    for (kind, t), (y, sc, why) in placed.items():
+        print(f"yer: {kind} {t:.1f} s → y={y} ({why})")
+    print("YOXLA (mətnlər danışıqdan avtomatik götürülüb):")
+    for line in res["A"]["_review"]:
+        print(" -", line)
+
+
 def cmd_save(a: argparse.Namespace) -> None:
     """Layihə paketi (orijinal videolar OLMADAN): montaj qərarları, analiz, tarixçə, qaralama, Claude-un B-rollu,
     musiqi, yoxlama hesabatları. Orijinal Drive linkindən bərpa olunur. Şəxsi saxlama üçündür — public repoya qoyma."""
@@ -1383,6 +1458,10 @@ def main(argv: list[str] | None = None) -> int:
     vf.add_argument("pid")
     vf.add_argument("--mp4")
     vf.add_argument("--no-asr", action="store_true")
+    asn = sub.add_parser("ad-scan", help="reklam faktları (qiymət, tarix, çağırış, faydalar)")
+    asn.add_argument("pid")
+    apl = sub.add_parser("ad-plan", help="reklam üçün 3 storyboard variantı (plan faylları)")
+    apl.add_argument("pid")
     sv = sub.add_parser("save", help="layihə paketi (orijinal videolar olmadan)")
     sv.add_argument("pid")
     sv.add_argument("--out")
@@ -1437,7 +1516,7 @@ def main(argv: list[str] | None = None) -> int:
         {"new": cmd_new, "storyboard": cmd_storyboard, "edit": cmd_edit, "apply": cmd_apply,
          "render": cmd_render, "export": cmd_export, "editor": cmd_editor,
          "apply-edits": cmd_apply_edits, "set-client": cmd_set_client, "plan": cmd_plan, "looks": cmd_looks,
-         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "fix-word": cmd_fix_word,
+         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "fix-word": cmd_fix_word,
          "variants": cmd_variants, "choose": cmd_choose, "music-preview": cmd_music_preview}[a.cmd](a)
     except UserError as err:
         print(f"XƏTA: {err.message}\nNƏ ETMƏLİ: {err.hint}", file=sys.stderr)

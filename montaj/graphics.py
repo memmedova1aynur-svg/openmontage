@@ -14,9 +14,10 @@ from typing import Any
 
 from montaj import fonts
 
-TYPES = {"caption", "title", "section", "emphasis", "list", "card"}
+TYPES = {"caption", "title", "section", "emphasis", "list", "card", "offer", "cta", "badge"}
 DEFAULT_XY = {"caption": (0.5, 0.74), "title": (0.5, 0.14), "section": (0.5, 0.22), "emphasis": (0.5, 0.62),
-              "list": (0.5, 0.42), "card": (0.5, 0.42)}  # graphics.js-dəki DEFAULT_XY ilə eyni
+              "list": (0.5, 0.42), "card": (0.5, 0.42),
+              "offer": (0.5, 0.58), "cta": (0.5, 0.585), "badge": (0.5, 0.215)}  # graphics.js-dəki DEFAULT_XY ilə eyni
 
 
 def pos(c: dict[str, Any]) -> tuple[float, float]:
