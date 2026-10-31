@@ -339,3 +339,50 @@ def test_broll_cover_pip_insert(tmp_path, monkeypatch):
     f = frame(round(ins + 0.5, 2))
     assert f[H // 2, W // 2, 2] > 180 and f[H // 2, W // 2, 0] < 80, "insert: göy kadr"
     assert media.probe(mp4)["duration"] > before + 0.9
+
+
+def test_voice_clean_render_uses_clean_track(tmp_path, monkeypatch):
+    """Arxa səs təmizləmə: təmizlənmiş nüsxə eyni uzunluqda yazılır, orijinal dəyişmir, render danışıq qatında
+    onu işlədir; "off" söndürür. Model yoxdursa test atlanır."""
+    import hashlib
+
+    from montaj import voiceclean
+    st = voiceclean.available()
+    if not (st["installed"] and st["model"]):
+        pytest.skip("DeepFilterNet quraşdırılmayıb")
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import media, render, session, store
+
+    p = store.load(pid)
+    m = p["media"][0]
+    orig = store.project_dir(pid) / m["file"]
+    h0 = hashlib.sha1(orig.read_bytes()).hexdigest()
+    assert session.main(["voice-clean", pid, "--mode", "on"]) == 0
+    q = store.load(pid)
+    vc = q["voiceClean"][m["id"]]
+    cf = store.project_dir(pid) / vc["file"]
+    assert cf.is_file() and abs(media.probe(cf)["duration"] - m["duration"]) < 0.05, "eyni uzunluq (sinxron)"
+    assert hashlib.sha1(orig.read_bytes()).hexdigest() == h0, "orijinal dəyişmir"
+    cmd = render.build_command(q, store.project_dir(pid), tmp_path / "x.mp4", tmp_path)
+    assert any(str(a).endswith(".clean.wav") for a in cmd), "render təmizlənmiş danışığı işlədir"
+    assert session.main(["voice-clean", pid, "--mode", "off"]) == 0
+    assert store.load(pid)["voiceClean"] == {}
+
+
+def test_broll_insert_near_clip_boundary(tmp_path, monkeypatch):
+    """Araya kadr vaxtı klip sərhədinə çox yaxın olanda (bölmə mümkün deyil) həmin sərhədə qoyulur."""
+    import subprocess
+
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import session, store
+
+    blue = tmp_path / "goy.mp4"
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-f", "lavfi", "-i", "color=c=blue:s=360x640:d=2", "-c:v", "libx264",
+                    "-pix_fmt", "yuv420p", str(blue)], check=True)
+    assert session.main(["add-broll", pid, "--file", str(blue)]) == 0
+    p = session.node_tl("migrate", store.load(pid))
+    seq = session.node_tl("videoClips", p)
+    edge = seq[0]["srcOut"] - seq[0]["srcIn"]  # birinci klipin sonu (zaman xəttində)
+    q = session._apply_broll(pid, p, {"name": "goy.mp4", "mode": "insert", "at": edge + 0.05, "dur": 1.0})
+    seq2 = session.node_tl("videoClips", q)
+    assert [c.get("broll", False) for c in seq2] == [False, True, False], "sərhədə qoyulur, klip bölünmür"
