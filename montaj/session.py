@@ -412,7 +412,8 @@ def cmd_set_client(a: argparse.Namespace) -> None:
                   "colorsConfirmed": "derived" not in (prof.get("theme_source") or ""), "palette": prof.get("palette"),
                   "fonts": prof.get("fonts"), "cautions": prof.get("cautions") or [], "source": "expert-reels profil"}
     saved = store.save(a.pid, p, p["revision"])
-    print(f"müştəri: {prof['name']}; rənglər təsdiqlənib: {p['brand']['colorsConfirmed']}; versiya {saved['revision']}")
+    kind = "müştərinin kodları" if p["brand"]["colorsConfirmed"] else "rəng ailəsi (yaxın çalarlar olar)"
+    print(f"müştəri: {prof['name']}; rəng: {kind}; versiya {saved['revision']}")
 
 
 def _sfx_media(pid: str, kind: str) -> dict[str, Any]:

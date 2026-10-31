@@ -9,7 +9,7 @@
   "cautions": [
     "Hələlik video montajı yoxdur; profil saxlanılır."
   ],
-  "theme_source": "derived from the colour family; NOT a client-confirmed code - say so in the storyboard",
+  "theme_source": "derived from the colour family; brand colour = colour family (user rule 2026-10-31): nearby shades of the family are fine, no 'unconfirmed code' warning",
   "theme": {
     "primary": "#1A1A1A",
     "primaryDeep": "#0E0E0E",

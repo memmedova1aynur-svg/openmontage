@@ -9,7 +9,7 @@
   "cautions": [
     "PİKMENT ilə rəng ailəsi yaxındır: tipoqrafiya, qrafika və təqdimat dili ilə ayrı kimlik."
   ],
-  "theme_source": "derived from the colour family; NOT a client-confirmed code - say so in the storyboard",
+  "theme_source": "derived from the colour family; brand colour = colour family (user rule 2026-10-31): nearby shades of the family are fine, no 'unconfirmed code' warning",
   "theme": {
     "primary": "#3E2466",
     "primaryDeep": "#26143F",
