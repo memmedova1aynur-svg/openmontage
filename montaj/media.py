@@ -55,19 +55,46 @@ def probe(path: Path) -> dict[str, Any]:
         except ValueError:
             info["fps"] = 0
         info["videoCodec"] = v.get("codec_name")
+        info["fpsRate"] = v.get("avg_frame_rate") or v.get("r_frame_rate")
+        trc = v.get("color_transfer") or ""
+        info["colorTransfer"] = trc or None
+        info["colorPrimaries"] = v.get("color_primaries")
+        info["hdr"] = trc in ("smpte2084", "arib-std-b67")
+        pix = v.get("pix_fmt") or ""
+        info["pixFmt"] = pix
+        info["bitDepth"] = 10 if ("10" in pix or "p010" in pix) else 12 if "12" in pix else 8
+        fmt_name = (data.get("format") or {}).get("format_name", "")
+        is_still = (v.get("codec_name") in ("mjpeg", "png", "webp", "bmp", "tiff", "gif", "heic", "hevc")
+                    and (fmt_name.endswith("_pipe") or fmt_name in ("image2", "png_pipe", "jpeg_pipe")
+                         or (v.get("nb_frames") in ("1", None) and not dur)))
+        if is_still and a is None and fmt_name not in ("mov,mp4,m4a,3gp,3g2,mj2", "matroska,webm"):
+            info["isImage"] = True
+            info["duration"] = 600.0  # hərəkətsiz şəkil istənilən müddətdə istifadə oluna bilər
+            info["fps"] = 0
     if a is not None:
         info["audioCodec"] = a.get("codec_name")
     return info
 
 
-def make_proxy(src: Path, dst: Path, has_video: bool, has_audio: bool) -> None:
+def make_image_preview(src: Path, dst: Path) -> None:
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(src), "-frames:v", "1",
+                    "-vf", "scale='min(1440,iw)':-2", "-q:v", "3", str(dst)], check=True, capture_output=True)
+
+
+def make_proxy(src: Path, dst: Path, has_video: bool, has_audio: bool, hdr: bool = False) -> None:
     """Brauzerdə rahat oynayan H.264/AAC (və ya yalnız AAC) önizləmə nüsxəsi."""
     dst.parent.mkdir(parents=True, exist_ok=True)
     tmp = dst.with_suffix(".tmp" + dst.suffix)
     cmd = ["ffmpeg", "-y", "-v", "error", "-i", str(src)]
+    if hdr:
+        tm = ("zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709,tonemap=tonemap=hable:desat=0,"
+              "zscale=t=bt709:m=bt709:r=tv,")
+    else:
+        tm = ""
     if has_video:
         cmd += [
-            "-map", "0:v:0", "-vf", "scale='min(1280,iw)':-2,format=yuv420p",
+            "-map", "0:v:0", "-vf", tm + "scale='min(1280,iw)':-2,format=yuv420p",
             "-c:v", "libx264", "-preset", "veryfast", "-crf", "26",
             "-g", "15", "-movflags", "+faststart",
         ]

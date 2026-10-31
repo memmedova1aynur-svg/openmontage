@@ -26,7 +26,9 @@ _lock = threading.Lock()
 
 
 def projects_dir() -> Path:
-    return Path(os.environ.get("MONTAJ_PROJECTS_DIR", PROJECTS_DIR))
+    from montaj.config import projects_dir as _pd
+
+    return _pd()
 
 
 def check_id(pid: str) -> str:

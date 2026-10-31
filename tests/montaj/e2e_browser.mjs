@@ -35,6 +35,12 @@ const state = () => page.evaluate(() => {
 const waitSaved = () => page.waitForFunction(() => !window.__montaj.S.dirty && !window.__montaj.S.saving && /Saxlanılıb/.test(document.querySelector('#saveState').textContent), null, { timeout: 15000 });
 
 await page.goto(URL);
+if (page.url().includes('/login')) {
+  await page.fill('#pw', process.env.MONTAJ_PASSWORD);
+  await page.click('button[type=submit]');
+  await page.waitForSelector('#btnNew');
+}
+await page.click('details.blank-proj summary');
 await page.fill('#newTitle', `E2E ${mode}`);
 await page.click('#newForm button');
 await page.waitForSelector('#editor:not([hidden])');
@@ -161,7 +167,8 @@ assert.equal(s.video.find((v) => v.id === keep)?.srcOut, ext, 'əl ilə düzəld
 
 // 10) MP4 ixrac
 await waitSaved();
-await page.click('#btnRender');
+await page.click('.tabs button[data-tab="export"]');
+await page.click('#tab-export button.primary');
 await page.waitForSelector('#tab-export a[download]', { timeout: 120000 });
 const href = await page.getAttribute('#tab-export a[download]', 'href');
 log('render:', href);

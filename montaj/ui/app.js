@@ -9,7 +9,7 @@ const el = (tag, attrs = {}, ...kids) => {
     else if (k.startsWith('on')) n.addEventListener(k.slice(2), v);
     else if (v !== false && v != null) n.setAttribute(k, v === true ? '' : v);
   }
-  for (const k of kids.flat()) if (k != null) n.append(k.nodeType ? k : document.createTextNode(String(k)));
+  for (const k of kids.flat()) if (k != null && k !== false) n.append(k.nodeType ? k : document.createTextNode(String(k)));
   return n;
 };
 
@@ -45,6 +45,7 @@ const KIND_NAME = { video: 'Video', speech: 'Danışıq', music: 'Musiqi', sfx: 
 
 function toast(msg, err = false) {
   const t = $('#toast');
+  if (msg && typeof msg === 'object') msg = msg.hint ? `${msg.message} ${msg.hint}` : msg.message;
   t.textContent = msg;
   t.className = 'toast' + (err ? ' err' : '');
   t.hidden = false;
@@ -60,7 +61,9 @@ async function api(path, opts = {}) {
   let data = null;
   try { data = await res.json(); } catch { /* boş cavab */ }
   if (!res.ok) {
-    const e = new Error((data && (data.detail || data.error)) || `Xəta ${res.status}`);
+    if (res.status === 401 && !path.startsWith('/api/login')) { location.href = '/login'; }
+    const e = new Error((data && (data.error || data.detail)) || `Xəta ${res.status}`);
+    e.hint = data && data.hint;
     e.status = res.status;
     e.data = data;
     throw e;
@@ -77,6 +80,7 @@ async function showHome() {
   S.pid = null;
   $('#home').hidden = false;
   $('#editor').hidden = true;
+  $('#flow').hidden = true;
   $('#title').disabled = true;
   $('#title').value = '';
   $('#btnRender').disabled = true;
@@ -86,7 +90,7 @@ async function showHome() {
   try {
     const items = await api('/api/projects');
     list.replaceChildren(...(items.length ? items.map((p) => el('li', {},
-      el('a', { href: `#/p/${p.id}`, onclick: (e) => { e.preventDefault(); openProject(p.id); } },
+      el('a', { href: `#/p/${p.id}`, onclick: (e) => { e.preventDefault(); (window.__route || openProject)(p.id); } },
         el('span', {}, p.title || p.id),
         el('span', { class: 'muted' }, `${p.media} media · ${p.clips} klip · ${new Date(p.updatedAt * 1000).toLocaleString('az')}`)))) :
       [el('li', { class: 'muted' }, 'Hələ layihə yoxdur.')]));
@@ -101,7 +105,7 @@ $('#newForm').addEventListener('submit', async (e) => {
   try {
     const p = await api('/api/projects', { method: 'POST', body: JSON.stringify({ title, project: TL.newProject({ id: 'tmp', title }) }) });
     openProject(p.id);
-  } catch (err) { toast(err.message, true); }
+  } catch (err) { toast(err, true); }
 });
 
 function histKey(pid) { return `montaj:hist:${pid}`; }
@@ -117,8 +121,9 @@ function persistHistory() {
 
 async function openProject(pid) {
   let p;
-  try { p = await api(`/api/projects/${pid}`); } catch (e) { toast(e.message, true); return showHome(); }
+  try { p = await api(`/api/projects/${pid}`); } catch (e) { toast(e, true); return showHome(); }
   S.pid = pid;
+  p = TL.migrate(p);
   S.hist = new TL.History(p, 100);
   S.revision = p.revision;
   S.sel = null;
@@ -135,6 +140,7 @@ async function openProject(pid) {
   } catch { /* yox */ }
   for (const m of p.media) S.mediaInfo[m.id] = m;
   $('#home').hidden = true;
+  $('#flow').hidden = true;
   $('#editor').hidden = false;
   $('#title').disabled = false;
   $('#title').value = p.title;
@@ -165,7 +171,7 @@ function tryOp(fn, msg) {
     commit(fn(S.hist.present), msg);
     return true;
   } catch (e) {
-    toast(e.message, true);
+    toast(e, true);
     renderAll();
     return false;
   }
@@ -325,12 +331,20 @@ function mediaUrl(mid) {
 // ---------------------------------------------------------------------------
 
 const vid = $('#vid');
+const still = $('#still');
 const audios = new Map(); // clipId -> HTMLAudioElement
 let curVideoClip = null;
+let curImageClip = null;
 let curSrc = null;
 let wallStart = 0;
 let tStart = 0;
 let raf = 0;
+
+function endCardDur(p = P()) {
+  const e = (p.branding || {}).end || {};
+  return e.enabled ? Math.max(1, Math.min(10, Number(e.duration) || 3)) : 0;
+}
+function totalDur(p = P()) { return TL.duration(p) + endCardDur(p); }
 
 function setVideoSrc(url) {
   if (curSrc === url) return Promise.resolve();
@@ -343,13 +357,90 @@ function setVideoSrc(url) {
   });
 }
 
+// Çıxış kadrı (render ölçüsü) ilə eyni nisbətdə qutu
+function layoutFrameBox() {
+  const p = P();
+  const box = $('#frameBox');
+  const view = $('#viewer');
+  const vw = view.clientWidth || 1;
+  const vh = view.clientHeight || 1;
+  const ar = (p.width || 16) / (p.height || 9);
+  let w = vw;
+  let h = vw / ar;
+  if (h > vh) { h = vh; w = vh * ar; }
+  box.style.width = `${Math.round(w)}px`;
+  box.style.height = `${Math.round(h)}px`;
+}
+
+function lerpKeys(keys, t) {
+  const ks = [...keys].sort((x, y) => x.t - y.t);
+  if (!ks.length) return { cx: 0.5, cy: 0.5 };
+  if (t <= ks[0].t) return ks[0];
+  for (let i = 0; i < ks.length - 1; i++) {
+    const a = ks[i]; const b = ks[i + 1];
+    if (t < b.t) { const k = (t - a.t) / Math.max(1e-3, b.t - a.t); return { cx: a.cx + (b.cx - a.cx) * k, cy: a.cy + (b.cy - a.cy) * k }; }
+  }
+  return ks[ks.length - 1];
+}
+
+export function cssFilter(adj) {
+  if (!adj) return '';
+  const f = [];
+  const b = Number(adj.brightness || 0); const c = Number(adj.contrast ?? 1); const s = Number(adj.saturation ?? 1);
+  if (b) f.push(`brightness(${(1 + b * 1.6).toFixed(3)})`);
+  if (c !== 1) f.push(`contrast(${c})`);
+  if (s !== 1) f.push(`saturate(${s})`);
+  const temp = Number(adj.temperature || 6500);
+  if (temp < 6450) f.push(`sepia(${Math.min(0.6, (6500 - temp) / 6500 * 1.2).toFixed(3)})`);
+  else if (temp > 6550) f.push(`hue-rotate(${(-(temp - 6500) / 6500 * 25).toFixed(1)}deg)`);
+  return f.join(' ');
+}
+
+// Klipin kadrajını, güzgüsünü və rəngini media elementinə tətbiq edir (render ilə eyni parametrlər)
+function applyVisual(elm, clip, m, srcT) {
+  const box = $('#frameBox');
+  const bw = box.clientWidth || 1; const bh = box.clientHeight || 1;
+  const sw = m.width || 16; const sh = m.height || 9;
+  const fr = clip.frame || {};
+  const orig = S.compareOriginal;
+  const adj = clip.adjust || {};
+  const mirror = !orig && (Boolean(adj.mirror) !== Boolean(P().mirrorAll));
+  let w; let h; let left; let top;
+  if (!orig && (fr.mode === 'auto' || fr.mode === 'manual') && fr.keys) {
+    const cw = (fr.baseW || 1) * (fr.s || 1); const ch = (fr.baseH || 1) * (fr.s || 1);
+    let { cx, cy } = lerpKeys(fr.keys, srcT);
+    cx = Math.max(cw / 2, Math.min(1 - cw / 2, cx)); cy = Math.max(ch / 2, Math.min(1 - ch / 2, cy));
+    const k = bw / (cw * sw);
+    w = sw * k; h = sh * k; left = -(cx - cw / 2) * sw * k; top = -(cy - ch / 2) * sh * k;
+  } else {
+    const k = Math.min(bw / sw, bh / sh);
+    w = sw * k; h = sh * k; left = (bw - w) / 2; top = (bh - h) / 2;
+  }
+  Object.assign(elm.style, { width: `${w}px`, height: `${h}px`, left: `${left}px`, top: `${top}px` });
+  const rot = orig ? 0 : Number(fr.rotate || 0);
+  elm.style.transform = `${mirror ? 'scaleX(-1) ' : ''}${rot ? `rotate(${rot}deg) scale(${1 + Math.abs(Math.sin(rot * Math.PI / 180)) * 1.2})` : ''}`;
+  elm.style.filter = orig || S.hideAdjust ? '' : cssFilter(adj);
+}
+
+function mixGain(bus) { const mx = { ...TL.DEFAULT_MIX, ...(P().mix || {}) }; return Number(mx[bus] ?? 1); }
+
 async function syncPlayer(force = false) {
   if (!S.pid) return;
   const p = P();
+  layoutFrameBox();
   const a = TL.activeAt(p, S.t);
   const v = a.video;
   $('#emptyHint').hidden = p.clips.length > 0;
-  if (v) {
+  const vm = v ? (S.mediaInfo[v.clip.media] || TL.mediaById(p, v.clip.media)) : null;
+  if (v && vm && vm.isImage) {
+    curVideoClip = null;
+    if (!vid.paused) vid.pause();
+    vid.classList.add('blank');
+    if (curImageClip?.id !== v.clip.id) { curImageClip = v.clip; still.src = mediaUrl(v.clip.media); }
+    still.hidden = false;
+    applyVisual(still, v.clip, vm, v.local);
+  } else if (v) {
+    still.hidden = true; curImageClip = null;
     const url = mediaUrl(v.clip.media);
     const changed = !curVideoClip || curVideoClip.id !== v.clip.id || curSrc !== url;
     curVideoClip = v.clip;
@@ -357,36 +448,35 @@ async function syncPlayer(force = false) {
     if (changed || force || !S.playing) {
       S.switching = true;
       await setVideoSrc(url);
-      // gözləmə müddətində vaxt irəliləyibsə, yeni yerə keç
       const now = TL.activeAt(P(), S.t).video;
       const local = now && now.clip.id === v.clip.id ? now.local : v.local;
       if (Math.abs(vid.currentTime - local) > (S.playing ? 0.12 : 0.01)) vid.currentTime = local;
       S.switching = false;
     }
+    applyVisual(vid, v.clip, vm || { width: 16, height: 9 }, vid.currentTime || v.local);
     const partner = TL.partnerOf(p, v.clip);
     const linkedAudio = partner && partner.linkedTo === v.clip.id ? partner : null;
     vid.muted = !linkedAudio;
-    vid.volume = linkedAudio ? Math.min(1, linkedAudio.volume ?? 1) : 0;
+    vid.volume = linkedAudio ? Math.min(1, (linkedAudio.volume ?? 1) * mixGain('speech')) : 0;
     if (S.playing && vid.paused) vid.play().catch(() => {});
   } else {
-    curVideoClip = null;
+    curVideoClip = null; curImageClip = null; still.hidden = true;
     vid.classList.add('blank');
     if (!vid.paused) vid.pause();
   }
-  // Ayrı səs klipləri (ayrılmış danışıq, musiqi, effekt)
+  const speechActive = a.audio.some((x) => TL.trackKind(p, x.clip) === 'speech');
+  const duck = (p.mix || {}).duck && speechActive;
   const want = new Set();
   for (const x of a.audio) {
-    if (x.clip.linkedTo && v && x.clip.linkedTo === v.clip.id) continue;
+    if (x.clip.linkedTo && v && x.clip.linkedTo === v.clip.id && !(vm && vm.isImage)) continue;
     want.add(x.clip.id);
     let au = audios.get(x.clip.id);
-    if (!au) {
-      au = new Audio();
-      au.preload = 'auto';
-      audios.set(x.clip.id, au);
-    }
+    if (!au) { au = new Audio(); au.preload = 'auto'; audios.set(x.clip.id, au); }
     const url = mediaUrl(x.clip.media);
     if (au.dataset.src !== url) { au.dataset.src = url; au.src = url; }
-    au.volume = Math.min(1, x.clip.volume ?? 1);
+    const kind = TL.trackKind(p, x.clip);
+    const bus = x.clip.role === 'voiceover' ? 'voice' : kind;
+    au.volume = Math.min(1, (x.clip.volume ?? 1) * mixGain(bus) * (kind === 'music' && duck ? 0.3 : 1));
     if (Math.abs(au.currentTime - x.local) > (S.playing ? 0.15 : 0.02)) {
       try { au.currentTime = x.local; } catch { /* metadata hələ yox */ }
     }
@@ -397,34 +487,72 @@ async function syncPlayer(force = false) {
     if (!want.has(id)) { au.pause(); if (!TL.clipById(p, id)) audios.delete(id); }
   }
   renderTextLayer(a.text);
+  renderBranding(p);
 }
 
 function renderTextLayer(items) {
   const layer = $('#textLayer');
   const h = layer.clientHeight || 1;
-  const p = P();
-  // önizləmədə render ilə eyni nisbət: video sahəsinin hündürlüyünə görə
-  const vh = Math.min(h, (layer.clientWidth || 1) * (p.height / p.width));
   layer.replaceChildren(...items.map(({ clip }) => {
     const pos = clip.position || 'bottom';
     const n = el('div', { class: 'ov' }, clip.text || '');
-    n.style.fontSize = `${Math.max(10, vh * (clip.size || 0.06))}px`;
-    const top = (h - vh) / 2;
-    if (pos === 'top') n.style.top = `${top + vh * 0.08}px`;
+    n.style.fontSize = `${Math.max(9, h * (clip.size || 0.06))}px`;
+    if (clip.color) n.style.color = clip.color;
+    if (clip.bg) n.style.background = clip.bg.split('@')[0];
+    if (pos === 'top') n.style.top = `${h * 0.08}px`;
     else if (pos === 'center') { n.style.top = '50%'; n.style.transform = 'translate(-50%,-50%)'; }
-    else n.style.bottom = `${top + vh * 0.12}px`;
+    else n.style.bottom = `${h * 0.12}px`;
     return n;
   }));
+}
+
+function logoUrl(p = P()) {
+  const name = (p.brand || {}).logo;
+  return name ? `/api/logos/${encodeURIComponent(name)}` : null;
+}
+
+function renderBranding(p) {
+  const box = $('#frameBox');
+  const bw = box.clientWidth || 1; const bh = box.clientHeight || 1;
+  const lg = (p.branding || {}).logo || {};
+  const li = $('#logoLayer');
+  const url = logoUrl(p);
+  const main = TL.duration(p);
+  const inEnd = endCardDur(p) && S.t >= main - 1e-3;
+  if (lg.enabled && url && !inEnd) {
+    if (li.dataset.src !== url) { li.src = url; li.dataset.src = url; }
+    li.hidden = false;
+    li.style.width = `${bw * (lg.size || 0.18)}px`;
+    li.style.opacity = lg.opacity ?? 1;
+    const pos = lg.position || 'top-right';
+    li.style.left = pos.includes('left') ? `${bw * 0.04}px` : pos === 'center' ? `${(bw - bw * (lg.size || 0.18)) / 2}px` : '';
+    li.style.right = pos.includes('right') ? `${bw * 0.04}px` : '';
+    li.style.top = pos.startsWith('top') ? `${bh * 0.03}px` : pos === 'center' ? '40%' : '';
+    li.style.bottom = pos.startsWith('bottom') ? `${bh * 0.03}px` : '';
+  } else li.hidden = true;
+  const ec = $('#endCard');
+  const e = (p.branding || {}).end || {};
+  if (inEnd) {
+    ec.hidden = false;
+    ec.style.background = e.bg || '#000';
+    ec.style.color = e.color || '#fff';
+    ec.replaceChildren(
+      ...(e.showLogo && url ? [el('img', { src: url, alt: '' })] : []),
+      el('div', { class: 'cta' }, e.cta || ''), el('div', { class: 'contact' }, e.contact || ''));
+    ec.style.fontSize = `${bh * 0.035}px`;
+  } else ec.hidden = true;
 }
 
 function tick() {
   if (!S.playing) return;
   const p = P();
-  const total = TL.duration(p);
+  const total = totalDur(p);
   if (curVideoClip && !S.switching && !vid.seeking && !vid.paused && vid.readyState >= 2) {
     const lay = TL.layout(p).get(curVideoClip.id);
     if (lay) {
       S.t = lay.start + (vid.currentTime - curVideoClip.srcIn);
+      const m = S.mediaInfo[curVideoClip.media];
+      if (m) applyVisual(vid, curVideoClip, m, vid.currentTime);
       if (vid.currentTime >= curVideoClip.srcOut - 0.02) {
         S.t = lay.end;
         tStart = S.t; wallStart = performance.now();
@@ -435,7 +563,8 @@ function tick() {
   } else {
     S.t = tStart + (performance.now() - wallStart) / 1000;
     const a = TL.activeAt(p, S.t);
-    if ((a.video && (!curVideoClip || a.video.clip.id !== curVideoClip.id)) || !a.video) syncPlayer();
+    const cur = curVideoClip || curImageClip;
+    if ((a.video && (!cur || a.video.clip.id !== cur.id)) || (!a.video && cur)) syncPlayer();
   }
   if (S.t >= total) { S.t = total; pause(); }
   else if (tick._n++ % 10 === 0) syncPlayer();
@@ -446,7 +575,7 @@ tick._n = 0;
 
 function play() {
   if (!S.pid) return;
-  const total = TL.duration(P());
+  const total = totalDur();
   if (total <= 0) return;
   if (S.t >= total - 0.01) S.t = 0;
   S.playing = true;
@@ -467,7 +596,7 @@ function pause() {
 }
 
 function seek(t) {
-  const total = S.pid ? TL.duration(P()) : 0;
+  const total = S.pid ? totalDur() : 0;
   S.t = Math.max(0, Math.min(total, t));
   tStart = S.t; wallStart = performance.now();
   updatePlayhead();
@@ -482,7 +611,7 @@ $('#btnFwd').onclick = () => { pause(); seek(S.t + 1 / P().fps); };
 function updatePlayhead() {
   if (!S.pid) return;
   $('#playhead').style.left = `${S.t * S.pps}px`;
-  $('#timecode').textContent = `${fmt(S.t)} / ${fmt(TL.duration(P()))}`;
+  $('#timecode').textContent = `${fmt(S.t)} / ${fmt(totalDur())}`;
   if (S.playing) {
     const tl = $('#timeline');
     const x = S.t * S.pps;
@@ -776,19 +905,24 @@ document.addEventListener('keydown', (e) => {
 // ---------------------------------------------------------------------------
 
 for (const b of document.querySelectorAll('.tabs button')) b.onclick = () => setTab(b.dataset.tab);
+const SIDE = {};
 function setTab(tab) {
   S.tab = tab;
   for (const b of document.querySelectorAll('.tabs button')) b.classList.toggle('active', b.dataset.tab === tab);
-  for (const t of ['inspector', 'ai', 'media', 'export']) $(`#tab-${t}`).hidden = t !== tab;
+  for (const n of document.querySelectorAll('.tab-body')) n.hidden = n.id !== `tab-${tab}`;
+  S.compareOriginal = false;
+  S.hideAdjust = false;
   renderSide();
+  syncPlayer();
 }
 
 function renderSide() {
   if (!S.pid) return;
   if (S.tab === 'inspector') renderInspector();
-  if (S.tab === 'ai') renderAI();
-  if (S.tab === 'media') renderMedia();
-  if (S.tab === 'export') renderExport();
+  else if (S.tab === 'ai') renderAI();
+  else if (S.tab === 'media') renderMedia();
+  else if (S.tab === 'export') renderExport();
+  else if (SIDE[S.tab]) SIDE[S.tab]();
 }
 
 function renderInspector() {
@@ -870,7 +1004,7 @@ async function renderAI() {
       await flushSave();
       const pr = await api(`/api/projects/${S.pid}/proposals/silence`, { method: 'POST', body: JSON.stringify({}) });
       commit(TL.addProposal(S.hist.present, pr), pr.summary);
-    } catch (e) { toast(e.message, true); }
+    } catch (e) { toast(e, true); }
     renderAI();
   };
   kids.push(el('div', { class: 'card' },
@@ -898,7 +1032,7 @@ async function renderAI() {
         await flushSave();
         const pr = await api(`/api/projects/${S.pid}/proposals/fillers`, { method: 'POST', body: JSON.stringify({}) });
         commit(TL.addProposal(S.hist.present, pr), pr.summary);
-      } catch (e) { toast(e.message, true); }
+      } catch (e) { toast(e, true); }
       renderAI();
     };
     trCard.append(el('div', { class: 'row' }, fb));
@@ -1002,7 +1136,7 @@ async function startTranscribe(mid, btn) {
     const j = await waitJob(job);
     if (j.status === 'done') { delete S.transcripts[mid]; toast(`Transkripsiya hazırdır: ${j.result.words} söz`); }
     else toast('Transkripsiya alınmadı: ' + j.error, true);
-  } catch (e) { toast(e.message, true); }
+  } catch (e) { toast(e, true); }
   renderAI();
 }
 
@@ -1092,8 +1226,12 @@ $('#btnRender').onclick = startRender;
 window.addEventListener('resize', () => { if (S.pid) { renderTimeline(); updatePlayhead(); syncPlayer(); } });
 
 // Giriş: #/p/<id> varsa layihəni aç
-const m = location.hash.match(/^#\/p\/([a-z0-9_-]+)/);
-if (m) openProject(m[1]); else showHome();
 
-// testlər üçün
+
+// testlər və flow.js üçün
 window.__montaj = { S, TL, P, seek, play, pause, save: flushSave };
+export const M = {
+  S, P, TL, $, el, fmt, api, toast, commit, tryOp, flushSave, openProject, showHome, renderAll, renderSide,
+  syncPlayer, seek, pause, play, setTab, SIDE, mediaUrl, uploadFile, waitJob, logoUrl, totalDur, ensureStatus,
+  layoutFrameBox, capBadge,
+};

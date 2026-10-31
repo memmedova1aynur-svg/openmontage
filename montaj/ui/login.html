@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="az">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14161a">
+<title>Giriş — Montaj</title>
+<link rel="stylesheet" href="/ui/login.css">
+</head>
+<body>
+<form id="f" class="card">
+  <h1>Montaj paneli</h1>
+  <label for="pw">Parol</label>
+  <input id="pw" type="password" autocomplete="current-password" required autofocus>
+  <button type="submit">Daxil ol</button>
+  <p id="err" role="alert"></p>
+</form>
+<script>
+document.getElementById('f').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const err = document.getElementById('err');
+  err.textContent = '';
+  try {
+    const r = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: document.getElementById('pw').value }) });
+    const d = await r.json().catch(() => ({}));
+    if (r.ok) { location.href = '/'; return; }
+    err.textContent = [d.error, d.hint].filter(Boolean).join(' ') || 'Giriş alınmadı.';
+  } catch { err.textContent = 'Serverə qoşulmaq alınmadı. İnterneti yoxlayın.'; }
+});
+</script>
+</body>
+</html>

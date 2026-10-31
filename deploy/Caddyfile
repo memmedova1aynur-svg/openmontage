@@ -1,0 +1,16 @@
+# Caddy Let's Encrypt sertifikatını avtomatik alır və yeniləyir.
+{$MONTAJ_DOMAIN} {
+	encode gzip
+	request_body {
+		max_size 4GB
+	}
+	reverse_proxy montaj:4760 {
+		transport http {
+			read_timeout 30m
+			write_timeout 30m
+		}
+	}
+	header {
+		Strict-Transport-Security "max-age=31536000"
+	}
+}

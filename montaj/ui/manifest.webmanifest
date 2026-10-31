@@ -1,0 +1,3 @@
+{ "name": "Montaj paneli", "short_name": "Montaj", "start_url": "/", "display": "standalone",
+  "background_color": "#14161a", "theme_color": "#14161a", "lang": "az",
+  "icons": [{ "src": "/ui/icon.svg", "sizes": "any", "type": "image/svg+xml" }] }
