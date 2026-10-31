@@ -652,3 +652,48 @@ def test_tale_plan_scenes_sticker(tmp_path, monkeypatch):
     assert body[0] > 170 and body[2] < 120, f"obraz görünür: {body}"
     corner = fr[int(Hd * 0.1), int(Wd * 0.1)]
     assert not (corner[0] > 170 and corner[2] < 120), "obrazdan kənarda əsas video (alfa şəffafdır)"
+
+
+def test_video_carousel(tmp_path, monkeypatch):
+    """Video karusel: sıra sözləri ilə fikir slaydları, örtük/çağırış, slayd əsas montajdan kəsilir (əsas dəyişmir),
+    hər slayd 1080x1350 MP4, sayğac və başlıq; örtük və ümumi şəkil."""
+    import subprocess
+
+    from montaj import carousel
+
+    def W(txt, t0):
+        return [{"w": w, "s": round(t0 + i * 0.4, 2), "e": round(t0 + i * 0.4 + 0.35, 2)} for i, w in enumerate(txt.split())]
+    words, t = [], 0.0
+    for s in ["Satışda üç səhv var.", "Birincisi, qiymət yazmırsınız heç vaxt orada.", "Bu müştərini itirir tamamilə.",
+              "İkincisi, cavab gec gəlir sizdən.", "Müştəri gözləmir.", "Üçüncüsü, çağırış yoxdur sonda heç.", "Direktə yazın."]:
+        ws = W(s, t); words += ws; t = ws[-1]["e"] + 0.5
+    ideas = carousel.split_ideas(words, min_s=1.0)
+    assert [i["first"].split()[0] for i in ideas] == ["Satışda", "Birincisi,", "İkincisi,", "Üçüncüsü,"]
+    r = carousel.plan(words, lambda x: x, t, {"tl": words[-1]["s"], "value": "Direktə yazın", "keyword": ""})
+    sl = r["slides"]
+    assert len(sl) == 3 and sl[0]["cover"] and sl[0]["title"].startswith("Satışda") and sl[-1].get("cta")
+    assert sl[1]["title"].startswith("Cavab"), sl[1]["title"]
+    assert all(s["to"] - s["from"] <= carousel.MAX_SLIDE + 1 for s in sl)
+    assert all(x["to"] <= y["from"] for x, y in zip(sl, sl[1:])), "slaydlar üst-üstə düşmür"
+
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import session, store
+
+    before = json.dumps(store.load(pid)["clips"], sort_keys=True)
+    q = session.node_tl("migrate", store.load(pid))
+    total = sum(c["srcOut"] - c["srcIn"] for c in session.node_tl("videoClips", q))
+    part = carousel.slice_project(q, 1.0, 4.0, session.node_tl)
+    assert abs(sum(c["srcOut"] - c["srcIn"] for c in session.node_tl("videoClips", part)) - 3.0) < 0.05
+    plan = tmp_path / "carousel.json"
+    plan.write_text(json.dumps({"slides": [{"from": 0, "to": 3.0, "title": "Vacib mövzu", "cover": True},
+                                           {"from": 3.0, "to": round(total, 2), "title": "İkinci fikir", "cta": {"text": "Yazın"}}]}))
+    assert session.main(["carousel", pid, str(plan)]) == 0
+    assert json.dumps(store.load(pid)["clips"], sort_keys=True) == before, "əsas montaj dəyişmir"
+    o = tmp_path / "out" / pid / "carousel"
+    for i, d in ((1, 3.0), (2, total - 3.1)):
+        info = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=width,height:format=duration",
+                               "-of", "json", str(o / f"slide_{i:02d}.mp4")], capture_output=True, text=True, check=True).stdout
+        js = json.loads(info)
+        assert (js["streams"][0]["width"], js["streams"][0]["height"]) == (1080, 1350)
+        assert abs(float(js["format"]["duration"]) - d) < 0.3
+    assert (o / "ortuk.jpg").stat().st_size > 5000 and (o / "karusel.jpg").stat().st_size > 5000

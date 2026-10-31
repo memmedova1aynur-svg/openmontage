@@ -55,6 +55,15 @@ Ara düzəliş raundları təklif etmə.
      obraz: `{"make": {"kind": "tale_char", "props": {"transparent": true, "char": {"kind": "fox", "action": "wave"}}}, "mode": "sticker"}`
      — şəffaf (ProRes 4444) obraz danışanın yanında (standart sol tərəf, altyazının üstü).
    - Real görünüşlü obraz (fotorealist) pulsuz deyil — təsdiqsiz ödənişli xidmət qoşma; cizgi üslubunu təklif et.
+2g. **Video karusel** (Instagram: bir paylaşımda 2–10 qısa video slayd, 4:5) — əsas montaj təsdiqlənəndən sonra:
+   - `carousel-plan <pid>` → `out/<pid>/carousel.json`: slayd = bir fikir (danışıqdakı "birincisi, ikincisi…, sonuncu" və ya
+     pauzalar; yoxdursa cümlə sərhədlərində 3–7 bərabər hissə). 1-ci slayd örtükdür (hook), danışıqda çağırış varsa sonuncuda
+     CTA kartı. Qısa hook (<2 s) növbəti fikirlə birləşir; slaydlar üst-üstə düşmür.
+   - Başlıqlar **yalnız danışıqdan** (qısaldılmış) — `_review`-u oxu, ASR səhvini düzəlt, başlığı redaktə et (mənanı dəyişmə).
+   - `carousel <pid> <carousel.json>` → `out/<pid>/carousel/slide_01.mp4…` (1080x1350, hər biri ≤60 s), `ortuk.jpg`,
+     `karusel.jpg` (yoxlama üçün yan-yana). Hər slaydda sayğac "2/5", başlıq, söz-söz altyazı (y 0.84), müştəri rəngi;
+     örtükdə böyük başlıq + "Sürüşdürün →". Əsas montaj dəyişmir (9:16 kartları slayda keçmir).
+   - Yoxlama: `karusel.jpg`-ə bax (üz, başlıq, altyazı üst-üstə düşmür), sonra istifadəçiyə slaydları sıra ilə göndər.
 2e. **Motion graphics** (data, IT, analitika — qrafika ağırlıqlı):
    - Qrafik səhnələr (`session scenes`, `mg_*`): `mg_bar` (sütun), `mg_line` (zaman üzrə xətt), `mg_donut` (faiz),
      `mg_compare` (iki dəyər), `mg_steps` (proses/yol xəritəsi), `mg_code` (kod/terminal), `mg_kpi` (2–4 rəqəm). Müştəri rəngində,

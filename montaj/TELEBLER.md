@@ -204,3 +204,5 @@ real danışıqda səs sinxronu və görünən keyfiyyət, iPhone Safari, Instag
 | 18.2 | `tale-plan`: danışıqdan obraz/məkan/hərəkət, obraz yeri sabit, olmayan obraz uydurulmur | ✅ | `test_tale_plan_scenes_sticker` |
 | 18.3 | `sticker`: şəffaf obraz (ProRes 4444 alfa) real videonun üstündə | ✅ | Kadr piksel yoxlaması + Günel videosunda vizual |
 | 18.4 | Nağıl səhnəsində danışanın dairəsi səmada (obrazları örtmür) | ✅ | Vizual |
+| 19.1 | `carousel-plan`: fikir slaydları (sıra sözləri "Birincisi/İkincisi", pauza, bərabər bölgü), örtük + CTA, qısa hook birləşir, üst-üstə düşmür | ✅ | `test_video_carousel` + Günel videosu (3 slayd) |
+| 19.2 | `carousel`: slayd əsas montajdan kəsilir (əsas dəyişmir), 1080x1350, sayğac/başlıq/altyazı, örtük + ümumi şəkil | ✅ | `test_video_carousel` (ölçü, müddət) + `karusel.jpg` vizual |
