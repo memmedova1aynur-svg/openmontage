@@ -25,6 +25,16 @@ Ara düzəliş raundları təklif etmə.
    Transkripti oxu: təkrar cümlələri, alınmayan cəhdləri, yarımçıq fikirləri tap.
    Çıxarmaq üçün: `cut <pid> [media:]başla-son …` (sərhəd səsin ən sakit yerinə çəkilir; söz kəsilmir;
    şübhəli sərhəddə material saxlanılır, çıxışda ŞÜBHƏLİ yazılır) və ya `edit --exclude N`.
+2a. **B-roll / araya kadr materialı** (istifadəçi əlavə video/şəkil göndərsə — Drive linki və ya fayl):
+   `add-broll <pid> --link <..> [--file <..>]` → material danışıq analizinə və kəsimə düşmür.
+   Storyboard variantlarında harada işlədiləcəyini təklif et (planda `broll`):
+   - `{"name": "<fayl>", "mode": "cover", "at": 6.0, "dur": 2.0, "from": 0}` — əsas videonun üstündə tam kadr;
+     danışıq, altyazı, kartlar davam edir (məhsul, nümunə, emosiya kadrı üçün).
+   - `"mode": "pip"` — küncdə kiçik pəncərə, mənbə nisbətində; `x`/`y` verilməsə **üzü və altyazını örtməyən**
+     yer avtomatik seçilir (`scale` standart 0.42).
+   - `"mode": "insert"` — araya kadr: əsas video **ən yaxın təbii pauzada** dayanır (söz və altyazı sözü bölünmür),
+     kadr öz səsi ilə oynayır (`volume`, 0 — səssiz), sonra danışıq davam edir (gülməli reaksiya, keçid üçün).
+   Şəkil də ola bilər (istənilən müddət). Rəng şablonu B-roll-a da tətbiq olunur. Material verilməyibsə B-roll uydurma.
 3a. **Kadraj düzəlişi — HƏR videoda məcburi.** `framefix <pid>`: əyrilik fondakı düz xətlərdən ölçülüb düzəldilir
    (0.4°–6°), üz/obyekt ortalanır, baş üstü boşluq təbii olur; ümumi yaxınlaşma ≤1.12x (görüntü yumşalmasın —
    lazım olsa ortalama qismən olur). Nəticə qaralamaya yazılır, variantlar və yekun montaj onu işlədir;

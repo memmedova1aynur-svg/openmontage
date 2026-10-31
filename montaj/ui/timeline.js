@@ -18,6 +18,7 @@ export const SCHEMA_VERSION = 1;
 
 export const TRACKS = [
   { id: 'v1', kind: 'video', name: 'Video' },
+  { id: 'v2', kind: 'overlay', name: 'B-roll' },
   { id: 'a1', kind: 'speech', name: 'Danışıq' },
   { id: 'm1', kind: 'music', name: 'Musiqi' },
   { id: 's1', kind: 'sfx', name: 'Səs effekti' },

@@ -271,3 +271,71 @@ def test_framefix_tilt_and_center(tmp_path):
     s, cx, cy = framefix.center_window(0.62, 0.2, 1.12)
     assert s >= 1 / 1.12 - 1e-6 and cx > 0.5 and abs(cx - 0.62) < 0.08, "qismən ortalama, yaxınlaşma həddində"
     assert framefix.center_window(0.51, 0.2, 1.12)[0] == 1.0, "artıq ortadadırsa yaxınlaşma yoxdur"
+
+
+def test_broll_cover_pip_insert(tmp_path, monkeypatch):
+    """B-roll: cover (danışıq + altyazı davam edir), pip (küncdə), insert (əsas video təbii pauzada dayanır).
+    B-roll mediası storyboard kartlarına düşmür."""
+    import subprocess
+
+    import numpy as np
+
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import media, render, server, session, store
+
+    red = tmp_path / "qirmizi.mp4"   # 16:9, səssiz — cover və pip üçün
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-f", "lavfi", "-i", "color=c=red:s=640x360:d=5", "-c:v", "libx264",
+                    "-pix_fmt", "yuv420p", str(red)], check=True)
+    blue = tmp_path / "goy.mp4"      # səsli — insert üçün
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-f", "lavfi", "-i", "color=c=blue:s=360x640:d=3", "-f", "lavfi",
+                    "-i", "sine=f=880:d=3", "-shortest", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac", str(blue)], check=True)
+    assert session.main(["add-broll", pid, "--file", str(red), "--file", str(blue)]) == 0
+    p = store.load(pid)
+    assert sum(1 for m in p["media"] if m.get("role") == "broll") == 2
+    sb = server.build_storyboard(pid, {"aspect": "9:16", "useAi": False})
+    brolls = {m["id"] for m in p["media"] if m.get("role") == "broll"}
+    assert not any(c["mediaId"] in brolls for c in sb["cards"]), "B-roll storyboard kartına düşmür"
+
+    before = sum(c["srcOut"] - c["srcIn"] for c in session.node_tl("videoClips", p))
+    def sub_text(x):
+        return " ".join(c["text"] for c in sorted((c for c in x["clips"] if c["track"] == "c1" and not c.get("hidden")),
+                                                   key=lambda c: c["start"]))
+    subs_before = sub_text(p)
+    plan = tmp_path / "plan.json"
+    plan.write_text(json.dumps({"look": None, "broll": [
+        {"name": "qirmizi.mp4", "mode": "cover", "at": 1.0, "dur": 1.5},
+        {"name": "qirmizi.mp4", "mode": "pip", "at": 4.5, "dur": 1.0, "scale": 0.4, "x": 0.7, "y": 0.3},
+        {"name": "goy.mp4", "mode": "insert", "at": 5.0, "dur": 1.0}]}))
+    assert session.main(["plan", pid, str(plan)]) == 0
+    q = store.load(pid)
+    after = sum(c["srcOut"] - c["srcIn"] for c in session.node_tl("videoClips", q))
+    assert abs(after - before - 1.0) < 0.01, "insert müddəti əlavə edir"
+    assert sub_text(q) == subs_before, "altyazı sözləri itmir (insert yerində altyazı iki yerə bölünə bilər)"
+    assert len([c for c in q["clips"] if c["track"] == "v2"]) == 2
+    assert session.main(["plan", pid, str(plan)]) == 0, "təkrar plan"
+    q2 = store.load(pid)
+    assert len([c for c in q2["clips"] if c["track"] == "v2"]) == 2 and \
+        abs(sum(c["srcOut"] - c["srcIn"] for c in session.node_tl("videoClips", q2)) - after) < 0.01, "ikiləşmir"
+
+    assert session.main(["render", pid]) == 0
+    mp4 = sorted((tmp_path / "out" / pid).glob(f"{pid}_r*.mp4"))[-1]
+    W, H = q2["width"], q2["height"]
+
+    def frame(t):
+        raw = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{t}", "-i", str(mp4), "-frames:v", "1", "-f", "rawvideo",
+                              "-pix_fmt", "rgb24", "-"], capture_output=True, check=True).stdout
+        return np.frombuffer(raw, np.uint8).reshape(H, W, 3).astype(int)
+
+    f = frame(1.7)
+    assert f[H // 2, W // 2, 0] > 180 and f[H // 2, W // 2, 2] < 80, "cover: kadr B-roll ilə örtülür"
+    f = frame(0.5)
+    assert not (f[H // 2, W // 2, 0] > 180 and f[H // 2, W // 2, 2] < 80), "cover-dən əvvəl əsas video"
+    seq = session.node_tl("videoClips", q2)
+    acc, ins = 0.0, None
+    for c in seq:
+        if c.get("broll"):
+            ins = acc
+        acc += c["srcOut"] - c["srcIn"]
+    f = frame(round(ins + 0.5, 2))
+    assert f[H // 2, W // 2, 2] > 180 and f[H // 2, W // 2, 0] < 80, "insert: göy kadr"
+    assert media.probe(mp4)["duration"] > before + 0.9

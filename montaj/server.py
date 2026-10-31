@@ -454,7 +454,7 @@ def _brand(project: dict[str, Any]) -> dict[str, Any] | None:
 
 def _segments(pid: str, project: dict[str, Any], options: dict[str, Any], progress=None) -> dict[str, list]:
     pdir = store.project_dir(pid)
-    vis = [m for m in project["media"] if m.get("hasVideo") or m.get("hasAudio")]
+    vis = [m for m in project["media"] if (m.get("hasVideo") or m.get("hasAudio")) and m.get("role") != "broll"]
     out: dict[str, list] = {}
     for i, m in enumerate(vis):
         an = analysis.analyze_media(pdir, m, options.get("language", "az"))
@@ -468,7 +468,7 @@ def _frames(pid: str, project: dict[str, Any], aspect: str, hint: str, progress=
     if aspect in ("source", None, ""):
         return {}
     pdir = store.project_dir(pid)
-    vids = [m for m in project["media"] if m.get("hasVideo")]
+    vids = [m for m in project["media"] if m.get("hasVideo") and m.get("role") != "broll"]
     _, out_h = reframe.output_size(reframe.primary_video(project["media"]), aspect)
     res = {}
     for i, m in enumerate(vids):

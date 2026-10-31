@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Any
 
-TRACK_KINDS = {"video", "speech", "music", "sfx", "text"}
+TRACK_KINDS = {"video", "overlay", "speech", "music", "sfx", "text"}  # overlay: B-roll / PIP (danışıq davam edir)
 AUDIO_KINDS = {"speech", "music", "sfx"}
 MIN_CLIP = 0.1
 
@@ -98,7 +98,7 @@ def validate(project: dict[str, Any]) -> None:
             raise ProjectError(f"Klip {cid}: media tapılmadı")
         if s_in < -1e-6 or s_out > float(m["duration"]) + 0.05:
             raise ProjectError(f"Klip {cid}: mənbə sərhədlərindən kənardadır")
-        if kind == "video" and not m.get("hasVideo"):
+        if kind in ("video", "overlay") and not m.get("hasVideo"):
             raise ProjectError(f"Klip {cid}: mediada video yoxdur")
         if kind in AUDIO_KINDS and not m.get("hasAudio"):
             raise ProjectError(f"Klip {cid}: mediada səs yoxdur")
