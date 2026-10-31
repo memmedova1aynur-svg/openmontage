@@ -43,6 +43,18 @@ Ara düzəliş raundları təklif etmə.
    Orijinal dəyişmir; yalnız danışıq qatı təmizlənmiş nüsxəni işlədir (musiqi, SFX, B-roll səsi toxunulmaz).
    Təmizlənibsə `ses_evvel_sonra.m4a`-nı qərar mesajına əlavə et. Yaxında danışan başqa adamın səsi də danışıqdır —
    tam silinmir, bunu de. Model (DeepFilterNet3) internetdən endirildiyi üçün ilk işə salmada icazə soruşula bilər.
+2f. **Nağıl və cizgi videoları** (VIDEO_TYPES növ 9 / M12 — obrazlar ardıcıl, üslub storyboardda təsdiqlənir,
+   olmayan imkan iddia edilmir):
+   - Obraz kitabxanası (`tale.tsx`, flat/sevimli üslub): **tülkü, dovşan, ayı, pişik, uşaq** — nəfəs, göz qırpma, danışma,
+     əl yelləmə, tullanma, yan tərəfdən giriş. Fonlar: `forest`, `meadow`, `night`, `house`, `plain` (müştəri rəngi).
+   - `tale-plan <pid>`: danışıqdakı obraz və məkanlardan səhnələr (`tale_plan.json`): danışan obraz danışır ("dedi"), sevinən
+     tullanır, salamlaşan əl yelləyir; obraz video boyu eyni yerdə və görünüşdə; başlıq mətni danışıqdan.
+     Kitabxanada olmayan obraz (canavar, əjdaha, nənə…) **uydurulmur** — `_review`-da; istifadəçiyə mövcud obrazla əvəz
+     etməyi və ya səhnəsiz saxlamağı təklif et.
+   - Rejimlər: `cover_pip` (nağıl səhnəsi tam kadr, danışan səmada dairədə — `x: 0.07, y: 0.33`), `cover`; real video üzərində
+     obraz: `{"make": {"kind": "tale_char", "props": {"transparent": true, "char": {"kind": "fox", "action": "wave"}}}, "mode": "sticker"}`
+     — şəffaf (ProRes 4444) obraz danışanın yanında (standart sol tərəf, altyazının üstü).
+   - Real görünüşlü obraz (fotorealist) pulsuz deyil — təsdiqsiz ödənişli xidmət qoşma; cizgi üslubunu təklif et.
 2e. **Motion graphics** (data, IT, analitika — qrafika ağırlıqlı):
    - Qrafik səhnələr (`session scenes`, `mg_*`): `mg_bar` (sütun), `mg_line` (zaman üzrə xətt), `mg_donut` (faiz),
      `mg_compare` (iki dəyər), `mg_steps` (proses/yol xəritəsi), `mg_code` (kod/terminal), `mg_kpi` (2–4 rəqəm). Müştəri rəngində,

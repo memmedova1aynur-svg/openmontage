@@ -286,7 +286,11 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
         m = media[c["media"]]
         k = add_input(m, float(c["srcIn"]), o["dur"])
         pip = c.get("pip") if c.get("mode") == "pip" else None
-        if pip:  # PIP mənbənin öz nisbətində (qara zolaqsız), nazik ağ çərçivə ilə
+        if c.get("mode") == "sticker":  # şəffaf obraz (ProRes 4444 alfa) — tam kadr ölçüsündə, alfa qorunur
+            chain = (f"scale={W}:{H}:flags=lanczos,fps={fps_str},setpts=PTS-STARTPTS,"
+                     f"tpad=stop_mode=clone:stop_duration=1,trim=end_frame={o['frames']},setpts=PTS-STARTPTS,format=yuva420p")
+            x = y = "0"
+        elif pip:  # PIP mənbənin öz nisbətində (qara zolaqsız), nazik ağ çərçivə ilə
             sc = min(0.9, max(0.15, float(pip.get("scale", 0.42))))
             bw = max(2, int(W * 0.006))
             adj = c.get("adjust") or {}

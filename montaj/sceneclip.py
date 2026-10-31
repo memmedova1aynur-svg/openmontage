@@ -140,7 +140,8 @@ def render(kind: str, props: dict[str, Any], dur: float, theme: dict[str, Any], 
     st = {**DEFAULT_STYLE, **(style or {})}
     key = hashlib.sha1(json.dumps([kind, props, round(dur, 2), theme, st, _src_hash()], sort_keys=True, ensure_ascii=False).encode()).hexdigest()[:14]
     out_dir.mkdir(parents=True, exist_ok=True)
-    out = out_dir / f"scene_{kind}_{key}.{'png' if still else 'mp4'}"
+    alpha = bool(props.get("transparent")) and not still
+    out = out_dir / f"scene_{kind}_{key}.{'png' if still else 'mov' if alpha else 'mp4'}"
     if out.is_file():
         return out
     ws = _workspace(out_dir.parent if out_dir.name == "scenes" else out_dir)
@@ -151,6 +152,9 @@ def render(kind: str, props: dict[str, Any], dur: float, theme: dict[str, Any], 
     tmp = out.with_suffix(".part" + out.suffix)
     if still:
         cmd = ["npx", "remotion", "still", "src/scene_clip.tsx", "SceneClip", str(tmp), f"--frame={int(dur * 30 * 0.6)}"]
+    elif alpha:  # şəffaf fon: real videonun üstünə qoyulan obraz (ProRes 4444, alfa ilə)
+        cmd = ["npx", "remotion", "render", "src/scene_clip.tsx", "SceneClip", str(tmp), "--codec=prores", "--prores-profile=4444",
+               "--pixel-format=yuva444p10le", "--image-format=png", "--concurrency=4", "--muted"]
     else:
         cmd = ["npx", "remotion", "render", "src/scene_clip.tsx", "SceneClip", str(tmp), "--codec=h264", "--crf=16",
                "--jpeg-quality=95", "--concurrency=4", "--muted"]

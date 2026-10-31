@@ -200,3 +200,7 @@ real danışıqda səs sinxronu və görünən keyfiyyət, iPhone Safari, Instag
 | 17.1 | Motion graphics səhnələri: mg_bar, mg_line, mg_donut, mg_compare, mg_steps, mg_code, mg_kpi (müştəri rəngi, az yazılışı) | ✅ | 7-si də render olunur; Data Clone Academy rəngində vizual yoxlama |
 | 17.2 | `cover_pip`: səhnə tam kadr, danışan dairədə (sol-aşağı) | ✅ | `test_motion_graphics_scenes_scan_cover_pip` (kadr piksel yoxlaması) + Günel videosunda vizual |
 | 17.3 | `mg-scan`: danışıqdakı rəqəmlər + səhnə təklifi (il şəkilçisi, say sözləri; rəqəmlər birləşmir) | ✅ | Unit test |
+| 18.1 | Nağıl obraz kitabxanası (tülkü, dovşan, ayı, pişik, uşaq) + fonlar, hərəkətlər (nəfəs, göz qırpma, danışma, əl, tullanma, giriş) | ✅ | Günel rəngində vizual yoxlama; qolların yeri düzəldildi |
+| 18.2 | `tale-plan`: danışıqdan obraz/məkan/hərəkət, obraz yeri sabit, olmayan obraz uydurulmur | ✅ | `test_tale_plan_scenes_sticker` |
+| 18.3 | `sticker`: şəffaf obraz (ProRes 4444 alfa) real videonun üstündə | ✅ | Kadr piksel yoxlaması + Günel videosunda vizual |
+| 18.4 | Nağıl səhnəsində danışanın dairəsi səmada (obrazları örtmür) | ✅ | Vizual |

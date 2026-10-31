@@ -17,6 +17,7 @@ import { ACADEMIC } from "./academic";
 import { STUDIO } from "./studio";
 import { Backdrop, SCENES } from "./scenes";
 import { MG } from "./mg";
+import { TALE } from "./tale";
 import { FPS, useFonts } from "./theme";
 
 type Input = { kind: string; props?: Record<string, any>; dur?: number };
@@ -24,7 +25,7 @@ const IN = getInputProps() as Input;
 
 export const REGISTRIES: Record<string, Record<string, React.FC<any>>> = {
   scenes: SCENES, rahime: RAHIME, broll: BROLL, blueprint: BLUEPRINT, sheet: SHEET, cards: CARDS,
-  academic: ACADEMIC, studio: STUDIO, cartoon: CARTOON, sketch: SKETCH, paper: PAPER, illustrated: ILLUSTRATED, mg: MG,
+  academic: ACADEMIC, studio: STUDIO, cartoon: CARTOON, sketch: SKETCH, paper: PAPER, illustrated: ILLUSTRATED, mg: MG, tale: TALE,
 };
 
 const find = (kind: string): React.FC<any> | undefined => {
@@ -40,7 +41,7 @@ const Clip: React.FC = () => {
   if (!Scene) throw new Error(`Naməlum səhnə: ${IN.kind}`);
   return (
     <AbsoluteFill>
-      <Backdrop p={1} />
+      {!IN.props?.transparent && <Backdrop p={1} />}
       <Scene f={f} p={IN.props ?? {}} startT={0} />
     </AbsoluteFill>
   );
