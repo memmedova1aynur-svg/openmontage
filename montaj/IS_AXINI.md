@@ -35,6 +35,12 @@ Ara düzəliş raundları təklif etmə.
    - `"mode": "insert"` — araya kadr: əsas video **ən yaxın təbii pauzada** dayanır (söz və altyazı sözü bölünmür),
      kadr öz səsi ilə oynayır (`volume`, 0 — səssiz), sonra danışıq davam edir (gülməli reaksiya, keçid üçün).
    Şəkil də ola bilər (istənilən müddət). Rəng şablonu B-roll-a da tətbiq olunur. Material verilməyibsə B-roll uydurma.
+3b. **Arxa səsin təmizlənməsi — HƏR videoda yoxlanır.** `voice-clean <pid>` (standart `auto`): kafe uğultusu,
+   uzaq danışıq, çəngəl-bıçaq, uzaqdan musiqi azaldılır; **danışanın səsi qorunur** (zəiflətmə ≤20 dB, danışıq
+   səviyyəsi orijinala bərabərləşdirilir, sinxron dəyişmir). Arxa səs azdırsa (studiya) özü tətbiq etmir.
+   Orijinal dəyişmir; yalnız danışıq qatı təmizlənmiş nüsxəni işlədir (musiqi, SFX, B-roll səsi toxunulmaz).
+   Təmizlənibsə `ses_evvel_sonra.m4a`-nı qərar mesajına əlavə et. Yaxında danışan başqa adamın səsi də danışıqdır —
+   tam silinmir, bunu de. Model (DeepFilterNet3) internetdən endirildiyi üçün ilk işə salmada icazə soruşula bilər.
 3a. **Kadraj düzəlişi — HƏR videoda məcburi.** `framefix <pid>`: əyrilik fondakı düz xətlərdən ölçülüb düzəldilir
    (0.4°–6°), üz/obyekt ortalanır, baş üstü boşluq təbii olur; ümumi yaxınlaşma ≤1.12x (görüntü yumşalmasın —
    lazım olsa ortalama qismən olur). Nəticə qaralamaya yazılır, variantlar və yekun montaj onu işlədir;

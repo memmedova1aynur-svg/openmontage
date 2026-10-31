@@ -684,7 +684,10 @@ def _apply_broll(pid: str, q: dict[str, Any], b: dict[str, Any]) -> dict[str, An
     if lay[c["id"]] + 0.12 < cut < lay[c["id"]] + (c["srcOut"] - c["srcIn"]) - 0.12:
         q = node_tl("split", q, c["id"], cut)
     seq = node_tl("videoClips", q)
-    idx = next(i for i, x in enumerate(seq) if abs(sum(y["srcOut"] - y["srcIn"] for y in seq[:i]) - cut) < 0.02)
+    bounds = [sum(y["srcOut"] - y["srcIn"] for y in seq[:i]) for i in range(len(seq) + 1)]
+    idx = min(range(len(bounds)), key=lambda i: abs(bounds[i] - cut))  # sərhədə yaxın nöqtə (bölünmədisə) — həmin sərhəd
+    if abs(bounds[idx] - cut) > 0.15:
+        raise UserError(f"Araya kadr üçün yer tapılmadı ({cut:.2f} s).", "Başqa vaxt verin.")
     vid = "v_" + _uuid.uuid4().hex[:10]
     clip = {"id": vid, "track": "v1", "media": m["id"], "srcIn": round(src_in, 3), "srcOut": round(src_in + dur, 3),
             "order": 10_000, "origin": "plan", "manual": False, "broll": True}
@@ -826,6 +829,41 @@ def _latest_render(pid: str) -> Path:
     if not mp4s:
         raise UserError("Render tapılmadı.", f"Əvvəlcə `render {pid}`.")
     return mp4s[-1]
+
+
+def cmd_voice_clean(a: argparse.Namespace) -> None:
+    """Arxa səsin təmizlənməsi (danışığı qoruyaraq). auto: arxa səs azdırsa tətbiq edilmir.
+    Əvvəl/sonra dinləmə nümunəsi: out/<pid>/ses_evvel_sonra.m4a."""
+    from montaj import voiceclean
+
+    st = voiceclean.available()
+    if a.mode != "off" and not (st["installed"] and st["model"]):
+        raise UserError("Səs təmizləmə modeli quraşdırılmayıb.", "bash scripts/cloud-setup.sh (DeepFilterNet + model).")
+    p = store.load(a.pid)
+    used = {c["media"] for c in p["clips"] if c["track"] == "a1" and c.get("media")}
+    out: dict[str, Any] = {}
+    sample = None
+    for m in p["media"]:
+        if m["id"] not in used or m.get("role") == "broll" or not m.get("hasAudio"):
+            continue
+        if a.mode == "off":
+            print(f"{m.get('name')}: təmizləmə söndürüldü")
+            continue
+        r = voiceclean.clean_media(store.project_dir(a.pid), m, a.mode, a.atten)
+        if r["applied"]:
+            out[m["id"]] = {"file": r["file"], "atten": r["atten"], "removedDb": r["removedDb"], "gainDb": r["gainDb"]}
+            print(f"{m.get('name')}: arxa səs təmizləndi (çıxarılan {r['removedDb']} dB, danışıq səviyyəsi {r['gainDb']:+} dB bərpa olundu)")
+            if sample is None:
+                c = next(x for x in p["clips"] if x["track"] == "a1" and x.get("media") == m["id"])
+                sample = voiceclean.ab_sample(store.project_dir(a.pid), m, r["file"], out_dir(a.pid) / "ses_evvel_sonra.m4a", c["srcIn"])
+        else:
+            print(f"{m.get('name')}: {r['why']}")
+    cur = store.load(a.pid)
+    cur["voiceClean"] = out
+    saved = store.save(a.pid, cur, cur["revision"])
+    if sample:
+        print(f"dinləmə: {sample} (əvvəl → 0.8 s sükut → sonra)")
+    print(f"versiya {saved['revision']}")
 
 
 def cmd_add_broll(a: argparse.Namespace) -> None:
@@ -1108,6 +1146,10 @@ def main(argv: list[str] | None = None) -> int:
     lk.add_argument("pid")
     lk.add_argument("--frames", type=int, default=3)
     lk.add_argument("--t", type=float, action="append", help="mənbə videoda kadrın saniyəsi (təkrarlana bilər)")
+    vc = sub.add_parser("voice-clean", help="arxa səsin təmizlənməsi (danışığı qoruyaraq)")
+    vc.add_argument("pid")
+    vc.add_argument("--mode", choices=["auto", "on", "off"], default="auto")
+    vc.add_argument("--atten", type=float, default=20.0, help="maksimum zəiflətmə, dB (danışığı qorumaq üçün)")
     br = sub.add_parser("add-broll", help="B-roll / araya kadr materialı (video, şəkil)")
     br.add_argument("pid")
     br.add_argument("--link", action="append")
@@ -1165,7 +1207,7 @@ def main(argv: list[str] | None = None) -> int:
         {"new": cmd_new, "storyboard": cmd_storyboard, "edit": cmd_edit, "apply": cmd_apply,
          "render": cmd_render, "export": cmd_export, "editor": cmd_editor,
          "apply-edits": cmd_apply_edits, "set-client": cmd_set_client, "plan": cmd_plan, "looks": cmd_looks,
-         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "verify": cmd_verify, "words": cmd_words, "fix-word": cmd_fix_word,
+         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "verify": cmd_verify, "words": cmd_words, "fix-word": cmd_fix_word,
          "variants": cmd_variants, "choose": cmd_choose, "music-preview": cmd_music_preview}[a.cmd](a)
     except UserError as err:
         print(f"XƏTA: {err.message}\nNƏ ETMƏLİ: {err.hint}", file=sys.stderr)

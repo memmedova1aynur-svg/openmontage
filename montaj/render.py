@@ -372,9 +372,14 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
 
     total = plan["total"]
     buses: dict[str, list[str]] = {}
+    clean = project.get("voiceClean") or {}
     for i, a in enumerate(plan["audio"]):
         c = a["clip"]
-        k = add_input(media[c["media"]], float(c["srcIn"]), a["dur"])
+        m = media[c["media"]]
+        vc = clean.get(m["id"]) if a["kind"] == "speech" else None
+        if vc and vc.get("file") and (media_root / vc["file"]).is_file():
+            m = {**m, "file": vc["file"], "isImage": False}  # arxa səsi təmizlənmiş danışıq (orijinal dəyişmir)
+        k = add_input(m, float(c["srcIn"]), a["dur"])
         ms = int(round(a["start"] * 1000))
         bus = "voice" if c.get("role") == "voiceover" else a["kind"]
         vol = float(c.get("volume", 1) if c.get("volume") is not None else 1) * float(mix.get(bus, 1))

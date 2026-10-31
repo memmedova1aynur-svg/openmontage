@@ -44,6 +44,19 @@ if ! ldconfig -p 2>/dev/null | grep -q libEGL.so.1 && command -v apt-get >/dev/n
   apt-get install -y -qq libegl1 libgles2 >/dev/null 2>&1 || echo "[setup] libegl1 quraşdırılmadı — avtomatik kadraj işləməyəcək" >&2
 fi
 
+echo "[setup] Arxa səs təmizləmə: DeepFilterNet (torch CPU) + model"
+if ! python3 -c "import df, torch" >/dev/null 2>&1; then
+  python3 -m pip install -q --index-url https://download.pytorch.org/whl/cpu torch torchaudio || echo "[setup] torch quraşdırılmadı" >&2
+  python3 -m pip install -q deepfilternet || echo "[setup] deepfilternet quraşdırılmadı" >&2
+fi
+if [ ! -f "$HOME/.cache/DeepFilterNet/DeepFilterNet3/config.ini" ]; then
+  mkdir -p "$HOME/.cache/DeepFilterNet"
+  # github.com/raw bəzi şəbəkə siyasətlərində bloklanır — raw.githubusercontent.com işləyir
+  curl -sSL -m 180 -o /tmp/DeepFilterNet3.zip https://raw.githubusercontent.com/Rikorose/DeepFilterNet/main/models/DeepFilterNet3.zip \
+    && python3 -m zipfile -e /tmp/DeepFilterNet3.zip "$HOME/.cache/DeepFilterNet/" \
+    || echo "[setup] DeepFilterNet modeli endirilmədi — arxa səs təmizləmə işləməyəcək" >&2
+fi
+
 if [ "${MONTAJ_PREFETCH_WHISPER:-1}" = "1" ]; then
   echo "[setup] Whisper modeli əvvəlcədən endirilir (${MONTAJ_WHISPER_MODEL:-large-v3-turbo})"
   python3 - <<'PY' || echo "[setup] Model endirilmədi — ilk transkripsiyada yenidən cəhd olunacaq" >&2
