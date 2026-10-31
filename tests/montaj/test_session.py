@@ -102,3 +102,36 @@ def test_editor_page_and_edits_roundtrip(tmp_path, monkeypatch):
     mp4 = next((tmp_path / "out" / pid).glob("*.mp4"))
     fl, bp = flash_onsets(mp4), beep_onsets(mp4)
     assert len(fl) == 8 and max(abs(a - b) for a, b in zip(fl, bp)) <= 1 / 30 + 0.005
+
+
+def test_plan_default_look_and_sharpen(tmp_path, monkeypatch):
+    """Standart rəng (C) planla tətbiq olunur, əl ilə rəngə toxunmur, "look": null ilə götürülür; render kəskinlik əlavə edir."""
+    import sys
+    from pathlib import Path
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    from tests.montaj import editor_fixture
+
+    monkeypatch.setenv("MONTAJ_OUT_DIR", str(tmp_path / "out"))
+    pid = editor_fixture.make(tmp_path / "data", tmp_path)
+    from montaj import render, session, store
+
+    plan = tmp_path / "plan.json"
+    plan.write_text(json.dumps({"captions": {"enabled": True, "style": {"type": "caption"}}}))
+    assert session.main(["plan", pid, str(plan)]) == 0
+    vids = [c for c in store.load(pid)["clips"] if c["track"] == "v1"]
+    assert vids and all({k: c["adjust"][k] for k in session.LOOKS["C"]} == session.LOOKS["C"] for c in vids)
+    chain = render.video_chain(vids[0], {"width": 202, "height": 360}, 202, 360, "30", False, 30)
+    assert "unsharp=5:5:0.25:5:5:0" in chain and "eq=brightness=0.010:contrast=1.040:saturation=1.050" in chain
+    assert chain.index("scale=202:360") < chain.index("unsharp"), "kəskinlik çıxış ölçüsündə"
+
+    p = store.load(pid)  # bir klipin rəngi əl ilə dəyişdirilir
+    p["clips"] = [dict(c, adjust={"contrast": 1.2, "mirror": True}) if c["id"] == vids[0]["id"] else c for c in p["clips"]]
+    store.save(pid, p, p["revision"])
+    plan.write_text(json.dumps({"captions": {"enabled": True, "style": {"type": "caption"}}, "look": None}))
+    assert session.main(["plan", pid, str(plan)]) == 0
+    after = {c["id"]: c.get("adjust") for c in store.load(pid)["clips"] if c["track"] == "v1"}
+    assert after[vids[0]["id"]] == {"contrast": 1.2, "mirror": True}, "əl ilə rəng qorunur"
+    assert all(after[c["id"]] is None for c in vids[1:]), "plan şablonu götürülür"
+    no = render.video_chain(vids[1] | {"adjust": {}}, {"width": 202, "height": 360}, 202, 360, "30", False, 30)
+    assert "unsharp" not in no and "eq=" not in no

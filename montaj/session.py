@@ -439,6 +439,11 @@ def _sfx_media(pid: str, kind: str) -> dict[str, Any]:
     return rec
 
 
+# İstifadəçinin seçdiyi standart rəng korreksiyası ("C": az kontrast, bir az işıq, yüngül kəskinlik).
+# Ölçü/format dəyişmir. Plan faylında "look": null olarsa tətbiq edilmir.
+LOOKS: dict[str, dict[str, float]] = {"C": {"brightness": 0.01, "contrast": 1.04, "saturation": 1.05, "sharpen": 0.25}}
+
+
 def cmd_plan(a: argparse.Namespace) -> None:
     """Təsdiqlənmiş storyboard planını (JSON məlumat) layihəyə tətbiq edir — hər video üçün kod yazılmır."""
     plan = json.loads(Path(a.plan).read_text(encoding="utf-8"))
@@ -470,6 +475,25 @@ def cmd_plan(a: argparse.Namespace) -> None:
         q = node_tl("setFrame", q, mid["id"], fr, {"manual": False})
     for g in plan.get("graphics") or []:
         q = node_tl("addGraphic", q, {**g, "origin": "plan"})
+    look_name = plan.get("look", "C")
+    if look_name and look_name not in LOOKS:
+        raise UserError(f"Naməlum rəng şablonu: {look_name}", "Mövcud: " + ", ".join(LOOKS))
+    keys = ("brightness", "contrast", "saturation", "sharpen")
+    for c in q["clips"]:  # rəngi əl ilə dəyişdirilmiş klipə toxunulmur; əvvəlki planın şablonu yenilənir
+        if c["track"] != "v1":
+            continue
+        adj = dict(c.get("adjust") or {})
+        cur = {k: adj[k] for k in keys if k in adj}
+        if cur and cur not in LOOKS.values():
+            continue
+        for k in keys:
+            adj.pop(k, None)
+        if look_name:
+            adj.update(LOOKS[look_name])
+        if adj:
+            c["adjust"] = adj
+        else:
+            c.pop("adjust", None)
     for s in plan.get("sfx") or []:
         med = next(x for x in store.load(a.pid)["media"] if x["id"] == f"sfx_{s['kind']}")
         if not any(x["id"] == med["id"] for x in q["media"]):
@@ -486,7 +510,8 @@ def cmd_plan(a: argparse.Namespace) -> None:
     cur = store.load(a.pid)
     saved = store.save(a.pid, q, cur["revision"])
     print(f"plan tətbiq olundu: {len(plan.get('graphics') or [])} qrafika, {len(plan.get('zooms') or [])} yaxınlaşma, "
-          f"{len(plan.get('sfx') or [])} səs effekti, {len(plan.get('corrections') or [])} düzəliş; versiya {saved['revision']}")
+          f"{len(plan.get('sfx') or [])} səs effekti, {len(plan.get('corrections') or [])} düzəliş, "
+          f"rəng: {look_name or 'yox'}; versiya {saved['revision']}")
 
 
 def _start(q: dict[str, Any], cid: str) -> float:

@@ -5,7 +5,7 @@ yuvarlaqlaşdırılır, bağlı səs həmin başlanğıcı götürür — sürü
 
 Klip parametrləri (hamısı istəyə bağlı, yalnız istifadəçi seçəndə):
   frame  — kadraj (reframe.py), rotate — dərəcə
-  adjust — {mirror, brightness, contrast, saturation, temperature}
+  adjust — {mirror, brightness, contrast, saturation, temperature, soften, sharpen}
 Layihə parametrləri:
   aspect, mix {speech, music, sfx, voice, duck}, branding {logo, end}, mirrorAll
 """
@@ -172,6 +172,9 @@ def video_chain(c: dict[str, Any], m: dict[str, Any], W: int, H: int, fps_str: s
     if abs(temp - 6500) > 50:
         f.append(f"colortemperature=temperature={temp:.0f}")
     f.append(f"scale={W}:{H}:force_original_aspect_ratio=decrease:flags=lanczos")
+    sharp = float(adj.get("sharpen") or 0)
+    if sharp > 0.01:  # yüngül kəskinlik (yalnız parlaqlıq kanalı), çıxış ölçüsündə
+        f.append(f"unsharp=5:5:{min(1.0, sharp):.2f}:5:5:0")
     f.append(f"pad={W}:{H}:(ow-iw)/2:(oh-ih)/2:color=black,setsar=1,fps={fps_str}")
     f.append(f"setpts=PTS-STARTPTS,tpad=stop_mode=clone:stop_duration=1,trim=end_frame={frames},"
              f"setpts=PTS-STARTPTS,format=yuv420p")
