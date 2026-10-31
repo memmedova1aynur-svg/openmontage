@@ -32,6 +32,8 @@ import textwrap
 from pathlib import Path
 from typing import Any
 
+import numpy as np
+
 os.environ.setdefault("MONTAJ_SYNC_DERIVE", "1")
 
 from montaj import analysis, clients, drive, store  # noqa: E402
@@ -538,6 +540,164 @@ def _music_media(pid: str, src: Path) -> dict[str, Any]:
     return rec
 
 
+def _cover_frame(m: dict[str, Any], W: int, H: int) -> dict[str, Any] | None:
+    """B-roll-un çıxış kadrını doldurması üçün mərkəzdən kəsim (boş/qara zolaq qalmır)."""
+    sw, sh = float(m.get("width") or W), float(m.get("height") or H)
+    ar, src_ar = W / H, sw / sh
+    if abs(src_ar - ar) < 0.02:
+        return None
+    bw, bh = (ar * sh / sw, 1.0) if src_ar > ar else (1.0, (sw / ar) / sh)
+    return {"aspect": "out", "mode": "auto", "s": 1.0, "baseW": round(bw, 5), "baseH": round(bh, 5),
+            "keys": [{"t": 0, "cx": 0.5, "cy": 0.5}], "rotate": 0, "warnings": []}
+
+
+def _find_media(q: dict[str, Any], b: dict[str, Any]) -> dict[str, Any]:
+    key = b.get("media") or b.get("name")
+    m = next((x for x in q["media"] if x["id"] == key or x.get("name") == key), None)
+    if not m:
+        raise UserError(f"B-roll materialı tapılmadı: {key}", "Əvvəlcə `add-broll` ilə əlavə edin; id və ya fayl adını yazın.")
+    if not m.get("hasVideo"):
+        raise UserError(f"{m.get('name')}: B-roll üçün video və ya şəkil lazımdır.", "Səs faylı üçün plan-da `music`/`sfx` işlədin.")
+    return m
+
+
+def _insert_point(pid: str, q: dict[str, Any], t: float) -> tuple[dict[str, Any], float]:
+    """Araya kadr üçün yer: t-yə ən yaxın təbii pauza (söz arası), söz kəsilmir."""
+    from montaj import media as mediautil
+    from montaj import quality
+
+    pos = 0.0
+    for c in node_tl("videoClips", q):
+        d = c["srcOut"] - c["srcIn"]
+        if pos <= t <= pos + d:
+            break
+        pos += d
+    else:
+        raise UserError(f"Araya kadr vaxtı ({t:.1f} s) montajdan kənardadır.", "Vaxtı yekun montajın müddəti daxilində verin.")
+    if abs(t - pos) < 0.12 or abs(pos + d - t) < 0.12:  # klip sərhədi — artıq kəsimdir
+        return c, (pos if abs(t - pos) < 0.12 else pos + d)
+    m = next(x for x in q["media"] if x["id"] == c["media"])
+    words = (json.loads(analysis.analysis_path(store.project_dir(pid), m["id"]).read_text(encoding="utf-8")).get("words")
+             if analysis.analysis_path(store.project_dir(pid), m["id"]).is_file() else []) or []
+    # altyazının söz vaxtları da nəzərə alınır (altyazı sözü bölünməsin)
+    sub_words = ((q.get("subtitles") or {}).get("words") or {}).get(m["id"]) or []
+    words = sorted({(w["s"], w["e"], w["w"]) for w in [*words, *sub_words]})
+    words = [{"s": a, "e": b, "w": w} for a, b, w in words]
+    merged: list[dict[str, Any]] = []
+    for w in words:  # üst-üstə düşən sözlər bir aralıq sayılır
+        if merged and w["s"] < merged[-1]["e"]:
+            merged[-1]["e"] = max(merged[-1]["e"], w["e"])
+        else:
+            merged.append(dict(w))
+    words = merged
+    src_t = c["srcIn"] + (t - pos)
+    gaps = [((a["e"] + b["s"]) / 2, b["s"] - a["e"]) for a, b in zip(words, words[1:])
+            if c["srcIn"] + 0.15 < (a["e"] + b["s"]) / 2 < c["srcOut"] - 0.15]
+    if gaps:
+        mid, _gap = min(gaps, key=lambda g: abs(g[0] - src_t) - 0.3 * min(g[1], 0.6))
+        if abs(mid - src_t) <= 1.5:
+            src_t = mid
+    if m.get("hasAudio"):
+        rms = quality.frame_rms(mediautil.read_mono(store.project_dir(pid) / m["file"], quality.SR))
+        src_t, _ok = quality.safe_boundary(rms, src_t, "out", words, quality.speech_level(rms), window=0.08)
+    return c, round(pos + (src_t - c["srcIn"]), 3)
+
+
+def _pip_place(pid: str, q: dict[str, Any], at: float, dur: float, m: dict[str, Any], scale: float) -> tuple[float, float, str]:
+    """PIP üçün yer: üzü (və altyazı zonasını) örtməyən ilk namizəd. Üz əsas videonun həmin anından tapılır."""
+    from montaj import reframe
+
+    W, H = float(q["width"]), float(q["height"])
+    pw = scale
+    ph = scale * W / H * float(m.get("height") or 9) / float(m.get("width") or 16)  # H vahidində
+    pos, face = 0.0, None
+    for c in node_tl("videoClips", q):
+        d = c["srcOut"] - c["srcIn"]
+        if pos <= at < pos + d and not c.get("broll"):
+            mm = next(x for x in q["media"] if x["id"] == c["media"])
+            s0 = c["srcIn"] + (at - pos)
+            smp = reframe.detect_faces(store.project_dir(pid) / mm["file"], s0, min(c["srcOut"], s0 + dur), step=0.5)
+            fs = [f for x in smp for f in x["faces"][:1]]
+            if fs:
+                face = (min(f["x"] for f in fs), min(f["y"] for f in fs),
+                        max(f["x"] + f["w"] for f in fs), max(f["y"] + f["h"] for f in fs))
+            break
+        pos += d
+    cands = [("yuxarı-orta", 0.5, 0.12), ("yuxarı-sol", 0.27, 0.12), ("yuxarı-sağ", 0.73, 0.12),
+             ("orta-sol", 0.25, 0.45), ("orta-sağ", 0.75, 0.45)]
+    best = None
+    for name, cx, cy in cands:
+        box = (cx - pw / 2, cy - ph / 2, cx + pw / 2, cy + ph / 2)
+        ov = 0.0
+        if face:  # üz qutusu 15% genişləndirilir (saç, çənə)
+            fx0, fy0, fx1, fy1 = face
+            ex, ey = (fx1 - fx0) * 0.15, (fy1 - fy0) * 0.25
+            ix = max(0.0, min(box[2], fx1 + ex) - max(box[0], fx0 - ex))
+            iy = max(0.0, min(box[3], fy1 + ey) - max(box[1], fy0 - ey))
+            ov = ix * iy
+        ov += max(0.0, box[3] - 0.66) * pw  # altyazı zonası
+        if best is None or ov < best[0] - 1e-6:
+            best = (ov, name, cx, cy)
+        if ov == 0:
+            break
+    note = best[1] + ("" if face else " (üz tapılmadı)") + ("" if best[0] == 0 else " — üzə qismən toxunur, yoxlayın")
+    return best[2], best[3], note
+
+
+def _apply_broll(pid: str, q: dict[str, Any], b: dict[str, Any]) -> dict[str, Any]:
+    """Plan-ın bir B-roll elementi.
+    mode="cover" (standart): əsas videonun üstündə, danışıq və altyazı davam edir;
+    mode="pip": küncdə kiçik pəncərə (pip: {scale, x, y});
+    mode="insert": araya kadr — əsas video ən yaxın təbii pauzada dayanır, kadr öz səsi ilə oynayır, sonra davam edir."""
+    import uuid as _uuid
+
+    m = _find_media(q, b)
+    W, H = int(q["width"]), int(q["height"])
+    dur = float(b.get("dur", 2.5))
+    src_in = float(b.get("from", 0))
+    if not m.get("isImage"):
+        src_in = min(src_in, max(0.0, float(m["duration"]) - 0.2))
+        dur = min(dur, float(m["duration"]) - src_in)
+    if dur < 0.3:
+        raise UserError(f"{m.get('name')}: B-roll çox qısadır.", "dur və from dəyərlərini yoxlayın.")
+    mode = b.get("mode", "cover")
+    frame = _cover_frame(m, W, H) if mode != "pip" else None
+    if mode in ("cover", "pip"):
+        clip = {"id": "b_" + _uuid.uuid4().hex[:10], "track": "v2", "media": m["id"], "srcIn": round(src_in, 3),
+                "srcOut": round(src_in + dur, 3), "start": round(float(b["at"]), 3), "mode": mode,
+                "origin": "plan", "manual": False}
+        if frame:
+            clip["frame"] = frame
+        if mode == "pip":
+            sc = float(b.get("scale", 0.42))
+            if b.get("x") is not None and b.get("y") is not None:
+                x, y, why = float(b["x"]), float(b["y"]), "plan"
+            else:
+                x, y, why = _pip_place(pid, q, float(b["at"]), dur, m, sc)
+            clip["pip"] = {"scale": sc, "x": x, "y": y, "placed": why}
+        q["clips"].append(clip)
+        return q
+    if mode != "insert":
+        raise UserError(f"Naməlum B-roll rejimi: {mode}", "cover, pip və ya insert yazın.")
+    c, cut = _insert_point(pid, q, float(b["at"]))
+    lay = {x["id"]: s for x, s in zip(node_tl("videoClips", q), np.cumsum([0] + [y["srcOut"] - y["srcIn"] for y in node_tl("videoClips", q)])[:-1])}
+    if lay[c["id"]] + 0.12 < cut < lay[c["id"]] + (c["srcOut"] - c["srcIn"]) - 0.12:
+        q = node_tl("split", q, c["id"], cut)
+    seq = node_tl("videoClips", q)
+    idx = next(i for i, x in enumerate(seq) if abs(sum(y["srcOut"] - y["srcIn"] for y in seq[:i]) - cut) < 0.02)
+    vid = "v_" + _uuid.uuid4().hex[:10]
+    clip = {"id": vid, "track": "v1", "media": m["id"], "srcIn": round(src_in, 3), "srcOut": round(src_in + dur, 3),
+            "order": 10_000, "origin": "plan", "manual": False, "broll": True}
+    if frame:
+        clip["frame"] = frame
+    q["clips"].append(clip)
+    if m.get("hasAudio") and float(b.get("volume", 1.0)) > 0:
+        q["clips"].append({"id": "a_" + _uuid.uuid4().hex[:10], "track": "a1", "media": m["id"], "srcIn": clip["srcIn"],
+                           "srcOut": clip["srcOut"], "linkedTo": vid, "volume": float(b.get("volume", 1.0)),
+                           "fadeIn": 0.05, "fadeOut": 0.08, "origin": "plan", "manual": False})
+    return node_tl("moveVideo", q, vid, idx)
+
+
 def apply_plan(pid: str, p: dict[str, Any], plan: dict[str, Any], plan_name: str = "plan.json") -> dict[str, Any]:
     """Planı layihənin SURƏTİNƏ tətbiq edir və nəticəni qaytarır (saxlamır). Storyboard variantlarının
     önizləməsi və `plan` əmri eyni funksiyanı işlədir."""
@@ -564,22 +724,29 @@ def apply_plan(pid: str, p: dict[str, Any], plan: dict[str, Any], plan_name: str
                 q = node_tl("split", q, seg["id"], t)
         mid = next(c for c in node_tl("videoClips", q) if abs(_start(q, c["id"]) - z["from"]) < 0.05)
         m = next(x for x in q["media"] if x["id"] == mid["media"])
-        fr = {"aspect": q.get("aspect") or "source", "mode": "auto", "s": round(1 / float(z.get("scale", 1.12)), 4),
-              "baseW": 1, "baseH": 1, "keys": [{"t": mid["srcIn"], "cx": z.get("cx", 0.5), "cy": z.get("cy", 0.45)}],
-              "rotate": 0, "warnings": [], "planZoom": True}
+        cur = mid.get("frame") or {}  # avtomatik kadraj düzəlişi (fırlatma, ortalama) punch-in-də də qalır
+        base_s = float(cur.get("s") or 1) if cur.get("mode") in ("auto", "manual") else 1.0
+        k0 = (cur.get("keys") or [{}])[0] if cur.get("mode") in ("auto", "manual") else {}
+        fr = {"aspect": q.get("aspect") or "source", "mode": "auto", "s": round(base_s / float(z.get("scale", 1.12)), 4),
+              "baseW": cur.get("baseW", 1) if k0 else 1, "baseH": cur.get("baseH", 1) if k0 else 1,
+              "keys": [{"t": mid["srcIn"], "cx": z.get("cx", k0.get("cx", 0.5)), "cy": z.get("cy", k0.get("cy", 0.45))}],
+              "rotate": cur.get("rotate", 0), "warnings": [], "planZoom": True}
         if m.get("width") and q.get("width") and abs(m["width"] / m["height"] - q["width"] / q["height"]) > 0.02:
             raise UserError("Punch-in yalnız eyni ölçülü kadrda avtomatik qurulur.", "Kadrajı redaktorda əl ilə edin.")
         q = node_tl("setFrame", q, mid["id"], fr, {"manual": False})
     for g in plan.get("graphics") or []:
         q = node_tl("addGraphic", q, {**g, "origin": "plan"})
 
+    for b in plan.get("broll") or []:
+        q = _apply_broll(pid, q, b)
+
     # rəng: plan şablonu ("look" işarəsi olan) yenilənir, əl ilə dəyişdirilmiş rəngə toxunulmur
     look_name = plan.get("look", DEFAULT_LOOK)
     if look_name and look_name not in LOOKS:
         raise UserError(f"Naməlum rəng şablonu: {look_name}", "Mövcud: " + ", ".join(LOOKS))
-    vids = [c for c in q["clips"] if c["track"] == "v1"]
+    vids = [c for c in q["clips"] if c["track"] in ("v1", "v2")]
     owned = [c for c in vids if not any(k in (c.get("adjust") or {}) for k in LOOK_KEYS) or (c.get("adjust") or {}).get("look")]
-    expo = quality.exposure_offsets(owned, {m["id"]: m for m in q["media"]}, store.project_dir(pid)) \
+    expo = quality.exposure_offsets([c for c in owned if c["track"] == "v1"], {m["id"]: m for m in q["media"]}, store.project_dir(pid)) \
         if look_name and plan.get("matchExposure", True) else {}
     for c in owned:
         adj = {k: v for k, v in (c.get("adjust") or {}).items() if k not in LOOK_KEYS and k != "look"}
@@ -659,6 +826,71 @@ def _latest_render(pid: str) -> Path:
     if not mp4s:
         raise UserError("Render tapılmadı.", f"Əvvəlcə `render {pid}`.")
     return mp4s[-1]
+
+
+def cmd_add_broll(a: argparse.Namespace) -> None:
+    """B-roll / araya kadr materialı (video, şəkil) əlavə edir: danışıq analizinə və kəsimə düşmür,
+    yalnız plan-ın "broll" bölməsi ilə istifadə olunur. Orijinal dəyişmir."""
+    from montaj import server
+
+    added = []
+    for link in a.link or []:
+        tmp, name = drive.download(link, store.originals_dir(a.pid), lambda x: None)
+        added.append(server._register(a.pid, tmp, name, {"type": "drive", "id": drive.parse_link(link)["id"]})["media"])
+    for f in a.file or []:
+        tmp = store.originals_dir(a.pid) / f".cli_{Path(f).name}.part"
+        shutil.copyfile(f, tmp)
+        added.append(server._register(a.pid, tmp, Path(f).name)["media"])
+    for m in added:  # media qeydi serverin məlumatıdır — yalnız rol işarəsi əlavə olunur
+        store.update_media_record(a.pid, m["id"], {"role": "broll"})
+    for m in added:
+        kind = "şəkil" if m.get("isImage") else f"video {m['duration']:.1f} s" + (", səsli" if m.get("hasAudio") else "")
+        print(f"b-roll: {m['id']}  {m['name']}  {m.get('width')}x{m.get('height')}  {kind}")
+
+
+def cmd_framefix(a: argparse.Namespace) -> None:
+    """Hər video mənbə üçün kadraj düzəlişi (əyrilik + ortalama) storyboard qaralamasına yazılır;
+    `kadraj.jpg`: orijinal / düzəldilmiş. Təsdiqə qədər layihə dəyişmir."""
+    from montaj import framefix, render
+
+    p = store.load(a.pid)
+    sb = _load_draft(a.pid)
+    W, H = int(p["width"]), int(p["height"])
+    o = out_dir(a.pid)
+    tiles = []
+    font = render._font()
+    for m in p["media"]:
+        if not m.get("hasVideo") or m.get("isImage"):
+            continue
+        cards = [c for c in sb["cards"] if c["mediaId"] == m["id"] and c.get("include", True)]
+        a0 = min((c["srcIn"] for c in cards), default=0.0)
+        b0 = max((c["srcOut"] for c in cards), default=float(m["duration"]))
+        src = store.project_dir(a.pid) / m["file"]
+        r = framefix.suggest_fix(src, m, a0, b0, W, H)
+        sb.setdefault("frames", {})[m["id"]] = r["frame"]
+        print(f"{m.get('name')}: " + "; ".join(r["notes"]))
+        t = (a0 + b0) / 2
+        for label, fr in (("Orijinal", None), ("Düzəldilmiş", r["frame"])):
+            clip = {"id": "x", "media": m["id"], "srcIn": t, "srcOut": t + 0.1, "frame": fr}
+            if fr and fr.get("keys"):
+                clip["frame"] = {**fr, "keys": [{**k, "t": t} for k in fr["keys"]]}
+            vf = render.video_chain(clip, m, W, H, "30", False, 1) + ",scale=360:-2"
+            if font:
+                vf += f",drawbox=y=0:w=iw:h=32:color=black@0.65:t=fill,drawtext=fontfile={font}:text='{label}':x=8:y=7:fontsize=17:fontcolor=white"
+            if fr is not None:  # köməkçi şəbəkə: üfüq və orta xətt
+                vf += ",drawgrid=w=iw/2:h=ih/3:t=1:c=white@0.35"
+            tile = o / f"kadraj_{len(tiles)}.png"
+            subprocess.run(["ffmpeg", "-y", "-v", "error", "-ss", f"{t:.3f}", "-i", str(src), "-frames:v", "1",
+                            "-vf", vf, str(tile)], check=True)
+            tiles.append(tile)
+    _save_draft(a.pid, sb)
+    if tiles:
+        sheet = o / "kadraj.jpg"
+        ins = sum((["-i", str(x)] for x in tiles), [])
+        subprocess.run(["ffmpeg", "-y", "-v", "error", *ins, "-filter_complex", f"hstack={len(tiles)}", "-q:v", "3", str(sheet)], check=True)
+        for x in tiles:
+            x.unlink()
+        print(sheet)
 
 
 def cmd_cut(a: argparse.Namespace) -> None:
@@ -780,7 +1012,13 @@ def cmd_variants(a: argparse.Namespace) -> None:
         total = sum(c["srcOut"] - c["srcIn"] for c in node_tl("videoClips", q))
         lay_t = sorted({round(float(g.get("start", 0)) + min(1.0, (g["srcOut"] - g["srcIn"]) / 2), 2)
                         for g in q["clips"] if g["track"] == "t1"})
-        times = sorted({0.8, *lay_t[:3], max(0.5, total - 1.0)})[:5]
+        seq_t, acc = [], 0.0
+        for c in node_tl("videoClips", q):
+            if c.get("broll"):
+                seq_t.append(round(acc + (c["srcOut"] - c["srcIn"]) / 2, 2))
+            acc += c["srcOut"] - c["srcIn"]
+        br_t = sorted([round(float(c["start"]) + (c["srcOut"] - c["srcIn"]) / 2, 2) for c in q["clips"] if c["track"] == "v2"] + seq_t)
+        times = sorted({0.8, *br_t[:2], *lay_t[:3], max(0.5, total - 1.0)})[:6]
         tiles = []
         for i, t in enumerate(times):
             tile = Path(tempfile.mkstemp(suffix=".png")[1])
@@ -870,6 +1108,12 @@ def main(argv: list[str] | None = None) -> int:
     lk.add_argument("pid")
     lk.add_argument("--frames", type=int, default=3)
     lk.add_argument("--t", type=float, action="append", help="mənbə videoda kadrın saniyəsi (təkrarlana bilər)")
+    br = sub.add_parser("add-broll", help="B-roll / araya kadr materialı (video, şəkil)")
+    br.add_argument("pid")
+    br.add_argument("--link", action="append")
+    br.add_argument("--file", action="append")
+    ff = sub.add_parser("framefix", help="kadraj düzəlişi (əyrilik + ortalama) qaralamaya")
+    ff.add_argument("pid")
     ct = sub.add_parser("cut", help="qaralamadan mənbə aralığını çıxar: [media:]başla-son")
     ct.add_argument("pid")
     ct.add_argument("ranges", nargs="+")
@@ -921,7 +1165,7 @@ def main(argv: list[str] | None = None) -> int:
         {"new": cmd_new, "storyboard": cmd_storyboard, "edit": cmd_edit, "apply": cmd_apply,
          "render": cmd_render, "export": cmd_export, "editor": cmd_editor,
          "apply-edits": cmd_apply_edits, "set-client": cmd_set_client, "plan": cmd_plan, "looks": cmd_looks,
-         "cut": cmd_cut, "verify": cmd_verify, "words": cmd_words, "fix-word": cmd_fix_word,
+         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "verify": cmd_verify, "words": cmd_words, "fix-word": cmd_fix_word,
          "variants": cmd_variants, "choose": cmd_choose, "music-preview": cmd_music_preview}[a.cmd](a)
     except UserError as err:
         print(f"XƏTA: {err.message}\nNƏ ETMƏLİ: {err.hint}", file=sys.stderr)

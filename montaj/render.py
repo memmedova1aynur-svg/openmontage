@@ -79,7 +79,7 @@ def render_plan(project: dict[str, Any]) -> dict[str, Any]:
         vplan.append({"clip": c, "start": frames / fps, "frames": n, "dur": n / fps})
         frames += n
     video_end = frames / fps
-    aplan, tplan = [], []
+    aplan, tplan, oplan = [], [], []
     for c in project["clips"]:
         k = kinds[c["track"]]
         if k in AUDIO_KINDS:
@@ -94,10 +94,13 @@ def render_plan(project: dict[str, Any]) -> dict[str, Any]:
                 continue
             s, e = lay[c["id"]]
             tplan.append({"clip": c, "start": s, "end": e})
+        elif k == "overlay":
+            s, e = lay[c["id"]]
+            oplan.append({"clip": c, "start": s, "dur": e - s, "frames": max(1, round((e - s) * fps))})
     main = max([video_end] + [a["start"] + a["dur"] for a in aplan] + [t["end"] for t in tplan] + [0.0])
     ec = end_card(project)
     total = main + (ec["duration"] if ec else 0)
-    return {"fps": fps, "video": vplan, "audio": aplan, "text": tplan, "videoEnd": video_end,
+    return {"fps": fps, "video": vplan, "overlay": oplan, "audio": aplan, "text": tplan, "videoEnd": video_end,
             "main": round(main, 3), "endCard": ec, "total": round(total, 3)}
 
 
@@ -243,6 +246,30 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
 
     font = _font()
     cur = "vbase"
+    # B-roll / PIP: əsas videonun üstündə, yazı və altyazının altında; səsi əsas danışığı əvəz etmir
+    for i, o in enumerate(plan["overlay"]):
+        c = o["clip"]
+        m = media[c["media"]]
+        k = add_input(m, float(c["srcIn"]), o["dur"])
+        pip = c.get("pip") if c.get("mode") == "pip" else None
+        if pip:  # PIP mənbənin öz nisbətində (qara zolaqsız), nazik ağ çərçivə ilə
+            sc = min(0.9, max(0.15, float(pip.get("scale", 0.42))))
+            bw = max(2, int(W * 0.006))
+            adj = c.get("adjust") or {}
+            parts = ([HDR_TO_SDR] if m.get("hdr") else []) + color_filters(adj) + [
+                f"scale={_even(W * sc) - 2 * bw}:-2:flags=lanczos"] + sharpen_filter(adj) + [
+                f"pad=iw+{2 * bw}:ih+{2 * bw}:{bw}:{bw}:color=white", f"fps={fps_str}", "setpts=PTS-STARTPTS",
+                f"tpad=stop_mode=clone:stop_duration=1,trim=end_frame={o['frames']}", "setpts=PTS-STARTPTS", "format=yuv420p"]
+            chain = ",".join(parts)
+            x = f"'max(0,min(W-w,W*{float(pip.get('x', 0.5)):.4f}-w/2))'"
+            y = f"'max(0,min(H-h,H*{float(pip.get('y', 0.13)):.4f}-h/2))'"
+        else:
+            chain = video_chain(c, m, W, H, fps_str, False, o["frames"])
+            x = y = "0"
+        filters.append(f"[{k}:v]{chain},setpts=PTS+{o['start']:.4f}/TB[ov{i}]")
+        filters.append(f"[{cur}][ov{i}]overlay=x={x}:y={y}:eof_action=pass:"
+                       f"enable='between(t,{o['start']:.4f},{o['start'] + o['dur'] - 0.5 / fps:.4f})'[vo{i}]")
+        cur = f"vo{i}"
     from montaj import graphics as G
 
     gfx = [t for t in plan["text"] if G.is_graphic(t["clip"])]

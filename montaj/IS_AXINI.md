@@ -4,7 +4,10 @@ Bu fayl istifadəçinin təsdiqlədiyi **əsas** iş axınıdır (sorğu → Dri
 Redaktor paneli (artifact) saxlanılır, amma əsas axında **tələb edilmir və linki göndərilmir** —
 yalnız istifadəçi açıq istəyəndə (`SESSIYA_TELIMATI.md`, 9-cu addım).
 
-Hədəf: video ilk dəfədən hazır olsun, əlavə düzəliş tələb etməsin.
+Hədəf: video ilk dəfədən hazır olsun, əlavə düzəliş tələb etməsin. İstifadəçi ilə yalnız **iki dəfə** əlaqə:
+(1) sorğu, (2) **bir qərar mesajı** — storyboard variantları + kadraj (əvvəl/sonra) + rəng variantları + musiqi
+nümunələri birlikdə göndərilir, istifadəçi bir cavabla seçir (məs. “B, rəng A, musiqi 2”). Sonra yalnız **yekun MP4**.
+Ara düzəliş raundları təklif etmə.
 
 ## Addımlar
 
@@ -22,6 +25,21 @@ Hədəf: video ilk dəfədən hazır olsun, əlavə düzəliş tələb etməsin.
    Transkripti oxu: təkrar cümlələri, alınmayan cəhdləri, yarımçıq fikirləri tap.
    Çıxarmaq üçün: `cut <pid> [media:]başla-son …` (sərhəd səsin ən sakit yerinə çəkilir; söz kəsilmir;
    şübhəli sərhəddə material saxlanılır, çıxışda ŞÜBHƏLİ yazılır) və ya `edit --exclude N`.
+2a. **B-roll / araya kadr materialı** (istifadəçi əlavə video/şəkil göndərsə — Drive linki və ya fayl):
+   `add-broll <pid> --link <..> [--file <..>]` → material danışıq analizinə və kəsimə düşmür.
+   Storyboard variantlarında harada işlədiləcəyini təklif et (planda `broll`):
+   - `{"name": "<fayl>", "mode": "cover", "at": 6.0, "dur": 2.0, "from": 0}` — əsas videonun üstündə tam kadr;
+     danışıq, altyazı, kartlar davam edir (məhsul, nümunə, emosiya kadrı üçün).
+   - `"mode": "pip"` — küncdə kiçik pəncərə, mənbə nisbətində; `x`/`y` verilməsə **üzü və altyazını örtməyən**
+     yer avtomatik seçilir (`scale` standart 0.42).
+   - `"mode": "insert"` — araya kadr: əsas video **ən yaxın təbii pauzada** dayanır (söz və altyazı sözü bölünmür),
+     kadr öz səsi ilə oynayır (`volume`, 0 — səssiz), sonra danışıq davam edir (gülməli reaksiya, keçid üçün).
+   Şəkil də ola bilər (istənilən müddət). Rəng şablonu B-roll-a da tətbiq olunur. Material verilməyibsə B-roll uydurma.
+3a. **Kadraj düzəlişi — HƏR videoda məcburi.** `framefix <pid>`: əyrilik fondakı düz xətlərdən ölçülüb düzəldilir
+   (0.4°–6°), üz/obyekt ortalanır, baş üstü boşluq təbii olur; ümumi yaxınlaşma ≤1.12x (görüntü yumşalmasın —
+   lazım olsa ortalama qismən olur). Nəticə qaralamaya yazılır, variantlar və yekun montaj onu işlədir;
+   `kadraj.jpg` (orijinal / düzəldilmiş) qərar mesajına əlavə olunur. Ölçülə bilməyəni (xətt yoxdur, üz yoxdur)
+   düzəldilmiş kimi təqdim etmə. Əl kamerasının titrəməsi/hərəkəti izlənmir (stabilizasiya yoxdur).
 4. **Üç vizual storyboard.** Hər variant üçün `plan_A.json`, `plan_B.json`, `plan_C.json` yaz və
    `variants <pid> plan_A.json plan_B.json plan_C.json` → `storyboard_variantlari.jpg` (real kadrlar üzərində
    qrafika ilə) + `variant_X.mp4` (540p önizləmə). Şəkli göndər + hər variant üçün 1–2 sətir izah.
@@ -33,8 +51,12 @@ Hədəf: video ilk dəfədən hazır olsun, əlavə düzəliş tələb etməsin.
    - Müştəri brendi (`brand.theme`), məqsəd və əvvəl bəyənilən montajlar: profildəki üslub qeydləri,
      `templates/expert-reels/` (README, VIDEO_TYPES, AUDIT), `instagram-ops/edit-references/`.
      Talking-head, reklam, seminar, motion graphics üçün eyni şablonu məcburi işlətmə.
+   - **Brend rəngi = rəng AİLƏSİ, tək kod deyil** (istifadəçi qərarı). Profildəki `palette.family` və `theme`
+     istiqamətdir: həmin ailənin yaxın çalarlarından videoya uyğun seçmək olar (məs. Nilufar — bənövşəyi ailəsi).
+     “Kod təsdiqlənməyib” xəbərdarlığı vermə. Ailədən kənar rəng işlətmə; bir müştərinin rəngini başqasına keçirmə.
+     Loqo yoxdursa loqo uydurma; istifadəçi loqo versə sonluqda/küncdə işlət.
    - **Storyboard təsdiqlənmədən yekun montaj qərarı tətbiq edilmir** (`variants` layihəni dəyişmir).
-5. **Seçimdən sonra rəng və musiqi.**
+5. **Rəng və musiqi — storyboard ilə EYNİ qərar mesajında.**
    - Rəng: `looks <pid>` → `reng_variantlari.jpg` (3 təmsilçi kadr × Orijinal, A təbii, B yumşaq-isti,
      C təmiz-neytral). Göndər, seçim gözlə. Seçim planda `"look": "A"|"B"|"C"` (`null` — düzəliş yoxdur).
      Fərqli işıqlanan kliplər avtomatik yaxınlaşdırılır (`"matchExposure": true`, ±0.04).
@@ -52,7 +74,7 @@ Hədəf: video ilk dəfədən hazır olsun, əlavə düzəliş tələb etməsin.
      nümunələri (`musiqi_N.m4a`); seçim planda `"music": {"file": "..", "volume": 0.12, "from": 0}`
      (yumşaq giriş/çıxış, danışıqda azalma avtomatik).
    - SFX məqsədli və ölçülü (whoosh/pop sintez, `sfx`).
-6. **Montaj və yekun MP4.** `choose <pid> plan_X.json` (qaralama düzəlişləri → apply → plan) → `render <pid>` →
+6. **Montaj və yekun MP4 (bir dəfə).** `choose <pid> plan_X.json` (qaralama düzəlişləri → apply → plan) → `render <pid>` →
    **`verify <pid>`** → `words <pid>`.
    - `verify`: kəsim sərhədləri orijinal səsin enerjisi və söz vaxtları ilə, səs/görüntü uzunluğu, kliklər,
      kəsim yanındakı sözlər yekun səsdə yenidən tanınaraq yoxlanır. `!` olan yerləri düzəlt (`cut`/`edit` ilə
