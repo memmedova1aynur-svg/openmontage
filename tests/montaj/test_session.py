@@ -386,3 +386,30 @@ def test_broll_insert_near_clip_boundary(tmp_path, monkeypatch):
     q = session._apply_broll(pid, p, {"name": "goy.mp4", "mode": "insert", "at": edge + 0.05, "dur": 1.0})
     seq2 = session.node_tl("videoClips", q)
     assert [c.get("broll", False) for c in seq2] == [False, True, False], "sərhədə qoyulur, klip bölünmür"
+
+
+def test_claude_broll_scene_render_and_plan(tmp_path, monkeypatch):
+    """Claude-un hazırladığı B-roll: kataloq; səhnə layihə rəngində render olunur (keş), plan "make" ilə
+    insert kimi qoyulur, təkrar plan media ikiləşdirmir. Remotion yoxdursa atlanır."""
+    from montaj import sceneclip
+    if not sceneclip.NODE_MODULES.is_dir():
+        pytest.skip("remotion-composer/node_modules yoxdur")
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import media, session, store
+
+    cat = sceneclip.catalog()
+    assert len(cat) >= 30 and {"checklist", "stat", "chat", "timeline"} <= set(cat) and "items" in cat["checklist"]["props"]
+    before = sum(c["srcOut"] - c["srcIn"] for c in session.node_tl("videoClips", store.load(pid)))
+    plan = tmp_path / "plan.json"
+    plan.write_text(json.dumps({"look": None, "broll": [{"make": {"kind": "checklist", "props": {
+        "label": "Sınaq", "title": "Üç addım", "items": ["bir", "iki", "üç"], "times": [0.1, 0.4, 0.7]}},
+        "mode": "insert", "at": 1.0, "dur": 1.5}]}))
+    assert session.main(["plan", pid, str(plan)]) == 0
+    p = store.load(pid)
+    gen = [m for m in p["media"] if (m.get("source") or {}).get("type") == "generated"]
+    assert len(gen) == 1 and gen[0]["role"] == "broll"
+    assert media.probe(store.project_dir(pid) / gen[0]["file"])["width"] == 1080
+    after = sum(c["srcOut"] - c["srcIn"] for c in session.node_tl("videoClips", p))
+    assert abs(after - before - 1.5) < 0.02, "insert müddəti əlavə edir"
+    assert session.main(["plan", pid, str(plan)]) == 0
+    assert len([m for m in store.load(pid)["media"] if (m.get("source") or {}).get("type") == "generated"]) == 1, "keş: ikiləşmir"

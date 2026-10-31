@@ -55,8 +55,8 @@ Every client has a profile. Besides the render `theme` it holds the brand facts 
 `name`, `status` (`inactive` blocks edits), `activity`, `audience`, `identity` (the visual language),
 `palette` (`confirmed` codes from the client vs. a colour `family` only), `fonts`, `video_types`,
 `cautions` (rules that override defaults) and `theme_source`. When `theme_source` says *derived*, the
-theme's shades were chosen by us from the family: show them in the storyboard and never present them as
-the client's own codes. A spec may carry `"theme": {...}` to override the default for one video
+theme's shades were chosen by us from the family. Brand colour = colour family (user rule 2026-10-31):
+nearby shades are fine and no 'unconfirmed code' warning is shown. A spec may carry `"theme": {...}` to override the default for one video
 (e.g. Xalidə's colour column). Brand stays recognisable across a client's videos; the edit approach,
 layout, motion and sound still change with the video type (VIDEO_TYPES.md). Clients with similar
 colours (Aytən / Nərgiz, Nilüfər / PİKMENT) are separated by typography, graphics and layout.

@@ -41,6 +41,15 @@ Ara düzəliş raundları təklif etmə.
    Orijinal dəyişmir; yalnız danışıq qatı təmizlənmiş nüsxəni işlədir (musiqi, SFX, B-roll səsi toxunulmaz).
    Təmizlənibsə `ses_evvel_sonra.m4a`-nı qərar mesajına əlavə et. Yaxında danışan başqa adamın səsi də danışıqdır —
    tam silinmir, bunu de. Model (DeepFilterNet3) internetdən endirildiyi üçün ilk işə salmada icazə soruşula bilər.
+2b. **Claude-un hazırladığı B-roll** (istifadəçi material göndərmir — hamısını Claude hazırlayır):
+   `scenes` — şablondakı animasiyalı səhnələr (siyahı, statistika, chat, zaman xətti, telefon, eskiz, illüstrasiya,
+   kollaj və s., ~40). Planda: `{"make": {"kind": "checklist", "props": {...}}, "mode": "cover"|"insert", "at": .., "dur": ..}`
+   — səhnə müştərinin rəng ailəsində render olunur (keşlənir), B-roll kimi qoyulur; variantlar önizləməsində görünür.
+   - **Səhnədəki mətn, rəqəm, siyahı YALNIZ danışanın dediyindən** (transkriptdən) götürülür; statistika, fakt,
+     vəd uydurulmur. Danışıqda rəqəm yoxdursa `stat`/`bg_number` işlətmə.
+   - Səhnələrdə `times`/`at` — klipin öz başlanğıcından saniyələr (0-dan).
+   - Hər storyboard variantında 0–3 B-roll; danışanın üzü ən vacib anlarda (hook, CTA) örtülmür.
+   - Ayrıca sınaq: `make-broll <pid> --kind .. --props '{..}' --still`.
 3a. **Kadraj düzəlişi — HƏR videoda məcburi.** `framefix <pid>`: əyrilik fondakı düz xətlərdən ölçülüb düzəldilir
    (0.4°–6°), üz/obyekt ortalanır, baş üstü boşluq təbii olur; ümumi yaxınlaşma ≤1.12x (görüntü yumşalmasın —
    lazım olsa ortalama qismən olur). Nəticə qaralamaya yazılır, variantlar və yekun montaj onu işlədir;
