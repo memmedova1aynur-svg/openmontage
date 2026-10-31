@@ -11,7 +11,7 @@
   "cautions": [
     "Rəng ailəsi Aytən Cəlilova ilə yaxındır (lacivərt + açıq mavi): krem kartlar, akademik tipoqrafiya və qızılı vurğu ilə ayrı kimlik; Aytənin tünd göy kart üslubu təkrarlanmır."
   ],
-  "theme_source": "derived from the colour family; NOT a client-confirmed code - say so in the storyboard",
+  "theme_source": "derived from the colour family; brand colour = colour family (user rule 2026-10-31): nearby shades of the family are fine, no 'unconfirmed code' warning",
   "theme": {
     "primary": "#14284B",
     "primaryDeep": "#0B1830",

@@ -10,7 +10,7 @@
   "cautions": [
     "Tibbi və peşəkar məlumat danışıqda deyildiyindən daha qəti formada verilmir."
   ],
-  "theme_source": "derived from the colour family; NOT a client-confirmed code - say so in the storyboard",
+  "theme_source": "derived from the colour family; brand colour = colour family (user rule 2026-10-31): nearby shades of the family are fine, no 'unconfirmed code' warning",
   "theme": {
     "primary": "#8E4F5F",
     "primaryDeep": "#5E3240",

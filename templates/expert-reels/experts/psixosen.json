@@ -9,7 +9,7 @@
   "cautions": [
     "Hazırda aktiv deyil: avtomatik kontent və ya montaj tapşırığı yaradılmır."
   ],
-  "theme_source": "derived from the colour family; NOT a client-confirmed code - say so in the storyboard",
+  "theme_source": "derived from the colour family; brand colour = colour family (user rule 2026-10-31): nearby shades of the family are fine, no 'unconfirmed code' warning",
   "theme": {
     "primary": "#1F5F6B",
     "primaryDeep": "#0F1A1D",

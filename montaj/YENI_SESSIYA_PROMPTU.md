@@ -8,9 +8,12 @@ aşağıdakı mətni **ilk mesaj** kimi göndərin, sonra Drive linklərini əla
 Bu söhbət müştəri videolarının gündəlik montajı üçündür. Montaj sistemi repodadır — onu yenidən yazma, kod əlavə etmə.
 
 1. Əvvəlcə `AGENT_GUIDE.md`-ni, sonra **`montaj/IS_AXINI.md`**-ni oxu və ona tam əməl et.
-2. Mühiti hazırla: `bash scripts/cloud-setup.sh`, sonra
-   `export MONTAJ_DATA_DIR=$HOME/montaj-data MONTAJ_OUT_DIR=$HOME/montaj-data/out`.
-   `FREESOUND_API_KEY`-in olub-olmadığını yoxla (dəyərini göstərmə). Yoxdursa bunu mənə qısa de.
+2. Mühiti yoxla (setup skripti sessiyadan əvvəl işləyib):
+   - `python3 -c "import faster_whisper; from montaj import voiceclean; print(voiceclean.available())"` və `ffmpeg -version`;
+     (`import df` birbaşa xəta verir — torchaudio uyğunsuzluğu; `voiceclean` bunu öz düzəlişi ilə keçir, bu normaldır);
+   - nəsə çatışmırsa: `bash scripts/cloud-setup.sh`;
+   - `export MONTAJ_DATA_DIR=$HOME/montaj-data MONTAJ_OUT_DIR=$HOME/montaj-data/out`;
+   - `FREESOUND_API_KEY`-i həqiqi sorğu ilə yoxla ("calm piano", yalnız CC0, 1 nəticə); dəyərini göstərmə. Nəticəni bir sətirlə de.
 3. Hər yeni video üçün iş axını:
    - əvvəl bir qısa sorğu (müştəri, məqsəd, format, müddət, xüsusi istək), sonra Drive linki;
    - analiz, təkrar və alınmayan cümlələrin təmizlənməsi (söz kəsilmir), kadraj düzəlişi (`framefix`),
