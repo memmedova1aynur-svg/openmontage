@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="az">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14161a">
+<title>Montaj paneli</title>
+<link rel="stylesheet" href="/ui/app.css">
+</head>
+<body>
+<header class="top">
+  <button class="ghost" id="btnHome" title="Layihələr">☰</button>
+  <input id="title" class="title" value="" aria-label="Layihə adı" disabled>
+  <span id="saveState" class="save-state" aria-live="polite"></span>
+  <div class="spacer"></div>
+  <button id="btnUndo" title="Geri al (Ctrl+Z)" disabled>↶<span class="lbl"> Geri al</span></button>
+  <button id="btnRedo" title="Təkrarla (Ctrl+Shift+Z)" disabled>↷<span class="lbl"> Təkrarla</span></button>
+  <button id="btnRender" class="primary" disabled>MP4 ixrac</button>
+</header>
+
+<section id="home" class="home">
+  <h1>Montaj paneli</h1>
+  <p class="muted">Orijinal fayllar dəyişmir. Hər klip mənbə faylına və onun giriş/çıxış vaxtına istinad edir.</p>
+  <form id="newForm" class="new-form">
+    <input id="newTitle" placeholder="Layihənin adı" required maxlength="120">
+    <button class="primary" type="submit">Yeni layihə</button>
+  </form>
+  <h2>Layihələr</h2>
+  <ul id="projectList" class="project-list"><li class="muted">Yüklənir…</li></ul>
+</section>
+
+<main id="editor" class="editor" hidden>
+  <section class="stage">
+    <div class="viewer" id="viewer">
+      <video id="vid" playsinline preload="auto"></video>
+      <div id="textLayer" class="text-layer"></div>
+      <div id="emptyHint" class="empty-hint">Video yükləmək üçün aşağıdakı <b>＋ Yüklə</b> düyməsinə toxunun</div>
+    </div>
+    <div class="transport">
+      <button id="btnBack" title="1 kadr geri">⏮</button>
+      <button id="btnPlay" class="play" title="Oynat / dayandır (Boşluq)">▶</button>
+      <button id="btnFwd" title="1 kadr irəli">⏭</button>
+      <span id="timecode" class="timecode">0:00.00 / 0:00.00</span>
+    </div>
+  </section>
+
+  <section class="tools" id="tools">
+    <label class="tool upload" title="Video və ya səs yüklə">
+      ＋ Yüklə<input id="fileInput" type="file" accept="video/*,audio/*" multiple hidden>
+    </label>
+    <button class="tool" id="tSplit" title="Oynatma xəttində böl (S)">✂ Böl</button>
+    <button class="tool" id="tDelete" title="Seçilmişi sil (Delete)">🗑 Sil</button>
+    <button class="tool" id="tLeft" title="Sola">◀</button>
+    <button class="tool" id="tRight" title="Sağa">▶</button>
+    <button class="tool" id="tUnlink" title="Videonu öz səsindən ayır">⛓ Səsi ayır</button>
+    <button class="tool" id="tText" title="Oynatma xəttində mətn əlavə et">T Mətn</button>
+    <span class="spacer"></span>
+    <button class="tool small" id="zOut" title="Kiçilt">−</button>
+    <button class="tool small" id="zIn" title="Böyüt">＋</button>
+  </section>
+
+  <section class="timeline-wrap">
+    <div class="track-heads" id="trackHeads"></div>
+    <div class="timeline" id="timeline">
+      <div class="tl-inner" id="tlInner">
+        <div class="ruler" id="ruler"></div>
+        <div class="lanes" id="lanes"></div>
+        <div class="playhead" id="playhead"><div class="ph-knob"></div></div>
+      </div>
+    </div>
+  </section>
+  <div id="uploadBar" class="upload-bar" hidden></div>
+
+  <aside class="side">
+    <nav class="tabs" role="tablist">
+      <button role="tab" data-tab="inspector" class="active">Klip</button>
+      <button role="tab" data-tab="ai">Təkliflər</button>
+      <button role="tab" data-tab="media">Media</button>
+      <button role="tab" data-tab="export">İxrac</button>
+    </nav>
+    <div class="tab-body" id="tab-inspector"></div>
+    <div class="tab-body" id="tab-ai" hidden></div>
+    <div class="tab-body" id="tab-media" hidden></div>
+    <div class="tab-body" id="tab-export" hidden></div>
+  </aside>
+</main>
+
+<div id="toast" class="toast" role="status" hidden></div>
+<script type="module" src="/ui/app.js"></script>
+</body>
+</html>
