@@ -25,7 +25,7 @@ def available() -> dict[str, Any]:
     return {"installed": installed, "model": DEFAULT_MODEL}
 
 
-def transcribe(src: Path, start: float, end: float, language: str | None = "az") -> dict[str, Any]:
+def transcribe(src: Path, start: float, end: float, language: str | None = "az", hotwords: str | None = None) -> dict[str, Any]:
     from faster_whisper import WhisperModel  # yalnız lazım olanda yüklənir
 
     from montaj.media import read_mono
@@ -36,6 +36,7 @@ def transcribe(src: Path, start: float, end: float, language: str | None = "az")
     a, b = int(max(0, start) * 16000), int(end * 16000)
     segments, info = model.transcribe(
         audio[a:b], language=language or None, word_timestamps=True, vad_filter=False,
+        hotwords=hotwords or None,  # müştərinin terminləri/adları (lüğətdən) — düzgün tanınma ehtimalı artır
     )
     words: list[dict[str, Any]] = []
     text_parts: list[str] = []

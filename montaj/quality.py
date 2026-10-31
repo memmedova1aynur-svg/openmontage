@@ -192,7 +192,15 @@ def verify(project: dict[str, Any], project_dir: Path, mp4: Path, analyses: dict
                     rep["problems"].append({"t": round(te, 2), "what": f"kəsim yanındakı “{w['w']}” sözü yekun səsdə tanınmadı — dinləyib yoxlayın"})
         rep["checks"].append(f"kəsim yanındakı {edge} söz yekun səsdə axtarıldı")
     else:
-        rep["unverified"].append("yekun səsin yenidən tanınması (Whisper yoxdur)")
+        rep["unverified"].append("yekun səsin yenidən tanınması (" + ("söndürülüb: --no-asr" if not asr else "Whisper yoxdur") + ")")
+    import tempfile
+
+    try:
+        lay = layout_check(project, project_dir, Path(tempfile.mkdtemp(prefix="montaj_layout_")))
+        rep["checks"].append("kartlar/altyazı: üzü örtmə və Instagram interfeysi zonası yoxlandı")
+        rep["problems"] += lay
+    except Exception as e:  # noqa: BLE001
+        rep["unverified"].append(f"kart/üz/təhlükəsiz zona yoxlaması alınmadı: {str(e)[:120]}")
     rep["unverified"].append("səs qulaqla dinlənilməyib — yoxlama ölçmə ilədir")
     return rep
 
@@ -276,4 +284,160 @@ def music_preview(speech_src: Path, music: Path, out: Path, seconds: float = 20,
            f"[sp][duck]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.95[out]")
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(speech_src), "-i", str(music), "-filter_complex", flt,
                     "-map", "[out]", "-c:a", "aac", "-b:a", "160k", str(out)], check=True)
+    return out
+
+
+# ---------------------------------------------------------------------------
+# Təkrar / yarımçıq cümlələr (dublyaj)
+# ---------------------------------------------------------------------------
+
+def sentences(words: list[dict[str, Any]], gap: float = 0.6) -> list[dict[str, Any]]:
+    """Söz vaxtlarından cümlələr: nöqtə/sual/nida və ya uzun pauza ilə bölünür."""
+    out, cur = [], []
+    for i, w in enumerate(words):
+        cur.append(w)
+        end_punct = w["w"].rstrip().endswith((".", "?", "!", "…"))
+        nxt_gap = (words[i + 1]["s"] - w["e"]) if i + 1 < len(words) else 9
+        if end_punct or nxt_gap >= gap:
+            out.append({"s": cur[0]["s"], "e": cur[-1]["e"], "words": cur, "text": " ".join(x["w"] for x in cur)})
+            cur = []
+    if cur:
+        out.append({"s": cur[0]["s"], "e": cur[-1]["e"], "words": cur, "text": " ".join(x["w"] for x in cur)})
+    return out
+
+
+def find_retakes(words: list[dict[str, Any]], window: int = 3, min_ratio: float = 0.62) -> list[dict[str, Any]]:
+    """Ardıcıl təkrarlanan cümlələr (sonrakı cəhd adətən tamdır): əvvəlki cəhdin çıxarılması təklif olunur.
+    Növlər: "repeat" — oxşar cümlə yenidən deyilib; "restart" — cümlə yarımçıq qalıb, eyni sözlərlə yenidən başlayıb."""
+    norm = transcribe.norm_word
+    ss = sentences(words)
+    res, used = [], set()
+    for i, a in enumerate(ss):
+        if i in used:
+            continue
+        aw = [norm(w["w"]) for w in a["words"] if norm(w["w"])]
+        if len(aw) < 2:
+            continue
+        for j in range(i + 1, min(len(ss), i + 1 + window)):
+            bw = [norm(w["w"]) for w in ss[j]["words"] if norm(w["w"])]
+            if len(bw) < 2:
+                continue
+            ratio = difflib.SequenceMatcher(a=aw, b=bw, autojunk=False).ratio()
+            k = 0
+            while k < min(len(aw), len(bw)) and aw[k] == bw[k]:
+                k += 1
+            restart = k >= 2 and len(aw) <= len(bw)  # eyni başlanğıc, sonra daha tam variant
+            if ratio >= min_ratio or restart:
+                res.append({"kind": "restart" if restart and ratio < min_ratio else "repeat", "ratio": round(ratio, 2),
+                            "drop": {"s": a["s"], "e": ss[j]["s"], "text": a["text"]},
+                            "keep": {"s": ss[j]["s"], "e": ss[j]["e"], "text": ss[j]["text"]}})
+                used.update(range(i, j))
+                break
+    return res
+
+
+# ---------------------------------------------------------------------------
+# Kart üzü örtürmü / Instagram təhlükəsiz zonası
+# ---------------------------------------------------------------------------
+
+# Reels interfeysi (normallaşdırılmış 9:16): yuxarıda hesab adı, aşağıda caption/səs, sağda düymələr
+SAFE_ZONES = {"yuxarı (hesab adı)": (0.0, 0.0, 1.0, 0.08), "aşağı (caption, musiqi)": (0.0, 0.86, 1.0, 1.0),
+              "sağ (bəyən/şərh düymələri)": (0.88, 0.45, 1.0, 0.90)}
+
+
+def _inter(a: tuple[float, ...], b: tuple[float, ...]) -> float:
+    w = max(0.0, min(a[2], b[2]) - max(a[0], b[0]))
+    h = max(0.0, min(a[3], b[3]) - max(a[1], b[1]))
+    return w * h
+
+
+def _alpha_box(png: str, W: int, H: int, cx: float, cy: float) -> tuple[float, float, float, float] | None:
+    from PIL import Image
+
+    im = Image.open(png)
+    bb = im.getchannel("A").getbbox() if im.mode == "RGBA" else (0, 0, im.width, im.height)
+    if not bb:
+        return None
+    x0, y0 = cx * W - im.width / 2, cy * H - im.height / 2
+    return ((x0 + bb[0]) / W, (y0 + bb[1]) / H, (x0 + bb[2]) / W, (y0 + bb[3]) / H)
+
+
+def _face_in_output(project_dir: Path, media: dict[str, Any], clip: dict[str, Any], src_t: float) -> tuple[float, ...] | None:
+    from montaj import reframe
+
+    smp = reframe.detect_faces(project_dir / media["file"], src_t, src_t + 0.5, step=0.5)
+    fs = [f for x in smp for f in x["faces"][:1]]
+    if not fs:
+        return None
+    f = max(fs, key=lambda z: z["w"] * z["h"])
+    box = (f["x"], f["y"], f["x"] + f["w"], f["y"] + f["h"])
+    fr = clip.get("frame") or {}
+    if fr.get("mode") in ("auto", "manual") and fr.get("keys"):
+        w, h = float(fr.get("baseW", 1)) * float(fr.get("s", 1)), float(fr.get("baseH", 1)) * float(fr.get("s", 1))
+        k = fr["keys"][0]
+        cx = min(max(float(k["cx"]), w / 2), 1 - w / 2)
+        cy = min(max(float(k["cy"]), h / 2), 1 - h / 2)
+        x0, y0 = cx - w / 2, cy - h / 2
+        box = ((box[0] - x0) / w, (box[1] - y0) / h, (box[2] - x0) / w, (box[3] - y0) / h)
+    return box
+
+
+def layout_check(project: dict[str, Any], project_dir: Path, workdir: Path) -> list[dict[str, Any]]:
+    """Kartlar/başlıqlar üzü örtürmü və mətn Reels interfeysi zonasına düşürmü (yekun kadr koordinatlarında)."""
+    from montaj import graphics as G
+    from montaj.render import output_dims, render_plan
+
+    plan = render_plan(project)
+    W, H = output_dims(project)
+    media = {m["id"]: m for m in project["media"]}
+    items, meta = [], {}
+    caps = 0
+    for t in plan["text"]:
+        c = t["clip"]
+        if not G.is_graphic(c):
+            continue
+        if c["type"] == "caption":
+            caps += 1
+            if caps > 3:  # altyazılar eyni yerdədir — bir neçə nümunə kifayətdir
+                continue
+        pts = G.state_points(c)
+        tl = pts[-1] if len(pts) > 1 else (float(c["srcOut"]) - float(c["srcIn"])) / 2
+        name = f"chk_{c['id']}"
+        items.append((name, dict(c, _start=t["start"]), tl))
+        meta[name] = (c, t["start"] + min(tl + 0.05, float(c["srcOut"]) - float(c["srcIn"]) - 0.05))
+    if not items:
+        return []
+    workdir.mkdir(parents=True, exist_ok=True)
+    rast = G.rasterize(items, W, H, (project.get("brand") or {}).get("theme"), workdir)
+    out = []
+    covers = [(o["start"], o["start"] + o["dur"]) for o in plan["overlay"] if o["clip"].get("mode") != "pip"]
+    for name, (c, t_abs) in meta.items():
+        info = rast.get(name)
+        if not info:
+            continue
+        cx, cy = G.pos(c)
+        box = _alpha_box(info["file"], W, H, cx, cy)
+        if not box:
+            continue
+        label = "altyazı" if c["type"] == "caption" else f"{c['type']} “{str(c.get('text') or c.get('heading') or '')[:30]}”"
+        area = max(1e-6, (box[2] - box[0]) * (box[3] - box[1]))
+        for zname, z in SAFE_ZONES.items():
+            if _inter(box, z) / area > 0.04:
+                out.append({"t": round(t_abs, 2), "what": f"{label} Instagram interfeysi zonasına düşür: {zname}"})
+        if any(a <= t_abs < b for a, b in covers):
+            continue  # B-roll üzü onsuz da örtür
+        v = next((it for it in plan["video"] if it["start"] <= t_abs < it["start"] + it["dur"]), None)
+        if not v or v["clip"].get("broll"):
+            continue
+        m = media.get(v["clip"].get("media"))
+        if not m or not m.get("hasVideo") or m.get("isImage"):
+            continue
+        face = _face_in_output(project_dir, m, v["clip"], float(v["clip"]["srcIn"]) + (t_abs - v["start"]))
+        if face:
+            fx = (face[2] - face[0]) * 0.1
+            fbox = (face[0] - fx, face[1] - (face[3] - face[1]) * 0.2, face[2] + fx, face[3] + (face[3] - face[1]) * 0.1)
+            farea = max(1e-6, (fbox[2] - fbox[0]) * (fbox[3] - fbox[1]))
+            ov = _inter(box, fbox) / farea
+            if ov > 0.12:
+                out.append({"t": round(t_abs, 2), "what": f"{label} üzü {ov * 100:.0f}% örtür — yerini dəyiş"})
     return out

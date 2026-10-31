@@ -554,8 +554,9 @@ textarea { width: 100%; min-height: 90px; font: 12px var(--mono); background: va
   const PRESETS = [['Orijinal', {}], ['A: təbii', { contrast: 1.03, saturation: 1.03, vibrance: 0.04, look: 'A' }],
     ['B: yumşaq-isti', { brightness: 0.012, contrast: 0.98, saturation: 1.04, vibrance: 0.03, temperature: 6100, look: 'B' }],
     ['C: təmiz-neytral', { contrast: 1.04, saturation: 0.98, depth: 0.6, temperature: 6700, look: 'C' }],
+    ['D: zəif işıq', { denoise: 1, shadows: 1, gamma: 1.35, saturation: 1.05, vibrance: 0.03, look: 'D' }],
     ['İsti', { temperature: 5400, saturation: 1.08 }], ['Soyuq', { temperature: 7600 }], ['Ağ-qara', { saturation: 0 }]];
-  const ADJ_KEYS = ['brightness', 'contrast', 'saturation', 'temperature', 'sharpen', 'vibrance', 'depth', 'look'];
+  const ADJ_KEYS = ['brightness', 'contrast', 'saturation', 'temperature', 'sharpen', 'vibrance', 'depth', 'denoise', 'shadows', 'gamma', 'look'];
   function visualPanel(p, c) {
     const m = MEDIA[c.media] || {}; const fr = c.frame || null; const adj = c.adjust || {};
     const ar = (p.width || 9) / (p.height || 16); const sw = m.width || 9, sh = m.height || 16;

@@ -22,7 +22,9 @@ Ara düzəliş raundları təklif etmə.
 3. **Analiz.** `python -m montaj.session new --title "<ad>" --link "<link>" --client "<profil>" [--goal ...] [--format ...]`
    → `storyboard <pid>`. Transkripsiya yerli faster-whisper `large-v3-turbo` ilə, nəticə keşlənir
    (mənbə/parametr dəyişməyibsə təkrarlanmır). Ölçü, kodek, HDR-i qısa qeyd et.
-   Transkripti oxu: təkrar cümlələri, alınmayan cəhdləri, yarımçıq fikirləri tap.
+   Transkripti oxu: təkrar cümlələri, alınmayan cəhdləri, yarımçıq fikirləri tap. Köməkçi: `retakes <pid>` — ardıcıl
+   təkrar/yarımçıq cümlələri və hazır `cut` təklifini göstərir (sonrakı, tam cəhd saxlanılır); yenə də özün oxuyub qərar ver.
+   Müştərinin profilində `glossary` varsa (`terms`, `fixes`) — `new --client` Whisper-ə terminləri verir, `plan` düzəlişləri tətbiq edir.
    Çıxarmaq üçün: `cut <pid> [media:]başla-son …` (sərhəd səsin ən sakit yerinə çəkilir; söz kəsilmir;
    şübhəli sərhəddə material saxlanılır, çıxışda ŞÜBHƏLİ yazılır) və ya `edit --exclude N`.
 2a. **B-roll / araya kadr materialı** (istifadəçi əlavə video/şəkil göndərsə — Drive linki və ya fayl):
@@ -73,7 +75,7 @@ Ara düzəliş raundları təklif etmə.
    - **Storyboard təsdiqlənmədən yekun montaj qərarı tətbiq edilmir** (`variants` layihəni dəyişmir).
 5. **Rəng və musiqi — storyboard ilə EYNİ qərar mesajında.**
    - Rəng: `looks <pid>` → `reng_variantlari.jpg` (3 təmsilçi kadr × Orijinal, A təbii, B yumşaq-isti,
-     C təmiz-neytral). Göndər, seçim gözlə. Seçim planda `"look": "A"|"B"|"C"` (`null` — düzəliş yoxdur).
+     C təmiz-neytral; orta parlaqlıq aşağıdırsa avtomatik **D: zəif işıq** — dən azalır, kölgə açılır). Göndər, seçim gözlə. Seçim planda `"look": "A"|"B"|"C"` (`null` — düzəliş yoxdur).
      Fərqli işıqlanan kliplər avtomatik yaxınlaşdırılır (`"matchExposure": true`, ±0.04).
      Dəri rəngi və detal qorunur; güclü doyumluluq, kəskinləşdirmə, “4K effekti” yoxdur;
      retuş/gözəlləşdirmə yalnız ayrıca istəklə.
@@ -94,8 +96,13 @@ Ara düzəliş raundları təklif etmə.
    - `verify`: kəsim sərhədləri orijinal səsin enerjisi və söz vaxtları ilə, səs/görüntü uzunluğu, kliklər,
      kəsim yanındakı sözlər yekun səsdə yenidən tanınaraq yoxlanır. `!` olan yerləri düzəlt (`cut`/`edit` ilə
      sərhədi genişləndir, yenidən render). Yoxlanılmayan hissəni yoxlanılmış kimi təqdim etmə.
+   - `render` səsi **−14 LUFS**-a gətirir (pik ≤ −1.5 dBTP, video təkrar kodlanmır); fayl 40 MB-dan böyükdürsə
+     `_ig.mp4` yüngül nüsxə də yaranır (eyni ölçü/fps) — telefona onu göndər.
+   - `verify` kartın/başlığın **üzü örtməsini** və mətnin **Reels interfeysi zonalarına** (yuxarı ad, aşağı caption, sağ düymələr)
+     düşməsini də yoxlayır — `!` varsa yeri dəyiş, yenidən render.
    - `words`: şübhəli tanınmış sözlər vaxtla — istifadəçiyə **bir qısa siyahı**. Mənanı dəyişən təxmin etmə.
-     İstifadəçinin düzəlişi: `fix-word <pid> səhv düzgün` (layihədə yadda qalır, təkrar analiz/render geri qaytarmır).
+     İstifadəçinin düzəlişi: `fix-word <pid> səhv düzgün` (layihədə yadda qalır); müştəriyə aid termin/ad isə
+     `--remember` ilə profilin lüğətinə də yazılır (növbəti videolarda avtomatik) — profil faylını commit et (yalnız experts/*.json).
    - MP4-ü göndər (SendUserFile) + 2–4 sətir: nə edildi, nə yoxlanmalıdır.
 
 ## Danışıq və kəsim qaydaları
@@ -117,7 +124,9 @@ Ara düzəliş raundları təklif etmə.
 - “Bu sözü düzəlt” → `fix-word`; “mahnını dəyiş” → planda yalnız `music`, `plan` yenidən; “kartı yuxarı çək” →
   yalnız həmin element (`plan`-da həmin qrafikanın `y`-i və ya layihədə həmin klip). Digər qərarları yenidən vermə.
   Sonra `render` + `verify`.
-- Konteyner müvəqqətidir: sessiya bitəndə layihə itə bilər — istifadəçi orijinalı yenidən göndərir.
+- Konteyner müvəqqətidir. Yekun MP4-dən sonra `save <pid>` → `<pid>_layihe.tar.gz` (orijinal videolar olmadan, ~1 MB):
+  istifadəçiyə göndər və ya şəxsi repoya qoy (public repoya YOX). Sonradan düzəliş: `restore <paket>` — orijinal
+  Drive linkindən özü endirilir (link yoxdursa `--file mid=yol`), təsdiqlənmiş montaj olduğu kimi qayıdır.
 
 ## Qənaət və ünsiyyət
 

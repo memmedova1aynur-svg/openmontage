@@ -457,7 +457,7 @@ def _segments(pid: str, project: dict[str, Any], options: dict[str, Any], progre
     vis = [m for m in project["media"] if (m.get("hasVideo") or m.get("hasAudio")) and m.get("role") != "broll"]
     out: dict[str, list] = {}
     for i, m in enumerate(vis):
-        an = analysis.analyze_media(pdir, m, options.get("language", "az"))
+        an = analysis.analyze_media(pdir, m, options.get("language", "az"), hotwords=options.get("hotwords"))
         out[m["id"]] = analysis.candidate_segments(m, an, options.get("cutMode", "suggest"))
         if progress:
             progress(0.1 + 0.5 * (i + 1) / max(1, len(vis)))

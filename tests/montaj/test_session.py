@@ -413,3 +413,72 @@ def test_claude_broll_scene_render_and_plan(tmp_path, monkeypatch):
     assert abs(after - before - 1.5) < 0.02, "insert müddəti əlavə edir"
     assert session.main(["plan", pid, str(plan)]) == 0
     assert len([m for m in store.load(pid)["media"] if (m.get("source") or {}).get("type") == "generated"]) == 1, "keş: ikiləşmir"
+
+
+def test_loudness_delivery_retakes(tmp_path, monkeypatch):
+    """Render səsi −14 LUFS-a gətirir (video kopyalanır); böyük fayl üçün yüngül nüsxə; təkrar cümlə tapılır."""
+    import subprocess
+
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import quality, render, session
+
+    assert session.main(["render", pid]) == 0
+    mp4 = sorted((tmp_path / "out" / pid).glob(f"{pid}_r*.mp4"))[-1]
+    lo = render.measure_loudness(mp4)
+    assert lo and abs(lo["input_i"] - render.LOUDNESS_TARGET) < 1.0 and lo["input_tp"] <= -1.0
+    big = tmp_path / "big.mp4"
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-f", "lavfi", "-i", "testsrc2=s=1080x1920:d=4", "-f", "lavfi", "-i",
+                    "sine=d=4", "-shortest", "-c:v", "libx264", "-crf", "0", "-c:a", "aac", str(big)], check=True)
+    cap = big.stat().st_size / 1e6 / 3
+    ig = render.delivery_copy(big, tmp_path / "ig.mp4", cap_mb=cap)
+    assert ig and ig.stat().st_size / 1e6 <= cap * 1.05
+    assert render.delivery_copy(ig, tmp_path / "x.mp4", cap_mb=cap * 2) is None, "kiçik faylda nüsxə yoxdur"
+
+    def W(txt, t0):
+        return [{"w": w, "s": round(t0 + i * 0.35, 2), "e": round(t0 + i * 0.35 + 0.3, 2)} for i, w in enumerate(txt.split())]
+    words = W("Salam əziz analar.", 0) + W("Bu gün sizə laktasiya haqqında", 1.6) + W("Bu gün sizə laktasiya haqqında danışacam.", 4.0) + W("Sonra su için.", 7.5)
+    r = quality.find_retakes(words)
+    assert len(r) == 1 and r[0]["drop"]["s"] == 1.6 and r[0]["drop"]["e"] == 4.0
+    assert quality.find_retakes(W("Bir iki üç dörd.", 0) + W("Beş altı yeddi.", 2)) == []
+
+
+def test_glossary_save_restore_layout_lowlight(tmp_path, monkeypatch):
+    """Müştəri lüğəti (fix-word --remember + plan); layihə paketi bərpası; kart təhlükəsiz zonada; D (zəif işıq)."""
+    import shutil as sh
+
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import quality, render, session, store
+
+    prof = tmp_path / "test-musteri.json"
+    prof.write_text(json.dumps({"name": "Test Müştəri", "theme": session.DEFAULT_SCENE_THEME}), encoding="utf-8")
+    monkeypatch.setattr(session, "profile_path", lambda name: prof)
+    monkeypatch.setattr(session, "expert_profile", lambda name: json.loads(prof.read_text(encoding="utf-8")))
+    p = store.load(pid)
+    p["brand"] = {"name": "Test Müştəri"}
+    store.save(pid, p, p["revision"])
+    assert session.main(["fix-word", pid, "yeddi", "Yeddi", "--remember"]) == 0
+    g = json.loads(prof.read_text(encoding="utf-8"))["glossary"]
+    assert g["fixes"] == [{"from": "yeddi", "to": "Yeddi"}] and session.glossary_terms(json.loads(prof.read_text())) == ["Yeddi"]
+
+    plan = tmp_path / "plan.json"
+    plan.write_text(json.dumps({"look": "D", "graphics": [{"type": "title", "text": "Yuxarıda başlıq", "start": 0.2, "dur": 2, "y": 0.02}]}))
+    assert session.main(["plan", pid, str(plan)]) == 0
+    q = store.load(pid)
+    assert any(c.get("from") == "yeddi" for c in q["subtitles"]["corrections"]), "lüğət düzəlişi plana düşür"
+    v = next(c for c in q["clips"] if c["track"] == "v1")
+    assert "hqdn3d" in ",".join(render.color_filters(v["adjust"])) and v["adjust"]["look"] == "D"
+    lay = quality.layout_check(q, store.project_dir(pid), tmp_path / "lay")
+    assert any("yuxarı" in x["what"] for x in lay), lay
+
+    pack = tmp_path / "paket.tar.gz"
+    assert session.main(["save", pid, "--out", str(pack)]) == 0
+    m = q["media"][0]
+    orig = store.project_dir(pid) / m["file"]
+    keep = tmp_path / "orijinal.mp4"
+    sh.copyfile(orig, keep)
+    monkeypatch.setenv("MONTAJ_DATA_DIR", str(tmp_path / "data2"))
+    monkeypatch.setenv("MONTAJ_OUT_DIR", str(tmp_path / "out2"))
+    assert session.main(["restore", str(pack), "--file", f"{m['id']}={keep}"]) == 0
+    r = store.load(pid)
+    assert r["revision"] == q["revision"] and r["clips"] == q["clips"]
+    assert (store.project_dir(pid) / m["file"]).read_bytes() == keep.read_bytes()
