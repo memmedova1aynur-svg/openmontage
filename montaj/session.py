@@ -1219,6 +1219,98 @@ def cmd_tale_plan(a: argparse.Namespace) -> None:
         print("YOXLA:", r)
 
 
+def _timeline_words(pid: str, q: dict[str, Any]) -> tuple[list[dict[str, Any]], Any, float]:
+    """Əsas montajın (tətbiq olunmuş) zaman xətti: mənbə sözləri + mənbə→zaman xətti çevirməsi + ümumi müddət."""
+    from montaj import ad
+
+    tm, acc = [], 0.0
+    for c in node_tl("videoClips", q):
+        d = c["srcOut"] - c["srcIn"]
+        if not c.get("broll"):
+            tm.append((c["media"], float(c["srcIn"]), float(c["srcOut"]), acc))
+        acc += d
+    words = [w for w in _ad_words(pid, q) if any(m == w["media"] and a0 - 0.05 <= w["s"] <= b0 for m, a0, b0, _ in tm)]
+    words.sort(key=lambda w: ad.to_timeline(tm, w["s"], w["media"]) or 0)
+    return words, (lambda t, mid=None: ad.to_timeline(tm, t, mid)), acc
+
+
+def cmd_carousel_plan(a: argparse.Namespace) -> None:
+    """Video karusel planı (carousel.json): örtük + fikir slaydları + çağırış; əsas montajdan kəsilir. Yoxla/redaktə et."""
+    from montaj import ad, carousel
+
+    q = store.load(a.pid)
+    words, tl, total = _timeline_words(a.pid, q)
+    sc = ad.scan(words)
+    cta = next((dict(f, tl=tl(f["t"])) for f in reversed(sc["facts"]) if f["kind"] == "cta"), None)
+    res = carousel.plan(words, tl, total, cta)
+    f = out_dir(a.pid) / "carousel.json"
+    f.write_text(json.dumps(res, ensure_ascii=False, indent=1), encoding="utf-8")
+    for i, s in enumerate(res["slides"], 1):
+        tag = " [örtük]" if s.get("cover") else " [çağırış]" if s.get("cta") else ""
+        print(f"{i}. {s['from']:6.2f}–{s['to']:6.2f} s ({s['to'] - s['from']:.1f} s){tag}: “{s['title']}”")
+    print(f"→ {f}")
+    for r in res.get("_review") or []:
+        print("YOXLA:", r)
+
+
+def cmd_carousel(a: argparse.Namespace) -> None:
+    """Video karusel: hər slayd ayrıca 1080x1350 MP4 (≤60 s), eyni dizayn (başlıq, sayğac, altyazı); örtük PNG və ümumi şəkil."""
+    from montaj import carousel, quality as _q
+    from montaj.render import render as _render
+
+    q = node_tl("migrate", store.load(a.pid))
+    plan = json.loads(Path(a.plan).read_text(encoding="utf-8"))
+    W, H = 1080, 1350
+    o = out_dir(a.pid) / "carousel"
+    o.mkdir(parents=True, exist_ok=True)
+    media = {m["id"]: m for m in q["media"]}
+    slides = plan["slides"]
+    n = len(slides)
+    outs = []
+    for i, s in enumerate(slides, 1):
+        if s["to"] - s["from"] > carousel.MAX_SLIDE + 2:
+            raise UserError(f"Slayd {i} 60 saniyədən uzundur.", "carousel.json-da həmin slaydı bölün.")
+        sp = carousel.slice_project(q, float(s["from"]), float(s["to"]), node_tl)
+        sp["width"], sp["height"] = W, H
+        sp["clips"] = [c for c in sp["clips"] if c["track"] != "t1"]  # əsas montajın kartları 9:16 üçündür — slayd öz başlığını alır
+        for c in sp["clips"]:
+            m = media.get(c.get("media"))
+            if c["track"] in ("v1", "v2") and m and m.get("hasVideo") and c.get("mode") not in ("pip", "sticker"):
+                fr = _cover_frame(m, W, H)
+                if fr:
+                    old = ((c.get("frame") or {}).get("keys") or [{}])[0]
+                    fr["keys"] = [{"t": c["srcIn"], "cx": old.get("cx", 0.5), "cy": 0.42}]
+                    fr["rotate"] = (c.get("frame") or {}).get("rotate", 0)
+                c["frame"] = fr
+        if sp.get("subtitles"):
+            sp["subtitles"]["style"] = {**(sp["subtitles"].get("style") or {}), "y": 0.84}
+        dur = s["to"] - s["from"]
+        gfx = [{"type": "badge", "text": f"{i}/{n}", "x": 0.88, "y": 0.055, "start": 0, "dur": dur, "anim": {"in": "none", "out": "none"}}]
+        if s.get("cover"):
+            gfx.append({"type": "title", "text": s["title"], "x": 0.5, "y": 0.16, "start": 0, "dur": dur, "size": 0.04, "anim": {"in": "pop", "out": "none"}})
+            gfx.append({"type": "section", "text": "Sürüşdürün →", "x": 0.5, "y": 0.93, "start": 0.8, "dur": max(0.5, dur - 0.8), "anim": {"in": "fade", "out": "none"}})
+        else:
+            gfx.append({"type": "section", "text": s["title"], "x": 0.5, "y": 0.12, "start": 0, "dur": dur, "anim": {"in": "slide-up", "out": "none"}})
+        if s.get("cta"):
+            gfx.append({"type": "cta", "text": s["cta"].get("text") or "", "keyword": s["cta"].get("keyword") or "", "x": 0.5, "y": 0.6,
+                        "start": max(0.0, dur - 3.5), "dur": min(3.5, dur), "anim": {"in": "pop", "out": "none"}})
+        for g in gfx:
+            sp = node_tl("addGraphic", sp, {**g, "origin": "plan"})
+        f = o / f"slide_{i:02d}.mp4"
+        _render(sp, store.project_dir(a.pid), f, lambda x: None)
+        outs.append(f)
+        print(f"slayd {i}/{n}: {f.name} ({dur:.1f} s)")
+    cover = o / "ortuk.jpg"
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-ss", "1.2", "-i", str(outs[0]), "-frames:v", "1", "-q:v", "2", str(cover)], check=True)
+    ins = sum((["-ss", "1.2", "-i", str(x)] for x in outs), [])
+    subprocess.run(["ffmpeg", "-y", "-v", "error", *ins, "-filter_complex",
+                    "".join(f"[{k}:v]scale=270:-2[s{k}];" for k in range(len(outs))) + "".join(f"[s{k}]" for k in range(len(outs))) +
+                    f"hstack={len(outs)}" if len(outs) > 1 else "[0:v]scale=270:-2", "-frames:v", "1", "-q:v", "3", str(o / "karusel.jpg")], check=True)
+    print(f"örtük: {cover}")
+    print(f"ümumi şəkil: {o / 'karusel.jpg'}")
+    print("Instagram-da: yeni paylaşım → bir neçə seç → slaydları sıra ilə əlavə et")
+
+
 def cmd_highlights(a: argparse.Namespace) -> None:
     """Uzun videodan (seminar, çıxış) müstəqil qısa Reels hissələri: bal, səbəb, hazır `extract` əmri.
     Təklifdir — transkripti oxu, kontekstsiz anlaşılmayan hissəni seçmə."""
@@ -1570,6 +1662,11 @@ def main(argv: list[str] | None = None) -> int:
     vf.add_argument("pid")
     vf.add_argument("--mp4")
     vf.add_argument("--no-asr", action="store_true")
+    cp = sub.add_parser("carousel-plan", help="video karusel planı (örtük + fikirlər + çağırış)")
+    cp.add_argument("pid")
+    cr = sub.add_parser("carousel", help="video karusel slaydları (1080x1350 MP4)")
+    cr.add_argument("pid")
+    cr.add_argument("plan")
     tp = sub.add_parser("tale-plan", help="nağıl: obraz/məkanlardan cizgi səhnələri")
     tp.add_argument("pid")
     tp.add_argument("--mode", default="cover_pip", choices=["cover_pip", "cover"])
@@ -1642,7 +1739,7 @@ def main(argv: list[str] | None = None) -> int:
         {"new": cmd_new, "storyboard": cmd_storyboard, "edit": cmd_edit, "apply": cmd_apply,
          "render": cmd_render, "export": cmd_export, "editor": cmd_editor,
          "apply-edits": cmd_apply_edits, "set-client": cmd_set_client, "plan": cmd_plan, "looks": cmd_looks,
-         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "highlights": cmd_highlights, "extract": cmd_extract, "mg-scan": cmd_mg_scan, "tale-plan": cmd_tale_plan, "fix-word": cmd_fix_word,
+         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "highlights": cmd_highlights, "extract": cmd_extract, "mg-scan": cmd_mg_scan, "tale-plan": cmd_tale_plan, "carousel-plan": cmd_carousel_plan, "carousel": cmd_carousel, "fix-word": cmd_fix_word,
          "variants": cmd_variants, "choose": cmd_choose, "music-preview": cmd_music_preview}[a.cmd](a)
     except UserError as err:
         print(f"XƏTA: {err.message}\nNƏ ETMƏLİ: {err.hint}", file=sys.stderr)
