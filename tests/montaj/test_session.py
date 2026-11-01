@@ -916,3 +916,42 @@ def test_duo_switch_split(tmp_path, monkeypatch):
     from montaj import session
 
     assert session.main(["duo", pid, "--mode", "split"]) == 2, "üzsüz kadrda aydın xəta"
+
+
+def test_virtual_multicam(tmp_path, monkeypatch, capsys):
+    """Virtual multikamera: keyfiyyət ehtiyatına görə plan ölçüləri, cümlə sərhədində kəsim, eyni ölçü ardıcıl deyil,
+    vurğuda yaxın plan; 1x ehtiyatda dürüst xəbərdarlıq; yavaş yaxınlaşma (push) render olunur."""
+    from montaj import multicam, render
+
+    assert list(multicam.tiers(2.0)) == ["wide", "medium", "close"] and multicam.tiers(2.0)["close"] == 2.0
+    assert multicam.tiers(1.0) == {"wide": 1.0, "close": 1.12}
+    assert multicam.tiers(0.56) == {"wide": 1.0}, "16:9 → 9:16 (artıq böyüdülür): yaxınlaşma yoxdur"
+    sents = [{"s": i * 3.0, "e": i * 3.0 + 2.5, "text": t} for i, t in enumerate(
+        ["Salam.", "Bu gün danışacağıq.", "Ən vacib qayda budur!", "Sonra davam edək.", "Və bitirək.", "Sağ olun.", "Görüşənədək."])]
+    segs = multicam.segments(sents, 21.0, 5.0)
+    assert segs[0]["a"] == 0 and segs[-1]["b"] == 21.0 and all(x["b"] == y["a"] for x, y in zip(segs, segs[1:]))
+    names = multicam.assign(segs, multicam.tiers(2.0))
+    assert names[0] == "wide" and all(x != y for x, y in zip(names, names[1:]))
+    assert names[[i for i, g in enumerate(segs) if g["emph"]][0]] == "close"
+    chain = render.video_chain({"srcIn": 0, "srcOut": 4, "frame": {"mode": "auto", "s": 0.5, "baseW": 1, "baseH": 1, "push": 1.08,
+                                "keys": [{"t": 0, "cx": 0.5, "cy": 0.5}]}}, {"width": 1920, "height": 1080}, 540, 960, "30", False, 120)
+    assert "eval=frame" in chain and "crop=960:540" in chain
+
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import session, store
+
+    _draft_and_analysis(pid)
+    capsys.readouterr()
+    assert session.main(["multicam", pid]) == 0
+    out = capsys.readouterr().out
+    assert "XƏBƏRDARLIQ" in out and "4K" in out, "1x ehtiyatda dürüst xəbərdarlıq"
+    q, rep = session._apply_multicam(pid, session.node_tl("migrate", store.load(pid)), {"min_len": 2.0})  # qısa sınaq videosu
+    vs = session.node_tl("videoClips", q)
+    ss = [round(c["frame"]["s"], 3) for c in vs]
+    pl = [n for _, _, n in rep["plans"]]
+    assert len(pl) >= 2 and len(set(ss)) == 2 and all(x != y for x, y in zip(pl, pl[1:])), (pl, ss)
+    assert abs(min(ss) - 1 / 1.123) < 0.01, "yaxın plan 1.12x (1x ehtiyat)"
+    c = vs[0]
+    c["frame"]["push"] = 1.06
+    store.save(pid, q, q["revision"])
+    assert session.main(["render", pid]) == 0
