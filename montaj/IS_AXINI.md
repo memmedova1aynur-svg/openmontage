@@ -182,6 +182,11 @@ Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq,
      ağırlıqlı, məlumat yönümlü). Yalnız rəng dəyişərək variant yaratma.
    - Planda `"title"`, `"storyboard": {"exclude": [..], "order": [..], "text": {"1": ".."}}` (giriş/sıra fərqi),
      `captions`, `graphics`, `zooms`, `sfx`.
+   - **Davamlılıq + müxtəliflik** (bütün müştərilər, istifadəçi qaydası): videolar bir-birinin davamı kimi — eyni rəng ailəsi,
+     oxşar ruh; amma kopya yox. `storyboard` çıxışında "bu video üçün təklif" sətri var (son videolardan fərqli ton — əsas /
+     açıq / tünd / solğun / ailədə krem varsa krem —, altyazı üslubu qutu/kontur, yazı girişi): planlara `"variation": {...}`
+     kimi qoy (variantlardan biri təklifi, digərləri yaxın alternativ ola bilər). Tamamilə fərqli üslub təklif etmə. `choose`
+     tonu, altyazı üslubunu və animasiyanı tarixçəyə yazır — növbəti təklif onlardan fərqlənir.
    - **J/L-cut**: planda `"jl": {"auto": true, "lead": 0.25}` — fərqli kameralar (media) arasında görüntü səsdən 0.25 s əvvəl
      keçir (səs yerində); əl ilə `"cuts": {"<video klip id>": 0.3 (J) | -0.3 (L)}`. Eyni kamerada tətbiq olunmur (dodaq
      sinxronu). Danışıq kəsimində 12 ms səs keçidi avtomatikdir (söndürmək: layihədə `"speechEdgeFade": false`).

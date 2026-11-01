@@ -243,6 +243,10 @@ real danışıqda səs sinxronu və görünən keyfiyyət, iPhone Safari, Instag
 | 29.3 | `duo` keçidi J-cut üslubunda (yeni danışan başlamazdan 0.25 s əvvəl, əvvəlki bitəndən sonra) | ✅ | Test |
 | 29.4 | M09 plan ölçüsü (ümumi/orta/yaxın), eyni ölçü dalbadal gəlmir; kadrlar.jpg-də ölçü | ✅ | Test |
 | 29.5 | Montaj prinsipləri sənədi `KINO_DILI.md` (videoqrafiya bələdçisinin xülasəsi + sistemdə qarşılığı) | ✅ | Sənəd |
+| 30.1 | Davamlılıq + müxtəliflik (`variation.py`): ailə daxilində tonlar (krem daxil), son videolardan fərqli ton/altyazı/animasiya təklifi, plan `"variation"`, tarixçəyə yazılır | ✅ | `test_style_variation`; Sura krem variantı vizual |
+| 30.2 | Düzəliş: plan qrafikası klip sərhədində (multicam/duo bölünməsi) kəsilmir — istənilən müddət (`want`) saxlanılır | ✅ | Test (bölünmədən sonra da 4.5 s) + node timeline 13 pass |
+| 30.3 | Sura Malik profili: sahə (ana-körpə, laktasiya, analıq məktəbi), rəng ailəsi çəhrayı + krem, davamlılıq qaydası | ✅ | Profil |
+
 
 
 

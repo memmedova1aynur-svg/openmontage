@@ -711,7 +711,14 @@ export function settle(p) {
     if (!l) { c.hidden = true; continue; }
     c.hidden = false;
     c.start = round(l.start + (c.anchor.offset || 0));
-    c.srcOut = round(Math.max(MIN_CLIP, Math.min(c.srcOut, l.end - c.start)));
+    // plan qrafikası klip sərhədində kəsilmir (klip bölünə bilər: plan ölçüsü, danışana keçid) — videonun sonuna qədər;
+    // istənilən müddət (want) yadda qalır ki, sonrakı bölünmə/birləşmədə geri bərpa olunsun
+    if (c.origin === 'plan' && c.want) {
+      const end = videoClips(p).reduce((m, v) => Math.max(m, (lay.get(v.id) || { end: 0 }).end), 0);
+      c.srcOut = round(Math.max(MIN_CLIP, Math.min(c.want, end - c.start)));
+    } else {
+      c.srcOut = round(Math.max(MIN_CLIP, Math.min(c.srcOut, l.end - c.start)));
+    }
   }
   rebuildSubtitles(p, lay);
   return p;
@@ -1048,6 +1055,7 @@ export function addGraphic(p0, spec) {
   const g = { id: spec.id || uid('g'), track: 't1', media: null, srcIn: 0, srcOut: round(Math.max(MIN_CLIP, spec.dur || 3)), start,
     type: spec.type || 'title', text: spec.text || '', x: spec.x ?? 0.5, y: spec.y ?? 0.5, anim: spec.anim || { in: 'pop', out: 'fade' },
     origin: spec.origin || 'manual', manual: spec.origin !== 'plan' };
+  if (spec.origin === 'plan') g.want = g.srcOut;
   for (const k of [...GFX_KEYS, 'size', 'font', 'weight', 'color', 'bg']) if (spec[k] !== undefined) g[k] = clone(spec[k]);
   if (v) g.anchor = { clip: v.id, offset: round(start - lay.get(v.id).start) };
   p.clips.push(g);

@@ -1210,3 +1210,42 @@ def test_jl_cut_and_speech_edges(tmp_path, monkeypatch):
     p["jl"] = {"auto": True}
     store.save(pid, p, p["revision"])
     assert session.main(["render", pid]) == 0, "J/L ayarı ilə render (eyni kamera — dəyişiklik yoxdur)"
+
+
+def test_style_variation(tmp_path, monkeypatch):
+    """Davamlılıq + müxtəliflik: tonlar eyni ailədə (krem varsa krem də), son videolardan fərqli ton və altyazı üslubu
+    təklif olunur; plan "variation" tətbiq olunur; plan qrafikası klip bölünəndə kəsilmir."""
+    import colorsys
+
+    from montaj import variation
+
+    theme = {"primary": "#C9577D", "primaryDeep": "#9E3D5E", "accent": "#F7C6D4", "text": "#FFFFFF"}
+    ts = variation.tones(theme, "yumşaq çəhrayı, isti krem")
+    assert [t["name"] for t in ts] == ["əsas", "açıq", "tünd", "solğun", "krem"]
+    hue = lambda c: colorsys.rgb_to_hls(*variation._hex(c))[0]
+    assert all(abs(hue(t["primary"]) - hue(theme["primary"])) < 0.03 for t in ts[:4]), "eyni rəng ailəsi"
+    assert "krem" not in [t["name"] for t in variation.tones(theme, "göy")]
+    prof = {"palette": {"family": "çəhrayı"}, "history": [{"tone": "#C9577D", "captions": "box", "anim": "pop"}]}
+    sg = variation.suggest(prof, theme)
+    assert sg["primary"] != "#C9577D" and sg["captions"] == "stroke" and sg["anim"] != "pop", "son videonun kopyası deyil"
+
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import session, store
+
+    _draft_and_analysis(pid)
+    assert session.main(["apply", pid]) == 0
+    q = session.node_tl("migrate", store.load(pid))
+    c0 = session.node_tl("videoClips", q)[0]
+    plan = {"look": None, "captions": {"enabled": True, "style": {"type": "caption"}},
+            "variation": {"primary": "#F2E4D6", "primaryDeep": "#C9577D", "text": "#9E3D5E", "accent": "#C9577D",
+                          "onAccent": "#FFFFFF", "captions": "box", "anim": "slide-up"},
+            "graphics": [{"type": "title", "text": "Uzun başlıq", "start": 0.2, "dur": 4.5}]}
+    r = session.apply_plan(pid, q, plan)
+    assert r["brand"]["theme"]["primary"] == "#F2E4D6" and r["brand"]["baseTheme"]["primary"] != "#F2E4D6"
+    assert r["subtitles"]["style"]["color"] == "#9E3D5E" and r["subtitles"]["style"]["activeColor"] == "#C9577D"
+    g = next(c for c in r["clips"] if c["track"] == "t1" and c.get("origin") == "plan")
+    assert g["anim"]["in"] == "slide-up"
+    assert abs(g["srcOut"] - 4.5) < 0.01, "plan qrafikası birinci klipin (3.1 s) sonunda kəsilmir"
+    r2 = session.node_tl("split", r, session.node_tl("videoClips", r)[0]["id"], 1.0)
+    g2 = next(c for c in r2["clips"] if c["id"] == g["id"])
+    assert abs(g2["srcOut"] - 4.5) < 0.01, "bölünmədən sonra da müddət qalır"
