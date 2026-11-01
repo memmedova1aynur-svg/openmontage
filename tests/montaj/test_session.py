@@ -792,7 +792,8 @@ def test_event_montage_beats(tmp_path, monkeypatch):
     for name, lav in srcs.items():
         f = tmp_path / f"{name}.mp4"
         vf = ["-vf", "boxblur=12:2"] if "bulaniq" in name else []
-        subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", f"{lav}=s=640x360:r=25:d=6", "-f", "lavfi", "-i", "sine=f=300:d=6",
+        r = 60 if name == "d_final" else 25  # final kadr 60 fps — yavaşlatma real kadrlarla
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", f"{lav}=s=640x360:r={r}:d=6", "-f", "lavfi", "-i", "sine=f=300:d=6",
                         *vf, "-shortest", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac", str(f)], check=True)
         tmp = store.originals_dir(pid) / f".{name}.part"
         tmp.write_bytes(f.read_bytes())
@@ -811,6 +812,8 @@ def test_event_montage_beats(tmp_path, monkeypatch):
     plan = json.loads((tmp_path / "out" / pid / "event_A.json").read_text())
     cards = plan["storyboard"]["cards"]
     assert cards[0]["role"] == "açılış" and cards[-1]["role"] == "final" and not any(c["mediaId"] in blur for c in cards)
+    if cards[-1].get("slowmo"):  # final 60 fps kadrdan seçilibsə — yavaşladılmış törəmə media
+        assert cards[-1]["mediaId"].startswith("slow_")
     assert session.main(["choose", pid, str(tmp_path / "out" / pid / "event_A.json")]) == 0
     q = store.load(pid)
     assert all(c["volume"] == 0 for c in q["clips"] if c["track"] == "a1"), "görüntünün öz səsi söndürülür"
@@ -1126,3 +1129,41 @@ def test_shoot_guide(capsys):
     assert "Hazırlıq" not in shoot.text(1, compact=True)
     capsys.readouterr()
     assert session.main(["types", "11", "--shoot"]) == 0 and "30–45°" in capsys.readouterr().out
+
+
+def test_slowmo_real_frames(tmp_path, monkeypatch, capsys):
+    """Yavaşlatma: 60 fps → 30 fps çıxışda 0.5x, bütün kadrlar fərqli (təkrar yox), müddət 2 qat; 30 fps materialda
+    hamar yavaşlatma mümkün deyil — aydın xəta / xəbərdarlıq."""
+    import subprocess
+
+    import numpy as np
+
+    from montaj import slowmo
+
+    assert slowmo.min_clean_speed(60, 30) == 0.5 and slowmo.verdict(60, 30, 0.5) is None
+    assert "60 fps" in slowmo.verdict(30, 30, 0.5)
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import server, session, store
+
+    src = tmp_path / "hizli.mp4"
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "testsrc2=s=320x180:r=60:d=4", "-c:v", "libx264",
+                    "-pix_fmt", "yuv420p", str(src)], check=True)
+    tmp = store.originals_dir(pid) / ".hizli.part"
+    tmp.write_bytes(src.read_bytes())
+    m = server._register(pid, tmp, "hizli.mp4")["media"]
+    p = store.load(pid)
+    p["fps"], p["fpsRate"] = 30, "30/1"
+    store.save(pid, p, p["revision"])
+    capsys.readouterr()
+    assert session.main(["slowmo", pid, "--media", m["id"], "--from", "1.0", "--to", "2.0"]) == 0
+    out = capsys.readouterr().out
+    assert "0.5x" in out and "XƏBƏRDARLIQ" not in out
+    rec = next(x for x in store.load(pid)["media"] if x["id"].startswith("slow_"))
+    assert abs(rec["duration"] - 2.0) < 0.1 and rec["role"] == "broll"
+    raw = subprocess.run(["ffmpeg", "-v", "error", "-i", str(store.project_dir(pid) / rec["file"]), "-vf", "scale=64:36",
+                          "-f", "rawvideo", "-pix_fmt", "gray", "-"], capture_output=True, check=True).stdout
+    fr = np.frombuffer(raw, np.uint8).reshape(-1, 36, 64).astype(int)
+    assert 58 <= len(fr) <= 62, "2 s × 30 fps"
+    diffs = np.abs(np.diff(fr, axis=0)).mean(axis=(1, 2))
+    assert (diffs > 0.05).mean() > 0.95, "kadrlar təkrarlanmır (real kadrlar)"
+    assert session.main(["slowmo", pid, "--media", "sinxron.mp4", "--from", "1", "--to", "2"]) == 2, "30 fps — hamar yavaşlatma yoxdur"

@@ -3,7 +3,7 @@
 * Musiqinin vuruşları (beat) yerli tapılır (numpy, əlavə kitabxana yoxdur): spektral axın → temp → vuruş şəbəkəsi.
 * Kadrlar (shot) avtomatik bölünür və qiymətləndirilir: kəskinlik, işıq, titrəmə, üz; zəif kadr seçilmir.
 * Quruluş: açılış (ümumi plan, məkan) → inkişaf (insanlar, fəaliyyət, xronoloji) → final (sonuncu anlar, uzun kadr).
-  Kəsimlər vuruşlara düşür. Yavaşlatma yoxdur (zaman xəttində sürət dəyişməsi dəstəklənmir) — iddia etmə.
+  Kəsimlər vuruşlara düşür. Yavaşlatma: material ≥50 fps olanda final kadr 0.5x (real kadrlar, slowmo.py); 30 fps-də yoxdur.
 * Seçim təklifdir: Claude variant şəklinə baxıb yoxlayır; real səs (alqış, gülüş) namizədləri `_review`-da.
 """
 

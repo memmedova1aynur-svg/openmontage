@@ -1821,6 +1821,53 @@ def cmd_bg_lib(a: argparse.Namespace) -> None:
               f"qarışıqlıq {r['busy']:5.2f}  {' '.join(r.get('tags') or [])}")
 
 
+def _slow_media(pid: str, m: dict[str, Any], a: float, b: float, speed: float) -> tuple[dict[str, Any], str | None]:
+    """Yavaşladılmış hissə → layihəyə törəmə media (keş). Qaytarır: (media, xəbərdarlıq | None)."""
+    import hashlib
+
+    from montaj import media as mediautil
+    from montaj import slowmo
+    from montaj.render import fps_of
+
+    p = store.load(pid)
+    out_fps, out_str = fps_of(p)
+    key = hashlib.sha1(f"{m['id']}:{a:.3f}:{b:.3f}:{speed:.3f}:{out_str}".encode()).hexdigest()[:10]
+    mid = f"slow_{key}"
+    have = next((x for x in p["media"] if x["id"] == mid), None)
+    warn = slowmo.verdict(float(m.get("fps") or 30), out_fps, speed)
+    if have and (store.project_dir(pid) / have["file"]).is_file():
+        return have, warn
+    rel = f"media/derived/{mid}.mp4"
+    slowmo.make(store.project_dir(pid) / m["file"], store.project_dir(pid) / rel, a, b, speed, out_str)
+    rec = {"id": mid, "name": f"{m['name']} · {speed}x yavaş", "file": rel, "role": "broll",
+           "source": {"type": "slowmo", "of": m["id"], "from": a, "to": b, "speed": speed}, **mediautil.probe(store.project_dir(pid) / rel)}
+    rec.update(hasAudio=False, isImage=False)
+    if not have:
+        store.add_media_record(pid, rec)  # media yalnız bu yolla əlavə olunur (store.save media siyahısını dəyişmir)
+    return rec, warn
+
+
+def cmd_slowmo(a: argparse.Namespace) -> None:
+    """Yavaşladılmış hissə (real kadrlarla) → törəmə media; plan-da B-roll "media" və ya kart kimi işlədilir."""
+    from montaj import slowmo
+    from montaj.render import fps_of
+
+    p = store.load(a.pid)
+    m = next((x for x in p["media"] if x["id"] == a.media or x.get("name") == a.media), None)
+    if not m or not m.get("hasVideo") or m.get("isImage"):
+        raise UserError(f"Video tapılmadı: {a.media}", "Media id-sini və ya adını yazın (layihədəki video).")
+    out_fps = fps_of(p)[0]
+    speed = a.speed or round(slowmo.min_clean_speed(float(m.get("fps") or 30), out_fps), 3)
+    if speed >= 0.99:
+        raise UserError(f"{m['name']} {m.get('fps')} fps — çıxış {out_fps:.0f} fps-də kadr təkrarı olmadan yavaşlatma mümkün deyil.",
+                        "Hamar yavaşlatma üçün 60 fps çəkiliş lazımdır; istəsəniz --speed 0.5 ilə (kadrlar təkrarlanacaq).")
+    rec, warn = _slow_media(a.pid, m, a.start, a.end, speed)
+    print(f"yavaşlatma: {rec['id']}  {rec['name']}  {rec['duration']:.2f} s (mənbə {a.start:.2f}–{a.end:.2f} s, {speed}x)")
+    if warn:
+        print("XƏBƏRDARLIQ:", warn)
+    print(f'plan-da: {{"media": "{rec["id"]}", "mode": "insert", "at": <saniyə>}} və ya storyboard kartı')
+
+
 def cmd_duo(a: argparse.Namespace) -> None:
     """Növ 11 (iki nəfər bir kadrda): `switch` — kadraj danışana keçir; `split` — bölünmüş ekran. Tətbiq olunmuş montaja."""
     from montaj import duo, quality, speakers
@@ -1941,10 +1988,33 @@ def cmd_event_plan(a: argparse.Namespace) -> None:
         _load_draft(a.pid)
     except UserError:
         raise UserError("Storyboard qaralaması yoxdur.", "Əvvəl `storyboard <pid>` işlədin (kadraj və analiz üçün).") from None
+    from montaj import slowmo
+    from montaj.render import fps_of
+
+    pr = store.load(a.pid)
+    media = {m["id"]: m for m in pr["media"]}
+    draft_frames = (_load_draft(a.pid).get("frames") or {})
+    out_fps = fps_of(pr)[0]
     for k in a.variants:
         r = event.assemble(shots, bt, k, a.target if a.target and k != "C" else None)
+        frames = {}
+        fin = r["cards"][-1] if r["cards"] else None
+        fm = media.get(fin["mediaId"]) if fin else None
+        if a.slowmo != "off" and k != "C" and fm and slowmo.min_clean_speed(float(fm.get("fps") or 30), out_fps) <= 0.55:
+            # final kadr yavaşlayır (yalnız real kadrlarla: material ≥ 2x çıxış fps)
+            L = fin["srcOut"] - fin["srcIn"]
+            rec, _w = _slow_media(a.pid, fm, fin["srcIn"], fin["srcIn"] + L * 0.5, 0.5)
+            fin.update(mediaId=rec["id"], srcIn=0.0, srcOut=round(min(L, float(rec["duration"])), 3), slowmo=0.5)
+            if draft_frames.get(fm["id"]):
+                fr = json.loads(json.dumps(draft_frames[fm["id"]]))
+                fr["keys"] = [{**kk, "t": 0.0} for kk in fr.get("keys", [])[:1]]
+                frames[rec["id"]] = fr
+            r["review"].append(f"final kadr 0.5x yavaşladıldı ({fm['name']}, {fm.get('fps')} fps — real kadrlar)")
+        elif a.slowmo == "on" and fm:
+            r["review"].append(f"yavaşlatma qurulmadı: {fm['name']} {fm.get('fps')} fps — hamar yavaşlatma üçün 60 fps çəkiliş lazımdır")
         plan = {"title": event.VARIANTS[k]["title"], "approach": "M09",
-                "storyboard": {"cards": r["cards"]}, "captions": {"enabled": False}, "dropStoryboardText": True,
+                "storyboard": {"cards": r["cards"], **({"frames": frames} if frames else {})},
+                "captions": {"enabled": False}, "dropStoryboardText": True,
                 "music": {"file": str(music.resolve()), "from": r["music_from"], "volume": a.volume, "duck": False,
                           "fadeIn": 0.0, "fadeOut": 2.0},
                 "liveSound": {"volume": 0.0, "keep": {}}, "look": None, "_review": r["review"]}
@@ -2153,6 +2223,8 @@ def _sb_override(sb: dict[str, Any], ov: dict[str, Any]) -> dict[str, Any]:
     """Planın storyboard düzəlişləri qaralamaya: "cards" (tam kart siyahısı — M09 kimi yığılan montaj), exclude/include/text/order."""
     if ov.get("cards"):
         sb["cards"] = [dict(c) for c in ov["cards"]]
+    if ov.get("frames"):  # törəmə media üçün kadraj (məs. yavaşladılmış hissə orijinalın kadrajını götürür)
+        sb["frames"] = {**(sb.get("frames") or {}), **ov["frames"]}
     for n in ov.get("exclude", []):
         sb["cards"][n - 1]["include"] = False
     for n in ov.get("include", []):
@@ -2326,6 +2398,7 @@ def main(argv: list[str] | None = None) -> int:
     ep.add_argument("--target", type=float, help="müddət, s (standart: A/B 30, C 17)")
     ep.add_argument("--volume", type=float, default=0.9)
     ep.add_argument("--variants", default="ABC")
+    ep.add_argument("--slowmo", choices=["auto", "on", "off"], default="auto", help="final kadrı yavaşlat (material ≥ 50 fps olanda)")
     sub.add_parser("intake", help="material yoxlaması (fps, ölçü, səs, işıq, kəskinlik)").add_argument("pid")
     bg = sub.add_parser("bg", help="arxa fon: blur | color | image | video | scene (--preview — müqayisə)")
     bg.add_argument("pid")
@@ -2355,6 +2428,12 @@ def main(argv: list[str] | None = None) -> int:
     bl.add_argument("action", choices=["add", "list"])
     bl.add_argument("files", nargs="*")
     bl.add_argument("--tag", action="append")
+    sm = sub.add_parser("slowmo", help="yavaşlatma (real kadrlarla, 60 fps material) → törəmə media")
+    sm.add_argument("pid")
+    sm.add_argument("--media", required=True)
+    sm.add_argument("--from", dest="start", type=float, required=True)
+    sm.add_argument("--to", dest="end", type=float, required=True)
+    sm.add_argument("--speed", type=float, help="standart: material imkan verən ən hamar (60→30: 0.5)")
     mc = sub.add_parser("multicam", help="virtual multikamera: plan ölçüləri (ümumi/orta/yaxın) bir rakursdan")
     mc.add_argument("pid")
     mc.add_argument("--style", choices=["calm", "dynamic"], default="calm")
@@ -2457,7 +2536,7 @@ def main(argv: list[str] | None = None) -> int:
         {"new": cmd_new, "storyboard": cmd_storyboard, "edit": cmd_edit, "apply": cmd_apply,
          "render": cmd_render, "export": cmd_export, "editor": cmd_editor,
          "apply-edits": cmd_apply_edits, "set-client": cmd_set_client, "plan": cmd_plan, "looks": cmd_looks,
-         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "highlights": cmd_highlights, "extract": cmd_extract, "mg-scan": cmd_mg_scan, "tale-plan": cmd_tale_plan, "carousel-plan": cmd_carousel_plan, "types": cmd_types, "event-scan": cmd_event_scan, "event-plan": cmd_event_plan, "qa-plan": cmd_qa_plan, "duo": cmd_duo, "multicam": cmd_multicam, "bg": cmd_bg, "intake": cmd_intake, "bg-lib": cmd_bg_lib, "set-type": cmd_set_type, "carousel": cmd_carousel, "fix-word": cmd_fix_word,
+         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "highlights": cmd_highlights, "extract": cmd_extract, "mg-scan": cmd_mg_scan, "tale-plan": cmd_tale_plan, "carousel-plan": cmd_carousel_plan, "types": cmd_types, "event-scan": cmd_event_scan, "event-plan": cmd_event_plan, "qa-plan": cmd_qa_plan, "duo": cmd_duo, "multicam": cmd_multicam, "slowmo": cmd_slowmo, "bg": cmd_bg, "intake": cmd_intake, "bg-lib": cmd_bg_lib, "set-type": cmd_set_type, "carousel": cmd_carousel, "fix-word": cmd_fix_word,
          "variants": cmd_variants, "choose": cmd_choose, "music-preview": cmd_music_preview}[a.cmd](a)
     except UserError as err:
         print(f"XƏTA: {err.message}\nNƏ ETMƏLİ: {err.hint}", file=sys.stderr)

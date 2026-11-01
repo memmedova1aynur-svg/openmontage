@@ -38,7 +38,7 @@ APPROACHES: dict[str, dict[str, Any]] = {
             "gaps": "addım nömrələri əl ilə; hərəkət–danışıq uyğunluğu Claude-un yoxlamasıdır"},
     "M09": {"name": "Tədbir və proses montajı", "what": "görüntülər musiqi ilə: açılış → inkişaf → tamamlanma",
             "engine": ["event-scan", "event-plan", "variants", "choose"], "status": "partial",
-            "gaps": "yavaşlatma yoxdur (sürət dəyişməsi dəstəklənmir); şəkillər hərəkətsizdir; açılış/final xronologiya və "
+            "gaps": "yavaşlatma yalnız ≥50 fps materialda (real kadrlar); şəkillər hərəkətsizdir; açılış/final xronologiya və "
                     "ümumi plana görə seçilir — Claude variant şəklində yoxlayır"},
     "M10": {"name": "Yumorlu sual-cavab montajı", "what": "sürətli ritm, sual ekranda, reaksiya anları saxlanılır",
             "engine": ["qa-plan", "variants", "choose"], "status": "partial",
@@ -88,7 +88,7 @@ TYPES: dict[int, dict[str, Any]] = {
         "commands": ["highlights", "extract", "framefix", "storyboard", "variants", "choose", "render", "verify"],
         "notes": ["Hissə kontekstsiz də anlaşılmalıdır", "Səbəb əlaqəsi təhrif olunmur, fikir yarımçıq kəsilmir"]},
     5: {"name": "Seminar və tədbir icmalı", "short": "Tədbir icmalı", "family": "seminar",
-        "approaches": ["M09"], "status": "partial", "gaps": "yavaşlatma yoxdur; şəkillər hərəkətsiz; real səs (alqış) əl ilə seçilir",
+        "approaches": ["M09"], "status": "partial", "gaps": "yavaşlatma yalnız ≥50 fps materialda; şəkillər hərəkətsiz; real səs (alqış) əl ilə seçilir",
         "variants": [("M09", "Xronoloji: açılış → inkişaf → final"), ("M09", "Ritmik: musiqi vuruşuna kəsim"),
                      ("M09", "Qısa dəvət (15–20 s)")],
         "commands": ["new --type 5", "storyboard", "event-scan", "event-plan --music", "variants", "choose", "render", "verify"],
