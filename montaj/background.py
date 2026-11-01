@@ -61,9 +61,12 @@ def model_path(kind: str = "accurate") -> Path:
 # ---------------------------------------------------------------------------
 
 def lib_dir() -> Path:
-    from montaj.config import data_dir
+    """Fon kitabxanası repoda (montaj/backgrounds) — hər sessiyada əlçatandır. Sınaq üçün MONTAJ_BG_DIR."""
+    import os
 
-    d = data_dir() / "backgrounds"
+    from montaj.config import REPO_ROOT
+
+    d = Path(os.environ.get("MONTAJ_BG_DIR") or REPO_ROOT / "montaj" / "backgrounds")
     d.mkdir(parents=True, exist_ok=True)
     return d
 
@@ -106,7 +109,8 @@ def lib_file(ref: str) -> Path:
 
 
 def lib_rank(an: dict[str, Any], top: int = 3, tags: list[str] | None = None) -> list[dict[str, Any]]:
-    """Videonun orijinal otaq işığına ən yaxın fonlar: parlaqlıq, rəng temperaturu, şaquli format; çox qarışıq fon cəzalanır."""
+    """Videonun orijinal otaq işığına ən yaxın fonlar: parlaqlıq, rəng temperaturu, şaquli format, duruşa uyğunluq
+    (teq "ayaqüstə" / "oturan"); çox qarışıq fon cəzalanır."""
     old = an.get("oldbg") or {}
     ob, ow = float(old.get("bright", 128)), float(old.get("warm", 0))
     vertical = an.get("h", 16) >= an.get("w", 9)
@@ -117,6 +121,9 @@ def lib_rank(an: dict[str, Any], top: int = 3, tags: list[str] | None = None) ->
         s = -abs(r["bright"] - ob) / 35 - abs(r["warm"] - ow) / 30 - max(0.0, r["busy"] - 14) / 10
         if (r["h"] >= r["w"]) == vertical:
             s += 0.8
+        want = {"standing": "ayaqüstə", "seated": "oturan", "half": "oturan"}.get(an.get("posture") or "")
+        if want and want in (r.get("tags") or []):  # duruşa uyğun fon: ayaqüstəyə döşəməli, oturana divar/rəf
+            s += 0.7
         scored.append({**r, "score": round(s, 2)})
     return sorted(scored, key=lambda r: -r["score"])[:top]
 
