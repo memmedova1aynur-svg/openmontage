@@ -216,6 +216,8 @@ def _score(shots: list[dict[str, Any]]) -> None:
         s["score"] = round(1.4 * q + expo + stab + (0.3 if s["faces"] else 0.0), 3)
         s["weak"] = why
         s["wide"] = (not s["faces"]) or s["face"] < 0.02  # ümumi plan (məkan/zal) — açılış üçün
+        # plan ölçüsü (videoqrafiya: ümumi / orta / yaxın) — üzün kadrdakı sahəsinə görə; üz yoxdursa ümumi və ya detal
+        s["size"] = "close" if s["face"] >= 0.05 else "medium" if s["face"] >= 0.012 else "wide"
 
 
 def best_window(shot: dict[str, Any], length: float, avoid: list[tuple[float, float]] | None = None) -> float | None:
@@ -314,7 +316,9 @@ def assemble(shots: list[dict[str, Any]], bt: dict[str, Any], variant: str = "A"
                 continue
             review.append(f"yer {k + 1} ({length:.1f} s) üçün uyğun kadr yoxdur — atlandı (musiqi qısalır)")
             continue
-        sh = max(cand, key=lambda s: s["score"] + (0.4 if k == 0 and s["wide"] else 0) - 0.8 * len(uses.get(id(s), [])))
+        psize = prev.get("size") if prev else None
+        sh = max(cand, key=lambda s: s["score"] + (0.4 if k == 0 and s["wide"] else 0) - 0.8 * len(uses.get(id(s), []))
+                 - (0.5 if psize and s.get("size") == psize else 0))  # eyni plan ölçüsü dalbadal gəlməsin (jump cut)
         t0 = win(sh, length)
         uses.setdefault(id(sh), []).append((t0, t0 + length))
         prev = sh

@@ -9,6 +9,8 @@ Hədəf: video ilk dəfədən hazır olsun, əlavə düzəliş tələb etməsin.
 nümunələri birlikdə göndərilir, istifadəçi bir cavabla seçir (məs. “B, rəng A, musiqi 2”). Sonra yalnız **yekun MP4**.
 Ara düzəliş raundları təklif etmə.
 
+Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq, ritm, J/L-cut, etika): [`KINO_DILI.md`](KINO_DILI.md).
+
 ## Addımlar
 
 1. **Əvvəl qısa sorğu — Drive linkindən ÖNCƏ.** İstifadəçi yeni video istəyəndə (və ya link sorğusuz gəlsə)
@@ -180,6 +182,9 @@ Ara düzəliş raundları təklif etmə.
      ağırlıqlı, məlumat yönümlü). Yalnız rəng dəyişərək variant yaratma.
    - Planda `"title"`, `"storyboard": {"exclude": [..], "order": [..], "text": {"1": ".."}}` (giriş/sıra fərqi),
      `captions`, `graphics`, `zooms`, `sfx`.
+   - **J/L-cut**: planda `"jl": {"auto": true, "lead": 0.25}` — fərqli kameralar (media) arasında görüntü səsdən 0.25 s əvvəl
+     keçir (səs yerində); əl ilə `"cuts": {"<video klip id>": 0.3 (J) | -0.3 (L)}`. Eyni kamerada tətbiq olunmur (dodaq
+     sinxronu). Danışıq kəsimində 12 ms səs keçidi avtomatikdir (söndürmək: layihədə `"speechEdgeFade": false`).
    - **Virtual multikamera** (bir rakursdan fərqli plan ölçüləri): planda `"multicam": {"style": "calm" | "dynamic"}`
      (punch-in `zooms` əvəzinə) və ya tətbiq olunmuş montaja `multicam <pid> [--style dynamic]`. Cümlə sərhədlərində
      ümumi / orta / yaxın plan; giriş ümumi, vurğulu fikir (sual, nida, rəqəm, "ən vacib"...) yaxın; eyni ölçü ardıcıl gəlmir;

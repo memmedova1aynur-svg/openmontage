@@ -899,7 +899,7 @@ def test_duo_switch_split(tmp_path, monkeypatch):
     assert len(ch) == 3 and all(c["e"] - c["s"] <= 2.0 for c in ch)
     rs = duo.runs([{"s": 0, "e": 3}, {"s": 3.2, "e": 3.8}, {"s": 4, "e": 7}, {"s": 7.2, "e": 10}], [0, 1, 0, 1])
     assert [r["speaker"] for r in rs] == [0, 1] and rs[0]["e"] == 7, "qısa növbə (0.6 s) birləşir"
-    assert duo.cut_points(rs) == [7.1]
+    assert duo.cut_points(rs) == [7.02], "J-cut: kadr yeni danışana o başlamazdan əvvəl, əvvəlki bitəndən sonra keçir"
     spec = duo.split_spec([{"cx": 0.7, "cy": 0.4, "w": 0.1}, {"cx": 0.3, "cy": 0.4, "w": 0.1}], 1920, 1080, 1080, 1920)
     assert spec["top"]["x"] < 0.3 < spec["bottom"]["x"], "yuxarıda soldakı şəxs"
     assert abs(spec["top"]["w"] * 1920 / (spec["top"]["h"] * 1080) - 1080 / 960) < 0.01
@@ -1167,3 +1167,46 @@ def test_slowmo_real_frames(tmp_path, monkeypatch, capsys):
     diffs = np.abs(np.diff(fr, axis=0)).mean(axis=(1, 2))
     assert (diffs > 0.05).mean() > 0.95, "kadrlar təkrarlanmır (real kadrlar)"
     assert session.main(["slowmo", pid, "--media", "sinxron.mp4", "--from", "1", "--to", "2"]) == 2, "30 fps — hamar yavaşlatma yoxdur"
+
+
+def test_jl_cut_and_speech_edges(tmp_path, monkeypatch):
+    """J/L-cut: görüntü kəsimi sürüşür, səs yerində qalır (fərqli kameralar avtomatik, eyni kamerada yox); real kəsimdə
+    danışıq səsinə qısa keçid, davamlı bölünmədə yox; M09 plan ölçüsü təsnifatı."""
+    from montaj import event, render
+
+    def clip(cid, media, a, b):
+        return {"id": cid, "track": "v1", "media": media, "srcIn": a, "srcOut": b}
+    vplan = [{"clip": clip("v1", "A", 2.0, 5.0), "start": 0.0, "frames": 90, "dur": 3.0},
+             {"clip": clip("v2", "B", 4.0, 7.0), "start": 3.0, "frames": 90, "dur": 3.0},
+             {"clip": clip("v3", "B", 7.0, 9.0), "start": 6.0, "frames": 60, "dur": 2.0}]
+    proj = {"jl": {"auto": True, "lead": 0.3}, "media": [{"id": "A", "duration": 10}, {"id": "B", "duration": 10}]}
+    render._jl_cuts(proj, vplan, 30.0)
+    assert vplan[0]["frames"] == 81 and vplan[1]["frames"] == 99 and abs(vplan[1]["clip"]["srcIn"] - 3.7) < 1e-6, "J: B kadrı 0.3 s əvvəl"
+    assert vplan[1]["aSrcIn"] == 4.0 and vplan[1]["aStart"] == 3.0, "səs sərhədi orijinal"
+    assert vplan[2]["frames"] == 60 and vplan[2]["clip"]["srcIn"] == 7.0, "eyni kamera (davamlı) — toxunulmur"
+    assert abs(vplan[2]["start"] - 6.0) < 1e-6
+    vp2 = [{"clip": clip("v1", "A", 2.0, 5.0), "start": 0.0, "frames": 90, "dur": 3.0},
+           {"clip": clip("v2", "B", 4.0, 7.0), "start": 3.0, "frames": 90, "dur": 3.0}]
+    render._jl_cuts({"jl": {"cuts": {"v2": -0.2}}, "media": proj["media"]}, vp2, 30.0)
+    assert vp2[0]["frames"] == 96 and abs(vp2[0]["clip"]["srcOut"] - 5.2) < 1e-6, "L: A kadrı 0.2 s davam edir"
+
+    vp = [{"clip": clip("x1", "A", 0, 3)}, {"clip": clip("x2", "A", 3, 5)}, {"clip": clip("x3", "A", 6, 8)}]
+    ap = [{"clip": {"id": f"a{i}", "linkedTo": f"x{i}"}, "kind": "speech"} for i in (1, 2, 3)]
+    render._speech_edges({}, vp, ap)
+    assert ap[0]["edgeOut"] == 0 and ap[1]["edgeIn"] == 0, "davamlı bölünmə — keçid yoxdur"
+    assert ap[1]["edgeOut"] == render.EDGE_FADE and ap[2]["edgeIn"] == render.EDGE_FADE, "real kəsim — qısa keçid"
+    assert "afade=t=in" in render._afades({}, 2.0, 0.012, 0.0)
+
+    shots = [{"faces": 0, "face": 0.0, "sharp": 0.7, "bright": 120, "shake": 1}, {"faces": 1, "face": 0.02, "sharp": 0.7, "bright": 120, "shake": 1},
+             {"faces": 1, "face": 0.08, "sharp": 0.7, "bright": 120, "shake": 1}]
+    event._score(shots)
+    assert [s["size"] for s in shots] == ["wide", "medium", "close"]
+
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import session, store
+
+    _draft_and_analysis(pid)
+    p = store.load(pid)
+    p["jl"] = {"auto": True}
+    store.save(pid, p, p["revision"])
+    assert session.main(["render", pid]) == 0, "J/L ayarı ilə render (eyni kamera — dəyişiklik yoxdur)"

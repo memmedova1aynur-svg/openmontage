@@ -941,6 +941,8 @@ def apply_plan(pid: str, p: dict[str, Any], plan: dict[str, Any], plan_name: str
         if m.get("width") and q.get("width") and abs(m["width"] / m["height"] - q["width"] / q["height"]) > 0.02:
             raise UserError("Punch-in yalnız eyni ölçülü kadrda avtomatik qurulur.", "Kadrajı redaktorda əl ilə edin.")
         q = node_tl("setFrame", q, mid["id"], fr, {"manual": False})
+    if plan.get("jl") is not None:  # J/L-cut (render-də): {"auto": true, "lead": 0.25, "cuts": {...}}
+        q["jl"] = plan["jl"]
     if plan.get("multicam"):  # virtual multikamera (plan ölçüləri) — punch-in əvəzinə
         q, rep = _apply_multicam(pid, q, plan["multicam"])
         q["multicamReport"] = {k: v for k, v in rep.items() if k != "plans"}
@@ -1962,7 +1964,8 @@ def cmd_event_scan(a: argparse.Namespace) -> None:
         if sh["weak"]:
             d.rectangle([x, y, x + tw, y + th], outline=(255, 90, 90), width=4)
         d.text((x, y + th + 4), f"#{i + 1} {sh['name'][:14]} {sh['s']:.1f}–{sh['e']:.1f}s", font=font, fill=(220, 222, 228))
-        d.text((x, y + th + 22), f"bal {sh['score']:.2f}" + (" · ümumi plan" if sh["wide"] else "") +
+        size_az = {"wide": "ümumi", "medium": "orta", "close": "yaxın"}.get(sh.get("size", "wide"), "")
+        d.text((x, y + th + 22), f"bal {sh['score']:.2f} · {size_az} plan" +
                (" · " + ", ".join(sh["weak"]) if sh["weak"] else ""), font=font, fill=(255, 140, 140) if sh["weak"] else (154, 161, 173))
     tmp.unlink(missing_ok=True)
     img.save(o / "kadrlar.jpg", quality=85)

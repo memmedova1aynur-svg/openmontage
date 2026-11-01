@@ -238,6 +238,12 @@ real danışıqda səs sinxronu və görünən keyfiyyət, iPhone Safari, Instag
 | 28.1 | Yavaşlatma real kadrlarla (`slowmo`): 60 fps → 30 fps çıxışda 0.5x, kadr uydurulmur; 30 fps materialda aydın xəta / xəbərdarlıq | ✅ | `test_slowmo_real_frames` (60 kadr, hamısı fərqli) |
 | 28.2 | M09: material ≥50 fps olanda final kadr avtomatik 0.5x (kadraj orijinaldan) | ✅ | `test_event_montage_beats` (60 fps final, kəsimlər vuruşda) |
 | 28.3 | Düzəliş: törəmə media `store.add_media_record` ilə (store.save yeni medianı qəbul etmir) | ✅ | Test |
+| 29.1 | J/L-cut render-də (görüntü kəsimi sürüşür, səs yerində; auto — fərqli kameralar; əl ilə J/L), verify səsə görə yoxlayır | ✅ | `test_jl_cut_and_speech_edges`; real render: kəsim 8.0 → 7.7 s, uzunluq eyni |
+| 29.2 | Danışıq kəsimində 12 ms səs keçidi (davamlı bölünmədə yox) | ✅ | Test |
+| 29.3 | `duo` keçidi J-cut üslubunda (yeni danışan başlamazdan 0.25 s əvvəl, əvvəlki bitəndən sonra) | ✅ | Test |
+| 29.4 | M09 plan ölçüsü (ümumi/orta/yaxın), eyni ölçü dalbadal gəlmir; kadrlar.jpg-də ölçü | ✅ | Test |
+| 29.5 | Montaj prinsipləri sənədi `KINO_DILI.md` (videoqrafiya bələdçisinin xülasəsi + sistemdə qarşılığı) | ✅ | Sənəd |
+
 
 
 
