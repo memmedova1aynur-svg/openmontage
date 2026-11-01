@@ -1462,6 +1462,116 @@ def cmd_carousel(a: argparse.Namespace) -> None:
     print("Instagram-da: yeni paylaşım → bir neçə seç → slaydları sıra ilə əlavə et")
 
 
+def _speech_media(p: dict[str, Any]) -> dict[str, Any]:
+    from montaj import reframe
+
+    m = reframe.primary_video([x for x in p["media"] if x.get("hasAudio") and not (x.get("source") or {}).get("type") in ("generated", "music", "sfx")])
+    if not m:
+        raise UserError("Danışıq videosu yoxdur.", "Səsli video faylı əlavə edin.")
+    return m
+
+
+def cmd_qa_plan(a: argparse.Namespace) -> None:
+    """M10: suallar + cavablar + reaksiyalar → qa_A/B/C.json (storyboard.cards) — `variants` / `choose` ilə."""
+    from montaj import event, qa, quality, speakers
+
+    p = store.load(a.pid)
+    m = _speech_media(p)
+    src = store.project_dir(a.pid) / m["file"]
+    words = sorted([w for w in _ad_words(a.pid, p) if w["media"] == m["id"]], key=lambda w: w["s"])
+    if not words:
+        raise UserError("Transkript yoxdur.", "Əvvəl `storyboard <pid>` işlədin.")
+    try:
+        _load_draft(a.pid)
+    except UserError:
+        raise UserError("Storyboard qaralaması yoxdur.", "Əvvəl `storyboard <pid>` işlədin.") from None
+    rms = quality.frame_rms(event._decode(src, quality.SR))
+    motion = None
+    if not a.no_faces and m.get("hasVideo"):
+        ser = speakers.mouth_tracks(src, 0, float(m["duration"]))
+        mt = speakers.main_track(ser)
+        if mt is not None:
+            motion = [speakers.motion_in(ser, mt, s_["s"], s_["e"]) for s_ in quality.sentences(words, gap=0.5)]
+    same = bool(m.get("width") and p.get("width") and abs(m["width"] / m["height"] - p["width"] / p["height"]) < 0.02)
+    r = qa.plans(words, m["id"], rms, motion, same_aspect=same)
+    print(f"{r['pairs']} sual-cavab, {len(r['reactions'])} reaksiya anı (gülüş/səsli pauza — saxlanılır)")
+    for k, plan in r["plans"].items():
+        f = out_dir(a.pid) / f"qa_{k}.json"
+        plan["_review"] = r["review"] + plan.get("_review", [])
+        f.write_text(json.dumps(plan, ensure_ascii=False, indent=1), encoding="utf-8")
+        dur = sum(c["srcOut"] - c["srcIn"] for c in plan["storyboard"]["cards"])
+        print(f"{k}: {plan['title']} ({plan['approach']}) — {dur:.1f} s, {len(plan['graphics'])} sual yazısı, "
+              f"{len(plan['zooms'])} yaxınlaşma → {f}")
+    for x in r["review"]:
+        print("YOXLA:", x)
+    if not same:
+        print("QEYD: kadr ölçüsü fərqlidir — reaksiya yaxınlaşması (punch-in) qurulmadı")
+    print("növbəti: sual mətnlərində ASR səhvini düzəlt → variants <pid> qa_A.json qa_B.json qa_C.json → choose")
+
+
+def cmd_duo(a: argparse.Namespace) -> None:
+    """Növ 11 (iki nəfər bir kadrda): `switch` — kadraj danışana keçir; `split` — bölünmüş ekran. Tətbiq olunmuş montaja."""
+    from montaj import duo, quality, speakers
+
+    q = node_tl("migrate", store.load(a.pid))
+    m = _speech_media(q)
+    src = store.project_dir(a.pid) / m["file"]
+    vids = [c for c in node_tl("videoClips", q) if c["media"] == m["id"] and not c.get("broll")]
+    if not vids:
+        raise UserError("Montajda bu videonun klipi yoxdur.", "Əvvəl storyboard-u tətbiq edin (`choose` və ya `apply`).")
+    a0, b0 = min(c["srcIn"] for c in vids), max(c["srcOut"] for c in vids)
+    ser = speakers.mouth_tracks(src, a0, b0)
+    if len(ser["tracks"]) < 2:
+        raise UserError(f"Kadrda iki nəfər tapılmadı ({len(ser['tracks'])}).",
+                        "Bu rejim bir kadrda iki danışan üçündür; iki ayrı kamera sinxronu hələ yoxdur.")
+    tr = sorted(ser["tracks"], key=lambda t: -t["n"])[:2]
+    idx = [ser["tracks"].index(t) for t in sorted(tr, key=lambda t: t["cx"])]
+    W, H = int(q["width"]), int(q["height"])
+    if a.mode == "split":
+        spec = duo.split_spec([ser["tracks"][i] for i in idx], float(m["width"]), float(m["height"]), W, H)
+        for c in q["clips"]:
+            if c["track"] == "v1" and c.get("media") == m["id"] and not c.get("broll"):
+                c["split"] = spec
+        if q.get("subtitles"):
+            q["subtitles"]["style"] = {**(q["subtitles"].get("style") or {}), "y": 0.5}
+        print("bölünmüş ekran: yuxarıda soldakı, aşağıda sağdakı şəxs; altyazı ortada (y 0.5)")
+    else:
+        words = sorted([w for w in _ad_words(a.pid, q) if w["media"] == m["id"]], key=lambda w: w["s"])
+        ss = duo.chunks(words, [x for x in quality.sentences(words, gap=0.5) if a0 - 0.05 <= x["s"] <= b0])
+        who = speakers.turns({**ser, "tracks": [ser["tracks"][i] for i in idx]}, ss)
+        rs = duo.runs(ss, who, a.min_len)
+        cuts = duo.cut_points(rs)
+        for t in cuts:  # mənbə vaxtı → klip bölünməsi
+            c = next((x for x in node_tl("videoClips", q) if x["media"] == m["id"] and x["srcIn"] + 0.2 < t < x["srcOut"] - 0.2), None)
+            if c:
+                q = node_tl("split", q, c["id"], _start(q, c["id"]) + (t - c["srcIn"]))
+        for c in node_tl("videoClips", q):
+            if c["media"] != m["id"] or c.get("broll"):
+                continue
+            mid = (c["srcIn"] + c["srcOut"]) / 2
+            r = next((x for x in rs if x["s"] - 0.3 <= mid <= x["e"] + 0.3), None)
+            if not r or r["speaker"] is None:
+                continue
+            t_ = ser["tracks"][idx[r["speaker"]]]
+            fr = dict(c.get("frame") or {})
+            if not fr.get("keys"):
+                continue
+            fr["keys"] = [{"t": c["srcIn"], "cx": round(t_["cx"], 4), "cy": round(min(0.6, max(0.35, t_["cy"])), 4)}]
+            fr.pop("planZoom", None)
+            q = node_tl("setFrame", q, c["id"], fr, {"manual": False})
+        share = {}
+        for r in rs:
+            share[r["speaker"]] = share.get(r["speaker"], 0) + r["e"] - r["s"]
+        print(f"{len(rs)} növbə, {len(cuts)} kəsim; danışma payı: " +
+              ", ".join(f"{'sol' if k == 0 else 'sağ' if k == 1 else '?'} {v:.0f} s" for k, v in share.items()))
+    for c in q["clips"]:  # avtomatik qərardır — sonrakı storyboard tətbiqi bu klipləri "əl ilə" saymasın
+        if c.get("media") == m["id"] and (c["track"] == "v1" or c.get("linkedTo")):
+            c["manual"] = False
+    cur = store.load(a.pid)
+    saved = store.save(a.pid, q, cur["revision"])
+    print(f"saxlandı: versiya {saved['revision']} — render <pid>")
+
+
 def cmd_event_scan(a: argparse.Namespace) -> None:
     """M09: bütün görüntülərin kadrları (xronoloji) və keyfiyyəti → shots.json + kadrlar.jpg (zəif kadr qırmızı)."""
     from PIL import Image, ImageDraw, ImageFont
@@ -1904,6 +2014,13 @@ def main(argv: list[str] | None = None) -> int:
     ep.add_argument("--target", type=float, help="müddət, s (standart: A/B 30, C 17)")
     ep.add_argument("--volume", type=float, default=0.9)
     ep.add_argument("--variants", default="ABC")
+    du = sub.add_parser("duo", help="növ 11: iki nəfər — kadraj danışana keçir (switch) və ya bölünmüş ekran (split)")
+    du.add_argument("pid")
+    du.add_argument("--mode", choices=["switch", "split"], default="switch")
+    du.add_argument("--min-len", type=float, default=1.5)
+    qp = sub.add_parser("qa-plan", help="M10: sürətli sual-cavab — 3 variant")
+    qp.add_argument("pid")
+    qp.add_argument("--no-faces", action="store_true")
     ty = sub.add_parser("types", help="video növləri, yanaşmalar, sorğu sualları (reyestr)")
     ty.add_argument("n", nargs="?", type=int)
     ty.add_argument("--survey", action="store_true")
@@ -1993,7 +2110,7 @@ def main(argv: list[str] | None = None) -> int:
         {"new": cmd_new, "storyboard": cmd_storyboard, "edit": cmd_edit, "apply": cmd_apply,
          "render": cmd_render, "export": cmd_export, "editor": cmd_editor,
          "apply-edits": cmd_apply_edits, "set-client": cmd_set_client, "plan": cmd_plan, "looks": cmd_looks,
-         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "highlights": cmd_highlights, "extract": cmd_extract, "mg-scan": cmd_mg_scan, "tale-plan": cmd_tale_plan, "carousel-plan": cmd_carousel_plan, "types": cmd_types, "event-scan": cmd_event_scan, "event-plan": cmd_event_plan, "set-type": cmd_set_type, "carousel": cmd_carousel, "fix-word": cmd_fix_word,
+         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "highlights": cmd_highlights, "extract": cmd_extract, "mg-scan": cmd_mg_scan, "tale-plan": cmd_tale_plan, "carousel-plan": cmd_carousel_plan, "types": cmd_types, "event-scan": cmd_event_scan, "event-plan": cmd_event_plan, "qa-plan": cmd_qa_plan, "duo": cmd_duo, "set-type": cmd_set_type, "carousel": cmd_carousel, "fix-word": cmd_fix_word,
          "variants": cmd_variants, "choose": cmd_choose, "music-preview": cmd_music_preview}[a.cmd](a)
     except UserError as err:
         print(f"XƏTA: {err.message}\nNƏ ETMƏLİ: {err.hint}", file=sys.stderr)
