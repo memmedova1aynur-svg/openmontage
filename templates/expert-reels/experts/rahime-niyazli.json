@@ -179,6 +179,18 @@
       "captions": "box",
       "tone": "#D9581F",
       "anim": "fade"
+    },
+    {
+      "video": "v1101-7",
+      "date": "2026-11-01",
+      "engine": "montaj",
+      "type": 1,
+      "approach": "M01+M02+M04",
+      "variant": "3 aylıq təlim proqramı",
+      "look": "C",
+      "captions": "stroke",
+      "tone": "#F7E6D0",
+      "anim": "pop"
     }
   ]
 }
