@@ -107,6 +107,78 @@
       "tone": "#F7E6D0",
       "anim": "fade",
       "notes": "güzgü çevrilmədi (istifadəçi qaydası: hflip yox); söz kəsilmədi; kadr s0.87 cx0.455 cy0.575 (tavan azaldıldı); fon: bulanıq 5 + qaraltma 0.35 (studiya loş işığı, smooth 0.75); rəng C; narıncı altyazı krem kontur; krem kartlar (2 sual başlığı, 2 vurğu, 3 maddəli siyahı); real Mixkit b-roll yuxarıda 16:9 pəncərə x3; musiqi CC0 Children's Game Music 4: Activity (heartade, OpenGameArt); fon işığı yalnız arxa fona (kreslo/stol orijinal); B-roll bölünmüş ekran aşağıda, altyazı başın üstündə"
+    },
+    {
+      "video": "v1101-1",
+      "date": "2026-11-01",
+      "engine": "montaj",
+      "type": 1,
+      "approach": "M01+M02+M04",
+      "variant": "Zəfər günü bağçada",
+      "look": "C",
+      "captions": "stroke",
+      "tone": "#F7E6D0",
+      "anim": "pop"
+    },
+    {
+      "video": "v1101-2",
+      "date": "2026-11-01",
+      "engine": "montaj",
+      "type": 1,
+      "approach": "M01+M02+M04",
+      "variant": "Özüm haqqında",
+      "look": "C",
+      "captions": "box",
+      "tone": "#D9581F",
+      "anim": "slide-up"
+    },
+    {
+      "video": "v1101-3",
+      "date": "2026-11-01",
+      "engine": "montaj",
+      "type": 1,
+      "approach": "M01+M02+M04",
+      "variant": "Bağça rəhbərliyi təlimi",
+      "look": "C",
+      "captions": "stroke",
+      "tone": "#D9581F",
+      "anim": "fade"
+    },
+    {
+      "video": "v1101-4",
+      "date": "2026-11-01",
+      "engine": "montaj",
+      "type": 1,
+      "approach": "M01+M02+M04",
+      "variant": "Açıq məşğələlərə dəvət",
+      "look": "C",
+      "captions": "box",
+      "tone": "#F7E6D0",
+      "anim": "pop"
+    },
+    {
+      "video": "v1101-5",
+      "date": "2026-11-01",
+      "engine": "montaj",
+      "type": 1,
+      "approach": "M01+M02+M04",
+      "variant": "Yeni rubrika",
+      "look": "C",
+      "captions": "stroke",
+      "tone": "#F7E6D0",
+      "anim": "slide-up"
+    },
+    {
+      "video": "v1101-6",
+      "date": "2026-11-01",
+      "engine": "montaj",
+      "type": 1,
+      "approach": "M01+M02+M04",
+      "variant": "10 günlük bağça işi təlimi",
+      "look": "C",
+      "captions": "box",
+      "tone": "#D9581F",
+      "anim": "fade"
     }
   ]
 }
