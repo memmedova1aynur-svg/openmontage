@@ -26,7 +26,8 @@
   "Hər render-dən əvvəl fix_joins.py: kəsimlər mənbə səsinə görə sükuta çəkilir (söz sonu 0.17 s, başlanğıc 0.11 s); retake sözü qayıdırsa PIN ilə saxla.",
   "Səs: LIGHT=1 (highpass + yüngül afftdn), açıq havada GENTLE=1 ATTEN=12. Güclü DFN + bərpa süni səs verdi.",
   "Bəyənilmədi: ikon dairələri, yan sütun qeydləri, buludlar, ensiz kartlar. Təsdiqli: firuzəyi 'dark' pop kartları, kids səhnəsi, dovşan, 1-2-3 rəqəm kadrları (altında alt yazı yox), real cihaz təsvirləri.",
-  "Qırmızı geyimdə alt yazı tam ağ (style.activeColor #FFFFFF). Son sözdən sonra ən azı 1 s qalsın - yekun faylda yoxla."
+  "Qırmızı geyimdə alt yazı tam ağ (style.activeColor #FFFFFF). Son sözdən sonra ən azı 1 s qalsın - yekun faylda yoxla.",
+  "Ümumi istifadəçi qaydası (2026-11-01, bütün müştərilər, soruşmadan): rəng həmişə looks C (təmiz-neytral). Musiqi: piano/yavaş YOX — uşaq inkişafı mövzusunda dinamik kids/kindergarten, təhsil reklamında educational/corporate (yalnız CC0). B-roll başı örtmür: bölünmüş ekran — danışan yuxarıda, B-roll sinədən aşağı (pip y≈0.70, tam en), həmin anda altyazı başın üstündə (y≈0.17). Fon işığı (loş studiya) yalnız arxa fona: kreslo, stol, oturacaq orijinal qalır (keçidli maska ~0.50→0.64). Güzgü çevirmə (hflip) yoxdur."
  ],
  "theme_source": "istifadəçi təsdiqi (2026-10-28): firuzəyi #127A80 əsas + çəhrayı #F66CA1 vurğu + sarı #FFD21A; səhifə rəngləri. Qırmızı geyimdə alt yazı ağ olsun.",
  "style": {

@@ -16,7 +16,8 @@
   "Fon bulanıqlaşdırılmır (istifadəçi bəyənmədi, 2026-10-30). Fonda insan keçirsə: həmin cümlə lazımsız/təkrardırsa çıxar, deyilsə saxla.",
   "Rakurs: Suranı ortala, əyriliyi düzəlt (şaquli xətlərə görə), başın üstündəki artıq boşluğu kəs (crop ~1.25 + yüngül unsharp). Yazılar hicabın üstündə qalsın.",
   "sura-01 nümunəsi təsdiqləndi (2026-10-30): qalan videoları soruşmadan et; hər video quruluşca fərqli olsun, insan montajı kimi.",
-  "Render-lər tək-tək getməlidir: Whisper + Remotion eyni anda 15 GB-ı aşır (2026-10-30). Checklist stikerləri çənəyə düşməsin deyə top >= 1000 və ya caption_shift istifadə et."
+  "Render-lər tək-tək getməlidir: Whisper + Remotion eyni anda 15 GB-ı aşır (2026-10-30). Checklist stikerləri çənəyə düşməsin deyə top >= 1000 və ya caption_shift istifadə et.",
+  "Ümumi istifadəçi qaydası (2026-11-01, bütün müştərilər, soruşmadan): rəng həmişə looks C (təmiz-neytral). Musiqi: piano/yavaş YOX — uşaq inkişafı mövzusunda dinamik kids/kindergarten, təhsil reklamında educational/corporate (yalnız CC0). B-roll başı örtmür: bölünmüş ekran — danışan yuxarıda, B-roll sinədən aşağı (pip y≈0.70, tam en), həmin anda altyazı başın üstündə (y≈0.17). Fon işığı (loş studiya) yalnız arxa fona: kreslo, stol, oturacaq orijinal qalır (keçidli maska ~0.50→0.64). Güzgü çevirmə (hflip) yoxdur."
  ],
  "theme_source": "pink theme chosen by us from the colour family and approved by the user on sura-01 (2026-10-30); brand colour = colour family (user rule 2026-10-31): nearby shades are fine, no 'unconfirmed code' warning",
  "theme": {
