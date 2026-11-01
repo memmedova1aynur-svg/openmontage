@@ -57,7 +57,8 @@ Ara düzəliş raundları təklif etmə.
      törəmə video (orijinal dəyişmir, səs orijinaldan, kadr sayı eyni); render onu götürür. Geri: `bg <pid> --off`.
      ~2 dəq / 30 s (1080x1920). "kənar titrəməsi" çap olunur: >0.06 olsa `smooth`-u artır və ya `blur` təklif et.
    - **Təbii fon (interyer/studiya şəkilləri) — dəyişdirildiyi hiss olunmasın.** Fon kitabxanası: `bg-lib add <şəkillər> [--tag ...]`,
-     `bg-lib list` (yerli: `$MONTAJ_DATA_DIR/backgrounds` — public repoya düşmür). `bg <pid> --auto --preview` — videonun otaq
+     `bg-lib list` (repoda: `montaj/backgrounds`, teqlər `ayaqüstə` / `oturan` / `studiya` / `interyer`; yeni fon əlavə edəndə
+     duruş teqini qoy və commit et). `bg <pid> --auto --preview` — videonun otaq
      işığına (parlaqlıq, rəng temperaturu) ən uyğun 3 fon; və ya `--lib <id>`. image/video/scene üçün avtomatik:
      rəng/parlaqlıq uyğunlaşması (fon orijinal otağın işığına yaxınlaşır, insanın üzünə toxunulmur), fokus (detallı fon çox
      bulanır), kənar işığı, kameranın dənəvərliyi, **masa avtomatik tapılır — oturan şəxsdə masa və əllər orijinal qalır**,

@@ -1801,7 +1801,7 @@ def _bg_analysis(pid: str, p: dict[str, Any], m: dict[str, Any]) -> dict[str, An
 
 
 def cmd_bg_lib(a: argparse.Namespace) -> None:
-    """Fon kitabxanası (yerli: MONTAJ_DATA_DIR/backgrounds — public repoya düşmür)."""
+    """Fon kitabxanası (repoda: montaj/backgrounds; teqlər: ayaqüstə / oturan / studiya / interyer)."""
     from montaj import background
 
     if a.action == "add":

@@ -1023,7 +1023,7 @@ def test_background_natural(tmp_path, monkeypatch):
     y, strength = bgm._table_edge(g, m)
     assert abs(y - 0.8) < 0.02 and strength > 6
 
-    monkeypatch.setenv("MONTAJ_DATA_DIR", str(tmp_path / "data"))
+    monkeypatch.setenv("MONTAJ_BG_DIR", str(tmp_path / "fonlar"))
     files = []
     for name, col in (("aciq_isti.png", (230, 200, 160)), ("qaranliq_soyuq.png", (30, 40, 70))):
         f = tmp_path / name
@@ -1034,6 +1034,9 @@ def test_background_natural(tmp_path, monkeypatch):
     an = {"w": 1080, "h": 1920, "oldbg": {"rgb": [220, 195, 165], "bright": 193, "warm": 55}, "noise": 4.0, "table": 0.79,
           "posture": "seated"}
     assert bgm.lib_rank(an, 1)[0]["source"] == "aciq_isti.png", "açıq, isti otağa açıq, isti fon"
+    bgm.lib_add([files[1]], ["ayaqüstə"])
+    dark_an = {**an, "oldbg": {"rgb": [120, 120, 120], "bright": 120, "warm": 0}}
+    assert bgm.lib_rank({**dark_an, "posture": "standing"}, 1)[0]["source"] == "qaranliq_soyuq.png", "duruş teqi üstünlük verir"
     gains = bgm.harmonize_gains(an, [100.0, 100.0, 100.0])
     assert all(x > 1 for x in gains) and gains[0] > gains[2], "qaranlıq fon açılır, isti otağa doğru"
     spec = bgm.resolve(bgm.normalize({"mode": "image", "lib": recs[1]["id"]}), an)
