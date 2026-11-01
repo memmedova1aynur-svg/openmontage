@@ -22,7 +22,7 @@
     "Rəhimə 4: 2-ci çəkilişdə 'yanaşmalı' deyilib - sözləri digər çəkilişlə müqayisə et, tam deyilən variantı götür.",
     "Mənbəni güzgü effektinə görə yoxla (Rəhimə 5 güzgü çəkilmişdi - çevrildi).",
     "Zəif/tez deyilən sözləri (məs. 'Hər səhvində') digər çəkilişlərlə müqayisə et; aydın olanı götür.",
-    "Ümumi istifadəçi qaydası (2026-11-01, bütün müştərilər, soruşmadan): rəng həmişə looks C (təmiz-neytral). Musiqi: piano/yavaş YOX — uşaq inkişafı mövzusunda dinamik kids/kindergarten, təhsil reklamında educational/corporate (yalnız CC0). B-roll başı örtmür: bölünmüş ekran — danışan yuxarıda, B-roll sinədən aşağı (pip y≈0.70, tam en), həmin anda altyazı başın üstündə (y≈0.17). Fon işığı (loş studiya) yalnız arxa fona: kreslo, stol, oturacaq orijinal qalır (keçidli maska ~0.50→0.64). Güzgü çevirmə (hflip) yoxdur."
+    "Ümumi istifadəçi qaydası (2026-11-01, bütün müştərilər, soruşmadan): rəng həmişə looks C (təmiz-neytral). Musiqi: piano/yavaş YOX — uşaq inkişafı mövzusunda dinamik kids/kindergarten, təhsil reklamında educational/corporate (yalnız CC0). B-roll başı örtmür: bölünmüş ekran — danışan yuxarıda, B-roll sinədən aşağı (pip y≈0.70, tam en), həmin anda altyazı başın üstündə (y≈0.17). Arxa fon bulanıqlaşdırılmır və qaraldılmır (istifadəçi: hiss olunur, başın ətrafında iz qalır) — fon orijinal qalır. Danışılmayan boş saniyələr (pauzalar ≥0.45 s) kəsilir, söz kəsilmir; kəsimdən sonra söz təkrarı olmadığını yoxla. Güzgü çevirmə (hflip) yoxdur."
   ],
   "theme_source": "colour family confirmed by the user (burnt orange / orange-cream); exact hex chosen by us",
   "theme": {
@@ -107,6 +107,90 @@
       "tone": "#F7E6D0",
       "anim": "fade",
       "notes": "güzgü çevrilmədi (istifadəçi qaydası: hflip yox); söz kəsilmədi; kadr s0.87 cx0.455 cy0.575 (tavan azaldıldı); fon: bulanıq 5 + qaraltma 0.35 (studiya loş işığı, smooth 0.75); rəng C; narıncı altyazı krem kontur; krem kartlar (2 sual başlığı, 2 vurğu, 3 maddəli siyahı); real Mixkit b-roll yuxarıda 16:9 pəncərə x3; musiqi CC0 Children's Game Music 4: Activity (heartade, OpenGameArt); fon işığı yalnız arxa fona (kreslo/stol orijinal); B-roll bölünmüş ekran aşağıda, altyazı başın üstündə"
+    },
+    {
+      "video": "v1101-1",
+      "date": "2026-11-01",
+      "engine": "montaj",
+      "type": 1,
+      "approach": "M01+M02+M04",
+      "variant": "Zəfər günü bağçada",
+      "look": "C",
+      "captions": "stroke",
+      "tone": "#F7E6D0",
+      "anim": "pop"
+    },
+    {
+      "video": "v1101-2",
+      "date": "2026-11-01",
+      "engine": "montaj",
+      "type": 1,
+      "approach": "M01+M02+M04",
+      "variant": "Özüm haqqında",
+      "look": "C",
+      "captions": "box",
+      "tone": "#D9581F",
+      "anim": "slide-up"
+    },
+    {
+      "video": "v1101-3",
+      "date": "2026-11-01",
+      "engine": "montaj",
+      "type": 1,
+      "approach": "M01+M02+M04",
+      "variant": "Bağça rəhbərliyi təlimi",
+      "look": "C",
+      "captions": "stroke",
+      "tone": "#D9581F",
+      "anim": "fade"
+    },
+    {
+      "video": "v1101-4",
+      "date": "2026-11-01",
+      "engine": "montaj",
+      "type": 1,
+      "approach": "M01+M02+M04",
+      "variant": "Açıq məşğələlərə dəvət",
+      "look": "C",
+      "captions": "box",
+      "tone": "#F7E6D0",
+      "anim": "pop"
+    },
+    {
+      "video": "v1101-5",
+      "date": "2026-11-01",
+      "engine": "montaj",
+      "type": 1,
+      "approach": "M01+M02+M04",
+      "variant": "Yeni rubrika",
+      "look": "C",
+      "captions": "stroke",
+      "tone": "#F7E6D0",
+      "anim": "slide-up"
+    },
+    {
+      "video": "v1101-6",
+      "date": "2026-11-01",
+      "engine": "montaj",
+      "type": 1,
+      "approach": "M01+M02+M04",
+      "variant": "10 günlük bağça işi təlimi",
+      "look": "C",
+      "captions": "box",
+      "tone": "#D9581F",
+      "anim": "fade"
+    },
+    {
+      "video": "v1101-7",
+      "date": "2026-11-01",
+      "engine": "montaj",
+      "type": 1,
+      "approach": "M01+M02+M04",
+      "variant": "3 aylıq təlim proqramı",
+      "look": "C",
+      "captions": "stroke",
+      "tone": "#F7E6D0",
+      "anim": "pop"
     }
   ]
 }

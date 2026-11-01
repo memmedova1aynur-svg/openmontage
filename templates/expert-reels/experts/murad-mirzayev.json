@@ -13,7 +13,7 @@
   "video_types": "ekspert danışığı, biznes izahı, reklam, sual-cavab, seminar",
   "cautions": [
     "İki ad eyni şəxsdir (Murad Mirzəyev / Murad Elxan).",
-    "Ümumi istifadəçi qaydası (2026-11-01, bütün müştərilər, soruşmadan): rəng həmişə looks C (təmiz-neytral). Musiqi: piano/yavaş YOX — uşaq inkişafı mövzusunda dinamik kids/kindergarten, təhsil reklamında educational/corporate (yalnız CC0). B-roll başı örtmür: bölünmüş ekran — danışan yuxarıda, B-roll sinədən aşağı (pip y≈0.70, tam en), həmin anda altyazı başın üstündə (y≈0.17). Fon işığı (loş studiya) yalnız arxa fona: kreslo, stol, oturacaq orijinal qalır (keçidli maska ~0.50→0.64). Güzgü çevirmə (hflip) yoxdur."
+    "Ümumi istifadəçi qaydası (2026-11-01, bütün müştərilər, soruşmadan): rəng həmişə looks C (təmiz-neytral). Musiqi: piano/yavaş YOX — uşaq inkişafı mövzusunda dinamik kids/kindergarten, təhsil reklamında educational/corporate (yalnız CC0). B-roll başı örtmür: bölünmüş ekran — danışan yuxarıda, B-roll sinədən aşağı (pip y≈0.70, tam en), həmin anda altyazı başın üstündə (y≈0.17). Arxa fon bulanıqlaşdırılmır və qaraldılmır (istifadəçi: hiss olunur, başın ətrafında iz qalır) — fon orijinal qalır. Danışılmayan boş saniyələr (pauzalar ≥0.45 s) kəsilir, söz kəsilmir; kəsimdən sonra söz təkrarı olmadığını yoxla. Güzgü çevirmə (hflip) yoxdur."
   ],
   "theme_source": "built from the client's confirmed codes (role mapping is ours)",
   "theme": {

@@ -26,7 +26,7 @@
   "Kafe/restoran məkanında çəkilişlər: arxa fon səsi (çəngəl-bıçaq, musiqi) denoise.sh (DeepFilterNet) ilə təmizlənir; pauzalar tighten.py ilə ~0.25 s-ə qədər qısaldılır (istifadəçi 2026-10-27 istədi).",
   "Hər videonu təhvildən əvvəl hazır faylın səsini yenidən mətnə çevirib skriptlə müqayisə et (təkrar cümlə, yarımçıq söz); bir partiyadakı videolar ayrı skin/altyazı ilə fərqləndirilir.",
   "Mikrofonla çəkilir: səs təmizləmə yalnız ehtiyac olanda (kafe, çəngəl-bıçaq). Göy köynəkli otaq çəkilişlərində təmizləmə yoxdur.",
-  "Ümumi istifadəçi qaydası (2026-11-01, bütün müştərilər, soruşmadan): rəng həmişə looks C (təmiz-neytral). Musiqi: piano/yavaş YOX — uşaq inkişafı mövzusunda dinamik kids/kindergarten, təhsil reklamında educational/corporate (yalnız CC0). B-roll başı örtmür: bölünmüş ekran — danışan yuxarıda, B-roll sinədən aşağı (pip y≈0.70, tam en), həmin anda altyazı başın üstündə (y≈0.17). Fon işığı (loş studiya) yalnız arxa fona: kreslo, stol, oturacaq orijinal qalır (keçidli maska ~0.50→0.64). Güzgü çevirmə (hflip) yoxdur."
+  "Ümumi istifadəçi qaydası (2026-11-01, bütün müştərilər, soruşmadan): rəng həmişə looks C (təmiz-neytral). Musiqi: piano/yavaş YOX — uşaq inkişafı mövzusunda dinamik kids/kindergarten, təhsil reklamında educational/corporate (yalnız CC0). B-roll başı örtmür: bölünmüş ekran — danışan yuxarıda, B-roll sinədən aşağı (pip y≈0.70, tam en), həmin anda altyazı başın üstündə (y≈0.17). Arxa fon bulanıqlaşdırılmır və qaraldılmır (istifadəçi: hiss olunur, başın ətrafında iz qalır) — fon orijinal qalır. Danışılmayan boş saniyələr (pauzalar ≥0.45 s) kəsilir, söz kəsilmir; kəsimdən sonra söz təkrarı olmadığını yoxla. Güzgü çevirmə (hflip) yoxdur."
  ],
  "theme_source": "approved in delivered videos",
  "theme": {
