@@ -18,7 +18,8 @@
     "Alt altyazı lövhəsi (plate) yalnız kadrda örtülməli bir yer olanda istifadə olunur; standart deyil. Belə ehtiyac yoxdursa, montaj daha dinamik olur (lövhəsiz canlı altyazı, qısa tam ekran illüstrasiyalar).",
     "Animasiya/illüstrasiya: üstünlük verilən üslub prompt-motion #9 kimi parlaq düz cizgi film (src/cartoon.tsx). Animasiya hissələri tam ekran olur, Lamiyə görünmür, səsi davam edir.",
     "Ardıcıl videolarda animasiya üslubu təkrarlanmır: cizgi film (cartoon.tsx) → akvarel eskiz (sketch.tsx) → növbəti dəfə başqa üslub.",
-    "İstifadəçi xam videoda bir hissəni hazır göndərirsə (səs effekti, rəng effekti), ona toxunulmur, təkrar effekt əlavə edilmir."
+    "İstifadəçi xam videoda bir hissəni hazır göndərirsə (səs effekti, rəng effekti), ona toxunulmur, təkrar effekt əlavə edilmir.",
+    "Ümumi istifadəçi qaydası (2026-11-01, bütün müştərilər, soruşmadan): rəng həmişə looks C (təmiz-neytral). Musiqi: piano/yavaş YOX — uşaq inkişafı mövzusunda dinamik kids/kindergarten, təhsil reklamında educational/corporate (yalnız CC0). B-roll başı örtmür: bölünmüş ekran — danışan yuxarıda, B-roll sinədən aşağı (pip y≈0.70, tam en), həmin anda altyazı başın üstündə (y≈0.17). Fon işığı (loş studiya) yalnız arxa fona: kreslo, stol, oturacaq orijinal qalır (keçidli maska ~0.50→0.64). Güzgü çevirmə (hflip) yoxdur."
   ],
   "theme_source": "approved by the user in the first video (2026-10-27): soft green #3A7A60 text/lines on soft mint #DCEFE4; shades derived from the family",
   "theme": {

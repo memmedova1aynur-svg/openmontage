@@ -9,7 +9,8 @@
   },
   "video_types": "ekspert danışığı, təlim reklamı, müəllimlik üzrə izahlar, sual-cavab, seminar materialları",
   "cautions": [
-    "Rəng ailəsi Aytən Cəlilova ilə yaxındır (lacivərt + açıq mavi): krem kartlar, akademik tipoqrafiya və qızılı vurğu ilə ayrı kimlik; Aytənin tünd göy kart üslubu təkrarlanmır."
+    "Rəng ailəsi Aytən Cəlilova ilə yaxındır (lacivərt + açıq mavi): krem kartlar, akademik tipoqrafiya və qızılı vurğu ilə ayrı kimlik; Aytənin tünd göy kart üslubu təkrarlanmır.",
+    "Ümumi istifadəçi qaydası (2026-11-01, bütün müştərilər, soruşmadan): rəng həmişə looks C (təmiz-neytral). Musiqi: piano/yavaş YOX — uşaq inkişafı mövzusunda dinamik kids/kindergarten, təhsil reklamında educational/corporate (yalnız CC0). B-roll başı örtmür: bölünmüş ekran — danışan yuxarıda, B-roll sinədən aşağı (pip y≈0.70, tam en), həmin anda altyazı başın üstündə (y≈0.17). Fon işığı (loş studiya) yalnız arxa fona: kreslo, stol, oturacaq orijinal qalır (keçidli maska ~0.50→0.64). Güzgü çevirmə (hflip) yoxdur."
   ],
   "theme_source": "derived from the colour family; brand colour = colour family (user rule 2026-10-31): nearby shades of the family are fine, no 'unconfirmed code' warning",
   "theme": {

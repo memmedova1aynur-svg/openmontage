@@ -16,7 +16,8 @@
   "cautions": [
     "Çəkilişlər güzgü görüntüdə gəlir: hər videonu soruşmadan hflip ilə çevir (istifadəçi, 2026-10-30).",
     "İstifadəçi (2026-10-30): storyboard təsdiqi gözləmədən montaj et və hazır faylı göndər; videolar bir-birini təkrarlamasın, marka rəngləri qorunsun, yazılar baş/üz/əllərə düşməsin (guard.py məcburi).",
-    "Naxışlı köynəkli çəkilişlərdə altyazı 'box' olmalıdır: 'chip'/'stroke' passiv sözləri naxışda itir (2026-10-30)."
+    "Naxışlı köynəkli çəkilişlərdə altyazı 'box' olmalıdır: 'chip'/'stroke' passiv sözləri naxışda itir (2026-10-30).",
+    "Ümumi istifadəçi qaydası (2026-11-01, bütün müştərilər, soruşmadan): rəng həmişə looks C (təmiz-neytral). Musiqi: piano/yavaş YOX — uşaq inkişafı mövzusunda dinamik kids/kindergarten, təhsil reklamında educational/corporate (yalnız CC0). B-roll başı örtmür: bölünmüş ekran — danışan yuxarıda, B-roll sinədən aşağı (pip y≈0.70, tam en), həmin anda altyazı başın üstündə (y≈0.17). Fon işığı (loş studiya) yalnız arxa fona: kreslo, stol, oturacaq orijinal qalır (keçidli maska ~0.50→0.64). Güzgü çevirmə (hflip) yoxdur."
   ],
   "theme_source": "built from the client's confirmed codes (role mapping is ours); primaryDeep and emphasis are derived shades",
   "theme": {
