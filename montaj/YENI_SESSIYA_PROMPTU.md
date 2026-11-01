@@ -32,7 +32,7 @@ Bu söhbət müştəri videolarının gündəlik montajı üçündür. Montaj si
    - müştəri üslubu onun profilindən (`templates/expert-reels/experts/`); brend rəngi rəng ailəsidir;
    - ödənişli xidmət qoşma;
    - müştəri mediası, transkript və layihə fayllarını repoya commit etmə;
-   - redaktor panelinin linkini yalnız istəsəm göndər;
+   - redaktor paneli istifadə olunmur — linkini göndərmə və təklif etmə, yalnız açıq istəsəm;
    - DeepFilterNet modeli ilk dəfə işə düşəndə icazə soruşularsa — icazə verirəm.
 5. Uzun texniki hesabat yazma: yalnız seçimlər, vacib suallar, real maneələr və hazır nəticə.
 6. Sistemdə səhv və ya çatışmazlıq görsən, burada kodu dəyişmə — mənə qısa yaz, ümumi sistem ayrıca söhbətdə inkişaf etdirilir.
