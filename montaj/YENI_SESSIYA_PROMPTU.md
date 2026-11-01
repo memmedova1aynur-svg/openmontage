@@ -15,7 +15,7 @@ Bu söhbət müştəri videolarının gündəlik montajı üçündür. Montaj si
    - `export MONTAJ_DATA_DIR=$HOME/montaj-data MONTAJ_OUT_DIR=$HOME/montaj-data/out`;
    - `FREESOUND_API_KEY`-i həqiqi sorğu ilə yoxla ("calm piano", yalnız CC0, 1 nəticə); dəyərini göstərmə. Nəticəni bir sətirlə de.
 3. Hər yeni video üçün iş axını:
-   - əvvəl bir qısa sorğu (müştəri, məqsəd, format, müddət, xüsusi istək), sonra Drive linki;
+   - əvvəl bir qısa sorğu (müştəri, video növü — `types --survey`, məqsəd, müddət, xüsusi istək), sonra Drive linki;
    - analiz, təkrar və alınmayan cümlələrin təmizlənməsi (söz kəsilmir), kadraj düzəlişi (`framefix`),
      arxa səs təmizləmə (`voice-clean`);
    - B-roll-u özün hazırla (`session scenes`, planda `broll[].make`); səhnə mətni yalnız danışıqdan;
