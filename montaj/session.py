@@ -380,6 +380,15 @@ def cmd_render(a: argparse.Namespace) -> None:
     from montaj.server import _project_logo
 
     p = store.load(a.pid)
+    for mid, b in (p.get("background") or {}).items():  # bərpadan sonra törəmə fon videosu yoxdursa yenidən hazırlanır
+        if b.get("file") and not (store.project_dir(a.pid) / b["file"]).is_file():
+            from montaj import background
+
+            m = next((x for x in p["media"] if x["id"] == mid), None)
+            if m:
+                print(f"{m['name']}: arxa fon yenidən hazırlanır…")
+                background.process(store.project_dir(a.pid) / m["file"], store.project_dir(a.pid) / b["file"], b["spec"],
+                                   _bg_scene_file(a.pid, p, b["spec"]))
     out = out_dir(a.pid) / f"{a.pid}_r{p['revision']}.mp4"
     render(p, store.project_dir(a.pid), out, lambda x: None, logo_path=_project_logo(p, a.pid))
     info = mediautil.probe(out)
@@ -1589,6 +1598,121 @@ def cmd_multicam(a: argparse.Namespace) -> None:
     print(f"saxlandı: versiya {saved['revision']} — render <pid>")
 
 
+def _bg_targets(p: dict[str, Any], only: str | None = None) -> list[dict[str, Any]]:
+    used = {c["media"] for c in p["clips"] if c["track"] == "v1" and not c.get("broll")}
+    out = [m for m in p["media"] if m["id"] in used and m.get("hasVideo") and not m.get("isImage")
+           and not (m.get("source") or {}).get("type") in ("generated", "music", "sfx")]
+    if only:
+        out = [m for m in out if m["id"] == only or m.get("name") == only]
+    return out
+
+
+def _bg_spec(a: argparse.Namespace, p: dict[str, Any]) -> list[dict[str, Any]]:
+    from montaj import background
+
+    raw = [json.loads(x) for x in (a.spec or [])]
+    if not raw and a.mode:
+        raw = [{"mode": a.mode, "color": a.color, "color2": a.color2, "direction": a.direction, "file": a.file, "kind": a.kind,
+                "props": json.loads(a.props) if a.props else None, "strength": a.strength, "dim": a.dim,
+                "keepBelow": a.keep_below, "feather": a.feather, "smooth": a.smooth, "model": "fast" if a.fast else None}]
+    th = _project_theme(p)
+    out = []
+    for r in raw:
+        r = {k: v for k, v in r.items() if v is not None}
+        if r.get("mode") == "color" and not r.get("color"):  # rəng verilməyibsə — müştərinin brend rəng ailəsi
+            r["color"] = th.get("primary") or "#333333"
+            r.setdefault("color2", th.get("primaryDeep") or r["color"])
+        try:
+            out.append(background.normalize(r))
+        except ValueError as e:
+            raise UserError(str(e), "Nümunə: --mode color --color '#C9577D' --color2 '#5A1E3C' və ya --mode blur") from None
+    return out
+
+
+def _bg_scene_file(pid: str, p: dict[str, Any], spec: dict[str, Any]) -> Path | None:
+    if spec["mode"] != "scene":
+        return None
+    from montaj import sceneclip
+
+    if not spec.get("kind"):
+        raise UserError("Səhnə fonu üçün kind lazımdır.", "Kataloq: `python -m montaj.session scenes`.")
+    return sceneclip.render(spec["kind"], spec.get("props") or {}, 6.0, _project_theme(p), store.derived_dir(pid) / "bg_scenes")
+
+
+def cmd_bg(a: argparse.Namespace) -> None:
+    """Arxa fon: --preview — bir neçə variant yan-yana (arxafon.jpg, layihə dəyişmir); əks halda tətbiq (törəmə video)."""
+    from PIL import Image, ImageDraw, ImageFont
+
+    from montaj import background
+
+    p = store.load(a.pid)
+    if a.off:
+        p["background"] = {}
+        saved = store.save(a.pid, p, p["revision"])
+        print(f"arxa fon orijinala qaytarıldı; versiya {saved['revision']}")
+        return
+    targets = _bg_targets(p, a.media)
+    if not targets:
+        raise UserError("Montajda danışıq videosu yoxdur.", "Əvvəl storyboard-u tətbiq edin (choose/apply).")
+    specs = _bg_spec(a, p)
+    if not specs:
+        raise UserError("Fon seçilməyib.", "--mode blur|color|image|video|scene və ya --spec '{...}' verin.")
+    root = store.project_dir(a.pid)
+    if a.preview:
+        m = targets[0]
+        src = root / m["file"]
+        cs = [c for c in p["clips"] if c["track"] == "v1" and c.get("media") == m["id"]]
+        a0, b0 = min(c["srcIn"] for c in cs), max(c["srcOut"] for c in cs)
+        ts = [a0 + (b0 - a0) * k for k in (0.2, 0.5, 0.8)]
+        rows = [("Orijinal", None)] + [(_bg_label(sp), sp) for sp in specs]
+        tiles = [[background.still(src, t, sp, 300, _bg_scene_file(a.pid, p, sp) if sp else None) for t in ts] for _, sp in rows]
+        th, tw = tiles[0][0].shape[:2]
+        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 18)
+        sheet = Image.new("RGB", (len(ts) * (tw + 6) + 6, len(rows) * (th + 36) + 6), (20, 22, 26))
+        d = ImageDraw.Draw(sheet)
+        for r, (label, _) in enumerate(rows):
+            y = 6 + r * (th + 36)
+            d.text((8, y), f"{chr(65 + r - 1) + ': ' if r else ''}{label}", font=font, fill=(235, 236, 240))
+            for k, im in enumerate(tiles[r]):
+                sheet.paste(Image.fromarray(im), (6 + k * (tw + 6), y + 28))
+        f = out_dir(a.pid) / "arxafon.jpg"
+        sheet.save(f, quality=88)
+        print(f)
+        return
+    spec = specs[0]
+    p.setdefault("background", {})
+    for m in targets:
+        src = root / m["file"]
+        key = background.spec_key(spec, src)
+        rel = f"media/derived/bg_{m['id']}_{key}.mp4"
+        dst = root / rel
+        info = {"flicker": (p["background"].get(m["id"]) or {}).get("flicker")}
+        if not dst.is_file():
+            print(f"{m['name']}: emal olunur ({_bg_label(spec)})…")
+            info = background.process(src, dst, spec, _bg_scene_file(a.pid, p, spec))
+        p["background"][m["id"]] = {"file": rel, "spec": spec, "flicker": info.get("flicker")}
+        fl = info.get("flicker")
+        if fl is not None:
+            verdict = "sabit" if fl < 0.03 else "normal" if fl < 0.06 else "kənar titrəyir — smooth-u artır və ya blur seç"
+            print(f"{m['name']}: hazır — kənar titrəməsi {fl} ({verdict})")
+    cur = store.load(a.pid)
+    cur["background"] = p["background"]
+    saved = store.save(a.pid, cur, cur["revision"])
+    print(f"saxlandı: versiya {saved['revision']} — render <pid> (orijinal dəyişmir; `bg <pid> --off` geri qaytarır)")
+
+
+def _bg_label(sp: dict[str, Any]) -> str:
+    mode = sp["mode"]
+    txt = {"blur": f"bulanıq fon ({sp.get('strength')})", "color": f"rəng {sp.get('color')}" + (f"→{sp['color2']}" if sp.get("color2") and sp.get("color2") != sp.get("color") else ""),
+           "image": f"şəkil {Path(sp.get('file', '')).name}", "video": f"video {Path(sp.get('file', '')).name}",
+           "scene": f"səhnə {sp.get('kind')}"}[mode]
+    if sp.get("dim"):
+        txt += f", qaraltma {sp['dim']}"
+    if sp.get("keepBelow") is not None:
+        txt += f", masa qalır (y≥{sp['keepBelow']})"
+    return txt
+
+
 def cmd_duo(a: argparse.Namespace) -> None:
     """Növ 11 (iki nəfər bir kadrda): `switch` — kadraj danışana keçir; `split` — bölünmüş ekran. Tətbiq olunmuş montaja."""
     from montaj import duo, quality, speakers
@@ -2094,6 +2218,25 @@ def main(argv: list[str] | None = None) -> int:
     ep.add_argument("--target", type=float, help="müddət, s (standart: A/B 30, C 17)")
     ep.add_argument("--volume", type=float, default=0.9)
     ep.add_argument("--variants", default="ABC")
+    bg = sub.add_parser("bg", help="arxa fon: blur | color | image | video | scene (--preview — müqayisə)")
+    bg.add_argument("pid")
+    bg.add_argument("--mode", choices=["blur", "color", "image", "video", "scene"])
+    bg.add_argument("--color")
+    bg.add_argument("--color2")
+    bg.add_argument("--direction", choices=["vertical", "horizontal", "radial"])
+    bg.add_argument("--file")
+    bg.add_argument("--kind")
+    bg.add_argument("--props")
+    bg.add_argument("--strength", type=float)
+    bg.add_argument("--dim", type=float)
+    bg.add_argument("--keep-below", type=float, help="bu hündürlükdən (0..1) aşağı orijinal qalır — masa")
+    bg.add_argument("--feather", type=float)
+    bg.add_argument("--smooth", type=float)
+    bg.add_argument("--fast", action="store_true")
+    bg.add_argument("--spec", action="append", help="JSON; bir neçə dəfə — önizləmədə müqayisə")
+    bg.add_argument("--preview", action="store_true")
+    bg.add_argument("--media")
+    bg.add_argument("--off", action="store_true")
     mc = sub.add_parser("multicam", help="virtual multikamera: plan ölçüləri (ümumi/orta/yaxın) bir rakursdan")
     mc.add_argument("pid")
     mc.add_argument("--style", choices=["calm", "dynamic"], default="calm")
@@ -2193,7 +2336,7 @@ def main(argv: list[str] | None = None) -> int:
         {"new": cmd_new, "storyboard": cmd_storyboard, "edit": cmd_edit, "apply": cmd_apply,
          "render": cmd_render, "export": cmd_export, "editor": cmd_editor,
          "apply-edits": cmd_apply_edits, "set-client": cmd_set_client, "plan": cmd_plan, "looks": cmd_looks,
-         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "highlights": cmd_highlights, "extract": cmd_extract, "mg-scan": cmd_mg_scan, "tale-plan": cmd_tale_plan, "carousel-plan": cmd_carousel_plan, "types": cmd_types, "event-scan": cmd_event_scan, "event-plan": cmd_event_plan, "qa-plan": cmd_qa_plan, "duo": cmd_duo, "multicam": cmd_multicam, "set-type": cmd_set_type, "carousel": cmd_carousel, "fix-word": cmd_fix_word,
+         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "highlights": cmd_highlights, "extract": cmd_extract, "mg-scan": cmd_mg_scan, "tale-plan": cmd_tale_plan, "carousel-plan": cmd_carousel_plan, "types": cmd_types, "event-scan": cmd_event_scan, "event-plan": cmd_event_plan, "qa-plan": cmd_qa_plan, "duo": cmd_duo, "multicam": cmd_multicam, "bg": cmd_bg, "set-type": cmd_set_type, "carousel": cmd_carousel, "fix-word": cmd_fix_word,
          "variants": cmd_variants, "choose": cmd_choose, "music-preview": cmd_music_preview}[a.cmd](a)
     except UserError as err:
         print(f"XƏTA: {err.message}\nNƏ ETMƏLİ: {err.hint}", file=sys.stderr)
