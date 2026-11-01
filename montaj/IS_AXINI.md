@@ -1,11 +1,8 @@
 # Əsas iş axını: Drive linki → yekun MP4 (davamlı təlimat)
 
 Bu fayl istifadəçinin təsdiqlədiyi **əsas** iş axınıdır (sorğu → Drive linki → analiz → 3 storyboard → rəng/musiqi → MP4) və `SESSIYA_TELIMATI.md`-dən üstündür.
-Redaktor paneli (artifact) saxlanılır, amma əsas axında **tələb edilmir və linki göndərilmir** —
-yalnız istifadəçi açıq istəyəndə (`SESSIYA_TELIMATI.md`, 9-cu addım). Paneldə **Studiya** bölməsi var: rəng tonu (müştərinin
-ailəsindən, dərhal görünür), altyazı qutu/kontur, arxa fon (orijinal / bulanıq / kitabxanadan şəkil), plan ölçüləri (virtual
-multikamera), J/L-cut (bir neçə kamera olanda), seçilmiş klipin 0.5x yavaşladılması (60 fps material). Bu seçimlər düzəlişin
-`requests` hissəsində gəlir — `apply-edits` onları icra edir (ton, yavaşlatma, plan ölçüləri, J/L, fon), sonra `render`.
+İstifadəçi yalnız **Drive linkini** verir — montajın hamısı Claude-da edilir və bir dəfəyə təhvil verilir. Redaktor paneli
+istifadə olunmur: linkini göndərmə, təklif etmə (yalnız istifadəçi açıq istəyəndə — faylın sonundakı "Redaktor paneli").
 
 Hədəf: video ilk dəfədən hazır olsun, əlavə düzəliş tələb etməsin. İstifadəçi ilə yalnız **iki dəfə** əlaqə:
 (1) sorğu, (2) **bir qərar mesajı** — storyboard variantları + kadraj (əvvəl/sonra) + rəng variantları + musiqi
@@ -207,7 +204,12 @@ Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq,
      “Kod təsdiqlənməyib” xəbərdarlığı vermə. Ailədən kənar rəng işlətmə; bir müştərinin rəngini başqasına keçirmə.
      Loqo yoxdursa loqo uydurma; istifadəçi loqo versə sonluqda/küncdə işlət.
    - **Storyboard təsdiqlənmədən yekun montaj qərarı tətbiq edilmir** (`variants` layihəni dəyişmir).
-5. **Rəng və musiqi — storyboard ilə EYNİ qərar mesajında.**
+5. **Rəng və musiqi — storyboard ilə EYNİ qərar mesajında.** Qərar mesajının tərkibi (hamısı bir mesajda, ayrıca sual yoxdur):
+   (1) `storyboard_variantlari.jpg` + hər variant 1–2 sətir; (2) `kadraj.jpg` əvvəl/sonra; (3) `reng_variantlari.jpg`;
+   (4) 2–3 musiqi nümunəsi; (5) arxa səs təmizlənibsə `ses_evvel_sonra.m4a`; (6) material yoxlamasının `!` qeydləri (bir cümlə);
+   (7) istifadəçi fon dəyişməsini istəyibsə `arxafon.jpg`. Yeni imkanları (davamlılıq tonu `variation`, plan ölçüləri `multicam`,
+   J/L, yavaşlatma) ayrıca soruşma — uyğun olanları storyboard variantlarının içinə qoy (məs. A — təklif olunan ton, B — plan
+   ölçüləri ilə), qalanını özün standart seç. Cavab bir sətir olsun: “B, rəng A, musiqi 2”.
    - Rəng: `looks <pid>` → `reng_variantlari.jpg` (3 təmsilçi kadr × Orijinal, A təbii, B yumşaq-isti,
      C təmiz-neytral; orta parlaqlıq aşağıdırsa avtomatik **D: zəif işıq** — dən azalır, kölgə açılır). Göndər, seçim gözlə. Seçim planda `"look": "A"|"B"|"C"` (`null` — düzəliş yoxdur).
      Fərqli işıqlanan kliplər avtomatik yaxınlaşdırılır (`"matchExposure": true`, ±0.04).
@@ -273,3 +275,9 @@ Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq,
 - Hazır kodu, şablonları, keşlənmiş analizi işlət; hər video üçün kod yazma. Yalnız seçilən müştərinin profilini oxu.
 - Ödənişli API/hosting qoşma.
 - İstifadəçiyə uzun texniki hesabat yazma: yalnız seçimlər, vacib suallar, real maneələr və hazır nəticə.
+
+## Redaktor paneli (yalnız istifadəçi açıq istəyəndə)
+Panel (`editor`, artifact) ehtiyatdadır. İstənəndə `SESSIYA_TELIMATI.md` 9-cu addım. Paneldə **Studiya** bölməsi var: rəng tonu
+(müştərinin ailəsindən, dərhal görünür), altyazı qutu/kontur, arxa fon (orijinal / bulanıq / kitabxanadan şəkil), plan ölçüləri,
+J/L-cut (bir neçə kamera olanda), seçilmiş klipin 0.5x yavaşladılması (60 fps material). Bu seçimlər düzəlişin `requests`
+hissəsində gəlir — `apply-edits` onları icra edir, sonra `render`.
