@@ -1006,3 +1006,43 @@ def test_background_replace(tmp_path, monkeypatch, capsys):
     px = np.frombuffer(raw, np.uint8).reshape(H, W, 3)[H // 3, W // 2].astype(int)
     assert abs(px[0] - 0x10) < 40 and abs(px[1] - 0xA0) < 40 and abs(px[2] - 0x40) < 40, f"insansız kadr — fon rəngi: {px}"
     assert session.main(["bg", pid, "--off"]) == 0 and not store.load(pid)["background"]
+
+
+def test_background_natural(tmp_path, monkeypatch):
+    """Təbii fon: masa xətti tapılır, kitabxana otaq işığına görə sıralayır, rəng/parlaqlıq uyğunlaşması orijinal otağa
+    doğrudur, "auto" seçimlər konkretləşir, ayaqüstə şəxsin altında kölgə, oturanda yox."""
+    import numpy as np
+    from PIL import Image
+
+    from montaj import background as bgm
+
+    g = np.full((200, 100), 180.0)
+    g[160:] = 90.0  # masanın üst xətti y=0.8
+    m = np.zeros((200, 100), np.float32)
+    m[40:170, 35:65] = 1  # insan (masanın arxasında)
+    y, strength = bgm._table_edge(g, m)
+    assert abs(y - 0.8) < 0.02 and strength > 6
+
+    monkeypatch.setenv("MONTAJ_DATA_DIR", str(tmp_path / "data"))
+    files = []
+    for name, col in (("aciq_isti.png", (230, 200, 160)), ("qaranliq_soyuq.png", (30, 40, 70))):
+        f = tmp_path / name
+        Image.new("RGB", (90, 160), col).save(f)
+        files.append(f)
+    recs = bgm.lib_add(files, ["sınaq"])
+    assert len(bgm.lib_load()) == 2
+    an = {"w": 1080, "h": 1920, "oldbg": {"rgb": [220, 195, 165], "bright": 193, "warm": 55}, "noise": 4.0, "table": 0.79,
+          "posture": "seated"}
+    assert bgm.lib_rank(an, 1)[0]["source"] == "aciq_isti.png", "açıq, isti otağa açıq, isti fon"
+    gains = bgm.harmonize_gains(an, [100.0, 100.0, 100.0])
+    assert all(x > 1 for x in gains) and gains[0] > gains[2], "qaranlıq fon açılır, isti otağa doğru"
+    spec = bgm.resolve(bgm.normalize({"mode": "image", "lib": recs[1]["id"]}), an)
+    assert spec["keepBelow"] == 0.79 and spec["shadow"] is False and spec["grain"] == 5.6 and isinstance(spec["focus"], float)
+    assert bgm.resolve(bgm.normalize({"mode": "image", "lib": recs[0]["id"]}), {**an, "posture": "standing", "table": None})["shadow"] is True
+    stand = np.zeros((100, 60), np.float32)
+    stand[10:85, 25:35] = 1  # ayaqlar kadrın içində
+    sh = bgm._shadow(stand)
+    assert sh[83:90].max() > 0.15 and sh[:60].max() < 0.01
+    sit = np.zeros((100, 60), np.float32)
+    sit[20:, 20:40] = 1  # kadrın altına qədər — kölgə yoxdur
+    assert bgm._shadow(sit).max() == 0

@@ -1611,10 +1611,11 @@ def _bg_spec(a: argparse.Namespace, p: dict[str, Any]) -> list[dict[str, Any]]:
     from montaj import background
 
     raw = [json.loads(x) for x in (a.spec or [])]
-    if not raw and a.mode:
-        raw = [{"mode": a.mode, "color": a.color, "color2": a.color2, "direction": a.direction, "file": a.file, "kind": a.kind,
-                "props": json.loads(a.props) if a.props else None, "strength": a.strength, "dim": a.dim,
-                "keepBelow": a.keep_below, "feather": a.feather, "smooth": a.smooth, "model": "fast" if a.fast else None}]
+    if not raw and (a.mode or a.lib):
+        raw = [{"mode": a.mode or "image", "color": a.color, "color2": a.color2, "direction": a.direction, "file": a.file, "lib": a.lib,
+                "kind": a.kind, "props": json.loads(a.props) if a.props else None, "strength": a.strength, "dim": a.dim,
+                "keepBelow": a.keep_below, "feather": a.feather, "smooth": a.smooth, "focus": a.focus,
+                "model": "fast" if a.fast else None}]
     th = _project_theme(p)
     out = []
     for r in raw:
@@ -1654,10 +1655,20 @@ def cmd_bg(a: argparse.Namespace) -> None:
     targets = _bg_targets(p, a.media)
     if not targets:
         raise UserError("Montajda danışıq videosu yoxdur.", "Əvvəl storyboard-u tətbiq edin (choose/apply).")
+    root = store.project_dir(a.pid)
+    an0 = _bg_analysis(a.pid, p, targets[0])
+    print(f"kadr: {_posture_az(an0)}; otaq işığı {an0.get('oldbg', {}) and an0['oldbg']['bright']} parlaqlıq, "
+          f"rəng temperaturu {an0.get('oldbg', {}) and an0['oldbg']['warm']:+}; dənəvərlik {an0.get('noise')}")
+    if a.auto:
+        ranked = background.lib_rank(an0, a.top, a.tag)
+        if not ranked:
+            raise UserError("Fon kitabxanası boşdur.", "Şəkilləri əlavə edin: `bg-lib add <fayllar>`.")
+        for r in ranked:
+            print(f"  uyğun fon: {r['id']} ({r['source']}) — bal {r['score']}")
+        a.spec = [json.dumps({"mode": "image", "lib": r["id"]}) for r in (ranked if a.preview else ranked[:1])]
     specs = _bg_spec(a, p)
     if not specs:
-        raise UserError("Fon seçilməyib.", "--mode blur|color|image|video|scene və ya --spec '{...}' verin.")
-    root = store.project_dir(a.pid)
+        raise UserError("Fon seçilməyib.", "--mode blur|color|image|video|scene, --lib <id>, --auto və ya --spec '{...}' verin.")
     if a.preview:
         m = targets[0]
         src = root / m["file"]
@@ -1665,7 +1676,13 @@ def cmd_bg(a: argparse.Namespace) -> None:
         a0, b0 = min(c["srcIn"] for c in cs), max(c["srcOut"] for c in cs)
         ts = [a0 + (b0 - a0) * k for k in (0.2, 0.5, 0.8)]
         rows = [("Orijinal", None)] + [(_bg_label(sp), sp) for sp in specs]
-        tiles = [[background.still(src, t, sp, 300, _bg_scene_file(a.pid, p, sp) if sp else None) for t in ts] for _, sp in rows]
+
+        def tile(t, sp):
+            if sp is None:
+                return background.still(src, t, None, 300)
+            sc = _bg_scene_file(a.pid, p, sp)
+            return background.still(src, t, background.resolve(sp, an0, sc), 300, sc)
+        tiles = [[tile(t, sp) for t in ts] for _, sp in rows]
         th, tw = tiles[0][0].shape[:2]
         font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 18)
         sheet = Image.new("RGB", (len(ts) * (tw + 6) + 6, len(rows) * (th + 36) + 6), (20, 22, 26))
@@ -1687,10 +1704,12 @@ def cmd_bg(a: argparse.Namespace) -> None:
         rel = f"media/derived/bg_{m['id']}_{key}.mp4"
         dst = root / rel
         info = {"flicker": (p["background"].get(m["id"]) or {}).get("flicker")}
+        sc = _bg_scene_file(a.pid, p, spec)
+        rs = background.resolve(spec, _bg_analysis(a.pid, p, m), sc)
         if not dst.is_file():
-            print(f"{m['name']}: emal olunur ({_bg_label(spec)})…")
-            info = background.process(src, dst, spec, _bg_scene_file(a.pid, p, spec))
-        p["background"][m["id"]] = {"file": rel, "spec": spec, "flicker": info.get("flicker")}
+            print(f"{m['name']}: emal olunur ({_bg_label(rs)})…")
+            info = background.process(src, dst, rs, sc)
+        p["background"][m["id"]] = {"file": rel, "spec": rs, "flicker": info.get("flicker")}
         fl = info.get("flicker")
         if fl is not None:
             verdict = "sabit" if fl < 0.03 else "normal" if fl < 0.06 else "kənar titrəyir — smooth-u artır və ya blur seç"
@@ -1704,13 +1723,49 @@ def cmd_bg(a: argparse.Namespace) -> None:
 def _bg_label(sp: dict[str, Any]) -> str:
     mode = sp["mode"]
     txt = {"blur": f"bulanıq fon ({sp.get('strength')})", "color": f"rəng {sp.get('color')}" + (f"→{sp['color2']}" if sp.get("color2") and sp.get("color2") != sp.get("color") else ""),
-           "image": f"şəkil {Path(sp.get('file', '')).name}", "video": f"video {Path(sp.get('file', '')).name}",
+           "image": f"fon {sp.get('lib') or Path(sp.get('file', '')).name}", "video": f"video {Path(sp.get('file', '')).name}",
            "scene": f"səhnə {sp.get('kind')}"}[mode]
     if sp.get("dim"):
         txt += f", qaraltma {sp['dim']}"
-    if sp.get("keepBelow") is not None:
-        txt += f", masa qalır (y≥{sp['keepBelow']})"
+    kb = sp.get("keepBelow")
+    if kb == "auto":
+        txt += ", masa avtomatik"
+    elif kb is not None:
+        txt += f", masa qalır (y≥{kb})"
     return txt
+
+
+def _posture_az(an: dict[str, Any]) -> str:
+    return {"standing": "ayaqüstə (tam boy) — ayaq altında kölgə", "seated": f"oturub, masa y={an.get('table')} — masa və əllər qalır",
+            "half": "bel/sinə planı (masa görünmür)"}.get(an.get("posture"), "?")
+
+
+def _bg_analysis(pid: str, p: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
+    """Kadrın analizi (otaq işığı, dənəvərlik, masa, duruş) — bir dəfə, keşlənir."""
+    from montaj import background
+
+    src = store.project_dir(pid) / m["file"]
+    f = store.derived_dir(pid) / f"bg_an_{m['id']}_{background._file_sig(src).replace(':', '_')}.json"
+    if f.is_file():
+        return json.loads(f.read_text(encoding="utf-8"))
+    rs = sorted((c["srcIn"], c["srcOut"]) for c in p["clips"] if c["track"] == "v1" and c.get("media") == m["id"])
+    an = background.analyze(src, rs or None)
+    f.parent.mkdir(parents=True, exist_ok=True)
+    f.write_text(json.dumps(an, ensure_ascii=False), encoding="utf-8")
+    return an
+
+
+def cmd_bg_lib(a: argparse.Namespace) -> None:
+    """Fon kitabxanası (yerli: MONTAJ_DATA_DIR/backgrounds — public repoya düşmür)."""
+    from montaj import background
+
+    if a.action == "add":
+        for r in background.lib_add([Path(x) for x in a.files], a.tag):
+            print(f"{r['id']}  {r['source']}  {r['w']}x{r['h']}  parlaqlıq {r['bright']}  temperatur {r['warm']:+}  qarışıqlıq {r['busy']}")
+        return
+    for r in background.lib_load().values():
+        print(f"{r['id']}  {r['source']:20s} {r['w']}x{r['h']}  parlaqlıq {r['bright']:5.1f}  temperatur {r['warm']:+6.1f}  "
+              f"qarışıqlıq {r['busy']:5.2f}  {' '.join(r.get('tags') or [])}")
 
 
 def cmd_duo(a: argparse.Namespace) -> None:
@@ -2237,6 +2292,15 @@ def main(argv: list[str] | None = None) -> int:
     bg.add_argument("--preview", action="store_true")
     bg.add_argument("--media")
     bg.add_argument("--off", action="store_true")
+    bg.add_argument("--lib", help="kitabxanadakı fonun id-si (bg-lib list)")
+    bg.add_argument("--focus", type=float, help="fonun fokus bulanıqlığı (0 — kəskin)")
+    bg.add_argument("--auto", action="store_true", help="kitabxanadan otaq işığına ən uyğun fonlar")
+    bg.add_argument("--top", type=int, default=3)
+    bg.add_argument("--tag", action="append")
+    bl = sub.add_parser("bg-lib", help="fon kitabxanası: add <fayllar> | list")
+    bl.add_argument("action", choices=["add", "list"])
+    bl.add_argument("files", nargs="*")
+    bl.add_argument("--tag", action="append")
     mc = sub.add_parser("multicam", help="virtual multikamera: plan ölçüləri (ümumi/orta/yaxın) bir rakursdan")
     mc.add_argument("pid")
     mc.add_argument("--style", choices=["calm", "dynamic"], default="calm")
@@ -2336,7 +2400,7 @@ def main(argv: list[str] | None = None) -> int:
         {"new": cmd_new, "storyboard": cmd_storyboard, "edit": cmd_edit, "apply": cmd_apply,
          "render": cmd_render, "export": cmd_export, "editor": cmd_editor,
          "apply-edits": cmd_apply_edits, "set-client": cmd_set_client, "plan": cmd_plan, "looks": cmd_looks,
-         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "highlights": cmd_highlights, "extract": cmd_extract, "mg-scan": cmd_mg_scan, "tale-plan": cmd_tale_plan, "carousel-plan": cmd_carousel_plan, "types": cmd_types, "event-scan": cmd_event_scan, "event-plan": cmd_event_plan, "qa-plan": cmd_qa_plan, "duo": cmd_duo, "multicam": cmd_multicam, "bg": cmd_bg, "set-type": cmd_set_type, "carousel": cmd_carousel, "fix-word": cmd_fix_word,
+         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "highlights": cmd_highlights, "extract": cmd_extract, "mg-scan": cmd_mg_scan, "tale-plan": cmd_tale_plan, "carousel-plan": cmd_carousel_plan, "types": cmd_types, "event-scan": cmd_event_scan, "event-plan": cmd_event_plan, "qa-plan": cmd_qa_plan, "duo": cmd_duo, "multicam": cmd_multicam, "bg": cmd_bg, "bg-lib": cmd_bg_lib, "set-type": cmd_set_type, "carousel": cmd_carousel, "fix-word": cmd_fix_word,
          "variants": cmd_variants, "choose": cmd_choose, "music-preview": cmd_music_preview}[a.cmd](a)
     except UserError as err:
         print(f"XƏTA: {err.message}\nNƏ ETMƏLİ: {err.hint}", file=sys.stderr)
