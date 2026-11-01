@@ -12,14 +12,20 @@ Ara düzəliş raundları təklif etmə.
 ## Addımlar
 
 1. **Əvvəl qısa sorğu — Drive linkindən ÖNCƏ.** İstifadəçi yeni video istəyəndə (və ya link sorğusuz gəlsə)
-   **bir** sorğu aç (`AskUserQuestion`): müştəri, məqsəd, format (talking-head / reklam: xidmət, təlim, məhsul /
-   seminar / motion graphics / başqa), arzu olunan müddət, xüsusi istək. Yalnız məlum olmayan sahələri soruş.
+   **bir** sorğu aç (`AskUserQuestion`): müştəri, video növü, məqsəd, arzu olunan müddət, xüsusi istək.
+   Yalnız məlum olmayan sahələri soruş. **Növ sualları reyestrdən:** `python -m montaj.session types --survey` —
+   əvvəl ailə (Danışıq / Reklam və rəy / Seminar, tədbir, dərs / Qrafika və animasiya), növ ailədən aydın deyilsə
+   ikinci sual (həmin ailənin növləri), məqsəd (maarifləndirmə / reklam / atmosfer / dəvət). Növ materialdan
+   aydınlaşacaqsa soruşma — analizdən sonra `set-type`. Statusu "qismən"/"alət yoxdur" olan növdə nəyin əl ilə
+   ediləcəyini sorğudan sonra bir cümlə ilə de (`types <N>` → "çatışmır"); hazır kimi təqdim etmə.
    - Profil adlarını `ls templates/expert-reels/experts/` ilə gör; yalnız seçilən müştərinin faylını oxu
      (profildə olan məlumatı yenidən soruşma). Müddət verilməyibsə — danışığa görə özün təyin et.
    - Sorğudan sonra Drive linkini istə.
 2. **Drive linki gəlir.** Asılılıqlar yoxdursa `bash scripts/cloud-setup.sh`.
    `export MONTAJ_DATA_DIR=$HOME/montaj-data MONTAJ_OUT_DIR=$HOME/montaj-data/out`
-3. **Analiz.** `python -m montaj.session new --title "<ad>" --link "<link>" --client "<profil>" [--goal ...] [--format ...]`
+3. **Analiz.** `python -m montaj.session new --title "<ad>" --link "<link>" --client "<profil>" --type <N> [--extra <N>]
+   [--goal ...] [--subtype ...]` (növ — `types`; qarışıq videoda əsas növ + `--extra`; növ aydın deyilsə `--uncertain "<nə, niyə>"`;
+   növün öz formatı varsa — məs. 15 modul dərs → 16:9 — `--aspect` verilməsə o götürülür; sonradan: `set-type <pid> <N>`)
    → `storyboard <pid>`. Transkripsiya yerli faster-whisper `large-v3-turbo` ilə, nəticə keşlənir
    (mənbə/parametr dəyişməyibsə təkrarlanmır). Ölçü, kodek, HDR-i qısa qeyd et.
    Transkripti oxu: təkrar cümlələri, alınmayan cəhdləri, yarımçıq fikirləri tap. Köməkçi: `retakes <pid>` — ardıcıl
@@ -107,7 +113,9 @@ Ara düzəliş raundları təklif etmə.
    lazım olsa ortalama qismən olur). Nəticə qaralamaya yazılır, variantlar və yekun montaj onu işlədir;
    `kadraj.jpg` (orijinal / düzəldilmiş) qərar mesajına əlavə olunur. Ölçülə bilməyəni (xətt yoxdur, üz yoxdur)
    düzəldilmiş kimi təqdim etmə. Əl kamerasının titrəməsi/hərəkəti izlənmir (stabilizasiya yoxdur).
-4. **Üç vizual storyboard.** Hər variant üçün `plan_A.json`, `plan_B.json`, `plan_C.json` yaz və
+4. **Üç vizual storyboard.** `storyboard` çıxışının sonunda növün 3 variantı (A/B/C yanaşmaları), qaydaları və
+   müştərinin son seçimləri (`history`) görünür — variantları buna görə qur, son videonun giriş/qutu/effekt ardıcıllığını
+   təkrarlama. Hər planda `"approach": "M01+M02"` yaz (tarixçəyə düşür). Hər variant üçün `plan_A.json`, `plan_B.json`, `plan_C.json` yaz və
    `variants <pid> plan_A.json plan_B.json plan_C.json` → `storyboard_variantlari.jpg` (real kadrlar üzərində
    qrafika ilə) + `variant_X.mp4` (540p önizləmə). Şəkli göndər + hər variant üçün 1–2 sətir izah.
    - Variantlar **giriş, ritm, başlıq, məlumat kartları və vizual təqdimat** baxımından həqiqətən fərqlənsin
@@ -142,7 +150,10 @@ Ara düzəliş raundları təklif etmə.
      (yumşaq giriş/çıxış, danışıqda azalma avtomatik).
    - SFX məqsədli və ölçülü (whoosh/pop sintez, `sfx`).
 6. **Montaj və yekun MP4 (bir dəfə).** `choose <pid> plan_X.json` (qaralama düzəlişləri → apply → plan) → `render <pid>` →
-   **`verify <pid>`** → `words <pid>`.
+   **`verify <pid>`** → `words <pid>`. `choose` seçilən variantı (növ, yanaşma, rəng, altyazı üslubu) müştəri profilinin
+   `history`-sinə yazır — növbəti videoda təkrarın qarşısını almaq üçün (profil dəyişikliyini commit et).
+   - `verify` növ qaydalarını da yoxlayır: hər növdə qrafikadakı rəqəm danışıqda olmalıdır; reklam (3), səsləndirməli
+     hekayə (8), modul dərs (15) — mətnin ardıcıllığı dəyişməyib (hook əvvələ çəkilməyib); modul dərs — üfüqi çıxış.
    - `verify`: kəsim sərhədləri orijinal səsin enerjisi və söz vaxtları ilə, səs/görüntü uzunluğu, kliklər,
      kəsim yanındakı sözlər yekun səsdə yenidən tanınaraq yoxlanır. `!` olan yerləri düzəlt (`cut`/`edit` ilə
      sərhədi genişləndir, yenidən render). Yoxlanılmayan hissəni yoxlanılmış kimi təqdim etmə.

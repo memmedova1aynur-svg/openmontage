@@ -206,3 +206,9 @@ real danışıqda səs sinxronu və görünən keyfiyyət, iPhone Safari, Instag
 | 18.4 | Nağıl səhnəsində danışanın dairəsi səmada (obrazları örtmür) | ✅ | Vizual |
 | 19.1 | `carousel-plan`: fikir slaydları (sıra sözləri "Birincisi/İkincisi", pauza, bərabər bölgü), örtük + CTA, qısa hook birləşir, üst-üstə düşmür | ✅ | `test_video_carousel` + Günel videosu (3 slayd) |
 | 19.2 | `carousel`: slayd əsas montajdan kəsilir (əsas dəyişmir), 1080x1350, sayğac/başlıq/altyazı, örtük + ümumi şəkil | ✅ | `test_video_carousel` (ölçü, müddət) + `karusel.jpg` vizual |
+| 20.1 | Növ reyestri `montaj/types.py`: 17 növ (VIDEO_TYPES 1–15 + motion graphics + loqo), M01–M14, hər növün statusu/çatışmayanı, 3 storyboard variantı, əmrləri, qaydaları; `types`, `types <N>`, `types --approaches` | ✅ | `test_video_type_registry` (reyestr ↔ VIDEO_TYPES.md uyğunluğu) |
+| 20.2 | Sorğu reyestrdən: `types --survey` (ailə → növ → məqsəd; sual başına ≤4 seçim; planlaşdırılan növ çıxmır) | ✅ | Unit test |
+| 20.3 | Layihədə növ qeydi: `new --type/--extra/--subtype/--uncertain`, `set-type`; növün formatı (15 → 16:9) | ✅ | Test: 16:9 layihə |
+| 20.4 | `storyboard` sonunda növün variantları + müştərinin son 3 seçimi; `choose` → profil `history` (növ, yanaşma, variant, rəng, altyazı) | ✅ | Test (müvəqqəti profil) |
+| 20.5 | `verify` növ qaydaları: qrafikada danışıqda olmayan rəqəm, mətnin ardıcıllığı (3, 8, 15), üfüqi dərs (15) | ✅ | Test: 350 AZN uydurma → problem; sıra dəyişəndə → problem |
+

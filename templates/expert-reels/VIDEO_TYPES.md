@@ -1,6 +1,8 @@
 # Video növləri və montaj yanaşmaları
 
-Gələcək işlər üçün istinad. Montaj resepti deyil. Hər yeni material gələndə əvvəl burada növü müəyyənləşdirilir, sonra işlənir.
+Gələcək işlər üçün istinad. Montaj resepti deyil. **Mühərrikin oxuduğu forma — `montaj/types.py` (reyestr):**
+`python -m montaj.session types` (siyahı, hazırlıq statusu), `types <N>` (3 storyboard variantı, əmrlər, qaydalar),
+`types --survey` (sorğu sualları). Bu cədvəl dəyişəndə reyestri də yenilə (test uyğunluğu yoxlayır). Hər yeni material gələndə əvvəl burada növü müəyyənləşdirilir, sonra işlənir.
 
 Növ çəkiliş tətbiqinin adına görə yox, faylın özünə və məzmununa görə təyin edilir.
 
@@ -37,6 +39,8 @@ Eyni material bir neçə növə çevrilə bilər. Məsələn, seminar görüntü
 | 13 | **Material və ekran üzərində izah.** Dərs planı, təqdimat, kart, sənəd, ekran yazısı. | Təhlil olunan material | Ekspert tam görünə, kiçik pəncərədə qala və ya yalnız səsi eşidilə bilər. |
 | 14 | **İştirakçı rəyi və təcrübəsi.** İnsan təlim və ya xidmət haqqında öz təcrübəsini danışır. | Real rəy və konteksti | Montajla insanın demədiyi nəticə yaradılmamalıdır. |
 | 15 | **Saytda yerləşdirilən modul təlim dərsi.** Adətən üfüqi, 5–10 dəq.; kursun bir neçə əlaqəli bölümündən biri; mütəxəssis kamera qarşısında mövzunu izah edir (teleprompterlə və ya sərbəst). | Dərsin aydınlığı və məntiqi ardıcıllığı | Hər bölüm ayrıca fayldır, amma kursun vizual dili bütün bölümlərdə eynidir. Hook yoxdur; Reels ritmi tətbiq edilmir. |
+| 16 | **Qrafika ağırlıqlı izah (motion graphics).** Data, IT, analitika: rəqəmlər, qrafiklər, proses addımları qrafika ilə; ekspert dairədə və ya yanda. | Qrafikanın çatdırdığı rəqəm/məntiq | Qrafikada yalnız danışıqda deyilən rəqəmlər. |
+| 17 | **Loqo animasiyası.** Brendin loqosunun qısa hərəkətli açılışı/bağlanışı. | Brend tanınması | Müştərinin loqo faylı (PNG/SVG) olmadan qurulmur — planlaşdırılıb. |
 
 ## Təsnifat qaydaları
 
@@ -221,6 +225,8 @@ Hazır mətn təsdiqlənibsə:
 | 13 Material və ekran üzərində izah | M05; + M03 | Pəncərə materialı örtmür |
 | 14 İştirakçı rəyi | M01 | Demədiyi nəticə montajla yaradılmır; rəyin konteksti qorunur |
 | 15 Modul təlim dərsi | M14; lazım olsa + M03 (izahlı element) | Dərsin ardıcıllığı qorunur; şübhəli ifadə təsdiqsiz seçilmir; üfüqi dərs şaquliyə çevrilmir |
+| 16 Motion graphics | M03; yüngül variant M01 + M03 | Qrafikada yalnız deyilən rəqəmlər |
+| 17 Loqo animasiyası | — (planlaşdırılıb) | Loqo faylı olmadan qurulmur |
 
 M06 (müqayisə) istənilən növdə iki variant göstərildikdə əlavə yanaşma kimi qoşula bilər.
 

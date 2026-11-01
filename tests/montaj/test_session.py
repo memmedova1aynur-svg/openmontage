@@ -697,3 +697,68 @@ def test_video_carousel(tmp_path, monkeypatch):
         assert (js["streams"][0]["width"], js["streams"][0]["height"]) == (1080, 1350)
         assert abs(float(js["format"]["duration"]) - d) < 0.3
     assert (o / "ortuk.jpg").stat().st_size > 5000 and (o / "karusel.jpg").stat().st_size > 5000
+
+
+def test_video_type_registry(tmp_path, monkeypatch, capsys):
+    """Növ reyestri: ardıcıllıq, sorğu, layihədə növ qeydi, növün formatı, verify qaydaları, müştəri tarixçəsi."""
+    from pathlib import Path
+
+    from montaj import types
+
+    fam = [n for f in types.FAMILIES.values() for n in f["types"]]
+    assert sorted(fam) == sorted(types.TYPES), "hər növ bir ailədədir"
+    for n, t in types.TYPES.items():
+        assert all(a in types.APPROACHES for a in t["approaches"]) and t["status"] in types.STATUS_LABEL
+        assert len(t["variants"]) == 3 or t["status"] == "planned", n
+        assert t["status"] == "ready" or t.get("gaps"), f"{n}: çatışmayan yazılmalıdır"
+        for r in t.get("rules", []):
+            assert r in ("source_order", "horizontal", "graphic_numbers_spoken")
+    doc = (Path(__file__).resolve().parents[2] / "templates/expert-reels/VIDEO_TYPES.md").read_text(encoding="utf-8")
+    assert all(f"| {n} |" in doc for n in types.TYPES), "VIDEO_TYPES.md ilə reyestr uyğundur"
+    sv = types.survey()
+    assert len(sv["family"]) <= 4 and all(2 <= len(v) <= 4 for v in sv["type_by_family"].values())
+    assert not any(o["type"] == 17 for v in sv["type_by_family"].values() for o in v), "planlaşdırılan növ sorğuda yoxdur"
+    assert types._numbers("350 AZN, 1 200 nəfər, 4,5 ay") == {350, 1200, 4}
+
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import session, store
+
+    _draft_and_analysis(pid)
+    assert session.main(["set-type", pid, "3", "--goal", "reklam/satış"]) == 0
+    p = store.load(pid)
+    assert p["videoType"]["type"] == 3 and p["videoType"]["approaches"] == ["M01"]
+    assert any("storyboard A" in x for x in session._type_hints(p))
+    rep = session.type_checks(pid, p, {})
+    assert not rep["problems"] and any("ardıcıllığı qorunub" in c for c in rep["checks"])
+
+    q = session.node_tl("addGraphic", session.node_tl("migrate", p), {"type": "offer", "text": "Təlim", "price": "350 AZN",
+                                                                       "heading": "2 ay", "start": 0.5, "dur": 2, "origin": "plan"})
+    rep = session.type_checks(pid, q, {})
+    assert [x["what"] for x in rep["problems"]] == ["növ qaydası: qrafikada danışıqda olmayan rəqəm(lər): 350 — uydurma olmamalıdır"]
+
+    assert session.main(["edit", pid, "--order", "2,1"]) == 0 and session.main(["apply", pid]) == 0
+    rep = session.type_checks(pid, store.load(pid), {})
+    assert any("ardıcıllığı dəyişib" in x["what"] for x in rep["problems"]), "reklamda hook əvvələ çəkilmir"
+
+    prof = tmp_path / "x.json"
+    prof.write_text(json.dumps({"name": "Sınaq", "history": []}), encoding="utf-8")
+    monkeypatch.setattr(session, "profile_path", lambda name: prof)
+    p = store.load(pid)
+    p["brand"] = {"name": "Sınaq"}
+    store.save(pid, p, p["revision"])
+    _draft_and_analysis(pid)
+    plan = tmp_path / "A.json"
+    plan.write_text(json.dumps({"title": "Təmiz + vurğu", "approach": "M04 + punch-in", "look": None}), encoding="utf-8")
+    assert session.main(["choose", pid, str(plan)]) == 0
+    h = json.loads(prof.read_text(encoding="utf-8"))["history"][-1]
+    assert h["type"] == 3 and h["approach"] == "M04" and h["variant"] == "Təmiz + vurğu" and h["engine"] == "montaj"
+    assert store.load(pid)["videoType"]["approaches"] == ["M04"]
+
+    src = tmp_path / "sinxron.mp4"
+    capsys.readouterr()
+    assert session.main(["new", "--title", "Dərs 1", "--file", str(src), "--type", "15"]) == 0
+    out = capsys.readouterr().out
+    pid2 = out.split("layihə: ")[1].split()[0]
+    p2 = store.load(pid2)
+    assert p2["aspect"] == "16:9" and p2["width"] > p2["height"] and p2["videoType"]["type"] == 15
+    assert session.main(["types", "99"]) == 2

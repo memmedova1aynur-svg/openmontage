@@ -25,6 +25,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -36,7 +37,7 @@ import numpy as np
 
 os.environ.setdefault("MONTAJ_SYNC_DERIVE", "1")
 
-from montaj import analysis, clients, drive, store  # noqa: E402
+from montaj import analysis, clients, drive, store, types  # noqa: E402
 from montaj.config import data_dir  # noqa: E402
 from montaj.errors import UserError  # noqa: E402
 
@@ -69,6 +70,9 @@ def fmt(t: float) -> str:
 def cmd_new(a: argparse.Namespace) -> None:
     from montaj import server  # _register, output-size və s. üçün
 
+    vt = _type_record(a) if a.type else None
+    if not a.aspect:
+        a.aspect = (vt and types.get(vt["type"]).get("aspect")) or "9:16"
     base = node_tl("migrate", node_tl("newProject", {"id": "tmp", "title": a.title}))
     p = store.create(a.title, base)
     pid = p["id"]
@@ -100,8 +104,127 @@ def cmd_new(a: argparse.Namespace) -> None:
     if a.size:  # məs. 16:9 seminar → 9:16: kəsim kiçik olur; istəyə görə 1080x1920-yə böyüdülür (yumşalma açıq bildirilir)
         w, h = (int(x) // 2 * 2 for x in a.size.lower().split("x"))
     proj.update(options=options, aspect=a.aspect, width=w, height=h, brand=brand, clientId=brand and brand["id"])
+    if vt:
+        proj["videoType"] = vt
     store.save(pid, proj, proj["revision"])
     print(f"layihə: {pid}  çıxış: {w}x{h}")
+    if vt:
+        print(f"növ: {vt['type']} — {vt['name']}" + (f" + {', '.join(map(str, vt['extra']))}" if vt["extra"] else "")
+              + f"; yanaşma: {'+'.join(vt['approaches'])}  (ətraflı: types {vt['type']})")
+
+
+# ---------------------------------------------------------------------------
+# Video növləri (montaj/types.py reyestri)
+# ---------------------------------------------------------------------------
+
+def _type_record(a: argparse.Namespace) -> dict[str, Any]:
+    try:
+        return types.record(a.type, [int(x) for x in (a.extra or [])], ", ".join(a.goal or []) if isinstance(a.goal, list) else (a.goal or ""),
+                            types.parse_approaches(a.approach) if a.approach else None, a.subtype or "", a.uncertain or "")
+    except (KeyError, ValueError) as e:
+        raise UserError(str(e).strip("'\""), "Növlərin siyahısı: `python -m montaj.session types`.") from None
+
+
+def _type_lines(n: int) -> list[str]:
+    t = types.get(n)
+    out = [f"{n}. {t['name']} — {types.STATUS_LABEL[t['status']]}"]
+    if t.get("gaps"):
+        out.append(f"   çatışmır: {t['gaps']}")
+    if t.get("subtypes"):
+        out.append(f"   alt növlər: {', '.join(t['subtypes'])}")
+    if t["approaches"]:
+        out.append("   yanaşmalar: " + ", ".join(f"{k} {types.APPROACHES[k]['name']}" for k in t["approaches"]))
+    for letter, (ap, desc) in zip("ABC", t["variants"]):
+        out.append(f"   storyboard {letter}: {ap} — {desc}")
+    if t["commands"]:
+        out.append(f"   əmrlər: {' → '.join(t['commands'])}")
+    rules = [r for r in t.get("rules", [])]
+    if rules:
+        out.append(f"   avtomatik yoxlama (verify): {', '.join(rules)}")
+    for x in t.get("notes", []):
+        out.append(f"   qayda: {x}")
+    return out
+
+
+def cmd_types(a: argparse.Namespace) -> None:
+    """Video növləri / yanaşmalar / sorğu sualları — reyestrdən."""
+    if a.survey:
+        print(json.dumps(types.survey(), ensure_ascii=False, indent=1))
+        return
+    if a.approaches:
+        for k, ap in types.APPROACHES.items():
+            print(f"{k} {ap['name']} — {types.STATUS_LABEL[ap['status']]}: {ap['what']}" + (f" | çatışmır: {ap['gaps']}" if ap.get("gaps") else ""))
+        return
+    if a.n:
+        try:
+            print("\n".join(_type_lines(a.n)))
+        except KeyError as e:
+            raise UserError(str(e).strip("'\""), "Növlərin siyahısı: `python -m montaj.session types`.") from None
+        return
+    for k, f in types.FAMILIES.items():
+        print(f"{f['label']}:")
+        for n in f["types"]:
+            t = types.TYPES[n]
+            print(f"  {n:>2}. {t['name']} [{types.STATUS_LABEL[t['status']]}] — {'+'.join(t['approaches']) or '—'}")
+
+
+def cmd_set_type(a: argparse.Namespace) -> None:
+    """Mövcud layihəyə növ qeydi (analizdən sonra növ dəqiqləşəndə)."""
+    p = store.load(a.pid)
+    vt = _type_record(a)
+    p["videoType"] = vt
+    if not (p.get("options") or {}).get("goal") and vt["goal"]:
+        p["options"] = {**(p.get("options") or {}), "goal": [vt["goal"]]}
+    store.save(a.pid, p, p["revision"])
+    print("\n".join(_type_lines(vt["type"])))
+
+
+def _type_hints(project: dict[str, Any]) -> list[str]:
+    """storyboard-dan sonra: növ, 3 variant, qaydalar, müştərinin son seçimləri (təkrarın qarşısını almaq üçün)."""
+    vt = project.get("videoType")
+    out = []
+    if not vt:
+        out.append("növ qeyd olunmayıb — transkripti oxu, `set-type <pid> <N>` (siyahı: `types`)")
+    else:
+        out += _type_lines(vt["type"])
+        for e in vt.get("extra") or []:
+            out.append(f"   + əlavə növ {e}: {types.get(e)['name']}")
+    name = (project.get("brand") or {}).get("name")
+    prof = expert_profile(name) if name else None
+    hist = [h for h in (prof or {}).get("history") or [] if isinstance(h, dict)][-3:]
+    if hist:
+        out.append("müştərinin son seçimləri (eyni giriş/qutu/effekt ardıcıllığını təkrarlama):")
+        for h in hist:
+            bits = [str(h.get(k)) for k in ("date", "type", "approach", "variant", "look") if h.get(k)]
+            st = h.get("style")
+            if isinstance(st, dict):
+                bits.append(", ".join(f"{k}={v}" for k, v in st.items()))
+            out.append(f"   - {h.get('video', '')}: {'; '.join(bits)}")
+    return out
+
+
+def _remember_choice(pid: str, plan: dict[str, Any], plan_name: str) -> None:
+    """Seçilən variant: layihənin növ qeydinə yanaşma, müştəri profilinin tarixçəsinə qısa qeyd."""
+    import datetime
+
+    p = store.load(pid)
+    aps = re.findall(r"M\d\d", str(plan.get("approach") or "").upper())
+    vt = p.get("videoType")
+    if vt and aps:
+        vt["approaches"] = aps
+        store.save(pid, p, p["revision"])
+    name = (p.get("brand") or {}).get("name")
+    f = profile_path(name) if name else None
+    if not f:
+        return
+    prof = json.loads(f.read_text(encoding="utf-8"))
+    entry = {"video": p.get("title"), "date": datetime.date.today().isoformat(), "engine": "montaj",
+             "type": vt and vt["type"], "approach": "+".join(aps) or None, "variant": plan.get("title") or plan_name,
+             "look": plan.get("look"), "captions": ((plan.get("captions") or {}).get("style") or {}).get("type")}
+    prof.setdefault("history", []).append({k: v for k, v in entry.items() if v})
+    f.write_text(json.dumps(prof, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    print(f"müştəri tarixçəsinə yazıldı: {f.name} → history")
+
 
 
 def contact_sheet(pid: str, sb: dict[str, Any], dst: Path) -> Path:
@@ -208,6 +331,8 @@ def cmd_storyboard(a: argparse.Namespace) -> None:
             d = json.loads(an.read_text())
             print(f"transkript {mid}: dil={d.get('language')} sözlər={len(d.get('words', []))} "
                   f"{'(XƏTA: ' + d['transcribeError'] + ')' if d.get('transcribeError') else ''}")
+    for line in _type_hints(project):
+        print(line)
 
 
 def _parse_nums(s: str | None) -> list[int]:
@@ -1080,6 +1205,22 @@ def cmd_cut(a: argparse.Namespace) -> None:
     (o / "storyboard.md").write_text(summary(a.pid, sb), encoding="utf-8")
 
 
+def type_checks(pid: str, p: dict[str, Any], rep: dict[str, Any]) -> dict[str, Any]:
+    """Növün maşın qaydaları (types.rules_for): uğurlu → checks, pozulan → problems (t=0)."""
+    from montaj import ad
+
+    q = node_tl("migrate", p)
+    words, _tl, _tot = _timeline_words(pid, q)
+    spoken = {int(n["value"]) for s_ in ad.scan_numbers(words) for n in s_["numbers"]}
+    for w in words:
+        spoken |= types._numbers(w["w"])
+    checks, problems = list(rep.get("checks") or []), list(rep.get("problems") or [])
+    for rule in types.rules_for(p.get("videoType")):
+        ok, why = types.check(rule, q, node_tl("videoClips", q), spoken)
+        (checks.append(f"növ qaydası: {why}") if ok else problems.append({"t": 0.0, "what": f"növ qaydası: {why}"}))
+    return {"checks": checks, "problems": problems}
+
+
 def cmd_verify(a: argparse.Namespace) -> None:
     """Yekun render yoxlaması: kəsim sərhədləri, səs/görüntü, kliklər, yekun səsin yenidən tanınması."""
     from montaj import quality
@@ -1087,6 +1228,7 @@ def cmd_verify(a: argparse.Namespace) -> None:
     p = store.load(a.pid)
     mp4 = Path(a.mp4) if a.mp4 else _latest_render(a.pid)
     rep = quality.verify(p, store.project_dir(a.pid), mp4, _analyses(a.pid, p), asr=not a.no_asr)
+    rep.update(type_checks(a.pid, p, rep))
     (out_dir(a.pid) / f"{mp4.stem}_yoxlama.json").write_text(json.dumps(rep, ensure_ascii=False, indent=1), encoding="utf-8")
     for c in rep["checks"]:
         print("✓", c)
@@ -1592,6 +1734,7 @@ def cmd_choose(a: argparse.Namespace) -> None:
     _save_draft(a.pid, sb)
     cmd_apply(argparse.Namespace(pid=a.pid))
     cmd_plan(argparse.Namespace(pid=a.pid, plan=a.plan))
+    _remember_choice(a.pid, plan, Path(a.plan).stem)
 
 
 def cmd_music_preview(a: argparse.Namespace) -> None:
@@ -1625,7 +1768,12 @@ def main(argv: list[str] | None = None) -> int:
     n.add_argument("--link", action="append")
     n.add_argument("--file", action="append")
     n.add_argument("--client")
-    n.add_argument("--aspect", default="9:16")
+    n.add_argument("--aspect", help="standart 9:16; növün öz formatı varsa (məs. 15 → 16:9) o")
+    n.add_argument("--type", type=int, help="video növü (types)")
+    n.add_argument("--extra", action="append", help="əlavə növ (qarışıq video, məs. 1 + 13)")
+    n.add_argument("--approach", help="yanaşma, məs. M01+M02")
+    n.add_argument("--subtype")
+    n.add_argument("--uncertain", help="növ aydın deyilsə — nə və niyə")
     n.add_argument("--cut", default="suggest", choices=["keep", "suggest", "auto"])
     n.add_argument("--duration", type=float)
     n.add_argument("--size", help="çıxış ölçüsü, məs. 1080x1920 (kiçik kəsim böyüdülür — standart: böyütmə yoxdur)")
@@ -1662,6 +1810,18 @@ def main(argv: list[str] | None = None) -> int:
     vf.add_argument("pid")
     vf.add_argument("--mp4")
     vf.add_argument("--no-asr", action="store_true")
+    ty = sub.add_parser("types", help="video növləri, yanaşmalar, sorğu sualları (reyestr)")
+    ty.add_argument("n", nargs="?", type=int)
+    ty.add_argument("--survey", action="store_true")
+    ty.add_argument("--approaches", action="store_true")
+    st = sub.add_parser("set-type", help="layihəyə video növü qeydi")
+    st.add_argument("pid")
+    st.add_argument("type", type=int)
+    st.add_argument("--extra", action="append")
+    st.add_argument("--goal")
+    st.add_argument("--approach")
+    st.add_argument("--subtype")
+    st.add_argument("--uncertain")
     cp = sub.add_parser("carousel-plan", help="video karusel planı (örtük + fikirlər + çağırış)")
     cp.add_argument("pid")
     cr = sub.add_parser("carousel", help="video karusel slaydları (1080x1350 MP4)")
@@ -1739,7 +1899,7 @@ def main(argv: list[str] | None = None) -> int:
         {"new": cmd_new, "storyboard": cmd_storyboard, "edit": cmd_edit, "apply": cmd_apply,
          "render": cmd_render, "export": cmd_export, "editor": cmd_editor,
          "apply-edits": cmd_apply_edits, "set-client": cmd_set_client, "plan": cmd_plan, "looks": cmd_looks,
-         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "highlights": cmd_highlights, "extract": cmd_extract, "mg-scan": cmd_mg_scan, "tale-plan": cmd_tale_plan, "carousel-plan": cmd_carousel_plan, "carousel": cmd_carousel, "fix-word": cmd_fix_word,
+         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "highlights": cmd_highlights, "extract": cmd_extract, "mg-scan": cmd_mg_scan, "tale-plan": cmd_tale_plan, "carousel-plan": cmd_carousel_plan, "types": cmd_types, "set-type": cmd_set_type, "carousel": cmd_carousel, "fix-word": cmd_fix_word,
          "variants": cmd_variants, "choose": cmd_choose, "music-preview": cmd_music_preview}[a.cmd](a)
     except UserError as err:
         print(f"XƏTA: {err.message}\nNƏ ETMƏLİ: {err.hint}", file=sys.stderr)
