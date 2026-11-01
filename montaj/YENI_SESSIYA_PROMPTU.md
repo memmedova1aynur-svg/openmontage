@@ -22,6 +22,12 @@ Bu söhbət müştəri videolarının gündəlik montajı üçündür. Montaj si
    - **bir qərar mesajı**: 3 storyboard + kadraj əvvəl/sonra + rəng variantları + 2–3 musiqi nümunəsi
      (Freesound, yalnız CC0) + səs əvvəl/sonra. Mən bir cavabla seçirəm;
    - sonra yalnız **yekun MP4**: `render` + `verify` + şübhəli sözlər siyahısı. Ara düzəliş raundu yoxdur.
+   - müştəri hələ çəkməyibsə: `types <N> --shoot --client "<ad>"` (çəkiliş tövsiyəsi); `storyboard`-dakı material
+     yoxlamasının `!` qeydlərini qərar mesajında qısa de.
+   - növə görə alətlər (`types <N>`): reklam `ad-plan`, seminar `highlights`/`extract`, tədbir `event-scan`/`event-plan`,
+     sual-cavab `qa-plan`, iki nəfər `duo`, karusel `carousel-plan`/`carousel`, nağıl `tale-plan`, motion graphics `mg-scan`;
+     ümumi: virtual multikamera (`multicam`), arxa fon (`bg`, kitabxana `montaj/backgrounds`), yavaşlatma (`slowmo`, 60 fps),
+     J/L-cut (planda `"jl"`). Montaj prinsipləri: `montaj/KINO_DILI.md`.
 4. Qaydalar:
    - müştəri üslubu onun profilindən (`templates/expert-reels/experts/`); brend rəngi rəng ailəsidir;
    - ödənişli xidmət qoşma;
