@@ -70,6 +70,19 @@ Ara düzəliş raundları təklif etmə.
      `karusel.jpg` (yoxlama üçün yan-yana). Hər slaydda sayğac "2/5", başlıq, söz-söz altyazı (y 0.84), müştəri rəngi;
      örtükdə böyük başlıq + "Sürüşdürün →". Əsas montaj dəyişmir (9:16 kartları slayda keçmir).
    - Yoxlama: `karusel.jpg`-ə bax (üz, başlıq, altyazı üst-üstə düşmür), sonra istifadəçiyə slaydları sıra ilə göndər.
+2h. **Tədbir icmalı və kameraarxası — M09** (növ 5, 7; görüntülər musiqi ritmi ilə, danışıq yoxdur):
+   - `new --type 5` (və ya 7) — tədbir kadrajı avtomatik; bütün klipləri/şəkilləri bir layihəyə əlavə et → `storyboard`.
+   - `event-scan <pid>` → `shots.json` + `kadrlar.jpg`: hər kadr (avtomatik bölünür, xronoloji — çəkiliş vaxtı/fayl adı)
+     kəskinlik, işıq, titrəmə, üz ilə qiymətləndirilir; zəif kadr (bulanıq/qaranlıq/titrək) qırmızı və seçilmir.
+   - Musiqini Freesound-dan (yalnız CC0) seç → `event-plan <pid> --music <fayl> [--target 30]` → `event_A/B/C.json`:
+     A xronoloji (4 vuruşluq kadrlar), B ritmik (2 vuruş), C qısa dəvət (15–20 s). Quruluş: açılış (ümumi plan, 2 qat uzun)
+     → inkişaf (xronoloji, hər kadrın ən kəskin/sakit hissəsi) → final (uzun son kadr). Kəsimlər vuruşlara düşür
+     (±20 ms), musiqi vuruşdan başlayır, sonda 2 s sönür; görüntünün öz səsi söndürülür (`liveSound`).
+   - `_review`-da real səs namizədləri (fondan yüksək — alqış/gülüş ola bilər): dinlə, saxlamaq üçün planda
+     `"liveSound": {"volume": 0, "keep": {"e5": 0.8}}` (kart id). Rəng üçün plana `"look"` əlavə et.
+   - `variants <pid> event_A.json event_B.json event_C.json` → qərar mesajı → `choose` → `render` → `verify`.
+   - Yoxdur (iddia etmə): yavaşlatma, şəkillərdə hərəkət (Ken Burns), kadrın məzmununu tanıma (sertifikat, alqış) —
+     açılış/final xronologiya və ümumi plana görə seçilir; variant şəklinə baxıb yoxla. Dəvət mətni (tarix, yer) yalnız istifadəçidən.
 2e. **Motion graphics** (data, IT, analitika — qrafika ağırlıqlı):
    - Qrafik səhnələr (`session scenes`, `mg_*`): `mg_bar` (sütun), `mg_line` (zaman üzrə xətt), `mg_donut` (faiz),
      `mg_compare` (iki dəyər), `mg_steps` (proses/yol xəritəsi), `mg_code` (kod/terminal), `mg_kpi` (2–4 rəqəm). Müştəri rəngində,

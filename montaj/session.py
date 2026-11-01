@@ -71,6 +71,8 @@ def cmd_new(a: argparse.Namespace) -> None:
     from montaj import server  # _register, output-size və s. üçün
 
     vt = _type_record(a) if a.type else None
+    if vt and vt["type"] in (5, 7) and "event" not in (a.format or []):
+        a.format = [*(a.format or []), "event"]  # tədbir kadrajı (storyboard) — M09
     if not a.aspect:
         a.aspect = (vt and types.get(vt["type"]).get("aspect")) or "9:16"
     base = node_tl("migrate", node_tl("newProject", {"id": "tmp", "title": a.title}))
@@ -962,6 +964,13 @@ def apply_plan(pid: str, p: dict[str, Any], plan: dict[str, Any], plan_name: str
                    volume=float(mus.get("volume", 0.12)), fadeIn=float(mus.get("fadeIn", 1.2)),
                    fadeOut=float(mus.get("fadeOut", 2.0)), origin="plan")
         q.setdefault("mix", {})["duck"] = bool(mus.get("duck", True))
+    live = plan.get("liveSound")
+    if live is not None:  # M09: görüntünün öz səsi (standart söndürülür), seçilmiş kartlarda (alqış, gülüş) saxlanılır
+        card_of = {c["id"]: c.get("cardId") for c in q["clips"] if c["track"] == "v1"}
+        keep = {str(k): float(v) for k, v in (live.get("keep") or {}).items()}
+        for c in q["clips"]:
+            if c["track"] == "a1" and c.get("linkedTo") in card_of and not c.get("manual"):
+                c["volume"] = keep.get(str(card_of[c["linkedTo"]]), float(live.get("volume", 0.0)))
     for c in q["clips"]:  # plan qərarları "əl ilə" sayılmır
         if c["id"] not in was_manual and c.get("origin") in ("plan", "ai", "import", "auto", None):
             c["manual"] = False
@@ -1453,6 +1462,79 @@ def cmd_carousel(a: argparse.Namespace) -> None:
     print("Instagram-da: yeni paylaşım → bir neçə seç → slaydları sıra ilə əlavə et")
 
 
+def cmd_event_scan(a: argparse.Namespace) -> None:
+    """M09: bütün görüntülərin kadrları (xronoloji) və keyfiyyəti → shots.json + kadrlar.jpg (zəif kadr qırmızı)."""
+    from PIL import Image, ImageDraw, ImageFont
+
+    from montaj import event
+
+    p = store.load(a.pid)
+    root = store.project_dir(a.pid)
+    shots = event.scan_shots(p["media"], root, faces=not a.no_faces)
+    if not shots:
+        raise UserError("Görüntü materialı yoxdur.", "Tədbir/proses videolarını və şəkillərini layihəyə əlavə edin.")
+    o = out_dir(a.pid)
+    (o / "shots.json").write_text(json.dumps(shots, ensure_ascii=False), encoding="utf-8")
+    media = {m["id"]: m for m in p["media"]}
+    tw, th, cols = 240, 135, 5
+    font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 14)
+    rows = (len(shots) + cols - 1) // cols
+    img = Image.new("RGB", (cols * (tw + 8) + 8, rows * (th + 44) + 8), (20, 22, 26))
+    d = ImageDraw.Draw(img)
+    tmp = o / "_shot.jpg"
+    for i, sh in enumerate(shots):
+        x, y = 8 + (i % cols) * (tw + 8), 8 + (i // cols) * (th + 44)
+        t = 0 if sh.get("image") else (sh["s"] + sh["e"]) / 2
+        subprocess.run(["ffmpeg", "-y", "-v", "error", "-ss", f"{t:.2f}", "-i", str(root / media[sh["media"]]["file"]), "-frames:v", "1",
+                        "-vf", f"scale={tw}:{th}:force_original_aspect_ratio=decrease,pad={tw}:{th}:(ow-iw)/2:(oh-ih)/2", str(tmp)],
+                       capture_output=True)
+        if tmp.is_file():
+            img.paste(Image.open(tmp).convert("RGB"), (x, y))
+        if sh["weak"]:
+            d.rectangle([x, y, x + tw, y + th], outline=(255, 90, 90), width=4)
+        d.text((x, y + th + 4), f"#{i + 1} {sh['name'][:14]} {sh['s']:.1f}–{sh['e']:.1f}s", font=font, fill=(220, 222, 228))
+        d.text((x, y + th + 22), f"bal {sh['score']:.2f}" + (" · ümumi plan" if sh["wide"] else "") +
+               (" · " + ", ".join(sh["weak"]) if sh["weak"] else ""), font=font, fill=(255, 140, 140) if sh["weak"] else (154, 161, 173))
+    tmp.unlink(missing_ok=True)
+    img.save(o / "kadrlar.jpg", quality=85)
+    weak = sum(1 for x in shots if x["weak"])
+    print(f"{len(shots)} kadr ({weak} zəif), {len({x['media'] for x in shots})} fayl → {o / 'shots.json'}")
+    print(o / "kadrlar.jpg")
+
+
+def cmd_event_plan(a: argparse.Namespace) -> None:
+    """M09: musiqi vuruşlarına düzülmüş 3 variant planı (event_A/B/C.json) — `variants` və `choose` ilə işləyir."""
+    from montaj import event
+
+    f = out_dir(a.pid) / "shots.json"
+    if not f.is_file():
+        raise UserError("Kadr analizi yoxdur.", "Əvvəl `event-scan <pid>` işlədin.")
+    shots = json.loads(f.read_text(encoding="utf-8"))
+    music = Path(a.music)
+    if not music.is_file():
+        raise UserError(f"Musiqi faylı tapılmadı: {music}", "Freesound-dan (CC0) musiqi yükləyin və yolunu verin.")
+    bt = event.beats(music)
+    print(f"musiqi: temp {bt['tempo']} BPM, {len(bt['beats'])} vuruş, {bt['duration']:.1f} s")
+    try:
+        _load_draft(a.pid)
+    except UserError:
+        raise UserError("Storyboard qaralaması yoxdur.", "Əvvəl `storyboard <pid>` işlədin (kadraj və analiz üçün).") from None
+    for k in a.variants:
+        r = event.assemble(shots, bt, k, a.target if a.target and k != "C" else None)
+        plan = {"title": event.VARIANTS[k]["title"], "approach": "M09",
+                "storyboard": {"cards": r["cards"]}, "captions": {"enabled": False}, "dropStoryboardText": True,
+                "music": {"file": str(music.resolve()), "from": r["music_from"], "volume": a.volume, "duck": False,
+                          "fadeIn": 0.0, "fadeOut": 2.0},
+                "liveSound": {"volume": 0.0, "keep": {}}, "look": None, "_review": r["review"]}
+        out = out_dir(a.pid) / f"event_{k}.json"
+        out.write_text(json.dumps(plan, ensure_ascii=False, indent=1), encoding="utf-8")
+        roles = " · ".join(f"{c['role'][0]}:{c['srcOut'] - c['srcIn']:.1f}" for c in r["cards"])
+        print(f"{k}: {plan['title']} — {len(r['cards'])} kadr, {r['dur']:.1f} s ({roles}) → {out}")
+        for x in r["review"]:
+            print("   YOXLA:", x)
+    print("növbəti: variants <pid> event_A.json event_B.json event_C.json → seçim → choose (rəng: look əlavə et)")
+
+
 def cmd_highlights(a: argparse.Namespace) -> None:
     """Uzun videodan (seminar, çıxış) müstəqil qısa Reels hissələri: bal, səbəb, hazır `extract` əmri.
     Təklifdir — transkripti oxu, kontekstsiz anlaşılmayan hissəni seçmə."""
@@ -1645,6 +1727,22 @@ def cmd_fix_word(a: argparse.Namespace) -> None:
         print(f"müştəri lüğətinə yazıldı: {shown} (növbəti videolarda avtomatik)")
 
 
+def _sb_override(sb: dict[str, Any], ov: dict[str, Any]) -> dict[str, Any]:
+    """Planın storyboard düzəlişləri qaralamaya: "cards" (tam kart siyahısı — M09 kimi yığılan montaj), exclude/include/text/order."""
+    if ov.get("cards"):
+        sb["cards"] = [dict(c) for c in ov["cards"]]
+    for n in ov.get("exclude", []):
+        sb["cards"][n - 1]["include"] = False
+    for n in ov.get("include", []):
+        sb["cards"][n - 1]["include"] = True
+    for n, txt in (ov.get("text") or {}).items():
+        sb["cards"][int(n) - 1]["onScreenText"] = txt
+    if ov.get("order"):
+        cards = sb["cards"]
+        sb["cards"] = [cards[n - 1] for n in ov["order"]] + [c for i, c in enumerate(cards) if i + 1 not in ov["order"]]
+    return sb
+
+
 def cmd_variants(a: argparse.Namespace) -> None:
     """3 storyboard variantının önizləməsi: hər plan qaralamanın SURƏTİNƏ tətbiq olunur, yüngül (540p)
     önizləmə render edilir, əsas anlardan kadrlar götürülür. Layihə dəyişmir."""
@@ -1662,17 +1760,7 @@ def cmd_variants(a: argparse.Namespace) -> None:
     for k, plan_file in enumerate(a.plans):
         letter = "ABCDEF"[k]
         plan = json.loads(Path(plan_file).read_text(encoding="utf-8"))
-        sbv = copy.deepcopy(sb)
-        ov = plan.get("storyboard") or {}
-        for n in ov.get("exclude", []):
-            sbv["cards"][n - 1]["include"] = False
-        for n in ov.get("include", []):
-            sbv["cards"][n - 1]["include"] = True
-        for n, txt in (ov.get("text") or {}).items():
-            sbv["cards"][int(n) - 1]["onScreenText"] = txt
-        if ov.get("order"):
-            cards = sbv["cards"]
-            sbv["cards"] = [cards[n - 1] for n in ov["order"]] + [c for i, c in enumerate(cards) if i + 1 not in ov["order"]]
+        sbv = _sb_override(copy.deepcopy(sb), plan.get("storyboard") or {})
         r = node_tl("applyStoryboard", node_tl("migrate", copy.deepcopy(base)), sbv,
                     {"frames": sbv.get("frames") or {}, "brand": base.get("brand")})
         q = apply_plan(a.pid, r["project"], plan, Path(plan_file).name)
@@ -1689,6 +1777,13 @@ def cmd_variants(a: argparse.Namespace) -> None:
             acc += c["srcOut"] - c["srcIn"]
         br_t = sorted([round(float(c["start"]) + (c["srcOut"] - c["srcIn"]) / 2, 2) for c in q["clips"] if c["track"] == "v2"] + seq_t)
         times = sorted({0.8, *br_t[:2], *lay_t[:3], max(0.5, total - 1.0)})[:6]
+        if len(times) < 4:  # qrafikasız montaj (məs. M09): kadrların ortası
+            mids, acc2 = [], 0.0
+            for c in node_tl("videoClips", q):
+                mids.append(round(acc2 + (c["srcOut"] - c["srcIn"]) / 2, 2))
+                acc2 += c["srcOut"] - c["srcIn"]
+            step_ = max(1, len(mids) // 6 + (len(mids) % 6 > 0))
+            times = sorted(set(mids[::step_]))[:6]
         tiles = []
         for i, t in enumerate(times):
             tile = Path(tempfile.mkstemp(suffix=".png")[1])
@@ -1720,17 +1815,7 @@ def cmd_variants(a: argparse.Namespace) -> None:
 def cmd_choose(a: argparse.Namespace) -> None:
     """İstifadəçinin seçdiyi storyboard variantını tətbiq edir: qaralama düzəlişləri → apply → plan."""
     plan = json.loads(Path(a.plan).read_text(encoding="utf-8"))
-    sb = _load_draft(a.pid)
-    ov = plan.get("storyboard") or {}
-    for n in ov.get("exclude", []):
-        sb["cards"][n - 1]["include"] = False
-    for n in ov.get("include", []):
-        sb["cards"][n - 1]["include"] = True
-    for n, txt in (ov.get("text") or {}).items():
-        sb["cards"][int(n) - 1]["onScreenText"] = txt
-    if ov.get("order"):
-        cards = sb["cards"]
-        sb["cards"] = [cards[n - 1] for n in ov["order"]] + [c for i, c in enumerate(cards) if i + 1 not in ov["order"]]
+    sb = _sb_override(_load_draft(a.pid), plan.get("storyboard") or {})
     _save_draft(a.pid, sb)
     cmd_apply(argparse.Namespace(pid=a.pid))
     cmd_plan(argparse.Namespace(pid=a.pid, plan=a.plan))
@@ -1810,6 +1895,15 @@ def main(argv: list[str] | None = None) -> int:
     vf.add_argument("pid")
     vf.add_argument("--mp4")
     vf.add_argument("--no-asr", action="store_true")
+    es = sub.add_parser("event-scan", help="M09: tədbir/proses kadrlarının analizi")
+    es.add_argument("pid")
+    es.add_argument("--no-faces", action="store_true")
+    ep = sub.add_parser("event-plan", help="M09: musiqi ritminə düzülmüş 3 variant")
+    ep.add_argument("pid")
+    ep.add_argument("--music", required=True)
+    ep.add_argument("--target", type=float, help="müddət, s (standart: A/B 30, C 17)")
+    ep.add_argument("--volume", type=float, default=0.9)
+    ep.add_argument("--variants", default="ABC")
     ty = sub.add_parser("types", help="video növləri, yanaşmalar, sorğu sualları (reyestr)")
     ty.add_argument("n", nargs="?", type=int)
     ty.add_argument("--survey", action="store_true")
@@ -1899,7 +1993,7 @@ def main(argv: list[str] | None = None) -> int:
         {"new": cmd_new, "storyboard": cmd_storyboard, "edit": cmd_edit, "apply": cmd_apply,
          "render": cmd_render, "export": cmd_export, "editor": cmd_editor,
          "apply-edits": cmd_apply_edits, "set-client": cmd_set_client, "plan": cmd_plan, "looks": cmd_looks,
-         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "highlights": cmd_highlights, "extract": cmd_extract, "mg-scan": cmd_mg_scan, "tale-plan": cmd_tale_plan, "carousel-plan": cmd_carousel_plan, "types": cmd_types, "set-type": cmd_set_type, "carousel": cmd_carousel, "fix-word": cmd_fix_word,
+         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "highlights": cmd_highlights, "extract": cmd_extract, "mg-scan": cmd_mg_scan, "tale-plan": cmd_tale_plan, "carousel-plan": cmd_carousel_plan, "types": cmd_types, "event-scan": cmd_event_scan, "event-plan": cmd_event_plan, "set-type": cmd_set_type, "carousel": cmd_carousel, "fix-word": cmd_fix_word,
          "variants": cmd_variants, "choose": cmd_choose, "music-preview": cmd_music_preview}[a.cmd](a)
     except UserError as err:
         print(f"XƏTA: {err.message}\nNƏ ETMƏLİ: {err.hint}", file=sys.stderr)
