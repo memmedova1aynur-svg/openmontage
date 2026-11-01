@@ -762,3 +762,69 @@ def test_video_type_registry(tmp_path, monkeypatch, capsys):
     p2 = store.load(pid2)
     assert p2["aspect"] == "16:9" and p2["width"] > p2["height"] and p2["videoType"]["type"] == 15
     assert session.main(["types", "99"]) == 2
+
+
+def test_event_montage_beats(tmp_path, monkeypatch):
+    """M09: musiqi vuruşları (±10 ms), zəif kadr (bulanıq) seçilmir, kəsimlər vuruşa düşür, görüntünün öz səsi söndürülür."""
+    import subprocess
+
+    import numpy as np
+
+    from montaj import event
+
+    sr = 22050
+    y = np.random.default_rng(1).standard_normal(sr * 20) * 0.01 + 0.15 * np.sin(2 * np.pi * 220 * np.arange(sr * 20) / sr)
+    true = np.arange(0.25, 20, 0.5)
+    for k, t in enumerate(true):
+        i, n = int(t * sr), int(0.06 * sr)
+        y[i:i + n] += (0.9 if k % 4 == 0 else 0.5) * np.sin(2 * np.pi * (110 if k % 2 == 0 else 880) * np.arange(n) / sr) * np.exp(-np.arange(n) / (0.015 * sr))
+    mus = tmp_path / "musiqi.wav"  # yalnız test üçün sintez ritm
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f32le", "-ar", str(sr), "-ac", "1", "-i", "-", str(mus)],
+                   input=y.astype(np.float32).tobytes(), check=True)
+    bt = event.beats(mus)
+    assert abs(bt["tempo"] - 120) < 1.5
+    assert all(min(abs(true - b)) < 0.02 for b in bt["beats"]), "vuruş zərbə ilə eyni anda (±20 ms, 30 fps-də kadrdan az)"
+
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import server, session, store
+
+    srcs = {"a_zal": "testsrc2", "b_sehne": "smptebars", "c_bulaniq": "testsrc2", "d_final": "testsrc"}
+    for name, lav in srcs.items():
+        f = tmp_path / f"{name}.mp4"
+        vf = ["-vf", "boxblur=12:2"] if "bulaniq" in name else []
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", f"{lav}=s=640x360:r=25:d=6", "-f", "lavfi", "-i", "sine=f=300:d=6",
+                        *vf, "-shortest", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac", str(f)], check=True)
+        tmp = store.originals_dir(pid) / f".{name}.part"
+        tmp.write_bytes(f.read_bytes())
+        server._register(pid, tmp, f.name)
+    p = store.load(pid)
+    p["media"] = [m for m in p["media"] if m["name"] != "sinxron.mp4"]  # yalnız tədbir kadrları
+    p["clips"] = []
+    store.save(pid, p, p["revision"])
+    session._save_draft(pid, {"generator": "rules", "subtitles": False, "candidates": {}, "cards": [], "frames": {}, "options": {}})
+    assert session.main(["set-type", pid, "5"]) == 0
+    assert session.main(["event-scan", pid, "--no-faces"]) == 0
+    shots = json.loads((tmp_path / "out" / pid / "shots.json").read_text())
+    blur = {s["media"] for s in shots if "bulanıq" in s["weak"]}
+    assert len(blur) == 1
+    assert session.main(["event-plan", pid, "--music", str(mus), "--target", "8", "--variants", "A"]) == 0
+    plan = json.loads((tmp_path / "out" / pid / "event_A.json").read_text())
+    cards = plan["storyboard"]["cards"]
+    assert cards[0]["role"] == "açılış" and cards[-1]["role"] == "final" and not any(c["mediaId"] in blur for c in cards)
+    assert session.main(["choose", pid, str(tmp_path / "out" / pid / "event_A.json")]) == 0
+    q = store.load(pid)
+    assert all(c["volume"] == 0 for c in q["clips"] if c["track"] == "a1"), "görüntünün öz səsi söndürülür"
+    m1 = next(c for c in q["clips"] if c["track"] == "m1")
+    assert abs(m1["srcIn"] - plan["music"]["from"]) < 0.01
+    assert session.main(["render", pid]) == 0
+    mp4 = sorted((tmp_path / "out" / pid).glob(f"{pid}_r*.mp4"))[-1]
+    W, H = q["width"], q["height"]
+    raw = subprocess.run(["ffmpeg", "-v", "error", "-i", str(mp4), "-vf", "scale=64:112", "-f", "rawvideo", "-pix_fmt", "gray", "-"],
+                         capture_output=True, check=True).stdout
+    fr = np.frombuffer(raw, np.uint8).reshape(-1, 112, 64).astype(float)
+    fps = float(subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v", "-show_entries", "stream=r_frame_rate", "-of", "csv=p=0", str(mp4)],
+                               capture_output=True, text=True).stdout.strip().split("/")[0])
+    cuts = [(i + 1) / fps for i in np.where(np.abs(np.diff(fr, axis=0)).mean(axis=(1, 2)) > 25)[0]]
+    beats_out = np.array(plan["music"]["from"] and [b - plan["music"]["from"] for b in bt["beats"]])
+    assert len(cuts) == len(cards) - 1 and W and H
+    assert all(min(abs(beats_out - c)) < 1.5 / fps for c in cuts), f"kəsimlər vuruşda: {cuts}"

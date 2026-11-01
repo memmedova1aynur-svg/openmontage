@@ -211,4 +211,9 @@ real danışıqda səs sinxronu və görünən keyfiyyət, iPhone Safari, Instag
 | 20.3 | Layihədə növ qeydi: `new --type/--extra/--subtype/--uncertain`, `set-type`; növün formatı (15 → 16:9) | ✅ | Test: 16:9 layihə |
 | 20.4 | `storyboard` sonunda növün variantları + müştərinin son 3 seçimi; `choose` → profil `history` (növ, yanaşma, variant, rəng, altyazı) | ✅ | Test (müvəqqəti profil) |
 | 20.5 | `verify` növ qaydaları: qrafikada danışıqda olmayan rəqəm, mətnin ardıcıllığı (3, 8, 15), üfüqi dərs (15) | ✅ | Test: 350 AZN uydurma → problem; sıra dəyişəndə → problem |
+| 21.1 | M09 musiqi vuruşları (yerli, numpy): temp + vuruş şəbəkəsi + 5 ms dəqiqləşdirmə | ✅ | Sintez ritm: temp 120±1.5, vuruşlar ±20 ms |
+| 21.2 | `event-scan`: kadr bölgüsü, kəskinlik (blur effect — düz rəngli səth bulanıq sayılmır), işıq, titrəmə, üz; `kadrlar.jpg` | ✅ | Bulanıq kadr tapılır; real kameralarda kəskinlik 0.67–0.80 |
+| 21.3 | `event-plan`: A/B/C (xronoloji / ritmik / dəvət), açılış → inkişaf → final, zəif kadr seçilmir, eyni hissə təkrarlanmır, material azdırsa kəsim seyrəlir | ✅ | `test_event_montage_beats` |
+| 21.4 | Yekun MP4-də kəsimlər vuruşda; görüntünün öz səsi söndürülür (`liveSound`, seçilmiş kartda saxlanır); `variants` M09 planları ilə | ✅ | Render kadr analizi: kəsimlər 4.0/6.0/8.0/10.0 s, vuruşlar ±5 ms. Real tədbir çəkilişi ilə yoxlanılmayıb |
+
 
