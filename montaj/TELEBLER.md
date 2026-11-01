@@ -223,6 +223,11 @@ real danışıqda səs sinxronu və görünən keyfiyyət, iPhone Safari, Instag
 | 24.1 | Virtual multikamera: keyfiyyət ehtiyatı ölçülür (kəsim px / çıxış px), plan ölçüləri ona görə (2x → ümumi/orta/yaxın; 1x → 1.12x + xəbərdarlıq; <1x → dəyişmir) | ✅ | `test_virtual_multicam` |
 | 24.2 | Kəsim cümlə sərhədində, eyni ölçü ardıcıl deyil, vurğuda yaxın plan, yaxın planda üz pəncərənin yuxarı ~38%-də; `multicam` əmri və plan açarı | ✅ | Günel videosu 2x ehtiyatla: ümumi → orta → yaxın → orta (vizual) |
 | 24.3 | Yavaş yaxınlaşma (push-in) render-də (`frame.push`, scale eval=frame) | ✅ | Render testi + rəng zolaqları sınağı. Rakurs dəyişmir — yalnız plan ölçüsü |
+| 25.1 | Arxa fon: blur / color (rəng, qradiyent, brend ailəsi) / image / video / scene (Claude səhnəsi); dim, keepBelow (masa), feather, smooth | ✅ | `test_background_replace`; Günel videosunda 5 variant vizual |
+| 25.2 | Maska: çoxsinifli model, yumşaq hədd, kiçik ləkələrin (fondakı bitki) təmizlənməsi, kadrlar arası hamarlama, titrəmə ölçüsü | ✅ | Bitki izi itdi (vizual); titrəmə 0.055 |
+| 25.3 | Tam emal: birləşdirmə ffmpeg-də, kadr sayı orijinalla eyni, render törəmə videonu götürür, bərpadan sonra avtomatik yenidən hazırlanır, `--off` | ✅ | 30 s 1080x1920: 1 dəq 52 s (əvvəl 6 dəq 47 s); 900/900 kadr |
+| 25.4 | `bg --preview`: bir neçə variant yan-yana (layihə dəyişmir) | ✅ | Test + vizual |
+
 
 
 

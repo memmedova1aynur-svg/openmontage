@@ -257,10 +257,18 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
         idx += 1
         return idx - 1
 
+    bgs = project.get("background") or {}
+
+    def with_bg(m: dict[str, Any]) -> dict[str, Any]:
+        b = bgs.get(m["id"])  # arxa fonu dəyişdirilmiş törəmə video (orijinal dəyişmir, səs orijinaldan)
+        if b and b.get("file") and (media_root / b["file"]).is_file():
+            return {**m, "file": b["file"], "hdr": False, "isImage": False}
+        return m
+
     vlabels = []
     for i, v in enumerate(plan["video"]):
         c = v["clip"]
-        m = media[c["media"]]
+        m = with_bg(media[c["media"]])
         k = add_input(m, float(c["srcIn"]), v["dur"])
         filters.append(f"[{k}:v]{video_chain(c, m, W, H, fps_str, mirror_all, v['frames'], tag=f'sp{i}')}[v{i}]")
         vlabels.append(f"[v{i}]")

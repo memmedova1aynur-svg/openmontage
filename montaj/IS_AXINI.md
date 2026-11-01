@@ -43,6 +43,20 @@ Ara düzəliş raundları təklif etmə.
    - `"mode": "insert"` — araya kadr: əsas video **ən yaxın təbii pauzada** dayanır (söz və altyazı sözü bölünmür),
      kadr öz səsi ilə oynayır (`volume`, 0 — səssiz), sonra danışıq davam edir (gülməli reaksiya, keçid üçün).
    Şəkil də ola bilər (istənilən müddət). Rəng şablonu B-roll-a da tətbiq olunur. Material verilməyibsə B-roll uydurma.
+3c. **Arxa fonun dəyişdirilməsi — yalnız istifadəçi istəyəndə** (yerli, pulsuz: MediaPipe insan seqmentasiyası):
+   - Variantları müqayisə: `bg <pid> --preview --spec '{"mode":"blur"}' --spec '{"mode":"color"}' --spec '{...}'` →
+     `arxafon.jpg` (orijinal + hər variant 3 kadrda; layihə dəyişmir) — qərar mesajına əlavə et.
+   - Rejimlər: `blur` (bulanıq fon, `strength` 5–60 — ən etibarlısı, tövsiyə et), `color` (istənilən rəng və ya qradiyent:
+     `color`, `color2`, `direction` vertical/horizontal/radial; rəng verilməsə müştərinin brend rəng ailəsi), `image` (şəkil faylı),
+     `video` (video fon, dövrə ilə), `scene` (Claude-un səhnəsi: `kind`, `props` — `scenes` kataloqu). Seçimlər: `dim` 0–0.8
+     (fonu qaraltmaq), `keepBelow` 0–1 (bu hündürlükdən aşağı orijinal qalır — masa, əllər havada qalmasın), `feather`, `smooth`,
+     `model` accurate|fast.
+   - Tətbiq: `bg <pid> --mode color --color '#F4EDE4' --color2 '#D9C8B4' --keep-below 0.86` (və ya `--spec '{...}'`) →
+     törəmə video (orijinal dəyişmir, səs orijinaldan, kadr sayı eyni); render onu götürür. Geri: `bg <pid> --off`.
+     ~2 dəq / 30 s (1080x1920). "kənar titrəməsi" çap olunur: >0.06 olsa `smooth`-u artır və ya `blur` təklif et.
+   - Məhdudiyyət (dürüst de): saç ucları, sürətli əl hərəkəti, fonla eyni rəngli geyim kənarda səhv verə bilər; ən təmiz nəticə
+     yaşıl ekranla. **Etik qayda:** ekspertin olmadığı real məkanı (başqa ofis, ölkə) həqiqi kimi göstərmə — brend rəngi,
+     qrafika, bulanıq fon normaldır.
 3b. **Arxa səsin təmizlənməsi — HƏR videoda yoxlanır.** `voice-clean <pid>` (standart `auto`): kafe uğultusu,
    uzaq danışıq, çəngəl-bıçaq, uzaqdan musiqi azaldılır; **danışanın səsi qorunur** (zəiflətmə ≤20 dB, danışıq
    səviyyəsi orijinala bərabərləşdirilir, sinxron dəyişmir). Arxa səs azdırsa (studiya) özü tətbiq etmir.

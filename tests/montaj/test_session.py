@@ -955,3 +955,54 @@ def test_virtual_multicam(tmp_path, monkeypatch, capsys):
     c["frame"]["push"] = 1.06
     store.save(pid, q, q["revision"])
     assert session.main(["render", pid]) == 0
+
+
+def test_background_replace(tmp_path, monkeypatch, capsys):
+    """Arxa fon: seçimlərin yoxlanması, qradiyent, masa zolağı, birləşdirmə; tam emal — kadr sayı orijinalla eyni,
+    insansız kadrda nəticə fon rəngidir; layihədə törəmə video, render onu götürür, --off geri qaytarır; önizləmə şəkli."""
+    import subprocess
+
+    import numpy as np
+
+    from montaj import background
+
+    with pytest.raises(ValueError):
+        background.normalize({"mode": "color"})
+    with pytest.raises(ValueError):
+        background.normalize({"mode": "sky"})
+    g = background._gradient({"color": "#FF0000", "color2": "#0000FF"}, 4, 10)
+    assert g[0, 0, 0] == 255 and g[-1, 0, 2] == 255
+    k = background.keep_mask(100, 10, 0.8)
+    assert k[50, 0, 0] == 0 and k[99, 0, 0] == 1
+    out = background.composite(np.full((2, 2, 3), 200, np.uint8), np.array([[[1.0], [0.0]], [[0.5], [0.0]]], np.float32),
+                               np.zeros((2, 2, 3), np.float32), None)
+    assert out[0, 0, 0] == 200 and out[0, 1, 0] == 0 and 99 <= out[1, 0, 0] <= 101
+    try:
+        background.model_path("fast")
+    except Exception:  # noqa: BLE001
+        pytest.skip("seqmentasiya modeli endirilmədi (şəbəkə)")
+
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import session, store
+
+    capsys.readouterr()
+    assert session.main(["bg", pid, "--preview", "--spec", '{"mode":"blur","model":"fast"}',
+                         "--spec", '{"mode":"color","color":"#10A040","model":"fast"}']) == 0
+    assert (tmp_path / "out" / pid / "arxafon.jpg").stat().st_size > 5000
+    assert store.load(pid).get("background") in (None, {}), "önizləmə layihəni dəyişmir"
+    assert session.main(["bg", pid, "--mode", "color", "--color", "#10A040", "--fast"]) == 0
+    q = store.load(pid)
+    mid = q["media"][0]["id"]
+    der = store.project_dir(pid) / q["background"][mid]["file"]
+    cnt = lambda f: int(subprocess.run(["ffprobe", "-v", "error", "-count_frames", "-select_streams", "v:0", "-show_entries",
+                                        "stream=nb_read_frames", "-of", "csv=p=0", str(f)], capture_output=True, text=True).stdout.strip())
+    src = store.project_dir(pid) / q["media"][0]["file"]
+    assert abs(cnt(der) - cnt(src)) <= 1, "kadr sayı orijinalla eyni (vaxt sürüşmür)"
+    assert session.main(["render", pid]) == 0
+    mp4 = sorted((tmp_path / "out" / pid).glob(f"{pid}_r*.mp4"))[-1]
+    W, H = q["width"], q["height"]
+    raw = subprocess.run(["ffmpeg", "-v", "error", "-ss", "1.0", "-i", str(mp4), "-frames:v", "1", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
+                         capture_output=True, check=True).stdout
+    px = np.frombuffer(raw, np.uint8).reshape(H, W, 3)[H // 3, W // 2].astype(int)
+    assert abs(px[0] - 0x10) < 40 and abs(px[1] - 0xA0) < 40 and abs(px[2] - 0x40) < 40, f"insansız kadr — fon rəngi: {px}"
+    assert session.main(["bg", pid, "--off"]) == 0 and not store.load(pid)["background"]
