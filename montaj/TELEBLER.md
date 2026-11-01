@@ -227,6 +227,11 @@ real danışıqda səs sinxronu və görünən keyfiyyət, iPhone Safari, Instag
 | 25.2 | Maska: çoxsinifli model, yumşaq hədd, kiçik ləkələrin (fondakı bitki) təmizlənməsi, kadrlar arası hamarlama, titrəmə ölçüsü | ✅ | Bitki izi itdi (vizual); titrəmə 0.055 |
 | 25.3 | Tam emal: birləşdirmə ffmpeg-də, kadr sayı orijinalla eyni, render törəmə videonu götürür, bərpadan sonra avtomatik yenidən hazırlanır, `--off` | ✅ | 30 s 1080x1920: 1 dəq 52 s (əvvəl 6 dəq 47 s); 900/900 kadr |
 | 25.4 | `bg --preview`: bir neçə variant yan-yana (layihə dəyişmir) | ✅ | Test + vizual |
+| 25.5 | Kadr analizi (keş): otaq işığı, dənəvərlik, masa xətti, duruş (oturub / bel planı / ayaqüstə) | ✅ | `test_background_natural`; Günel: oturub, masa y=0.793 |
+| 25.6 | Təbiilik: rəng/parlaqlıq uyğunlaşması, avtomatik fokus, kənar işığı, dənəvərlik, masa qalır, ayaqüstədə kölgə | ✅ | Günel videosunda 6 interyer fonu vizual; 900/900 kadr; 30 s — 2 dəq 22 s |
+| 25.7 | Fon kitabxanası (`bg-lib`) və `bg --auto` (otaq işığına görə sıralama) | ✅ | Test + istifadəçinin 13 şəkli |
+| 25.8 | Ayaqüstə tam boy videoda kölgə | 🟡 | Yalnız sintetik test — real ayaqüstə çəkiliş yoxlanılmayıb |
+
 
 
 

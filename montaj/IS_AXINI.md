@@ -54,6 +54,14 @@ Ara düzəliş raundları təklif etmə.
    - Tətbiq: `bg <pid> --mode color --color '#F4EDE4' --color2 '#D9C8B4' --keep-below 0.86` (və ya `--spec '{...}'`) →
      törəmə video (orijinal dəyişmir, səs orijinaldan, kadr sayı eyni); render onu götürür. Geri: `bg <pid> --off`.
      ~2 dəq / 30 s (1080x1920). "kənar titrəməsi" çap olunur: >0.06 olsa `smooth`-u artır və ya `blur` təklif et.
+   - **Təbii fon (interyer/studiya şəkilləri) — dəyişdirildiyi hiss olunmasın.** Fon kitabxanası: `bg-lib add <şəkillər> [--tag ...]`,
+     `bg-lib list` (yerli: `$MONTAJ_DATA_DIR/backgrounds` — public repoya düşmür). `bg <pid> --auto --preview` — videonun otaq
+     işığına (parlaqlıq, rəng temperaturu) ən uyğun 3 fon; və ya `--lib <id>`. image/video/scene üçün avtomatik:
+     rəng/parlaqlıq uyğunlaşması (fon orijinal otağın işığına yaxınlaşır, insanın üzünə toxunulmur), fokus (detallı fon çox
+     bulanır), kənar işığı, kameranın dənəvərliyi, **masa avtomatik tapılır — oturan şəxsdə masa və əllər orijinal qalır**,
+     **ayaqüstə (tam boy) şəxsin ayağı altında yumşaq kölgə**. Çıxışda duruş və masa xətti çap olunur — yoxla. Əl ilə:
+     `bgZoom`, `bgX`, `bgY` (fonun miqyası/yeri), `focus`, `wrap`, `grain`, `harmonize`, `keepBelow`, `shadow` (`--spec` JSON).
+     Ayaqüstə şəxs üçün döşəməsi görünən fon (studiya, işıq dairəsi, boş otaq) seç; oturan üçün divar/rəf planı.
    - Məhdudiyyət (dürüst de): saç ucları, sürətli əl hərəkəti, fonla eyni rəngli geyim kənarda səhv verə bilər; ən təmiz nəticə
      yaşıl ekranla. **Etik qayda:** ekspertin olmadığı real məkanı (başqa ofis, ölkə) həqiqi kimi göstərmə — brend rəngi,
      qrafika, bulanıq fon normaldır.
