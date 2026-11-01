@@ -216,6 +216,12 @@ def video_chain(c: dict[str, Any], m: dict[str, Any], W: int, H: int, fps_str: s
         cy = _lerp_expr(fr["keys"], "cy", float(c["srcIn"]))
         f.append(f"crop=w='{cw}':h='{ch}':x='max(0,min(iw-ow,iw*({cx})-ow/2))':"
                  f"y='max(0,min(ih-oh,ih*({cy})-oh/2))'")
+        push = float(fr.get("push") or 1)
+        if push > 1.005 and m.get("width") and m.get("height"):  # yavaş yaxınlaşma (virtual kamera): klip boyu 1 → push
+            cwp, chp = _even(float(m["width"]) * bw * s), _even(float(m["height"]) * bh * s)
+            d = max(0.1, float(c["srcOut"]) - float(c["srcIn"]))
+            k = f"(1+{push - 1:.4f}*min(t,{d:.3f})/{d:.3f})"
+            f.append(f"scale=w='trunc({cwp}*{k}/2)*2':h='trunc({chp}*{k}/2)*2':eval=frame,crop={cwp}:{chp}")
     adj = c.get("adjust") or {}
     if bool(adj.get("mirror")) ^ bool(mirror_all):
         f.append("hflip")

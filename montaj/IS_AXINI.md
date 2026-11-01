@@ -149,6 +149,12 @@ Ara düzəliş raundları təklif etmə.
      ağırlıqlı, məlumat yönümlü). Yalnız rəng dəyişərək variant yaratma.
    - Planda `"title"`, `"storyboard": {"exclude": [..], "order": [..], "text": {"1": ".."}}` (giriş/sıra fərqi),
      `captions`, `graphics`, `zooms`, `sfx`.
+   - **Virtual multikamera** (bir rakursdan fərqli plan ölçüləri): planda `"multicam": {"style": "calm" | "dynamic"}`
+     (punch-in `zooms` əvəzinə) və ya tətbiq olunmuş montaja `multicam <pid> [--style dynamic]`. Cümlə sərhədlərində
+     ümumi / orta / yaxın plan; giriş ümumi, vurğulu fikir (sual, nida, rəqəm, "ən vacib"...) yaxın; eyni ölçü ardıcıl gəlmir;
+     sakit üslubda vurğuda yavaş yaxınlaşma. Plan sayı keyfiyyət ehtiyatından: 4K→1080 ≈ 2x (3 plan), 1080→1080 — yalnız
+     1.12x (fərq zəif — XƏBƏRDARLIQ-ı istifadəçiyə de: "növbəti çəkilişi 4K çəkin"), 16:9→9:16 — plan dəyişmir.
+     **Rakurs (bucaq) dəyişmir, yeni bucaq uydurulmur** — istifadəçiyə "fərqli rakurs" kimi təqdim etmə, "fərqli plan ölçüsü" de.
    - Müştəri brendi (`brand.theme`), məqsəd və əvvəl bəyənilən montajlar: profildəki üslub qeydləri,
      `templates/expert-reels/` (README, VIDEO_TYPES, AUDIT), `instagram-ops/edit-references/`.
      Talking-head, reklam, seminar, motion graphics üçün eyni şablonu məcburi işlətmə.

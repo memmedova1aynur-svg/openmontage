@@ -19,7 +19,7 @@ from typing import Any
 
 APPROACHES: dict[str, dict[str, Any]] = {
     "M01": {"name": "Təmiz ekspert montajı", "what": "lazımsız hissələr çıxır, altyazı, rəng, səs; effekt minimal",
-            "engine": ["storyboard", "cut", "retakes", "plan: captions, look"], "status": "ready"},
+            "engine": ["storyboard", "cut", "retakes", "plan: captions, look", "multicam (plan ölçüləri bir rakursdan)"], "status": "ready"},
     "M02": {"name": "Tipoqrafik vurğu", "what": "əsas söz və fikirlər ekranda yazı ilə (pops, başlıq, siyahı)",
             "engine": ["plan: graphics emphasis/title/list/section", "zooms"], "status": "ready"},
     "M03": {"name": "Ekspert + qrafik izah", "what": "sxem, rəqəm, addım qrafikası; ekspert dairədə və ya yanda",

@@ -220,6 +220,10 @@ real danışıqda səs sinxronu və görünən keyfiyyət, iPhone Safari, Instag
 | 23.1 | Ağız hərəkəti seriyası (speakers.py): üzlər izlənir, baş tərpənməsi çıxılır, sabit ölçülü müqayisə | ✅ | İki nəfərli sınaq: danışan aydın ayrılır (7.2 vs 0.01) |
 | 23.2 | `duo --mode switch`: kadraj danışana keçir, uzun cümlə ~2 s hissələrlə, qısa növbə birləşir | ✅ | Sınaq videosu: keçid 6.0 s əvəzinə 6.36 s (söz boşluğunda); kadr vizual yoxlandı |
 | 23.3 | `duo --mode split`: bölünmüş ekran (yuxarı sol, aşağı sağ, ayırıcı xətt, altyazı ortada) | ✅ | `test_duo_switch_split` (piksel) + vizual. İki ayrı kamera dəstəklənmir |
+| 24.1 | Virtual multikamera: keyfiyyət ehtiyatı ölçülür (kəsim px / çıxış px), plan ölçüləri ona görə (2x → ümumi/orta/yaxın; 1x → 1.12x + xəbərdarlıq; <1x → dəyişmir) | ✅ | `test_virtual_multicam` |
+| 24.2 | Kəsim cümlə sərhədində, eyni ölçü ardıcıl deyil, vurğuda yaxın plan, yaxın planda üz pəncərənin yuxarı ~38%-də; `multicam` əmri və plan açarı | ✅ | Günel videosu 2x ehtiyatla: ümumi → orta → yaxın → orta (vizual) |
+| 24.3 | Yavaş yaxınlaşma (push-in) render-də (`frame.push`, scale eval=frame) | ✅ | Render testi + rəng zolaqları sınağı. Rakurs dəyişmir — yalnız plan ölçüsü |
+
 
 
 

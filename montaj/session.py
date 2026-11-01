@@ -916,6 +916,9 @@ def apply_plan(pid: str, p: dict[str, Any], plan: dict[str, Any], plan_name: str
         if m.get("width") and q.get("width") and abs(m["width"] / m["height"] - q["width"] / q["height"]) > 0.02:
             raise UserError("Punch-in yalnız eyni ölçülü kadrda avtomatik qurulur.", "Kadrajı redaktorda əl ilə edin.")
         q = node_tl("setFrame", q, mid["id"], fr, {"manual": False})
+    if plan.get("multicam"):  # virtual multikamera (plan ölçüləri) — punch-in əvəzinə
+        q, rep = _apply_multicam(pid, q, plan["multicam"])
+        q["multicamReport"] = {k: v for k, v in rep.items() if k != "plans"}
     from montaj.graphics import DEFAULT_XY
     for g in plan.get("graphics") or []:
         d = DEFAULT_XY.get(g.get("type"), (0.5, 0.5))  # yer verilməyibsə növün standart yeri (addGraphic 0.5 qoyurdu)
@@ -1509,6 +1512,83 @@ def cmd_qa_plan(a: argparse.Namespace) -> None:
     print("növbəti: sual mətnlərində ASR səhvini düzəlt → variants <pid> qa_A.json qa_B.json qa_C.json → choose")
 
 
+def _apply_multicam(pid: str, q: dict[str, Any], spec: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Virtual multikamera (multicam.py): cümlə sərhədlərində plan ölçüsü dəyişir; nəticə + hesabat."""
+    from montaj import multicam, quality, reframe
+
+    st = multicam.STYLES.get(spec.get("style", "calm"), multicam.STYLES["calm"])
+    W = int(q["width"])
+    words, tl, total = _timeline_words(pid, q)
+    sents = []
+    for x in quality.sentences(words, gap=0.5):
+        a, b = tl(x["s"], x["words"][0].get("media")), tl(x["e"], x["words"][-1].get("media"))
+        if a is not None and b is not None:
+            sents.append({"s": a, "e": b, "text": x["text"]})
+    segs = multicam.segments(sorted(sents, key=lambda z: z["s"]), total, float(spec.get("min_len") or st["min_len"]))
+    media = {m["id"]: m for m in q["media"]}
+    main = [c for c in node_tl("videoClips", q) if not c.get("broll") and media.get(c["media"], {}).get("hasVideo")
+            and not media[c["media"]].get("isImage") and not c.get("split")]
+    if not main:
+        return q, {"tiers": {}, "plans": [], "warn": "video klip yoxdur"}
+    heads = {c["media"]: multicam.headroom(media[c["media"]], c.get("frame"), W) for c in main}
+    ts = multicam.tiers(min(heads.values()))
+    names = multicam.assign(segs, ts)
+    for g in segs[1:]:  # sərhədlərdə klipi böl
+        c = next((x for x in node_tl("videoClips", q) if not x.get("broll")
+                  and _start(q, x["id"]) + 0.2 < g["a"] < _start(q, x["id"]) + x["srcOut"] - x["srcIn"] - 0.2), None)
+        if c:
+            q = node_tl("split", q, c["id"], g["a"])
+    for c in node_tl("videoClips", q):
+        m = media.get(c["media"]) or {}
+        if c.get("broll") or not m.get("hasVideo") or m.get("isImage") or c.get("split"):
+            continue
+        t0 = _start(q, c["id"]) + (c["srcOut"] - c["srcIn"]) / 2
+        gi = next((i for i, g in enumerate(segs) if g["a"] <= t0 < g["b"]), len(segs) - 1)
+        z = ts[names[gi]]
+        cur = dict(c.get("frame") or {})
+        if not (cur.get("mode") in ("auto", "manual") and cur.get("keys")):
+            cur = {"aspect": q.get("aspect") or "source", "mode": "auto", "s": 1.0, "baseW": 1.0, "baseH": 1.0,
+                   "keys": [{"t": c["srcIn"], "cx": 0.5, "cy": 0.5}], "rotate": cur.get("rotate", 0), "warnings": []}
+        base = cur.get("mcBase") or {"s": float(cur.get("s") or 1), "keys": cur["keys"]}
+        fr = {**cur, "mcBase": base, "s": round(base["s"] / z, 4), "keys": [dict(k) for k in base["keys"]]}
+        fr.pop("push", None)
+        if z > 1.001:  # yaxın planda üz kəsim pəncərəsinin yuxarı ~38%-də
+            src = store.project_dir(pid) / m["file"]
+            mid = (c["srcIn"] + c["srcOut"]) / 2
+            det = reframe.detect_faces(src, mid, mid + 0.1, step=1.0)
+            f = max((x for d in det for x in d["faces"]), key=lambda x: x["w"], default=None)
+            if f:
+                chf = float(fr.get("baseH") or 1) * fr["s"]
+                fr["keys"] = [{"t": c["srcIn"], "cx": round(f["x"] + f["w"] / 2, 4),
+                               "cy": round(min(1 - chf / 2, max(chf / 2, f["y"] + f["h"] / 2 + 0.12 * chf)), 4)}]
+        if st["push"] and segs[gi]["emph"] and names[gi] != "close":  # sakit üslub: vurğuda yavaş yaxınlaşma
+            room = ts.get("close", 1.0) / z
+            if room > 1.03:
+                fr["push"] = round(min(1.1, room), 3)
+        q = node_tl("setFrame", q, c["id"], fr, {"manual": False})
+    head = min(heads.values())
+    warn = ""
+    if head < 1.0:
+        warn = f"kəsim artıq {1 / head:.2f}x böyüdülür (məs. 16:9 → 9:16) — plan ölçüsü dəyişmədi; 4K çəkiliş lazımdır"
+    elif len(ts) < 3:
+        warn = f"keyfiyyət ehtiyatı {head:.2f}x — yaxın plan yalnız {ts.get('close', 1):.2f}x, fərq zəif olacaq; növbəti çəkilişi 4K çəkin"
+    return q, {"tiers": ts, "headroom": round(head, 2), "plans": [(g["a"], g["b"], n) for g, n in zip(segs, names)], "warn": warn}
+
+
+def cmd_multicam(a: argparse.Namespace) -> None:
+    """Virtual multikamera tətbiq olunmuş montaja: ümumi/orta/yaxın plan cümlə sərhədlərində, vurğuda yaxınlaşma."""
+    q = node_tl("migrate", store.load(a.pid))
+    q, rep = _apply_multicam(a.pid, q, {"style": a.style})
+    print(f"keyfiyyət ehtiyatı {rep.get('headroom')}x → planlar: " + ", ".join(f"{k} {v}x" for k, v in rep["tiers"].items()))
+    for x, y, n in rep["plans"]:
+        print(f"  {x:6.2f}–{y:6.2f} s  {n}")
+    if rep["warn"]:
+        print("XƏBƏRDARLIQ:", rep["warn"])
+    cur = store.load(a.pid)
+    saved = store.save(a.pid, q, cur["revision"])
+    print(f"saxlandı: versiya {saved['revision']} — render <pid>")
+
+
 def cmd_duo(a: argparse.Namespace) -> None:
     """Növ 11 (iki nəfər bir kadrda): `switch` — kadraj danışana keçir; `split` — bölünmüş ekran. Tətbiq olunmuş montaja."""
     from montaj import duo, quality, speakers
@@ -2014,6 +2094,9 @@ def main(argv: list[str] | None = None) -> int:
     ep.add_argument("--target", type=float, help="müddət, s (standart: A/B 30, C 17)")
     ep.add_argument("--volume", type=float, default=0.9)
     ep.add_argument("--variants", default="ABC")
+    mc = sub.add_parser("multicam", help="virtual multikamera: plan ölçüləri (ümumi/orta/yaxın) bir rakursdan")
+    mc.add_argument("pid")
+    mc.add_argument("--style", choices=["calm", "dynamic"], default="calm")
     du = sub.add_parser("duo", help="növ 11: iki nəfər — kadraj danışana keçir (switch) və ya bölünmüş ekran (split)")
     du.add_argument("pid")
     du.add_argument("--mode", choices=["switch", "split"], default="switch")
@@ -2110,7 +2193,7 @@ def main(argv: list[str] | None = None) -> int:
         {"new": cmd_new, "storyboard": cmd_storyboard, "edit": cmd_edit, "apply": cmd_apply,
          "render": cmd_render, "export": cmd_export, "editor": cmd_editor,
          "apply-edits": cmd_apply_edits, "set-client": cmd_set_client, "plan": cmd_plan, "looks": cmd_looks,
-         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "highlights": cmd_highlights, "extract": cmd_extract, "mg-scan": cmd_mg_scan, "tale-plan": cmd_tale_plan, "carousel-plan": cmd_carousel_plan, "types": cmd_types, "event-scan": cmd_event_scan, "event-plan": cmd_event_plan, "qa-plan": cmd_qa_plan, "duo": cmd_duo, "set-type": cmd_set_type, "carousel": cmd_carousel, "fix-word": cmd_fix_word,
+         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "highlights": cmd_highlights, "extract": cmd_extract, "mg-scan": cmd_mg_scan, "tale-plan": cmd_tale_plan, "carousel-plan": cmd_carousel_plan, "types": cmd_types, "event-scan": cmd_event_scan, "event-plan": cmd_event_plan, "qa-plan": cmd_qa_plan, "duo": cmd_duo, "multicam": cmd_multicam, "set-type": cmd_set_type, "carousel": cmd_carousel, "fix-word": cmd_fix_word,
          "variants": cmd_variants, "choose": cmd_choose, "music-preview": cmd_music_preview}[a.cmd](a)
     except UserError as err:
         print(f"XƏTA: {err.message}\nNƏ ETMƏLİ: {err.hint}", file=sys.stderr)
