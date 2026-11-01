@@ -246,6 +246,9 @@ real danışıqda səs sinxronu və görünən keyfiyyət, iPhone Safari, Instag
 | 30.1 | Davamlılıq + müxtəliflik (`variation.py`): ailə daxilində tonlar (krem daxil), son videolardan fərqli ton/altyazı/animasiya təklifi, plan `"variation"`, tarixçəyə yazılır | ✅ | `test_style_variation`; Sura krem variantı vizual |
 | 30.2 | Düzəliş: plan qrafikası klip sərhədində (multicam/duo bölünməsi) kəsilmir — istənilən müddət (`want`) saxlanılır | ✅ | Test (bölünmədən sonra da 4.5 s) + node timeline 13 pass |
 | 30.3 | Sura Malik profili: sahə (ana-körpə, laktasiya, analıq məktəbi), rəng ailəsi çəhrayı + krem, davamlılıq qaydası | ✅ | Profil |
+| 31.1 | Redaktor paneli — Studiya: ton (ailədən, dərhal önizləmə), altyazı qutu/kontur, fon (orijinal/bulanıq/kitabxana kiçik şəkillərlə), plan ölçüləri, J/L, klip yavaşlatma; seçimlər `requests`-də | ✅ | `e2e_editor_studio.mjs` (Chromium iPhone emulyasiyası, real Safari deyil) |
+| 31.2 | `apply-edits` Studiya seçimlərini icra edir (ton → tema, fon → törəmə video, plan ölçüləri, J/L, yavaşlatma) və render | ✅ | `test_editor_studio_requests` (brauzer → apply-edits → render) |
+
 
 
 
