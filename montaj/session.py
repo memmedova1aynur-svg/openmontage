@@ -157,6 +157,14 @@ def cmd_types(a: argparse.Namespace) -> None:
         for k, ap in types.APPROACHES.items():
             print(f"{k} {ap['name']} — {types.STATUS_LABEL[ap['status']]}: {ap['what']}" + (f" | çatışmır: {ap['gaps']}" if ap.get("gaps") else ""))
         return
+    if a.n and a.shoot:
+        from montaj import shoot
+
+        try:
+            print(shoot.text(a.n, a.client, a.compact))
+        except KeyError as e:
+            raise UserError(str(e).strip("'\""), "Növlərin siyahısı: `python -m montaj.session types`.") from None
+        return
     if a.n:
         try:
             print("\n".join(_type_lines(a.n)))
@@ -2361,6 +2369,9 @@ def main(argv: list[str] | None = None) -> int:
     ty.add_argument("n", nargs="?", type=int)
     ty.add_argument("--survey", action="store_true")
     ty.add_argument("--approaches", action="store_true")
+    ty.add_argument("--shoot", action="store_true", help="müştəriyə çəkiliş tövsiyəsi (çəkilişdən əvvəl)")
+    ty.add_argument("--client", help="müştərinin adı (mesajda)")
+    ty.add_argument("--compact", action="store_true", help="qısa: hazırlıq bölməsi olmadan")
     st = sub.add_parser("set-type", help="layihəyə video növü qeydi")
     st.add_argument("pid")
     st.add_argument("type", type=int)

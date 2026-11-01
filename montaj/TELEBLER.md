@@ -234,6 +234,8 @@ real danışıqda səs sinxronu və görünən keyfiyyət, iPhone Safari, Instag
 | 26.1 | Material yoxlaması (`intake`, storyboard-da avtomatik): VFR/qarışıq fps, HDR, ölçü/ehtiyat, səsin partlaması və zəifliyi, işıq, fokus, titrəmə, ağ balansı fərqi | ✅ | `test_quality_control` (partlayan səs, qaranlıq, 25+30 fps) |
 | 26.2 | Yekun yoxlama: qara və donmuş kadr, səs piki, qəfil səs sıçrayışı, yazının oxunma müddəti, texniki uyğunluq | ✅ | `test_quality_control`; Günel r15 — yalançı xəbərdarlıq yoxdur |
 | 26.3 | Davamlı bölünmə (multicam, duo) kəsim/klik kimi sayılmır | ✅ | Test + əvvəlki yalançı 4 xəbərdarlıq aradan qalxdı |
+| 27.1 | Çəkiliş tövsiyəsi `types <N> --shoot [--client] [--compact]`: hər növ üçün planlar (coverage) + ümumi texniki siyahı (4K/fps, HDR, AE/AF kilidi, işıq, mikrofon, otaq sükutu, fon, geyim); danışıqsız növdə danışıq məsləhəti yoxdur | ✅ | `test_shoot_guide` |
+
 
 
 

@@ -20,6 +20,9 @@ Ara düzəliş raundları təklif etmə.
    ediləcəyini sorğudan sonra bir cümlə ilə de (`types <N>` → "çatışmır"); hazır kimi təqdim etmə.
    - Profil adlarını `ls templates/expert-reels/experts/` ilə gör; yalnız seçilən müştərinin faylını oxu
      (profildə olan məlumatı yenidən soruşma). Müddət verilməyibsə — danışığa görə özün təyin et.
+   - **Müştəri hələ çəkməyibsə** (və ya yeni növ/ilk çəkiliş): `types <N> --shoot --client "<ad>"` — çəkiliş tövsiyəsini
+     (planlar, 4K/fps, HDR, fokus kilidi, işıq, mikrofon, 10 s otaq sükutu, fon/geyim) olduğu kimi göndər; təkrar müştəriyə
+     `--compact`. Yaxşı çəkiliş sistemin imkanlarını açır (4K → virtual multikamera, 60 fps → yavaşlatma).
    - Sorğudan sonra Drive linkini istə.
 2. **Drive linki gəlir.** Asılılıqlar yoxdursa `bash scripts/cloud-setup.sh`.
    `export MONTAJ_DATA_DIR=$HOME/montaj-data MONTAJ_OUT_DIR=$HOME/montaj-data/out`

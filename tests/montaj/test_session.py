@@ -1110,3 +1110,19 @@ def test_quality_control(tmp_path, monkeypatch, capsys):
     assert pick(base) == pick(after), "davamlı bölünmə əlavə kəsim sayılmır"
     capsys.readouterr()
     assert session.main(["intake", pid]) == 0 and "material" in capsys.readouterr().out
+
+
+def test_shoot_guide(capsys):
+    """Çəkiliş tövsiyəsi: hər növ üçün plan və vacib qeydlər; ümumi texniki siyahı; danışıqsız növdə danışıq məsləhəti yoxdur;
+    modul dərs üfüqi; loqo üçün yalnız fayl tələbi."""
+    from montaj import session, shoot, types
+
+    assert set(shoot.SHOOT) == set(types.TYPES), "hər növün çəkiliş tövsiyəsi var"
+    t1 = shoot.text(1, "Sınaq")
+    assert "4K" in t1 and "HDR" in t1 and "10 saniyə" in t1 and "cümlə" in t1 and "(Sınaq)" in t1
+    assert "cümlə" not in shoot.text(5) and "Açılış" in shoot.text(5)
+    assert "üfüqi (16:9)" in shoot.text(15) and "Birincisi" in shoot.text(12)
+    assert "PNG" in shoot.text(17) and "HDR" not in shoot.text(17)
+    assert "Hazırlıq" not in shoot.text(1, compact=True)
+    capsys.readouterr()
+    assert session.main(["types", "11", "--shoot"]) == 0 and "30–45°" in capsys.readouterr().out
