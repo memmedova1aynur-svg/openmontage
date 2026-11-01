@@ -54,9 +54,10 @@ def runs(sentences: list[dict[str, Any]], who: list[int | None], min_len: float 
     return final
 
 
-def cut_points(rs: list[dict[str, Any]]) -> list[float]:
-    """Növbələr arasındakı kəsim nöqtələri: əvvəlki növbənin sonu ilə növbətinin başlanğıcının ortası."""
-    return [round((a["e"] + b["s"]) / 2, 3) for a, b in zip(rs, rs[1:])]
+def cut_points(rs: list[dict[str, Any]], lead: float = 0.25) -> list[float]:
+    """Növbələr arasındakı kəsim nöqtələri — J-cut üslubu: kadr yeni danışana o danışmağa başlamazdan `lead` saniyə
+    əvvəl keçir (kamera danışanı "gözləyir"), amma əvvəlki danışan sözünü bitirəndən sonra."""
+    return [round(max(a["e"] + 0.02, b["s"] - lead), 3) for a, b in zip(rs, rs[1:])]
 
 
 def split_spec(tracks: list[dict[str, Any]], sw: float, sh: float, W: int, H: int) -> dict[str, Any]:

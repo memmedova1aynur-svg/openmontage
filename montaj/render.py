@@ -97,6 +97,8 @@ def render_plan(project: dict[str, Any]) -> dict[str, Any]:
         elif k == "overlay":
             s, e = lay[c["id"]]
             oplan.append({"clip": c, "start": s, "dur": e - s, "frames": max(1, round((e - s) * fps))})
+    _speech_edges(project, vplan, aplan)
+    _jl_cuts(project, vplan, fps)
     main = max([video_end] + [a["start"] + a["dur"] for a in aplan] + [t["end"] for t in tplan] + [0.0])
     ec = end_card(project)
     total = main + (ec["duration"] if ec else 0)
@@ -104,11 +106,89 @@ def render_plan(project: dict[str, Any]) -> dict[str, Any]:
             "main": round(main, 3), "endCard": ec, "total": round(total, 3)}
 
 
-def _afades(c: dict[str, Any], dur: float) -> str:
-    """Yumşaq səs giriş-çıxışı (klipin fadeIn/fadeOut saniyələri)."""
+EDGE_FADE = 0.012  # danışıq kəsimində səs keçidi (klik və fon qırılması olmasın; söz səsi hiss olunmur)
+
+
+def _continuous(a: dict[str, Any], b: dict[str, Any]) -> bool:
+    """İki ardıcıl klip mənbədə davamlıdır (plan ölçüsü, danışana keçid bölünməsi) — kəsim deyil."""
+    return a.get("media") == b.get("media") and abs(float(a["srcOut"]) - float(b["srcIn"])) < 0.02
+
+
+def _speech_edges(project: dict[str, Any], vplan: list[dict[str, Any]], aplan: list[dict[str, Any]]) -> None:
+    """Real kəsim olan sərhədlərdə bağlı danışıq səsinə qısa giriş/çıxış (əl ilə fade varsa toxunulmur)."""
+    if project.get("speechEdgeFade") is False:
+        return
+    idx = {it["clip"]["id"]: i for i, it in enumerate(vplan)}
+    for a in aplan:
+        c = a["clip"]
+        i = idx.get(c.get("linkedTo"))
+        if i is None or a["kind"] != "speech":
+            continue
+        prev_cut = i > 0 and not _continuous(vplan[i - 1]["clip"], vplan[i]["clip"])
+        next_cut = i + 1 < len(vplan) and not _continuous(vplan[i]["clip"], vplan[i + 1]["clip"])
+        a["edgeIn"] = EDGE_FADE if prev_cut and not c.get("fadeIn") else 0.0
+        a["edgeOut"] = EDGE_FADE if next_cut and not c.get("fadeOut") else 0.0
+
+
+def _jl_cuts(project: dict[str, Any], vplan: list[dict[str, Any]], fps: float) -> None:
+    """J/L-cut: görüntü kəsimi səs kəsimindən ayrıca sürüşür (səs yerində qalır).
+    project["jl"] = {"lead": 0.25, "auto": true, "cuts": {"<növbəti video klip id>": +0.3 (J) | -0.3 (L)}}.
+    auto — yalnız FƏRQLİ kameralar (media) arasında J-cut: növbəti kadr səsdən `lead` əvvəl görünür. Eyni kamerada
+    tətbiq olunmur (dodaq sinxronu pozular). Əlavə kadrlar mənbədə olmalıdır (srcIn-dən əvvəl / srcOut-dan sonra)."""
+    jl = project.get("jl") or {}
+    if not jl:
+        return
+    media = {m["id"]: m for m in project.get("media", [])}
+    cuts = dict(jl.get("cuts") or {})
+    if jl.get("auto"):
+        for a, b in zip(vplan, vplan[1:]):
+            ca, cb = a["clip"], b["clip"]
+            if ca.get("media") != cb.get("media") and not cb.get("broll") and not ca.get("broll"):
+                cuts.setdefault(cb["id"], float(jl.get("lead", 0.25)))
+    if not cuts:
+        return
+    for i in range(1, len(vplan)):
+        sh = cuts.get(vplan[i]["clip"]["id"])
+        if not sh:
+            continue
+        n = int(round(abs(float(sh)) * fps))
+        a, b = vplan[i - 1], vplan[i]
+        ca, cb = dict(a["clip"]), dict(b["clip"])
+        if n < 1 or a["frames"] - n < fps * 0.5 or b["frames"] - n < fps * 0.5:
+            continue
+        for it, c in ((a, ca), (b, cb)):  # səs/kəsim yoxlaması üçün orijinal sərhədlər
+            it.setdefault("aSrcIn", float(c["srcIn"]))
+            it.setdefault("aSrcOut", float(c["srcOut"]))
+            it.setdefault("aStart", it["start"])
+            it.setdefault("aDur", it["dur"])
+        d = n / fps
+        if sh > 0:  # J: əvvəlki görüntü qısalır, növbəti srcIn-dən əvvəlki kadrlarla başlayır
+            if float(cb["srcIn"]) - d < 0:
+                continue
+            ca["srcOut"] = round(float(ca["srcOut"]) - d, 4)
+            cb["srcIn"] = round(float(cb["srcIn"]) - d, 4)
+            a["frames"] -= n
+            b["frames"] += n
+        else:  # L: əvvəlki görüntü davam edir (srcOut-dan sonrakı kadrlar), növbəti gec başlayır
+            dur_a = float(media.get(ca.get("media"), {}).get("duration") or 0)
+            if float(ca["srcOut"]) + d > dur_a:
+                continue
+            ca["srcOut"] = round(float(ca["srcOut"]) + d, 4)
+            cb["srcIn"] = round(float(cb["srcIn"]) + d, 4)
+            a["frames"] += n
+            b["frames"] -= n
+        a["clip"], b["clip"] = ca, cb
+    t = 0
+    for it in vplan:
+        it["start"], it["dur"] = t / fps, it["frames"] / fps
+        t += it["frames"]
+
+
+def _afades(c: dict[str, Any], dur: float, edge_in: float = 0.0, edge_out: float = 0.0) -> str:
+    """Yumşaq səs giriş-çıxışı (klipin fadeIn/fadeOut saniyələri; danışıq kəsimində qısa keçid)."""
     out = ""
-    fi = float(c.get("fadeIn") or 0)
-    fo = float(c.get("fadeOut") or 0)
+    fi = float(c.get("fadeIn") or 0) or edge_in
+    fo = float(c.get("fadeOut") or 0) or edge_out
     if fi > 0:
         out += f",afade=t=in:st=0:d={min(fi, dur):.3f}"
     if fo > 0:
@@ -464,7 +544,7 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
         bus = "voice" if c.get("role") == "voiceover" else a["kind"]
         vol = float(c.get("volume", 1) if c.get("volume") is not None else 1) * float(mix.get(bus, 1))
         filters.append(f"[{k}:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo,"
-                       f"asetpts=PTS-STARTPTS,atrim=0:{a['dur']:.4f},volume={vol:.3f}{_afades(c, a['dur'])},adelay=delays={ms}:all=1[a{i}]")
+                       f"asetpts=PTS-STARTPTS,atrim=0:{a['dur']:.4f},volume={vol:.3f}{_afades(c, a['dur'], a.get('edgeIn', 0.0), a.get('edgeOut', 0.0))},adelay=delays={ms}:all=1[a{i}]")
         buses.setdefault(bus, []).append(f"[a{i}]")
     bus_out = []
     for bus, labs in buses.items():

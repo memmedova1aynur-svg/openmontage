@@ -107,7 +107,9 @@ def verify(project: dict[str, Any], project_dir: Path, mp4: Path, analyses: dict
 
     plan = render_plan(project)
     # zaman xəttindəki video kliplər: mənbə aralığı + yekun videoda başlanğıc/müddət
-    vclips = [{**it["clip"], "start": it["start"], "dur": it["dur"]} for it in plan["video"]]
+    # J/L-cut sürüşdürməsi varsa — səs kəsimi orijinal sərhəddədir (görüntü yox), yoxlama səsə görə
+    vclips = [{**it["clip"], "srcIn": it.get("aSrcIn", it["clip"]["srcIn"]), "srcOut": it.get("aSrcOut", it["clip"]["srcOut"]),
+               "start": it.get("aStart", it["start"]), "dur": it.get("aDur", it["dur"])} for it in plan["video"]]
     media = {m["id"]: m for m in project["media"]}
     cache: dict[str, tuple[np.ndarray, float]] = {}
 
