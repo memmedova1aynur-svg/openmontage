@@ -235,6 +235,10 @@ real danışıqda səs sinxronu və görünən keyfiyyət, iPhone Safari, Instag
 | 26.2 | Yekun yoxlama: qara və donmuş kadr, səs piki, qəfil səs sıçrayışı, yazının oxunma müddəti, texniki uyğunluq | ✅ | `test_quality_control`; Günel r15 — yalançı xəbərdarlıq yoxdur |
 | 26.3 | Davamlı bölünmə (multicam, duo) kəsim/klik kimi sayılmır | ✅ | Test + əvvəlki yalançı 4 xəbərdarlıq aradan qalxdı |
 | 27.1 | Çəkiliş tövsiyəsi `types <N> --shoot [--client] [--compact]`: hər növ üçün planlar (coverage) + ümumi texniki siyahı (4K/fps, HDR, AE/AF kilidi, işıq, mikrofon, otaq sükutu, fon, geyim); danışıqsız növdə danışıq məsləhəti yoxdur | ✅ | `test_shoot_guide` |
+| 28.1 | Yavaşlatma real kadrlarla (`slowmo`): 60 fps → 30 fps çıxışda 0.5x, kadr uydurulmur; 30 fps materialda aydın xəta / xəbərdarlıq | ✅ | `test_slowmo_real_frames` (60 kadr, hamısı fərqli) |
+| 28.2 | M09: material ≥50 fps olanda final kadr avtomatik 0.5x (kadraj orijinaldan) | ✅ | `test_event_montage_beats` (60 fps final, kəsimlər vuruşda) |
+| 28.3 | Düzəliş: törəmə media `store.add_media_record` ilə (store.save yeni medianı qəbul etmir) | ✅ | Test |
+
 
 
 

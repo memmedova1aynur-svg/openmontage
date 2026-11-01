@@ -109,7 +109,10 @@ Ara düzəliş raundları təklif etmə.
    - `_review`-da real səs namizədləri (fondan yüksək — alqış/gülüş ola bilər): dinlə, saxlamaq üçün planda
      `"liveSound": {"volume": 0, "keep": {"e5": 0.8}}` (kart id). Rəng üçün plana `"look"` əlavə et.
    - `variants <pid> event_A.json event_B.json event_C.json` → qərar mesajı → `choose` → `render` → `verify`.
-   - Yoxdur (iddia etmə): yavaşlatma, şəkillərdə hərəkət (Ken Burns), kadrın məzmununu tanıma (sertifikat, alqış) —
+   - **Yavaşlatma:** material ≥50 fps-dirsə (60 fps çəkiliş) final kadr avtomatik 0.5x yavaşlayır (`--slowmo auto|on|off`) —
+     yalnız real kadrlarla, kadr uydurulmur. 30 fps materialda hamar yavaşlatma yoxdur — istifadəçiyə de, növbəti dəfə 60 fps.
+     Başqa an üçün: `slowmo <pid> --media <id> --from a --to b [--speed 0.5]` → törəmə media, planda B-roll `"media"` kimi.
+   - Yoxdur (iddia etmə): şəkillərdə hərəkət (Ken Burns), kadrın məzmununu tanıma (sertifikat, alqış) —
      açılış/final xronologiya və ümumi plana görə seçilir; variant şəklinə baxıb yoxla. Dəvət mətni (tarix, yer) yalnız istifadəçidən.
 2i. **Sürətli, əyləncəli sual-cavab — M10** (növ 10): `new --type 10` → `storyboard` → `qa-plan <pid>` → `qa_A/B/C.json`:
    A yüngül yumor (sual səsi + sual yazısı yuxarıda, "pop", gülüş anında yüngül yaxınlaşma), B sual yalnız yazı ilə (sual səsi
