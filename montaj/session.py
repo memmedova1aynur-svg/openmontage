@@ -202,6 +202,13 @@ def _type_hints(project: dict[str, Any]) -> list[str]:
     name = (project.get("brand") or {}).get("name")
     prof = expert_profile(name) if name else None
     hist = [h for h in (prof or {}).get("history") or [] if isinstance(h, dict)][-3:]
+    if prof:
+        from montaj import variation
+
+        sg = variation.suggest(prof, (project.get("brand") or {}).get("baseTheme") or _project_theme(project))
+        out.append(f"bu video üçün təklif (davamı kimi, kopya yox): ton {sg['tone']} {sg['primary']}, altyazı {sg['captions']}, "
+                   f"yazı girişi {sg['anim']} — planda \"variation\": {{\"primary\": \"{sg['primary']}\", \"primaryDeep\": "
+                   f"\"{sg['primaryDeep']}\", \"captions\": \"{sg['captions']}\", \"anim\": \"{sg['anim']}\"}} ({sg['why']})")
     if hist:
         out.append("müştərinin son seçimləri (eyni giriş/qutu/effekt ardıcıllığını təkrarlama):")
         for h in hist:
@@ -230,7 +237,9 @@ def _remember_choice(pid: str, plan: dict[str, Any], plan_name: str) -> None:
     prof = json.loads(f.read_text(encoding="utf-8"))
     entry = {"video": p.get("title"), "date": datetime.date.today().isoformat(), "engine": "montaj",
              "type": vt and vt["type"], "approach": "+".join(aps) or None, "variant": plan.get("title") or plan_name,
-             "look": plan.get("look"), "captions": ((plan.get("captions") or {}).get("style") or {}).get("type")}
+             "look": plan.get("look"), "captions": (plan.get("variation") or {}).get("captions")
+             or ((plan.get("captions") or {}).get("style") or {}).get("type"),
+             "tone": (plan.get("variation") or {}).get("primary"), "anim": (plan.get("variation") or {}).get("anim")}
     prof.setdefault("history", []).append({k: v for k, v in entry.items() if v})
     f.write_text(json.dumps(prof, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     print(f"müştəri tarixçəsinə yazıldı: {f.name} → history")
@@ -946,9 +955,19 @@ def apply_plan(pid: str, p: dict[str, Any], plan: dict[str, Any], plan_name: str
     if plan.get("multicam"):  # virtual multikamera (plan ölçüləri) — punch-in əvəzinə
         q, rep = _apply_multicam(pid, q, plan["multicam"])
         q["multicamReport"] = {k: v for k, v in rep.items() if k != "plans"}
+    var = plan.get("variation") or {}
+    if var:  # davamlılıq + müxtəliflik: ailə daxilində ton, altyazı üslubu (variation.py)
+        from montaj import variation
+
+        br = q.get("brand") or {}
+        base = br.get("baseTheme") or _project_theme(q)
+        q["brand"] = {**br, "baseTheme": base}
+        q = variation.apply(q, var, base)
     from montaj.graphics import DEFAULT_XY
     for g in plan.get("graphics") or []:
         d = DEFAULT_XY.get(g.get("type"), (0.5, 0.5))  # yer verilməyibsə növün standart yeri (addGraphic 0.5 qoyurdu)
+        if var.get("anim") and "anim" not in g:
+            g = {**g, "anim": {"in": var["anim"], "out": "fade"}}
         q = node_tl("addGraphic", q, {"x": d[0], "y": d[1], **g, "origin": "plan"})
 
     for b in plan.get("broll") or []:

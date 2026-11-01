@@ -1,10 +1,10 @@
 {
  "name": "Sura Malik",
  "status": "active",
- "activity": "Uşaq inkişafı və laktasiya mütəxəssisi.",
+ "activity": "Uşaq inkişafı, laktasiya və analıq mütəxəssisi: ana və körpə, süd vermə, analıq məktəbi / analıq təlimləri.",
  "palette": {
-  "family": "yumşaq çəhrayı, gül qurusu, isti krem, ağ",
-  "note": "Əsasən yumşaq çəhrayı; bəzən tünd çəhrayı da ola bilər."
+  "family": "yumşaq çəhrayı, gül qurusu, pudra, isti krem, ağ",
+  "note": "Çəhrayı və krem tonların hər ikisi uyğundur (istifadəçi, 2026-11-01). Bəzən tünd çəhrayı da ola bilər."
  },
  "video_types": "ekspert danışığı, təlim dərsi, reklam, sual-cavab, digər uyğun materiallar",
  "cautions": [
@@ -29,7 +29,10 @@
   "cardAlpha": 0.94,
   "emphasis": "#FFD3E0"
  },
- "style": {},
+ "style": {
+  "continuity": "Videolar bir-birinin davamı kimi olsun: eyni rəng ailəsi (çəhrayı/krem), oxşar ruh. Kopya olmasın — ton, altyazı üslubu, kart və effekt ardıcıllığı video-video dəyişə bilər; tamamilə fərqli üslub yox (istifadəçi, 2026-11-01).",
+  "mood": "ana-körpə mövzusu: yumşaq, isti, sakit; kəskin/aqressiv effekt yox"
+ },
  "history": [
   {
    "video": "sura-01: Uşaq qucağa öyrəşərmi?",

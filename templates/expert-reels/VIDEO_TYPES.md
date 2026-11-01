@@ -204,6 +204,8 @@ Hazır mətn təsdiqlənibsə:
 - Eyni girişi, yazı qutusunu, qrafik düzülüşü və effekt ardıcıllığını avtomatik təkrarlama.
 - Müxtəliflik üçün mənasız effekt əlavə etmə.
 - Son montaj seçimlərini qısa qeyd et (`experts/<id>.json` → `history`) və növbəti işdə nəzərə al.
+- Videolar bir-birinin davamı kimi olsun, kopyası yox: rəng ailəsi sabit, ton/altyazı/kart/effekt video-video dəyişir
+  (montaj mühərriki: `montaj/variation.py`, planda `"variation"`).
 - Vizual profil yoxdursa, neytral və oxunaqlı üslubdan istifadə et.
 
 ## Növ → yanaşma xəritəsi
