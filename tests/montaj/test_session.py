@@ -1249,3 +1249,36 @@ def test_style_variation(tmp_path, monkeypatch):
     r2 = session.node_tl("split", r, session.node_tl("videoClips", r)[0]["id"], 1.0)
     g2 = next(c for c in r2["clips"] if c["id"] == g["id"])
     assert abs(g2["srcOut"] - 4.5) < 0.01, "bölünmədən sonra da müddət qalır"
+
+
+def test_editor_studio_requests(tmp_path, monkeypatch):
+    """Redaktorun Studiya bölməsi (Chromium, telefon emulyasiyası): ton, altyazı, kitabxanadan fon, plan ölçüləri seçilir;
+    apply-edits seçimləri icra edir — ton brend temasına, fon törəmə videoya, plan ölçüləri kliplərə yazılır."""
+    import subprocess
+    from pathlib import Path
+
+    if subprocess.run(["node", "-e", "require('playwright')"], capture_output=True).returncode != 0:
+        pytest.skip("playwright (node) yoxdur")
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import background, session, store
+
+    try:
+        background.model_path("accurate")
+    except Exception:  # noqa: BLE001
+        pytest.skip("seqmentasiya modeli endirilmədi (şəbəkə)")
+    p = store.load(pid)
+    p["brand"] = {"name": "Sura Malik"}
+    store.save(pid, p, p["revision"])
+    assert session.main(["editor", pid, "--local"]) == 0
+    html = tmp_path / "out" / pid / "editor" / "index.html"
+    out = tmp_path / "studio_edits.json"
+    r = subprocess.run(["node", str(Path(__file__).parent / "e2e_editor_studio.mjs"), str(html), str(out)], capture_output=True, text=True)
+    assert r.returncode == 0, r.stdout + r.stderr
+    ed = json.loads(out.read_text())
+    assert session.main(["apply-edits", pid, str(out)]) == 0
+    q = store.load(pid)
+    assert q["brand"]["theme"]["primary"] == ed["requests"]["variation"]["primary"], "ton tətbiq olundu"
+    assert q["subtitles"]["style"]["bg"] == "none"
+    assert q["background"] and next(iter(q["background"].values()))["spec"]["lib"] == ed["requests"]["bg"]["lib"]
+    assert len(session.node_tl("videoClips", q)) >= 2
+    assert session.main(["render", pid]) == 0

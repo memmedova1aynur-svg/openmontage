@@ -2,7 +2,10 @@
 
 Bu fayl istifadəçinin təsdiqlədiyi **əsas** iş axınıdır (sorğu → Drive linki → analiz → 3 storyboard → rəng/musiqi → MP4) və `SESSIYA_TELIMATI.md`-dən üstündür.
 Redaktor paneli (artifact) saxlanılır, amma əsas axında **tələb edilmir və linki göndərilmir** —
-yalnız istifadəçi açıq istəyəndə (`SESSIYA_TELIMATI.md`, 9-cu addım).
+yalnız istifadəçi açıq istəyəndə (`SESSIYA_TELIMATI.md`, 9-cu addım). Paneldə **Studiya** bölməsi var: rəng tonu (müştərinin
+ailəsindən, dərhal görünür), altyazı qutu/kontur, arxa fon (orijinal / bulanıq / kitabxanadan şəkil), plan ölçüləri (virtual
+multikamera), J/L-cut (bir neçə kamera olanda), seçilmiş klipin 0.5x yavaşladılması (60 fps material). Bu seçimlər düzəlişin
+`requests` hissəsində gəlir — `apply-edits` onları icra edir (ton, yavaşlatma, plan ölçüləri, J/L, fon), sonra `render`.
 
 Hədəf: video ilk dəfədən hazır olsun, əlavə düzəliş tələb etməsin. İstifadəçi ilə yalnız **iki dəfə** əlaqə:
 (1) sorğu, (2) **bir qərar mesajı** — storyboard variantları + kadraj (əvvəl/sonra) + rəng variantları + musiqi

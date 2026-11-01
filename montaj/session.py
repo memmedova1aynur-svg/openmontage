@@ -454,7 +454,7 @@ def editor_data(pid: str, assets: dict[str, str]) -> dict[str, Any]:
     proj["media"] = [{k: m.get(k) for k in ("id", "name", "duration", "width", "height", "hasAudio", "hasVideo", "isImage")}
                      for m in p["media"]]
     media = {m["id"]: {"url": assets.get(m["id"]), "name": m["name"], "duration": m["duration"],
-                       "width": m.get("width"), "height": m.get("height")} for m in p["media"]}
+                       "width": m.get("width"), "height": m.get("height"), "fps": m.get("fps")} for m in p["media"]}
     build = hashlib.sha1((EDITOR_TEMPLATE.read_text() + UI.read_text()).encode()).hexdigest()[:10]
     from montaj import fonts
 
@@ -465,7 +465,105 @@ def editor_data(pid: str, assets: dict[str, str]) -> dict[str, Any]:
     colors = [c for c in [th.get("primary"), th.get("accent"), th.get("accentSoft"), th.get("primaryDeep")] if c] or (brand.get("colors") or [])
     proj["media"] = proj["media"]
     return {"project": proj, "media": media, "build": build, "fonts": fl, "brandColors": colors, "theme": th,
-            "brandName": brand.get("name")}
+            "brandName": brand.get("name"), "studio": _studio_data(pid, p)}
+
+
+def _studio_data(pid: str, p: dict[str, Any]) -> dict[str, Any]:
+    """Redaktorun "Studiya" bölməsi: ton variantları (rəng ailəsi), fon kitabxanası (kiçik şəkillər), duruş, keyfiyyət ehtiyatı."""
+    import base64
+    import io
+
+    from PIL import Image
+
+    from montaj import background, multicam, variation
+
+    out: dict[str, Any] = {}
+    br = p.get("brand") or {}
+    prof = expert_profile(br["name"]) if br.get("name") else None
+    base = br.get("baseTheme") or _project_theme(p)
+    fam = ((prof or {}).get("palette") or {}).get("family", "") if isinstance((prof or {}).get("palette"), dict) else ""
+    if prof or br.get("theme"):
+        out["tones"] = variation.tones(base, fam)
+        sg = variation.suggest(prof, base)
+        out["suggestion"] = f"ton {sg['tone']}, altyazı {'kontur' if sg['captions'] == 'stroke' else 'qutu'}"
+    lib = []
+    for r in background.lib_load().values():
+        try:
+            im = Image.open(background.lib_dir() / r["file"]).convert("RGB")
+            im.thumbnail((116, 192))
+            buf = io.BytesIO()
+            im.save(buf, "JPEG", quality=70)
+            lib.append({"id": r["id"], "source": r["source"], "tags": r.get("tags") or [],
+                        "thumb": "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()})
+        except OSError:
+            continue
+    out["library"] = lib
+    vids = [c for c in p["clips"] if c["track"] == "v1" and not c.get("broll")]
+    media = {m["id"]: m for m in p["media"]}
+    if vids and media.get(vids[0]["media"]):
+        out["headroom"] = round(multicam.headroom(media[vids[0]["media"]], vids[0].get("frame"), int(p.get("width") or 1080)), 2)
+        f = next(iter(sorted(store.derived_dir(pid).glob(f"bg_an_{vids[0]['media']}_*.json"))), None) if store.derived_dir(pid).is_dir() else None
+        if f:
+            out["posture"] = json.loads(f.read_text(encoding="utf-8")).get("posture")
+    out["mediaCount"] = len({c["media"] for c in vids})
+    out["bgActive"] = bool(p.get("background"))
+    return out
+
+
+def _apply_studio_requests(pid: str, req: dict[str, Any]) -> list[str]:
+    """Redaktorun "Studiya" seçimlərini icra edir (düzəlişlər tətbiq olunandan sonra). Qaytarır: görülən işlər."""
+    done: list[str] = []
+    if req.get("variation"):
+        from montaj import variation
+
+        q = store.load(pid)
+        br = q.get("brand") or {}
+        base = br.get("baseTheme") or _project_theme(q)
+        q["brand"] = {**br, "baseTheme": base}
+        q = variation.apply(q, {**req["variation"], "captions": None}, base)
+        store.save(pid, q, q["revision"])
+        done.append(f"ton {req['variation'].get('primary')}")
+    for cid in req.get("slowmo") or []:
+        q = store.load(pid)
+        c = next((x for x in q["clips"] if x["id"] == cid and x["track"] == "v1"), None)
+        m = next((x for x in q["media"] if c and x["id"] == c["media"]), None)
+        if not c or not m or float(m.get("fps") or 0) < 50:
+            done.append(f"yavaşlatma atlandı ({cid}: 60 fps material deyil)")
+            continue
+        L = float(c["srcOut"]) - float(c["srcIn"])
+        rec, _w = _slow_media(pid, m, float(c["srcIn"]), float(c["srcIn"]) + L * 0.5, 0.5)
+        q = store.load(pid)
+        for x in q["clips"]:
+            if x["id"] == cid:
+                x.update(media=rec["id"], srcIn=0.0, srcOut=round(min(L, float(rec["duration"])), 3))
+                if x.get("frame") and x["frame"].get("keys"):  # kadraj qalır (açar vaxtı yeni mediaya görə)
+                    x["frame"] = {**x["frame"], "keys": [{**k, "t": 0.0} for k in x["frame"]["keys"][:1]]}
+            elif x.get("linkedTo") == cid:
+                x["volume"] = 0.0  # yavaş görüntünün altında öz səsi uyğun gəlmir
+        store.save(pid, q, q["revision"])
+        done.append(f"klip {cid} 0.5x yavaşladı")
+    if req.get("multicam"):
+        cmd_multicam(argparse.Namespace(pid=pid, style=req["multicam"]))
+        done.append(f"plan ölçüləri ({req['multicam']})")
+    if req.get("jl") is not None:
+        q = store.load(pid)
+        q["jl"] = req["jl"] or {}
+        store.save(pid, q, q["revision"])
+        done.append("J/L-cut" if req["jl"] else "J/L-cut söndürüldü")
+    bg = req.get("bg")
+    if bg:
+        if bg.get("off"):
+            cmd_bg(argparse.Namespace(pid=pid, off=True, media=None))
+            done.append("fon orijinala qaytarıldı")
+        else:
+            spec = {k: v for k, v in bg.items() if k in ("mode", "lib", "strength", "color", "color2")}
+            ns = argparse.Namespace(pid=pid, off=False, media=None, preview=False, auto=bool(bg.get("auto")), top=1, tag=None,
+                                    spec=[json.dumps(spec)] if not bg.get("auto") else None, mode=None, lib=None,
+                                    color=None, color2=None, direction=None, file=None, kind=None, props=None, strength=None,
+                                    dim=None, keep_below=None, feather=None, smooth=None, focus=None, fast=False)
+            cmd_bg(ns)
+            done.append(f"fon: {spec.get('lib') or spec.get('mode')}")
+    return done
 
 
 def make_preview(src: Path, dst: Path, hdr: bool) -> None:
@@ -545,6 +643,9 @@ def cmd_apply_edits(a: argparse.Namespace) -> None:
         print(f"tətbiq olundu: {len(r['changed'])} dəyişən, {len(r['removed'])} silinən element; versiya {p['revision']} -> {saved['revision']}")
         if r["changed"] or r["removed"]:
             print("dəyişən:", ", ".join(r["changed"][:20]), "| silinən:", ", ".join(r["removed"][:20]))
+        if edits.get("requests"):
+            done = _apply_studio_requests(a.pid, edits["requests"])
+            print("studiya:", "; ".join(done) if done else "dəyişiklik yoxdur", f"— versiya {store.load(a.pid)['revision']}; indi render")
         return
     r = node_tl("applyEdits", p, edits)
     if not r["applied"] and not r["rejected"]:

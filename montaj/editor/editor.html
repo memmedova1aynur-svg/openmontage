@@ -79,6 +79,7 @@ input[type=range] { flex: 1; min-width: 120px; }
 .ta { width: 100%; min-height: 64px; font: 15px var(--font); background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; padding: 8px; }
 .seg { display: flex; gap: 6px; flex-wrap: wrap; }
 .seg button.on { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+.row button.on { outline: 3px solid var(--accent); outline-offset: 1px; }
 .btnlike { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); cursor: pointer; }
 .tabs { display: flex; gap: 6px; overflow-x: auto; }
 .tabs button.on { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
@@ -139,6 +140,8 @@ textarea { width: 100%; min-height: 90px; font: 12px var(--mono); background: va
   </div></div>
 
   <div class="panel" id="sel"></div>
+
+  <div class="panel" id="studio"></div>
 
   <div class="panel">
     <h2>Düzəlişi Claude-a qaytarmaq</h2>
@@ -631,6 +634,7 @@ textarea { width: 100%; min-height: 90px; font: 12px var(--mono); background: va
       TL.partnerOf(p, c) ? (() => { const a = TL.partnerOf(p, c); const v = el('input', { type: 'range', min: 0, max: 2, step: 0.05, value: a.volume ?? 1, 'aria-label': 'Klipin öz səsi' });
         v.onchange = () => commit(TL.setVolume(S.hist.present, a.id, Number(v.value)), 'Klipin səsi dəyişdi'); return el('div', { class: 'row' }, el('span', { class: 'k' }, 'Öz səsi'), v); })() : null,
       el('p', { class: 'hint' }, 'Sonrakı kliplər, bağlı yazılar və altyazılar avtomatik sürüşür. Bölmək üçün əvvəl oynatma xəttini istədiyiniz yerə qoyun.'),
+      slowButton(c),
       ...visualPanel(p, c));
   }
 
@@ -740,7 +744,10 @@ textarea { width: 100%; min-height: 90px; font: 12px var(--mono); background: va
 
   // --- tarixçə və saxlama ---
   function flash(msg, bad) { const s = $('#save'); s.textContent = msg; s.classList.toggle('err', !!bad); }
-  function edits() { return { ...TL.editorState(BASE, S.hist.present), savedAt: new Date().toISOString(), editor: DATA.build }; }
+  function edits() {
+    const req = Object.fromEntries(Object.entries(S.req || {}).filter(([, v]) => v !== undefined && v !== null && !(Array.isArray(v) && !v.length)));
+    return { ...TL.editorState(BASE, S.hist.present), savedAt: new Date().toISOString(), editor: DATA.build, ...(Object.keys(req).length ? { requests: req } : {}) };
+  }
   function refreshButtons() { $('#undo').disabled = !S.hist.canUndo; $('#redo').disabled = !S.hist.canRedo; $('#editsOut').value = JSON.stringify(edits(), null, 1); }
   function commit(next, msg) { S.hist.commit(next); keepLocal(); refreshButtons(); renderTimeline(); renderSel(); sync(true); scheduleSave(); if (msg) flash(msg); }
   $('#undo').onclick = () => { if (S.hist.undo()) { keepLocal(); refreshButtons(); renderTimeline(); renderSel(); sync(true); scheduleSave(); } };
@@ -761,6 +768,88 @@ textarea { width: 100%; min-height: 90px; font: 12px var(--mono); background: va
     try { await navigator.clipboard.writeText(txt); $('#copyMsg').textContent = 'Kopyalandı — Claude sessiyasına yapışdırın.'; }
     catch { const ta = $('#editsOut'); ta.closest('details').open = true; ta.focus(); ta.select(); $('#copyMsg').textContent = 'Mətni seçib kopyalayın.'; }
   };
+
+  // --- Studiya: render zamanı Claude-un tətbiq etdiyi seçimlər (fon, plan ölçüləri, J/L, ton, yavaşlatma) ---
+  const ST = DATA.studio || {};
+  const BASE_THEME = { ...THEME };
+  const RKEY = `${KEY}:req`;
+  try { S.req = JSON.parse(localStorage.getItem(RKEY) || 'null') || {}; } catch { S.req = {}; }
+  function setReq(k, v, msg) {
+    if (v === undefined) delete S.req[k]; else S.req[k] = v;
+    try { localStorage.setItem(RKEY, JSON.stringify(S.req)); } catch { /* */ }
+    refreshButtons(); scheduleSave(); renderStudio(); if (msg) flash(msg);
+  }
+  function previewTone() {
+    for (const k of Object.keys(THEME)) delete THEME[k];
+    Object.assign(THEME, BASE_THEME, (S.req.variation || {}));
+    sync(true);
+  }
+  function seg(items, cur, onPick, label) {
+    return el('div', { class: 'seg', role: 'group', 'aria-label': label }, ...items.map(([v, n]) => el('button', { class: v === cur ? 'on' : '', 'aria-pressed': v === cur ? 'true' : 'false', onclick: () => onPick(v) }, n)));
+  }
+  function renderStudio() {
+    const box = $('#studio'); if (!box) return;
+    const kids = [el('h2', {}, 'Studiya'), el('p', { class: 'hint' }, 'Bu seçimləri Claude render zamanı tətbiq edir (fon və plan ölçüləri ağır emaldır). Rəng tonu və altyazı burada dərhal görünür.')];
+    // ton
+    const tones = ST.tones || [];
+    if (tones.length) {
+      const cur = (S.req.variation || {}).primary || null;
+      kids.push(el('div', { class: 'row' }, el('span', { class: 'k' }, 'Rəng tonu'),
+        el('button', { class: cur ? '' : 'on', onclick: () => { setReq('variation', undefined, 'Ton: dəyişmir'); previewTone(); } }, 'Dəyişmə'),
+        ...tones.map((t) => el('button', { title: t.name, 'aria-label': `Ton ${t.name}`, class: cur === t.primary ? 'on' : '', style: `background:${t.primary};color:${t.text || '#fff'};min-width:44px`,
+          onclick: () => { const v = { primary: t.primary, primaryDeep: t.primaryDeep }; for (const k of ['text', 'accent', 'onAccent']) if (t[k]) v[k] = t[k]; setReq('variation', v, `Ton: ${t.name}`); previewTone(); } }, t.name))));
+      if (ST.suggestion) kids.push(el('p', { class: 'hint' }, `Təklif (son videonun kopyası olmasın): ${ST.suggestion}`));
+    }
+    // altyazı üslubu (dərhal — redaktorun öz vəziyyəti)
+    if (P().subtitles) {
+      const bg = ((P().subtitles.style || {}).bg) || '';
+      const isStroke = bg === 'none';
+      kids.push(el('div', { class: 'row' }, el('span', { class: 'k' }, 'Altyazı'),
+        seg([['box', 'Qutu'], ['stroke', 'Kontur']], isStroke ? 'stroke' : 'box', (v) => {
+          const prim = (S.req.variation || {}).primary || THEME.primary || '#333333';
+          opSubs(v === 'stroke' ? { bg: 'none' } : { bg: `${prim}@0.85` }, v === 'stroke' ? 'Altyazı: kontur' : 'Altyazı: qutu');
+          setTimeout(renderStudio, 0);
+        }, 'Altyazı üslubu')));
+    }
+    // arxa fon
+    const bgc = S.req.bg || null;
+    const mode = bgc ? (bgc.mode === 'image' ? 'lib' : bgc.mode) : 'none';
+    kids.push(el('div', { class: 'row' }, el('span', { class: 'k' }, 'Arxa fon'),
+      seg([['none', 'Orijinal'], ['blur', 'Bulanıq'], ['lib', 'Şəkil']], mode, (v) => {
+        if (v === 'none') setReq('bg', ST.bgActive ? { off: true } : undefined, 'Fon: orijinal');
+        else if (v === 'blur') setReq('bg', { mode: 'blur' }, 'Fon: bulanıq');
+        else setReq('bg', { mode: 'image', lib: (bgc && bgc.lib) || ((ST.library || [])[0] || {}).id, auto: !(bgc && bgc.lib) }, 'Fon: şəkil');
+      }, 'Arxa fon')));
+    if (mode === 'lib' && (ST.library || []).length) {
+      const grid = el('div', { class: 'row', style: 'flex-wrap:wrap;gap:6px' });
+      for (const L of ST.library) {
+        const on = bgc && bgc.lib === L.id;
+        grid.append(el('button', { 'aria-label': `Fon ${L.source}`, 'aria-pressed': on ? 'true' : 'false', title: (L.tags || []).join(', '),
+          style: `padding:0;border:3px solid ${on ? 'var(--accent)' : 'transparent'};border-radius:8px;overflow:hidden;width:58px;height:96px;background:url(${L.thumb}) center/cover`,
+          onclick: () => setReq('bg', { mode: 'image', lib: L.id }, `Fon: ${L.source}`) }));
+      }
+      kids.push(grid);
+      kids.push(el('p', { class: 'hint' }, `${ST.posture === 'seated' ? 'Oturub danışırsınız — masa və əllər qalır.' : ST.posture === 'standing' ? 'Ayaqüstə — ayaq altında yumşaq kölgə.' : ''} Fonun işığı otağa uyğunlaşdırılır. Kitabxanada olmayan fon: Claude-a şəkli göndərin.`));
+    }
+    // plan ölçüləri, J/L
+    kids.push(el('div', { class: 'row' }, el('span', { class: 'k' }, 'Plan ölçüləri'),
+      seg([['off', 'Yox'], ['calm', 'Sakit'], ['dynamic', 'Dinamik']], S.req.multicam || 'off', (v) => setReq('multicam', v === 'off' ? undefined : v, v === 'off' ? 'Plan ölçüləri: yox' : `Plan ölçüləri: ${v === 'calm' ? 'sakit' : 'dinamik'}`), 'Plan ölçüləri')));
+    if (ST.headroom != null) kids.push(el('p', { class: 'hint' }, ST.headroom >= 1.9 ? 'Keyfiyyət ehtiyatı yaxşıdır (4K kimi): ümumi / orta / yaxın plan.' : ST.headroom >= 1 ? 'Material 1080p — yaxın plan yalnız 1.12x, fərq zəif olacaq. Növbəti dəfə 4K çəkin.' : 'Kadr artıq böyüdülüb — plan ölçüsü dəyişməyəcək.'));
+    if ((ST.mediaCount || 1) > 1) kids.push(el('div', { class: 'row' }, el('span', { class: 'k' }, 'J/L-cut'),
+      seg([['off', 'Yox'], ['on', 'Bəli']], S.req.jl ? 'on' : 'off', (v) => setReq('jl', v === 'on' ? { auto: true, lead: 0.25 } : undefined, v === 'on' ? 'J-cut: kameralar arasında' : 'J-cut: yox'), 'J/L-cut')));
+    const slow = S.req.slowmo || [];
+    if (slow.length) kids.push(el('p', { class: 'hint' }, `Yavaşlatma: ${slow.length} klip (0.5x, real kadrlarla).`), el('button', { onclick: () => setReq('slowmo', undefined, 'Yavaşlatma ləğv olundu') }, 'Yavaşlatmanı ləğv et'));
+    box.replaceChildren(...kids);
+  }
+  function slowButton(c) {
+    const m = MEDIA[c.media] || {};
+    if (!(m.fps >= 50)) return el('p', { class: 'hint' }, `Yavaşlatma: material ${Math.round(m.fps || 0) || '?'} fps — hamar yavaşlatma üçün 60 fps çəkiliş lazımdır.`);
+    const on = (S.req.slowmo || []).includes(c.id);
+    return el('div', { class: 'row' }, el('span', { class: 'k' }, 'Yavaşlatma'),
+      el('button', { class: on ? 'on' : '', onclick: () => { const cur = new Set(S.req.slowmo || []); if (on) cur.delete(c.id); else cur.add(c.id); setReq('slowmo', [...cur], on ? 'Yavaşlatma ləğv olundu' : 'Klip 0.5x yavaşlayacaq (müddət eyni, hərəkətin ilk yarısı)'); renderSel(); } }, on ? '✓ 0.5x yavaş' : '0.5x yavaşlat'));
+  }
+  previewTone();
+  renderStudio();
 
   // --- başlanğıc ---
   window.addEventListener('resize', () => { renderTimeline(); sync(false); });
