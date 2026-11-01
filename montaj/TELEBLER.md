@@ -231,6 +231,10 @@ real danışıqda səs sinxronu və görünən keyfiyyət, iPhone Safari, Instag
 | 25.6 | Təbiilik: rəng/parlaqlıq uyğunlaşması, avtomatik fokus, kənar işığı, dənəvərlik, masa qalır, ayaqüstədə kölgə | ✅ | Günel videosunda 6 interyer fonu vizual; 900/900 kadr; 30 s — 2 dəq 22 s |
 | 25.7 | Fon kitabxanası (`bg-lib`) və `bg --auto` (otaq işığına görə sıralama) | ✅ | Test + istifadəçinin 13 şəkli |
 | 25.8 | Ayaqüstə tam boy videoda kölgə | 🟡 | Yalnız sintetik test — real ayaqüstə çəkiliş yoxlanılmayıb |
+| 26.1 | Material yoxlaması (`intake`, storyboard-da avtomatik): VFR/qarışıq fps, HDR, ölçü/ehtiyat, səsin partlaması və zəifliyi, işıq, fokus, titrəmə, ağ balansı fərqi | ✅ | `test_quality_control` (partlayan səs, qaranlıq, 25+30 fps) |
+| 26.2 | Yekun yoxlama: qara və donmuş kadr, səs piki, qəfil səs sıçrayışı, yazının oxunma müddəti, texniki uyğunluq | ✅ | `test_quality_control`; Günel r15 — yalançı xəbərdarlıq yoxdur |
+| 26.3 | Davamlı bölünmə (multicam, duo) kəsim/klik kimi sayılmır | ✅ | Test + əvvəlki yalançı 4 xəbərdarlıq aradan qalxdı |
+
 
 
 

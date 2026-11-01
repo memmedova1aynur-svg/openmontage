@@ -26,7 +26,9 @@ Ara düzəliş raundları təklif etmə.
 3. **Analiz.** `python -m montaj.session new --title "<ad>" --link "<link>" --client "<profil>" --type <N> [--extra <N>]
    [--goal ...] [--subtype ...]` (növ — `types`; qarışıq videoda əsas növ + `--extra`; növ aydın deyilsə `--uncertain "<nə, niyə>"`;
    növün öz formatı varsa — məs. 15 modul dərs → 16:9 — `--aspect` verilməsə o götürülür; sonradan: `set-type <pid> <N>`)
-   → `storyboard <pid>`. Transkripsiya yerli faster-whisper `large-v3-turbo` ilə, nəticə keşlənir
+   → `storyboard <pid>` (sonunda **material yoxlaması** çap olunur — ayrıca: `intake <pid>`: dəyişkən/qarışıq fps, HDR,
+   ölçü və keyfiyyət ehtiyatı, səsin partlaması və zəifliyi, qaranlıq/çox açıq, fokus, titrəmə, kliplər arası ağ balansı/işıq
+   fərqi; `!` olanları qərar mesajında bir cümlə ilə de — məs. "səs partlayır, tam düzəlmir"). Transkripsiya yerli faster-whisper `large-v3-turbo` ilə, nəticə keşlənir
    (mənbə/parametr dəyişməyibsə təkrarlanmır). Ölçü, kodek, HDR-i qısa qeyd et.
    Transkripti oxu: təkrar cümlələri, alınmayan cəhdləri, yarımçıq fikirləri tap. Köməkçi: `retakes <pid>` — ardıcıl
    təkrar/yarımçıq cümlələri və hazır `cut` təklifini göstərir (sonrakı, tam cəhd saxlanılır); yenə də özün oxuyub qərar ver.
@@ -206,6 +208,9 @@ Ara düzəliş raundları təklif etmə.
 6. **Montaj və yekun MP4 (bir dəfə).** `choose <pid> plan_X.json` (qaralama düzəlişləri → apply → plan) → `render <pid>` →
    **`verify <pid>`** → `words <pid>`. `choose` seçilən variantı (növ, yanaşma, rəng, altyazı üslubu) müştəri profilinin
    `history`-sinə yazır — növbəti videoda təkrarın qarşısını almaq üçün (profil dəyişikliyini commit et).
+   - `verify` yekun faylı da yoxlayır: qara kadr, donmuş kadr (şəkil klipləri və sonluq kartı istisna), səs piki və qəfil
+     səs sıçrayışı (adi səviyyədən 9 LU yuxarı), ekran yazısının oxunma müddəti (~3 söz/s, ən azı 1.2 s), texniki uyğunluq
+     (ölçü, yuv420p, səs tezliyi). Davamlı bölünmə (virtual multikamera, danışana keçid) kəsim sayılmır.
    - `verify` növ qaydalarını da yoxlayır: hər növdə qrafikadakı rəqəm danışıqda olmalıdır; reklam (3), səsləndirməli
      hekayə (8), modul dərs (15) — mətnin ardıcıllığı dəyişməyib (hook əvvələ çəkilməyib); modul dərs — üfüqi çıxış.
    - `verify`: kəsim sərhədləri orijinal səsin enerjisi və söz vaxtları ilə, səs/görüntü uzunluğu, kliklər,

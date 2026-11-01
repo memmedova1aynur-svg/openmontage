@@ -333,6 +333,14 @@ def cmd_storyboard(a: argparse.Namespace) -> None:
             d = json.loads(an.read_text())
             print(f"transkript {mid}: dil={d.get('language')} sözlər={len(d.get('words', []))} "
                   f"{'(XƏTA: ' + d['transcribeError'] + ')' if d.get('transcribeError') else ''}")
+    try:  # material yoxlaması — montajdan əvvəl xəbər verilsin
+        from montaj import qc
+
+        r = qc.intake(project, store.project_dir(a.pid))
+        (o / "material_yoxlama.json").write_text(json.dumps(r, ensure_ascii=False, indent=1), encoding="utf-8")
+        _print_intake(r)
+    except Exception as e:  # noqa: BLE001
+        print(f"material yoxlaması alınmadı: {str(e)[:120]}")
     for line in _type_hints(project):
         print(line)
 
@@ -1242,6 +1250,42 @@ def type_checks(pid: str, p: dict[str, Any], rep: dict[str, Any]) -> dict[str, A
     return {"checks": checks, "problems": problems}
 
 
+def _final_qc(p: dict[str, Any], mp4: Path, rep: dict[str, Any]) -> dict[str, Any]:
+    """Yekun faylın keyfiyyət nəzarəti (qc.final): qara/donmuş kadr, səs piki və sıçrayışı, yazının oxunma müddəti, texniki."""
+    from montaj import qc
+    from montaj.render import end_card, render_plan
+
+    plan = render_plan(p)
+    media = {m["id"]: m for m in p["media"]}
+    imgs = [(it["start"], it["start"] + it["dur"]) for it in plan["video"] if media.get(it["clip"].get("media"), {}).get("isImage")]
+    ec = end_card(p)
+    r = qc.final(p, mp4, imgs, (plan["total"] - ec["duration"]) if ec else None)
+    return {"checks": list(rep.get("checks") or []) + r["checks"], "problems": list(rep.get("problems") or []) + r["problems"]}
+
+
+def cmd_intake(a: argparse.Namespace) -> None:
+    """Material yoxlaması (montajdan əvvəl): fps, ölçü, HDR, səs (partlama/zəiflik), işıq və ağ balansı, kəskinlik, titrəmə."""
+    from montaj import qc
+
+    p = store.load(a.pid)
+    r = qc.intake(p, store.project_dir(a.pid))
+    (out_dir(a.pid) / "material_yoxlama.json").write_text(json.dumps(r, ensure_ascii=False, indent=1), encoding="utf-8")
+    _print_intake(r)
+
+
+def _print_intake(r: dict[str, Any]) -> None:
+    for i in r["items"]:
+        au = i.get("audio") or {}
+        print(f"material {i['name']}: {i['size'][0]}x{i['size'][1]}, {i['fps']} fps, keyfiyyət ehtiyatı {i['headroom']}x"
+              + (f", səs pik {au['peakDb']} dBFS / danışıq {au['speechDb']} dBFS" if au else ""))
+        for w in i["warnings"]:
+            print(f"  ! {w}")
+    for n in r["notes"]:
+        print(f"  • {n}")
+    if not any(i["warnings"] for i in r["items"]) and not r["notes"]:
+        print("material yoxlaması: problem tapılmadı")
+
+
 def cmd_verify(a: argparse.Namespace) -> None:
     """Yekun render yoxlaması: kəsim sərhədləri, səs/görüntü, kliklər, yekun səsin yenidən tanınması."""
     from montaj import quality
@@ -1250,6 +1294,7 @@ def cmd_verify(a: argparse.Namespace) -> None:
     mp4 = Path(a.mp4) if a.mp4 else _latest_render(a.pid)
     rep = quality.verify(p, store.project_dir(a.pid), mp4, _analyses(a.pid, p), asr=not a.no_asr)
     rep.update(type_checks(a.pid, p, rep))
+    rep.update(_final_qc(p, mp4, rep))
     (out_dir(a.pid) / f"{mp4.stem}_yoxlama.json").write_text(json.dumps(rep, ensure_ascii=False, indent=1), encoding="utf-8")
     for c in rep["checks"]:
         print("✓", c)
@@ -2273,6 +2318,7 @@ def main(argv: list[str] | None = None) -> int:
     ep.add_argument("--target", type=float, help="müddət, s (standart: A/B 30, C 17)")
     ep.add_argument("--volume", type=float, default=0.9)
     ep.add_argument("--variants", default="ABC")
+    sub.add_parser("intake", help="material yoxlaması (fps, ölçü, səs, işıq, kəskinlik)").add_argument("pid")
     bg = sub.add_parser("bg", help="arxa fon: blur | color | image | video | scene (--preview — müqayisə)")
     bg.add_argument("pid")
     bg.add_argument("--mode", choices=["blur", "color", "image", "video", "scene"])
@@ -2400,7 +2446,7 @@ def main(argv: list[str] | None = None) -> int:
         {"new": cmd_new, "storyboard": cmd_storyboard, "edit": cmd_edit, "apply": cmd_apply,
          "render": cmd_render, "export": cmd_export, "editor": cmd_editor,
          "apply-edits": cmd_apply_edits, "set-client": cmd_set_client, "plan": cmd_plan, "looks": cmd_looks,
-         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "highlights": cmd_highlights, "extract": cmd_extract, "mg-scan": cmd_mg_scan, "tale-plan": cmd_tale_plan, "carousel-plan": cmd_carousel_plan, "types": cmd_types, "event-scan": cmd_event_scan, "event-plan": cmd_event_plan, "qa-plan": cmd_qa_plan, "duo": cmd_duo, "multicam": cmd_multicam, "bg": cmd_bg, "bg-lib": cmd_bg_lib, "set-type": cmd_set_type, "carousel": cmd_carousel, "fix-word": cmd_fix_word,
+         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "highlights": cmd_highlights, "extract": cmd_extract, "mg-scan": cmd_mg_scan, "tale-plan": cmd_tale_plan, "carousel-plan": cmd_carousel_plan, "types": cmd_types, "event-scan": cmd_event_scan, "event-plan": cmd_event_plan, "qa-plan": cmd_qa_plan, "duo": cmd_duo, "multicam": cmd_multicam, "bg": cmd_bg, "intake": cmd_intake, "bg-lib": cmd_bg_lib, "set-type": cmd_set_type, "carousel": cmd_carousel, "fix-word": cmd_fix_word,
          "variants": cmd_variants, "choose": cmd_choose, "music-preview": cmd_music_preview}[a.cmd](a)
     except UserError as err:
         print(f"XƏTA: {err.message}\nNƏ ETMƏLİ: {err.hint}", file=sys.stderr)

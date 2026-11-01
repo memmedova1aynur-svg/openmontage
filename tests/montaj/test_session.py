@@ -1046,3 +1046,64 @@ def test_background_natural(tmp_path, monkeypatch):
     sit = np.zeros((100, 60), np.float32)
     sit[20:, 20:40] = 1  # kadrın altına qədər — kölgə yoxdur
     assert bgm._shadow(sit).max() == 0
+
+
+def test_quality_control(tmp_path, monkeypatch, capsys):
+    """QC: qara və donmuş kadr, qəfil səs sıçrayışı, yazının oxunma müddəti; material yoxlaması (partlayan səs, qaranlıq,
+    fərqli fps); davamlı bölünmə (plan ölçüsü) kəsim sayılmır."""
+    import subprocess
+
+    from montaj import qc
+
+    v = tmp_path / "qc.mp4"
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "testsrc2=s=320x240:r=25:d=2", "-f", "lavfi", "-i",
+                    "color=black:s=320x240:r=25:d=0.6", "-f", "lavfi", "-i", "testsrc2=s=320x240:r=25:d=1",
+                    "-f", "lavfi", "-i", "sine=f=300:d=6:sample_rate=48000", "-f", "lavfi", "-i", "sine=f=900:d=0.5:sample_rate=48000",
+                    "-filter_complex", "[2:v]trim=0:0.04,setpts=PTS-STARTPTS,tpad=stop_mode=clone:stop_duration=2[fz];"
+                    "[0:v][1:v][fz][2:v]concat=n=4:v=1:a=0[v];[3:a]volume=0.03[q];[4:a]volume=0.9,adelay=4500:all=1[l];"
+                    "[q][l]amix=inputs=2:duration=first:normalize=0[a]",
+                    "-map", "[v]", "-map", "[a]", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac", str(v)], check=True)
+    bl = qc.black_frames(v)
+    assert len(bl) == 1 and abs(bl[0][0] - 2.0) < 0.1
+    fz = qc.frozen_frames(v)
+    assert any(abs(s - 2.6) < 0.3 for s, _ in fz)
+    assert any(abs(t - 4.5) < 0.8 for t in qc.loud_jumps(v)), "qəfil səs sıçrayışı"
+    proj = {"width": 320, "height": 240, "clips": [
+        {"track": "t1", "type": "title", "text": "Bu çox uzun bir başlıq mətnidir oxumaq lazımdır", "srcIn": 0, "srcOut": 1.0, "start": 0},
+        {"track": "t1", "type": "badge", "text": "1/3", "srcIn": 0, "srcOut": 0.5, "start": 0},
+        {"track": "t1", "type": "title", "text": "Qısa", "srcIn": 0, "srcOut": 0.6, "start": 2}]}
+    rt = qc.reading_time(proj)
+    assert len(rt) == 1 and "oxumaq üçün" in rt[0]["what"]
+    r = qc.final(proj, v)
+    assert any("qara kadr" in x["what"] for x in r["problems"]) and any("donub" in x["what"] for x in r["problems"])
+
+    dark = tmp_path / "qaranliq.mp4"
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "testsrc2=s=320x240:r=30:d=3", "-f", "lavfi", "-i",
+                    "sine=f=200:d=3", "-vf", "eq=brightness=-0.6", "-af", "volume=30", "-c:v", "libx264", "-pix_fmt", "yuv420p",
+                    "-c:a", "aac", str(dark)], check=True)
+    from montaj import media as mediautil
+
+    ms = []
+    for f in (v, dark):
+        info = mediautil.probe(f)
+        ms.append({"id": f.stem, "name": f.name, "file": f.name, **info})
+    rep = qc.intake({"media": ms, "width": 320, "height": 240}, tmp_path)
+    w = " ".join(rep["items"][1]["warnings"])
+    assert "partlayır" in w and "qaranlıq" in w
+    assert any("kadr tezlik" in n for n in rep["notes"]), "25 və 30 fps"
+
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import quality, session, store
+
+    _draft_and_analysis(pid)
+    assert session.main(["render", pid]) == 0
+    p = session.node_tl("migrate", store.load(pid))
+    mp4 = sorted((tmp_path / "out" / pid).glob(f"{pid}_r*.mp4"))[-1]
+    base = quality.verify(p, store.project_dir(pid), mp4, session._analyses(pid, p), asr=False)["checks"]
+    c0 = session.node_tl("videoClips", p)[0]
+    p2 = session.node_tl("split", p, c0["id"], (c0["srcOut"] - c0["srcIn"]) / 2)
+    after = quality.verify(p2, store.project_dir(pid), mp4, session._analyses(pid, p2), asr=False)["checks"]
+    pick = lambda xs: next(x for x in xs if "kəsim sərhədi" in x)
+    assert pick(base) == pick(after), "davamlı bölünmə əlavə kəsim sayılmır"
+    capsys.readouterr()
+    assert session.main(["intake", pid]) == 0 and "material" in capsys.readouterr().out

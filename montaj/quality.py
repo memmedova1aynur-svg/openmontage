@@ -125,9 +125,14 @@ def verify(project: dict[str, Any], project_dir: Path, mp4: Path, analyses: dict
         rms, ref = rms_of(m["id"])
         words = (analyses.get(m["id"]) or {}).get("words") or []
         dur_src = float(m.get("duration") or 0)
+        prev_c = vclips[i - 1] if i else None
+        next_c = vclips[i + 1] if i + 1 < len(vclips) else None
         for kind, t, tl in (("in", c["srcIn"], c["start"]), ("out", c["srcOut"], c["start"] + c["dur"])):
             if (kind == "in" and t < 0.05) or (kind == "out" and t > dur_src - 0.05):
                 continue  # mənbənin öz başı/sonu — kəsim deyil
+            nb = prev_c if kind == "in" else next_c  # davamlı bölünmə (plan ölçüsü, danışana keçid) — səs kəsilmir
+            if nb and nb.get("media") == c.get("media") and abs((nb["srcOut"] if kind == "in" else nb["srcIn"]) - t) < 0.02:
+                continue
             cuts += 1
             j = int(t / HOP)
             seg = rms[max(0, j - 3): j] if kind == "out" else rms[j: j + 3]
@@ -142,7 +147,10 @@ def verify(project: dict[str, Any], project_dir: Path, mp4: Path, analyses: dict
     # kliklər: yekun səsdə sərhəd ətrafında qəfil sıçrayış
     fin = mediautil.read_mono(mp4, SR)
     clicks = 0
-    for c in vclips[1:]:
+    for k, c in enumerate(vclips[1:], 1):
+        pc = vclips[k - 1]
+        if pc.get("media") == c.get("media") and abs(pc["srcOut"] - c["srcIn"]) < 0.02:
+            continue  # davamlı bölünmə — səsdə kəsim yoxdur
         j = int(c["start"] * SR)
         if 64 < j < len(fin) - 64:
             jump = float(np.abs(np.diff(fin[j - 32: j + 32])).max())
