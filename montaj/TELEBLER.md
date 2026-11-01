@@ -215,5 +215,11 @@ real danışıqda səs sinxronu və görünən keyfiyyət, iPhone Safari, Instag
 | 21.2 | `event-scan`: kadr bölgüsü, kəskinlik (blur effect — düz rəngli səth bulanıq sayılmır), işıq, titrəmə, üz; `kadrlar.jpg` | ✅ | Bulanıq kadr tapılır; real kameralarda kəskinlik 0.67–0.80 |
 | 21.3 | `event-plan`: A/B/C (xronoloji / ritmik / dəvət), açılış → inkişaf → final, zəif kadr seçilmir, eyni hissə təkrarlanmır, material azdırsa kəsim seyrəlir | ✅ | `test_event_montage_beats` |
 | 21.4 | Yekun MP4-də kəsimlər vuruşda; görüntünün öz səsi söndürülür (`liveSound`, seçilmiş kartda saxlanır); `variants` M09 planları ilə | ✅ | Render kadr analizi: kəsimlər 4.0/6.0/8.0/10.0 s, vuruşlar ±5 ms. Real tədbir çəkilişi ilə yoxlanılmayıb |
+| 22.1 | M10 sual tanıma: sual işarəsi/sözü/ədatı ("kimi", "elmi", nida sual deyil), kadrarxası səs (ağız tərpənmir), ritorik sual qeydi | ✅ | `test_qa_fast_questions`; Günel videosunda ritorik suallar ayrıca qeyd olundu |
+| 22.2 | `qa-plan`: A/B/C, ölü pauza çıxır, reaksiya (gülüş/səsli pauza) qalır, sual yazısı danışıqdan, B-də sual səsi yoxdur, yaxınlaşma reaksiyada | ✅ | `test_qa_fast_questions` (render daxil) |
+| 23.1 | Ağız hərəkəti seriyası (speakers.py): üzlər izlənir, baş tərpənməsi çıxılır, sabit ölçülü müqayisə | ✅ | İki nəfərli sınaq: danışan aydın ayrılır (7.2 vs 0.01) |
+| 23.2 | `duo --mode switch`: kadraj danışana keçir, uzun cümlə ~2 s hissələrlə, qısa növbə birləşir | ✅ | Sınaq videosu: keçid 6.0 s əvəzinə 6.36 s (söz boşluğunda); kadr vizual yoxlandı |
+| 23.3 | `duo --mode split`: bölünmüş ekran (yuxarı sol, aşağı sağ, ayırıcı xətt, altyazı ortada) | ✅ | `test_duo_switch_split` (piksel) + vizual. İki ayrı kamera dəstəklənmir |
+
 
 

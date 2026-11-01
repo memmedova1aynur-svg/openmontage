@@ -174,12 +174,28 @@ def sharpen_filter(adj: dict[str, Any]) -> list[str]:
     return [f"unsharp=5:5:{min(1.0, sharp):.2f}:5:5:0"] if sharp > 0.01 else []
 
 
+def split_graph(sp: dict[str, Any], W: int, H: int, tag: str) -> str:
+    """Bölünmüş ekran (növ 11): mənbədən iki pəncərə → yuxarı/aşağı yarı, aralarında nazik xətt. Filtr qrafı parçası."""
+    h1 = _even(H / 2)
+    h2 = H - h1
+    parts = []
+    for key, hh, lab in (("top", h1, "t"), ("bottom", h2, "u")):
+        r = sp[key]
+        parts.append(f"[{tag}{lab}0]crop=iw*{r['w']:.4f}:ih*{r['h']:.4f}:iw*{r['x']:.4f}:ih*{r['y']:.4f},"
+                     f"scale={W}:{hh}:flags=lanczos,setsar=1[{tag}{lab}]")
+    return (f"split=2[{tag}t0][{tag}u0];" + ";".join(parts) + f";[{tag}t][{tag}u]vstack,"
+            f"drawbox=y={h1 - 2}:w=iw:h=4:color=white@0.85:t=fill")
+
+
 def video_chain(c: dict[str, Any], m: dict[str, Any], W: int, H: int, fps_str: str,
-                mirror_all: bool, frames: int) -> str:
+                mirror_all: bool, frames: int, tag: str = "x") -> str:
     """Bir video klip üçün filtr zənciri (input → [W x H], yuv420p)."""
     f: list[str] = []
     if m.get("hdr"):
         f.append(HDR_TO_SDR)
+    if c.get("split"):  # iki nəfər: kadraj əvəzinə iki pəncərə
+        f.append(split_graph(c["split"], W, H, tag))
+        c = {**c, "frame": None}
     fr = c.get("frame") or {}
     rot = float(fr.get("rotate") or 0)
     if abs(rot) > 0.05:
@@ -240,7 +256,7 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
         c = v["clip"]
         m = media[c["media"]]
         k = add_input(m, float(c["srcIn"]), v["dur"])
-        filters.append(f"[{k}:v]{video_chain(c, m, W, H, fps_str, mirror_all, v['frames'])}[v{i}]")
+        filters.append(f"[{k}:v]{video_chain(c, m, W, H, fps_str, mirror_all, v['frames'], tag=f'sp{i}')}[v{i}]")
         vlabels.append(f"[v{i}]")
     main = plan["main"]
     if vlabels:

@@ -828,3 +828,91 @@ def test_event_montage_beats(tmp_path, monkeypatch):
     beats_out = np.array(plan["music"]["from"] and [b - plan["music"]["from"] for b in bt["beats"]])
     assert len(cuts) == len(cards) - 1 and W and H
     assert all(min(abs(beats_out - c)) < 1.5 / fps for c in cuts), f"kəsimlər vuruşda: {cuts}"
+
+
+def test_qa_fast_questions(tmp_path, monkeypatch):
+    """M10: sual/cavab cütləri (sual işarəsi, sual sözü, ədat), ölü pauza çıxır, reaksiya qalır, B-də sual səsi yoxdur,
+    sual yazısı danışıqdan; kadrarxası səs (ağız tərpənmir) sual tərəfinə düşür."""
+    import numpy as np
+
+    from montaj import qa
+
+    assert qa.is_question("Ən sevdiyin yemək nədir") and qa.is_question("Sən heç Bakıya gəlmisənmi") and not qa.is_question("Plov.")
+    assert not qa.is_question("Onun kimi") and not qa.is_question("Bu elmi") and qa.is_question("Hazırsan mı")
+
+    def W(txt, t0, step=0.35):
+        return [{"w": w, "s": round(t0 + i * step, 2), "e": round(t0 + i * step + 0.3, 2)} for i, w in enumerate(txt.split())]
+    words = W("Ən sevdiyin yemək nədir?", 0.5) + W("Plov.", 2.6) + W("Çünki çox dadlıdır.", 4.6) + \
+        W("Səhər nə vaxt durursan?", 6.4) + W("Heç vaxt.", 8.6) + W("Zarafat edirəm.", 9.6)
+    rms = np.full(1200, 0.002)
+    for w in words:
+        rms[int(w["s"] * 100):int(w["e"] * 100)] = 0.1
+    rms[300:440] = 0.08  # "Plov."-dan sonra gülüş (sözsüz səs)
+    ss = __import__("montaj.quality", fromlist=["x"]).sentences(words, gap=0.5)
+    assert qa.classify(ss) == ["q", "a", "a", "q", "a", "a"]
+    assert qa.classify(ss, [3.0, 3.0, 3.0, 3.0, 0.2, 3.0]) == ["q", "a", "a", "q", "q", "a"], "ağız tərpənmir → kadrarxası"
+    react = qa.reactions(words, rms)
+    assert any(a <= 3.1 and b >= 4.4 for a, b in react)
+    r = qa.plans(words, "m1", rms)
+    assert r["pairs"] == 2
+    A, B, C = (r["plans"][k] for k in "ABC")
+    durA = sum(c["srcOut"] - c["srcIn"] for c in A["storyboard"]["cards"])
+    durB = sum(c["srcOut"] - c["srcIn"] for c in B["storyboard"]["cards"])
+    assert durB < durA, "B-də sual səsi çıxır"
+    assert not any(c["srcIn"] < 2.0 for c in B["storyboard"]["cards"]), "B birinci sualın səsini saxlamır"
+    assert any(c["srcIn"] <= 3.1 and c["srcOut"] >= 4.5 for c in A["storyboard"]["cards"]), "gülüş pauzası saxlanılır"
+    assert [g["text"] for g in A["graphics"]] == ["Ən sevdiyin yemək nədir?", "Səhər nə vaxt durursan?"]
+    assert A["zooms"] and A["sfx"] and not C["graphics"] and C["approach"] == "M01"
+
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import analysis, session, store
+
+    mid = _draft_and_analysis(pid)
+    f = analysis.analysis_path(store.project_dir(pid), mid)
+    f.write_text(json.dumps({"mediaId": mid, "words": words, "model": "test"}), encoding="utf-8")
+    assert session.main(["qa-plan", pid, "--no-faces"]) == 0
+    plan = tmp_path / "out" / pid / "qa_A.json"
+    assert session.main(["choose", pid, str(plan)]) == 0
+    q = store.load(pid)
+    assert len([c for c in q["clips"] if c["track"] == "t1" and c.get("origin") == "plan"]) == 2
+    assert session.main(["render", pid]) == 0
+
+
+def test_duo_switch_split(tmp_path, monkeypatch):
+    """Növ 11: növbələr (qısa növbə birləşir, uzun cümlə bölünür), kəsim boşluqda; bölünmüş ekran — yuxarı yarı soldakı,
+    aşağı yarı sağdakı pəncərədən; kadrda iki nəfər yoxdursa aydın xəta."""
+    import subprocess
+
+    import numpy as np
+
+    from montaj import duo, render
+
+    def W(txt, t0):
+        return [{"w": w, "s": round(t0 + i * 0.4, 2), "e": round(t0 + i * 0.4 + 0.3, 2)} for i, w in enumerate(txt.split())]
+    words = W("bir iki üç dörd beş altı yeddi səkkiz", 0.0) + W("doqquz on", 3.5)
+    ss = [{"s": words[0]["s"], "e": words[7]["e"], "words": words[:8], "text": ""},
+          {"s": words[8]["s"], "e": words[9]["e"], "words": words[8:], "text": ""}]
+    ch = duo.chunks(words, ss, 2.0)
+    assert len(ch) == 3 and all(c["e"] - c["s"] <= 2.0 for c in ch)
+    rs = duo.runs([{"s": 0, "e": 3}, {"s": 3.2, "e": 3.8}, {"s": 4, "e": 7}, {"s": 7.2, "e": 10}], [0, 1, 0, 1])
+    assert [r["speaker"] for r in rs] == [0, 1] and rs[0]["e"] == 7, "qısa növbə (0.6 s) birləşir"
+    assert duo.cut_points(rs) == [7.1]
+    spec = duo.split_spec([{"cx": 0.7, "cy": 0.4, "w": 0.1}, {"cx": 0.3, "cy": 0.4, "w": 0.1}], 1920, 1080, 1080, 1920)
+    assert spec["top"]["x"] < 0.3 < spec["bottom"]["x"], "yuxarıda soldakı şəxs"
+    assert abs(spec["top"]["w"] * 1920 / (spec["top"]["h"] * 1080) - 1080 / 960) < 0.01
+
+    src = tmp_path / "sol_sag.png"
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "color=red:s=320x360", "-f", "lavfi", "-i", "color=blue:s=320x360",
+                    "-filter_complex", "[0][1]hstack", "-frames:v", "1", str(src)], check=True)
+    sp = {"top": {"x": 0.0, "y": 0.0, "w": 0.4, "h": 0.8}, "bottom": {"x": 0.6, "y": 0.0, "w": 0.4, "h": 0.8}}
+    raw = subprocess.run(["ffmpeg", "-v", "error", "-i", str(src), "-filter_complex", f"[0:v]{render.split_graph(sp, 180, 320, 't')}",
+                          "-frames:v", "1", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], capture_output=True, check=True).stdout
+    fr = np.frombuffer(raw, np.uint8).reshape(320, 180, 3).astype(int)
+    assert fr[60, 90, 0] > 200 and fr[60, 90, 2] < 60, "yuxarı yarı — sol (qırmızı)"
+    assert fr[260, 90, 2] > 200 and fr[260, 90, 0] < 60, "aşağı yarı — sağ (göy)"
+    assert fr[160, 90].min() > 180, "ortada ayırıcı xətt"
+
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import session
+
+    assert session.main(["duo", pid, "--mode", "split"]) == 2, "üzsüz kadrda aydın xəta"

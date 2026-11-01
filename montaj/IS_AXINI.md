@@ -83,6 +83,19 @@ Ara düzəliş raundları təklif etmə.
    - `variants <pid> event_A.json event_B.json event_C.json` → qərar mesajı → `choose` → `render` → `verify`.
    - Yoxdur (iddia etmə): yavaşlatma, şəkillərdə hərəkət (Ken Burns), kadrın məzmununu tanıma (sertifikat, alqış) —
      açılış/final xronologiya və ümumi plana görə seçilir; variant şəklinə baxıb yoxla. Dəvət mətni (tarix, yer) yalnız istifadəçidən.
+2i. **Sürətli, əyləncəli sual-cavab — M10** (növ 10): `new --type 10` → `storyboard` → `qa-plan <pid>` → `qa_A/B/C.json`:
+   A yüngül yumor (sual səsi + sual yazısı yuxarıda, "pop", gülüş anında yüngül yaxınlaşma), B sual yalnız yazı ilə (sual səsi
+   çıxır — hər cavab tək başına anlaşılmalıdır), C sakit (M01). Ölü pauza çıxır, reaksiya (gülüş, səsli pauza) qalır; cavablar
+   yenidən sıralanmır. Sual: sual işarəsi / sözü / ədatı (“gəlmisənmi”, “hazırsan mı”; “kimi”, “elmi” sual deyil) və kadrarxası
+   səs (kadrdakı şəxsin ağzı tərpənmir). `_review`-da hər sual-cavab: sual mətnində ASR səhvini düzəlt (yazı danışıqdandır);
+   "kadrdakı şəxs özü soruşur" qeydi varsa ritorik ola bilər — sual-cavab deyilsə bu planları seçmə. Sonra `variants` → `choose`.
+   Ekspert alçaldılmır, demədiyi fikir yaradılmır.
+2j. **İki nəfərin söhbəti** (növ 11; iki nəfər BİR kadrda): seçilmiş hissə tətbiq olunandan sonra (`choose`/`apply`):
+   - `duo <pid> --mode switch` — kadraj danışana keçir (ağız hərəkəti; ASR iki nəfəri bir cümləyə birləşdirsə də ~2 s hissələrlə
+     yoxlanır; 1.5 s-dən qısa növbə birləşir, kəsim sözlər arasındakı boşluğa düşür). Danışma payı çap olunur.
+   - `duo <pid> --mode split` — bölünmüş ekran (9:16): yuxarıda soldakı, aşağıda sağdakı şəxs, ortada nazik xətt, altyazı ortada.
+     Reaksiyalar itmir — mübahisə/qarşılaşdırma (M06) üçün yaxşıdır.
+   - Kadrda iki nəfər tapılmasa aydın xəta verir. İki ayrı kameranın sinxronu hələ yoxdur — iddia etmə.
 2e. **Motion graphics** (data, IT, analitika — qrafika ağırlıqlı):
    - Qrafik səhnələr (`session scenes`, `mg_*`): `mg_bar` (sütun), `mg_line` (zaman üzrə xətt), `mg_donut` (faiz),
      `mg_compare` (iki dəyər), `mg_steps` (proses/yol xəritəsi), `mg_code` (kod/terminal), `mg_kpi` (2–4 rəqəm). Müştəri rəngində,
