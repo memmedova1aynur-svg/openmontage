@@ -1347,3 +1347,13 @@ def test_lesson_layout_graphics_captions(tmp_path, monkeypatch, capsys):
     assert session.main(["captions-file", pid, "--format", "srt"]) == 0
     srt = (tmp_path / "out" / pid / f"{pid}.srt").read_text(encoding="utf-8")
     assert srt.startswith("1\n00:00:") and " --> " in srt
+
+
+def test_output_size_keeps_landscape_quality():
+    """Üfüqi (dərs) layihə mənbənin keyfiyyətində qalır: 4K → 4K, Full HD → Full HD; şaquli Reels davranışı dəyişmir."""
+    from montaj.reframe import output_size
+
+    assert output_size({"width": 3840, "height": 2160}, "16:9") == (3840, 2160)
+    assert output_size({"width": 1920, "height": 1080}, "16:9") == (1920, 1080)
+    assert output_size({"width": 1080, "height": 1920}, "9:16") == (1080, 1920)
+    assert output_size({"width": 1920, "height": 1080}, "9:16") == (608, 1080)

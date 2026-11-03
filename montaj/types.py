@@ -153,7 +153,7 @@ TYPES: dict[int, dict[str, Any]] = {
          "gaps": "bölümlər arası eyni üslub plan şablonu ilə (kurs_sablon.json) — avtomatik deyil; altyazı lenti (ticker) yoxdur",
          "variants": [("M14", "Sakit dərs: ad-titul lövhəsi + sadə altyazı"), ("M14+M03", "Dərs + yan paneldə izah (siyahı, seçim kartı)"),
                       ("M14+M04", "Dərs + mövzu üzrə hazır görüntülər (stok B-roll)")],
-         "commands": ["new --type 15 --size 1920x1080 --link ... --link ...", "storyboard", "retakes", "cut", "stock", "plan: layout, lower, choice, captions lesson",
+         "commands": ["new --type 15 --link ... --link ... (üfüqi: mənbə ölçüsü, 4K qalır)", "storyboard", "retakes", "cut", "stock", "plan: layout, lower, choice, captions lesson",
                       "render", "verify", "captions-file"],
          "rules": ["source_order", "horizontal"],
          "notes": ["Hook yoxdur, Reels ritmi tətbiq edilmir", "Üfüqi dərs şaquliyə çevrilmir"]},

@@ -181,8 +181,10 @@ def output_size(first_video: dict[str, Any] | None, aspect: str) -> tuple[int, i
         return w // 2 * 2, h // 2 * 2
     ar = ASPECTS[aspect]
     sw, sh = float(first_video["width"]), float(first_video["height"])
-    if sw / sh > ar:
-        h = min(sh, 1920 if ar < 1 else 1080 / ar if ar > 1 else 1080)
+    if ar > 1:  # üfüqi (dərs, YouTube): mənbənin öz keyfiyyəti — 4K mənbə 4K qalır (əvvəl səhvən 1080x608-ə kiçilirdi)
+        h = min(sh, sw / ar)
+    elif sw / sh > ar:
+        h = min(sh, 1920 if ar < 1 else 1080)
     else:
         h = min(sw / ar, 1920 if ar < 1 else 1080)
     h = int(h) // 2 * 2

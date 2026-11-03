@@ -128,7 +128,8 @@
     }
     if (type === 'choice') {  // seçim: 2–3 variant; `at` anında doğrusu (correct) yaşıl çərçivə + ✓, qalanları solğun
       const reveal = tl == null || tl >= (clip.at ?? 1.5);
-      const wrap = node(doc, 'div', { ...base, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: `${fs * 0.55}px` });
+      // padding: ✓ nişanı və böyüyən kart elementin sərhədindən çıxmasın (PNG kəsilməsin)
+      const wrap = node(doc, 'div', { ...base, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: `${fs * 0.55}px`, padding: `${fs * 0.7}px` });
       if (clip.heading) wrap.append(node(doc, 'div', { fontWeight: '800', fontSize: `${fs * 0.85}px`, padding: `${fs * 0.25}px ${fs * 0.75}px`, borderRadius: '999px',
         background: rgba(clip.bg, rgba(`${th.primary || '#222222'}@0.92`)), color: th.text || '#FFFFFF' }, clip.heading));
       const row = node(doc, 'div', { display: 'flex', gap: `${fs * 0.55}px`, justifyContent: 'center', alignItems: 'flex-end' });

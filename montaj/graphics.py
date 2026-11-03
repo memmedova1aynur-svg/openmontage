@@ -155,6 +155,9 @@ def overlay_chain(c: dict[str, Any], k: int, n_states: int, a: float, b: float, 
     ty = f"{k3}*{0.04 * H:.2f}" if kind == "slide-up" else "0"
     px, py = pos(c)
     X, Y = px * W, py * H
+    mx, my = 0.02 * W, 0.02 * H  # element kadrdan çıxmasın (geniş kart kənara yaxın qoyulsa da)
+    bx = f"max({mx:.1f}\\,min(main_w-overlay_w-{mx:.1f}\\,{X:.2f}-overlay_w/2))"
+    by = f"max({my:.1f}\\,min(main_h-overlay_h-{my:.1f}\\,{Y:.2f}-overlay_h/2))"
     return (",".join(f) + f"[{lab}];"
-            f"[{cur}][{lab}]overlay=x='{X:.2f}-overlay_w/2+({tx})':y='{Y:.2f}-overlay_h/2+({ty})':"
+            f"[{cur}][{lab}]overlay=x='{bx}+({tx})':y='{by}+({ty})':"
             f"eval=frame:enable='between(t,{a:.4f},{b:.4f})'[{out}]")
