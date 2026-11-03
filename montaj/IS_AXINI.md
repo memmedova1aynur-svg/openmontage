@@ -123,6 +123,29 @@ Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq,
    səs (kadrdakı şəxsin ağzı tərpənmir). `_review`-da hər sual-cavab: sual mətnində ASR səhvini düzəlt (yazı danışıqdandır);
    "kadrdakı şəxs özü soruşur" qeydi varsa ritorik ola bilər — sual-cavab deyilsə bu planları seçmə. Sonra `variants` → `choose`.
    Ekspert alçaldılmır, demədiyi fikir yaradılmır.
+2k. **Təlim dərsləri / onlayn kurs** (növ 15, M14 — saytda satılan modul dərslər; Reels DEYİL: sakit, dinamik effekt yox):
+   - **Əvvəl xəritə, sonra montaj.** Papkadakı bütün faylları transkript et (`new --link` hər fayl üçün, bir bölümün faylları — məs.
+     ayrıca çəkilmiş salamlaşma + əsas hissə — bir layihədə). Hansı fayl hansı bölümə aiddir, giriş harada, sıra, təkrar və
+     lazımsız kadrlar → `kurs_xeritesi.md` (bölüm, fayllar, giriş, mövzular, vaxt kodları, çıxarılacaqlar, qrafika/görüntü yerləri).
+     İstifadəçi ilə razılaş, yalnız sonra montaj. Kartların sırası: `edit --order`.
+   - **Kadr**: üfüqi 1920x1080 (`new --type 15 --size 1920x1080`). Çəkiliş şaquli (telefon) olarsa — planda
+     `"layout": {"speaker": "left", "width": 0.42, "bg": "#rəng"}`: danışan solda paneldə, sağ sahə qrafika üçün (plan qrafikalarının
+     `x`-i avtomatik boş tərəfin mərkəzidir); fon müştərinin sakit rəngi (və ya `"blur"`). Üfüqi çəkilişdə layout lazım deyil.
+   - **Bölüm açılışı**: `{"type": "lower", "text": "<ad>", "sub": "<titul>", "start": 0.5, "dur": 5, "anim": {"in": "slide-left"}}`
+     (ad və titul profildən / istifadəçidən — uydurma). Bölüm adı lazım olsa `title`.
+   - **Altyazı**: `"captions": {"enabled": true, "style": {"preset": "lesson"}}` — sadə ağ, nazik yarışəffaf zolaq, uzun sətir,
+     söz-söz effekti yox. Sayt pleyeri üçün əlavə: `captions-file <pid>` → SRT + VTT (izləyici açıb-bağlayır). Sağdan sola axan
+     altyazı lenti (ticker) yoxdur — dərsdə oxunmur, diqqəti yayındırır; istifadəçiyə belə izah et.
+   - **Canlandırma (sakit, mövzuya uyğun, ~hər 30–90 s bir element)**: yan paneldə `list` (addımlar), `card` (əsas fikir),
+     `choice` — 2–3 variant, `at` anında doğrusu yaşıl ✓ + avtomatik "ding" (`"items": [{"text": "...", "img": "<fayl>"}], "correct": 0`),
+     mövzu üzrə hazır görüntü: `stock <pid> --query "<ingiliscə>" [--kind image]` → `secim.jpg`, seçilən fayl `add-broll --file`
+     (planda `broll` insert/cover) və ya seçim kartında `img`. Yalnız qeyd tələb etməyən pulsuz lisenziya (Mixkit, Pixabay —
+     `PIXABAY_API_KEY`, Wikimedia CC0/PD); `manifest.json`-dakı mənbələri təhvildə qısa siyahı ilə ver. Mətn yalnız danışıqdan.
+   - **Yoxdur (dərsdə)**: zoom/punch-in, tez-tez kəsim, whoosh/pop, hook, `variation` (kursda bütün bölümlər EYNİ görünür).
+     Musiqi — yalnız açılış/bağlanışda çox yumşaq, istəsə.
+   - **Kurs boyu eynilik**: ilk bölümün təsdiqlənmiş planını `kurs_sablon.json` kimi saxla (layout, captions, lower, rəng) və hər
+     bölümdə ondan başla; yalnız bölümə aid qrafika/görüntülər dəyişir.
+   - **Təhvil**: hər bölüm MP4 (1920x1080) + SRT/VTT; fayl adı “Bölüm N — Mövzu”.
 2j. **İki nəfərin söhbəti** (növ 11; iki nəfər BİR kadrda): seçilmiş hissə tətbiq olunandan sonra (`choose`/`apply`):
    - `duo <pid> --mode switch` — kadraj danışana keçir (ağız hərəkəti; ASR iki nəfəri bir cümləyə birləşdirsə də ~2 s hissələrlə
      yoxlanır; 1.5 s-dən qısa növbə birləşir, kəsim sözlər arasındakı boşluğa düşür). Danışma payı çap olunur.

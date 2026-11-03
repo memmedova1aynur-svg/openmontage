@@ -728,7 +728,8 @@ function subStyle(p) {
   const st = (p.subtitles && p.subtitles.style) || {};
   return { size: st.size ?? (p.subtitles && p.subtitles.size) ?? 0.045, position: st.position || 'bottom',
     font: st.font ?? null, weight: st.weight ?? null, color: st.color ?? null, bg: st.bg ?? null,
-    x: st.x ?? null, y: st.y ?? null, activeColor: st.activeColor ?? null, stroke: st.stroke ?? null, type: st.type ?? null };
+    x: st.x ?? null, y: st.y ?? null, activeColor: st.activeColor ?? null, stroke: st.stroke ?? null, type: st.type ?? null,
+    maxW: st.maxW ?? null, radius: st.radius ?? null, plain: st.plain ?? null, maxWords: st.maxWords ?? null, maxDur: st.maxDur ?? null };
 }
 
 function rebuildSubtitles(p, lay = layout(p)) {
@@ -747,7 +748,8 @@ function rebuildSubtitles(p, lay = layout(p)) {
     // ffmpeg yazını sətrə bölmür: sətir kadrın ~90%-nə sığsın (orta hərf eni ≈ 0.58 × şrift ölçüsü)
     const glyph = (style.weight || 700) >= 700 ? 0.68 : 0.58; // qalın şriftdə hərf daha enlidir
     const maxChars = Math.max(8, Math.floor((0.88 * (p.width || 1080)) / ((style.size || 0.045) * (p.height || 1920) * glyph)));
-    for (const ch of subtitleChunks(correctWords(st.words[v.media] || [], st.corrections), 4, 1.8, maxChars)) {
+    // dərs videosunda (plain) sətir uzun ola bilər: maxWords / maxDur üslubdan
+    for (const ch of subtitleChunks(correctWords(st.words[v.media] || [], st.corrections), style.maxWords || 4, style.maxDur || 1.8, maxChars)) {
       const ws = ch.words.filter(inside);
       if (!ws.length) continue;
       chunks.push(ws.length === ch.words.length ? ch : { s: ws[0].s, e: ws[ws.length - 1].e, text: ws.map((w) => w.w).join(' ').trim(), words: ws });
@@ -976,7 +978,7 @@ function retimeWords(oldWords, text, dur) {
   return toks.map((w) => { const d = (b - a) * (w.length + 1) / total; const x = { w, s: round(t), e: round(t + d) }; t += d; return x; });
 }
 
-const GFX_KEYS = ['heading', 'items', 'anim', 'activeColor', 'stroke', 'rot', 'headColor', 'accent', 'price', 'oldPrice', 'note', 'priceColor', 'keyword', 'sub'];
+const GFX_KEYS = ['heading', 'items', 'anim', 'activeColor', 'stroke', 'rot', 'headColor', 'accent', 'price', 'oldPrice', 'note', 'priceColor', 'keyword', 'sub', 'correct', 'at'];
 
 /** Mətni dəyişir; altyazıda söz vaxtları uyğunlaşdırılır, səs və video dəyişmir. */
 export function setCaptionText(p0, clipId, text) {
