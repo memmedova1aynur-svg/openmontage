@@ -8,7 +8,8 @@
   "cautions": [
     "Vizual istinad (istifadəçi, 2026-11-03): Instagram səhifəsi tünd yaşıl fon + laym vurğu; ağ yuvarlaq künclü kartlar/qutular, laym 'pill' düymələr, laym vurğulu söz (marker effekti), qalın sans-serif başlıq, bəzən italik serif vurğu sözü. Altyazı, kart, qutu bu üsluba uyğun.",
     "Ümumi istifadəçi qaydası (2026-11-01, bütün müştərilər, soruşmadan): rəng həmişə looks C (təmiz-neytral). Musiqi: piano/yavaş YOX (yalnız CC0). B-roll başı örtmür: bölünmüş ekran — danışan yuxarıda, B-roll sinədən aşağı (pip y≈0.70, tam en), həmin anda altyazı başın üstündə (y≈0.17). Arxa fon bulanıqlaşdırılmır və qaraldılmır — fon orijinal qalır. Danışılmayan boş saniyələr (pauzalar ≥0.45 s) kəsilir, söz kəsilmir; kəsimdən sonra söz təkrarı olmadığını yoxla. Güzgü çevirmə (hflip) yoxdur.",
-    "İş qaydası: videolar bir-bir render edilir və göndərilir; hər birindən əvvəl storyboard."
+    "İş qaydası: videolar bir-bir render edilir və göndərilir; hər birindən əvvəl storyboard.",
+    "İstifadəçi seçimi (2026-11-03): rəng — look H (təmiz işıqlı, sarı/isti ton YOX, neytral, yüngül kəskinlik). Kadraj: aşağı sərhəd oturduğu yerin başlanğıcı (ayaq, qarnın altı görünmür), yuxarıdan başın üstündə boşluq; yanlardan kəsilir (s≈0.85–0.91). Kartlar/yazılar YALNIZ başın üstündəki boşluqda (y≈0.19) və ya boğazdan aşağı (altyazı x 0.5, y 0.74) — üzə, ağıza, başa, əllərə heç vaxt. Musiqi ən sonda seçilir. Ssenaridə 'ekranda bu şeyə baxın' anları: bölünmüş ekran (Xəyyam yuxarı, göstərilən aşağı) və ya mərkəzdə kart/tam kadr."
   ],
   "theme_source": "istifadəçinin göndərdiyi 16 nümunə şəkil (tünd yaşıl + laym)",
   "theme": {

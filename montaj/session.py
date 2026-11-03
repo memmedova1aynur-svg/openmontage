@@ -807,9 +807,11 @@ LOOKS: dict[str, dict[str, float]] = {
     "E": {"contrast": 1.08, "saturation": 1.02, "depth": 1.0, "vibrance": 0.05, "sharpen": 0.45, "temperature": 6600},  # kəskin-kontrast
     "F": {"brightness": 0.01, "contrast": 1.05, "saturation": 1.05, "depth": 0.6, "temperature": 6000, "sharpen": 0.3},  # isti premium
     "G": {"contrast": 1.07, "saturation": 0.93, "depth": 0.9, "temperature": 7300, "sharpen": 0.35},  # sərin-kino
+    "H": {"brightness": 0.015, "contrast": 1.05, "saturation": 0.98, "temperature": 7400, "sharpen": 0.35},  # təmiz işıqlı (sarılıqsız)
 }
 LOOK_LABELS = {"A": "orijinala yaxın, təbii", "B": "yumşaq və isti", "C": "təmiz və neytral", "D": "zəif işıq: dən azalır, kölgə açılır",
-               "E": "kəskin və kontrastlı", "F": "isti premium", "G": "sərin, kino tonu"}
+               "E": "kəskin və kontrastlı", "F": "isti premium", "G": "sərin, kino tonu",
+               "H": "təmiz işıqlı, sarılıqsız neytral"}
 LOOK_KEYS = ("brightness", "contrast", "saturation", "vibrance", "depth", "sharpen", "temperature", "denoise", "shadows", "gamma")
 DARK_LUMA = 85  # 8-bit orta parlaqlıq bundan aşağıdırsa — zəif işıq (D variantı təklif olunur)
 DEFAULT_LOOK = "A"
