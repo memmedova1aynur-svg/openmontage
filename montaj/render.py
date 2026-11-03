@@ -235,6 +235,9 @@ def color_filters(adj: dict[str, Any]) -> list[str]:
     if depth > 0.01:  # qaranlıq və işıqlı hissələrə yüngül dərinlik (S-əyri)
         lo, hi = 0.05 - 0.015 * min(depth, 2), 0.95 + 0.015 * min(depth, 2)
         f.append(f"curves=master='0/0 0.05/{lo:.4f} 0.95/{hi:.4f} 1/1'")
+    hl = float(adj.get("highlights") or 0)
+    if hl > 0.01:  # parlaq hissələrə nəzarət (ağ köynək yanmasın): yalnız yuxarı tonlar yumşaq sıxılır
+        f.append(f"curves=master='0/0 0.6/0.6 0.85/{0.85 - 0.03 * hl:.4f} 1/{1 - 0.07 * hl:.4f}'")
     vib = float(adj.get("vibrance") or 0)
     if vib > 0.005:  # solğun rəngləri canlandırır, onsuz da doymuş rənglərə (dəriyə) az təsir edir
         f.append(f"vibrance=intensity={min(vib, 1):.3f}")
