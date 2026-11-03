@@ -257,6 +257,8 @@ real danışıqda səs sinxronu və görünən keyfiyyət, iPhone Safari, Instag
 | 32.7 | Qrafika kadrdan çıxmır (render-də kənardan 2% boşluqla sıxılır); seçim kartında ✓ nişanı kəsilmir | ✅ | 4K render vizual (3840x2160) |
 | 33.1 | `music`: sorğu profil/növə görə (soruşulmur), Freesound yalnız CC0 (köhnə alətdə lisenziya süzgəci yox idi), piano/yavaş atılır, 2–3 namizəd + dinləmə + plan hissəsi | ✅ | `test_music_auto_cc0_and_course_placement` |
 | 33.2 | Standart yerləşmə: Reels — bütün video boyu (ducking); kurs — yalnız açılış və sonluq, çox yumşaq; plan `music` siyahısı (`dur`) | ✅ | Test |
+| 33.3 | `music`-də Mixkit musiqisi (açarsız): kateqoriya səhifəsindən ad/müəllif/etiket/müddət, piano/yavaş/bayram mövzusu atılır; Freesound az və ya açarsızdırsa Mixkit | ✅ | `test_music_mixkit_fallback` + real axtarış (kids: 4 trek, corporate: 3 trek) |
+
 
 
 

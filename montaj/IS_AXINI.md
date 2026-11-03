@@ -243,7 +243,8 @@ Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq,
      Dəri rəngi və detal qorunur; güclü doyumluluq, kəskinləşdirmə, “4K effekti” yoxdur;
      retuş/gözəlləşdirmə yalnız ayrıca istəklə.
    - **Musiqi — SORUŞMA, özün seç**: `music <pid>` → sorğu profil/növə görə avtomatik (profildə `music.query` varsa o; uşaq
-     mövzusu — şən kids, reklam — corporate; piano/yavaş/kədərli YOX), Freesound **yalnız CC0**, 2–3 namizəd + `musiqi_N.m4a`
+     mövzusu — şən kids, reklam — corporate; piano/yavaş/kədərli/bayram mövzusu YOX), Freesound **yalnız CC0** + **Mixkit** (Stock Music
+     Free License — kommersiya pulsuz, müəllif qeydi tələb etmir; açarsız; Freesound açarı yoxdursa da işləyir), 2–3 namizəd + `musiqi_N.m4a`
      dinləmə nümunələri + plana hazır `music` hissəsi. Qərar mesajında nümunələri ver (“musiqi 1/2/3”); musiqinin necə, harada
      qoyulacağını soruşma — yerləşmə standartdır: Reels — bütün video boyu, danışıqda azalır; kurs dərsi — yalnız açılış (~7 s) və
      sonluq (~5 s), çox yumşaq, dərs boyu musiqi yoxdur. Planda `music` bir obyekt və ya siyahı ola bilər (`start`, `dur`, `volume`).
