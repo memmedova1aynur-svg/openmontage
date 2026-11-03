@@ -146,7 +146,7 @@ Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq,
      (planda `broll` insert/cover) və ya seçim kartında `img`. Yalnız qeyd tələb etməyən pulsuz lisenziya (Mixkit, Pixabay —
      `PIXABAY_API_KEY`, Wikimedia CC0/PD); `manifest.json`-dakı mənbələri təhvildə qısa siyahı ilə ver. Mətn yalnız danışıqdan.
    - **Yoxdur (dərsdə)**: zoom/punch-in, tez-tez kəsim, whoosh/pop, hook, `variation` (kursda bütün bölümlər EYNİ görünür).
-     Musiqi — yalnız açılış/bağlanışda çox yumşaq, istəsə.
+     Musiqi — soruşma: `music <pid>` (növ 15 → yalnız açılış və sonluqda çox yumşaq; dərs boyu yoxdur).
    - **Kurs boyu eynilik**: ilk bölümün təsdiqlənmiş planını `kurs_sablon.json` kimi saxla (layout, captions, lower, rəng) və hər
      bölümdə ondan başla; yalnız bölümə aid qrafika/görüntülər dəyişir.
    - **Təhvil**: hər bölüm MP4 (1920x1080) + SRT/VTT; fayl adı “Bölüm N — Mövzu”.
@@ -242,7 +242,12 @@ Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq,
      Fərqli işıqlanan kliplər avtomatik yaxınlaşdırılır (`"matchExposure": true`, ±0.04).
      Dəri rəngi və detal qorunur; güclü doyumluluq, kəskinləşdirmə, “4K effekti” yoxdur;
      retuş/gözəlləşdirmə yalnız ayrıca istəklə.
-   - Musiqi (özün tap, 2–3 namizəd təklif et), lisenziya kommersiya istifadəsinə uyğun olmalıdır:
+   - **Musiqi — SORUŞMA, özün seç**: `music <pid>` → sorğu profil/növə görə avtomatik (profildə `music.query` varsa o; uşaq
+     mövzusu — şən kids, reklam — corporate; piano/yavaş/kədərli YOX), Freesound **yalnız CC0**, 2–3 namizəd + `musiqi_N.m4a`
+     dinləmə nümunələri + plana hazır `music` hissəsi. Qərar mesajında nümunələri ver (“musiqi 1/2/3”); musiqinin necə, harada
+     qoyulacağını soruşma — yerləşmə standartdır: Reels — bütün video boyu, danışıqda azalır; kurs dərsi — yalnız açılış (~7 s) və
+     sonluq (~5 s), çox yumşaq, dərs boyu musiqi yoxdur. Planda `music` bir obyekt və ya siyahı ola bilər (`start`, `dur`, `volume`).
+     Ətraflı (əl ilə yol), lisenziya kommersiya istifadəsinə uyğun olmalıdır:
      1) **Freesound** (`tools/audio/freesound_music.py`, `FREESOUND_API_KEY` mühit dəyişəni, pulsuz açar) —
         yalnız **CC0** (müəllif qeydi tələb etmir). Açar yoxdursa bu yol bağlıdır.
      2) **Müəllif qeydi tələb edən musiqi (CC BY, məs. Incompetech) İŞLƏDİLMİR** — istifadəçi caption-a ad

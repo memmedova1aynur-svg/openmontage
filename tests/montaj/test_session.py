@@ -168,14 +168,15 @@ def test_plan_look_choice_and_manual_color_kept(tmp_path, monkeypatch):
 
 
 def test_looks_sheet(tmp_path, monkeypatch):
-    """`looks`: 3 kadr × (Orijinal, A, B, C) müqayisə şəkli; aralıq fayllar silinir."""
+    """`looks`: 3 kadr × (Orijinal + bütün şablonlar, D yalnız qaranlıqda) müqayisə şəkli; aralıq fayllar silinir."""
     pid = _fixture(tmp_path, monkeypatch)
     from montaj import media, session
 
     assert session.main(["looks", pid]) == 0
     sheet = tmp_path / "out" / pid / "reng_variantlari.jpg"
     info = media.probe(sheet)
-    assert info["width"] == 4 * 360 and info["height"] == 3 * 202, "3 sətir (640x360 mənbə → 360x202)"
+    cols = 1 + len([k for k in session.LOOKS if k != "D"])  # orijinal + şablonlar (D yalnız qaranlıq kadrda)
+    assert info["width"] == cols * 360 and info["height"] == 3 * 202, "3 sətir (640x360 mənbə → 360x202)"
     assert not list((tmp_path / "out" / pid).glob("reng_*.png"))
 
 
@@ -1357,3 +1358,47 @@ def test_output_size_keeps_landscape_quality():
     assert output_size({"width": 1920, "height": 1080}, "16:9") == (1920, 1080)
     assert output_size({"width": 1080, "height": 1920}, "9:16") == (1080, 1920)
     assert output_size({"width": 1920, "height": 1080}, "9:16") == (608, 1080)
+
+
+def test_music_auto_cc0_and_course_placement(tmp_path, monkeypatch):
+    """Musiqi soruşulmur: sorğu profil/növə görə, yalnız CC0, piano/yavaş atılır; kurs dərsində yalnız açılış və sonluq
+    (dərs boyu musiqi yoxdur); plan `music` siyahısı (hissə uzunluğu `dur`)."""
+    import io
+    import subprocess
+
+    from montaj import music
+
+    q, avoid = music.auto_query({"activity": "Uşaq inkişafı, laktasiya"}, 1)
+    assert "kids" in q and "piano" in avoid
+    assert music.auto_query({"music": {"query": "happy jazz"}}, 1)[0] == "happy jazz"
+    assert music.auto_query({"activity": "Uşaq inkişafı"}, 15)[0] == music.BY_TYPE[15], "kursda uşaq musiqisi yox"
+    assert music.auto_query(None, 3)[0].startswith("corporate")
+    res = {"results": [
+        {"id": 1, "name": "Sad piano", "tags": ["piano"], "license": "http://creativecommons.org/publicdomain/zero/1.0/", "duration": 60},
+        {"id": 2, "name": "Happy uke", "tags": ["ukulele"], "license": "https://creativecommons.org/licenses/by/4.0/", "duration": 60},
+        {"id": 3, "name": "Happy kids", "tags": ["kids"], "license": "http://creativecommons.org/publicdomain/zero/1.0/", "duration": 60}]}
+    seen = {}
+
+    def fake_open(req, timeout=30):
+        seen["url"] = req.full_url
+        return io.BytesIO(json.dumps(res).encode())
+    monkeypatch.setenv("FREESOUND_API_KEY", "test")
+    monkeypatch.setattr(music.urllib.request, "urlopen", fake_open)
+    got = music.search("kids happy", ["piano"], 20, 90, 3)
+    assert [s["id"] for s in got] == [3], "yalnız CC0, piano atılır"
+    assert "Creative+Commons+0" in seen["url"] or "Creative%20Commons%200" in seen["url"] or "Creative Commons 0" in seen["url"]
+    pl = music.placement(15, 300)
+    assert len(pl) == 2 and pl[0]["dur"] == 7.0 and pl[1]["start"] == 295.0 and all(x["volume"] <= 0.08 for x in pl)
+    assert music.placement(1, 40) == [{"start": 0.0, "volume": 0.12, "fadeIn": 1.2, "fadeOut": 2.0, "duck": True}]
+
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import session, store
+
+    _draft_and_analysis(pid)
+    assert session.main(["apply", pid]) == 0
+    mus = tmp_path / "m.m4a"
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "sine=f=330:d=30", "-c:a", "aac", str(mus)], check=True)
+    plan = {"look": None, "music": [{**x, "file": str(mus)} for x in music.placement(15, 6.2)]}
+    q = session.apply_plan(pid, store.load(pid), plan)
+    m1 = sorted((c for c in q["clips"] if c["track"] == "m1"), key=lambda c: c["start"])
+    assert len(m1) == 2 and abs(m1[0]["srcOut"] - m1[0]["srcIn"] - 6.2) < 0.05 and m1[1]["start"] > 0

@@ -255,6 +255,9 @@ real danışıqda səs sinxronu və görünən keyfiyyət, iPhone Safari, Instag
 | 32.5 | Altyazı lenti (ticker, sağdan sola) | ⛔ | Qurulmadı — dərsdə oxunmur; SRT/VTT + sadə zolaq tövsiyə olunur |
 | 32.6 | Düzəliş: üfüqi (16:9) layihədə çıxış ölçüsü mənbənin özüdür (4K → 3840x2160); əvvəl səhvən 1080x608-ə kiçilirdi | ✅ | `test_output_size_keeps_landscape_quality` |
 | 32.7 | Qrafika kadrdan çıxmır (render-də kənardan 2% boşluqla sıxılır); seçim kartında ✓ nişanı kəsilmir | ✅ | 4K render vizual (3840x2160) |
+| 33.1 | `music`: sorğu profil/növə görə (soruşulmur), Freesound yalnız CC0 (köhnə alətdə lisenziya süzgəci yox idi), piano/yavaş atılır, 2–3 namizəd + dinləmə + plan hissəsi | ✅ | `test_music_auto_cc0_and_course_placement` |
+| 33.2 | Standart yerləşmə: Reels — bütün video boyu (ducking); kurs — yalnız açılış və sonluq, çox yumşaq; plan `music` siyahısı (`dur`) | ✅ | Test |
+
 
 
 
