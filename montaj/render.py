@@ -512,6 +512,8 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
         if c.get("x") is not None and c.get("y") is not None:
             # telefonda sürüşdürülmüş yer: mərkəz nöqtəsi (0..1), kadrdan çıxmasın
             xexpr = f"max(0\\,min(w-text_w\\,w*{float(c['x']):.4f}-text_w/2))"
+            if c.get("align") == "left":  # sola düzlənmiş Reels yazısı: x — sol kənar
+                xexpr = f"w*{float(c['x']):.4f}"
             y = f"max(0\\,min(h-text_h\\,h*{float(c['y']):.4f}-text_h/2))"
         color = (c.get("color") or "white").replace("#", "0x")
         bg = c.get("bg") or "black@0.55"
@@ -522,6 +524,13 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
             f"{boxopt}:line_spacing={size // 5}:"
             f"x={xexpr}:y={y}:enable='between(t,{t['start']:.3f},{t['end']:.3f})'[vt{i}]")
         cur = f"vt{i}"
+        if c.get("underline") and c.get("x") is not None and c.get("y") is not None:  # altında qısa vurğu xətti
+            ux = int(W * float(c["x"])) if c.get("align") == "left" else int(W * float(c["x"]) - size * 0.65)
+            uy = int(H * float(c["y"]) + size * 0.78)
+            ucol = (c.get("activeColor") or "#C5E01F").replace("#", "0x")
+            filters.append(f"[{cur}]drawbox=x={ux}:y={uy}:w={int(size * 1.3)}:h={max(3, int(size * 0.1))}:color={ucol}:t=fill:"
+                           f"enable='between(t,{t['start']:.3f},{t['end']:.3f})'[vu{i}]")
+            cur = f"vu{i}"
 
     if gfx:
         theme = (project.get("brand") or {}).get("theme") or {}
