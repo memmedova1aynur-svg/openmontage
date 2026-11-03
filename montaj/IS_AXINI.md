@@ -128,7 +128,11 @@ Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq,
      ayrıca çəkilmiş salamlaşma + əsas hissə — bir layihədə). Hansı fayl hansı bölümə aiddir, giriş harada, sıra, təkrar və
      lazımsız kadrlar → `kurs_xeritesi.md` (bölüm, fayllar, giriş, mövzular, vaxt kodları, çıxarılacaqlar, qrafika/görüntü yerləri).
      İstifadəçi ilə razılaş, yalnız sonra montaj. Kartların sırası: `edit --order`.
-   - **Kadr**: üfüqi 1920x1080 (`new --type 15 --size 1920x1080`). Çəkiliş şaquli (telefon) olarsa — planda
+   - **Kadr və keyfiyyət**: üfüqi çəkiliş (YouTube ölçüsü) — `new --type 15` (`--size` VERMƏ): çıxış mənbənin öz ölçüsü və
+     keyfiyyətidir (4K mənbə → 3840x2160, kiçildilmir); render H.264 CRF 18 (gözlə fərqlənməz). 4K-da 15 dəqiqəlik render uzun çəkir —
+     bölümləri tək-tək render et. Üfüqi çəkilişdə layout lazım deyil: qrafika kadrın boş tərəfinə (danışanın üzünü örtməsin —
+     `verify` yoxlayır), x-i özün ver. **Rəng korreksiyası məcburidir** (`looks` → variant seçimi; solğun qalmasın, kliplər arası
+     işıq bərabərləşir). Çəkiliş şaquli (telefon) olarsa — `--size 1920x1080` və planda
      `"layout": {"speaker": "left", "width": 0.42, "bg": "#rəng"}`: danışan solda paneldə, sağ sahə qrafika üçün (plan qrafikalarının
      `x`-i avtomatik boş tərəfin mərkəzidir); fon müştərinin sakit rəngi (və ya `"blur"`). Üfüqi çəkilişdə layout lazım deyil.
    - **Bölüm açılışı**: `{"type": "lower", "text": "<ad>", "sub": "<titul>", "start": 0.5, "dur": 5, "anim": {"in": "slide-left"}}`

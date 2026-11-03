@@ -253,6 +253,10 @@ real danışıqda səs sinxronu və görünən keyfiyyət, iPhone Safari, Instag
 | 32.3 | Dərs altyazısı (`preset: lesson`: sadə ağ, nazik zolaq, uzun sətir, söz-söz effekti yox), `captions-file` SRT/VTT | ✅ | Test |
 | 32.4 | `stock`: Mixkit video (açarsız), Wikimedia şəkil (yalnız CC0/PD), Pixabay (pulsuz açarla); manifest + kontakt şəkli | ✅ | Test (lisenziya süzgəci) + real axtarış ("breastfeeding" — 3 uyğun video). Pexels/Openverse bu mühitdə bağlıdır |
 | 32.5 | Altyazı lenti (ticker, sağdan sola) | ⛔ | Qurulmadı — dərsdə oxunmur; SRT/VTT + sadə zolaq tövsiyə olunur |
+| 32.6 | Düzəliş: üfüqi (16:9) layihədə çıxış ölçüsü mənbənin özüdür (4K → 3840x2160); əvvəl səhvən 1080x608-ə kiçilirdi | ✅ | `test_output_size_keeps_landscape_quality` |
+| 32.7 | Qrafika kadrdan çıxmır (render-də kənardan 2% boşluqla sıxılır); seçim kartında ✓ nişanı kəsilmir | ✅ | 4K render vizual (3840x2160) |
+
+
 
 
 

@@ -26,17 +26,18 @@ de və mənə hazır olduğunu yaz — sonra Drive papkasının linkini göndər
 ## 3. Mərhələ 1 — xəritə (montajdan ƏVVƏL, mənimlə razılaşırıq)
 Papkada bir neçə bölümün xam videoları var (hər bölüm 5–15 dəq). Bəzi bölümlərdə salamlaşma (giriş) ayrıca bir neçə saniyəlik
 video kimi çəkilib, əsas hissə ayrıca.
-1. Bütün faylları endir və transkript et (`new --type 15 --size 1920x1080 --link ...`, `storyboard`), material yoxlamasına bax
-   (çəkiliş şaqulidir, yoxsa üfüqi; səs, işıq).
+1. Bütün faylları endir və transkript et (`new --type 15 --link ...` — `--size` VERMƏ, `storyboard`), material yoxlamasına bax
+   (ölçü/4K, fps, səs, işıq).
 2. Hansı fayl hansı bölümə aiddir, giriş hansıdır, bölümlərin sırası, hər bölümün mövzuları (vaxt kodları ilə), təkrar və alınmayan
    cəhdlər, lazımsız kadrlar — hamısını tap.
 3. Mənə **bir xəritə** göndər (`kurs_xeritesi.md`): bölüm → fayllar → giriş → mövzular → çıxarılacaq hissələr → harada nə
    göstəriləcək (siyahı, əsas fikir kartı, seçim kartı, hazır görüntü). Qeyri-müəyyən yerləri sual kimi yaz. Mən təsdiqləyirəm.
 
 ## 4. Mərhələ 2 — üslub (ilk bölümdə bir dəfə, bir qərar mesajında)
-İlk bölüm üçün 2–3 variant göstər (`variants`): kadr (şaquli çəkilişdirsə Sura solda, sağda qrafika sahəsi — fon rəngi
-profilin krem/çəhrayı ailəsindən; və ya bulanıq fon), ad-titul lövhəsi, sadə altyazı, yan paneldə qrafika nümunəsi, rəng
-korreksiyası (`looks`), səs təmizləmə əvvəl/sonra. Mən bir sətirlə seçirəm. Seçilən planı `kurs_sablon.json` kimi saxla — bütün
+Videolar üfüqi (YouTube ölçüsü) çəkilib — kadr və ölçü olduğu kimi qalır, keyfiyyət dəyişmir (4K-dırsa 4K təhvil verilir,
+kiçildilmir; layout lazım deyil). İlk bölüm üçün 2–3 variant göstər (`variants`): ad-titul lövhəsi, sadə altyazı, kadrın boş
+tərəfində qrafika nümunəsi (Suranın üzünü örtməsin), **rəng korreksiyası** (`looks` — məcburidir, video solğun qalmasın; kliplər
+arası işıq bərabərləşsin), səs təmizləmə əvvəl/sonra. Mən bir sətirlə seçirəm. Seçilən planı `kurs_sablon.json` kimi saxla — bütün
 bölümlər ondan başlayır, kurs boyu eyni görünüş.
 
 ## 5. Mərhələ 3 — hər bölümün montajı (ara sual yoxdur)
@@ -53,7 +54,7 @@ bölümlər ondan başlayır, kurs boyu eyni görünüş.
 - `render` → `verify` → `words`; `!` olanları düzəlt.
 
 ## 6. Təhvil
-Hər bölüm: MP4 (1920x1080, “Bölüm N — Mövzu”) + SRT + VTT + işlədilən hazır görüntülərin mənbə/lisenziya siyahısı (qısa).
+Hər bölüm: MP4 (mənbənin ölçüsündə — 4K-dırsa 3840x2160, “Bölüm N — Mövzu”) + SRT + VTT + işlədilən hazır görüntülərin mənbə/lisenziya siyahısı (qısa).
 Bölümləri hazır olduqca göndər; hər biri bir dəfəyə, ara düzəliş raundu yoxdur.
 
 ## 7. Qaydalar
