@@ -1086,7 +1086,9 @@ def apply_plan(pid: str, p: dict[str, Any], plan: dict[str, Any], plan_name: str
     for s in plan.get("sfx") or []:
         _sfx_media(pid, s["kind"])
     mus = plan.get("music")
-    mus_rec = _music_media(pid, Path(mus["file"])) if mus else None
+    mus_list = [m for m in (mus if isinstance(mus, list) else [mus] if mus else []) if m and m.get("file")]
+    mus_recs = [_music_media(pid, Path(m["file"])) for m in mus_list]  # bir və ya bir neçə hissə (kurs: açılış + sonluq)
+    mus_rec = mus_recs[0] if mus_recs else None
     q = node_tl("migrate", p)
     was_manual = {c["id"] for c in q["clips"] if c.get("manual")}
     q["clips"] = [c for c in q["clips"] if not (c.get("origin") == "plan" and not c.get("manual"))]
@@ -1178,18 +1180,20 @@ def apply_plan(pid: str, p: dict[str, Any], plan: dict[str, Any], plan_name: str
         new = q["clips"][-1]
         new["volume"] = s.get("vol", 0.3)
         new["origin"] = "plan"
-    if mus_rec:  # musiqi: m1 trekində, yumşaq giriş/çıxış, danışıqda azalır
+    if mus_recs:  # musiqi: m1 trekində, yumşaq giriş/çıxış, danışıqda azalır; "dur" — hissənin uzunluğu (yoxsa sona qədər)
         q["clips"] = [c for c in q["clips"] if not (c["track"] == "m1" and c.get("origin") == "plan")]
         total = sum(c["srcOut"] - c["srcIn"] for c in node_tl("videoClips", q))
-        at = float(mus.get("start", 0))
-        q = node_tl("addMedia", {**q, "media": [x for x in q["media"] if x["id"] != mus_rec["id"]]}, mus_rec,
-                    {"targetTrack": "m1", "at": at})
-        new = q["clips"][-1]
-        src_in = float(mus.get("from", 0))
-        new.update(srcIn=round(src_in, 3), srcOut=round(min(float(mus_rec["duration"]), src_in + max(0.5, total - at)), 3),
-                   volume=float(mus.get("volume", 0.12)), fadeIn=float(mus.get("fadeIn", 1.2)),
-                   fadeOut=float(mus.get("fadeOut", 2.0)), origin="plan")
-        q.setdefault("mix", {})["duck"] = bool(mus.get("duck", True))
+        for mus, mus_rec in zip(mus_list, mus_recs):
+            at = min(max(0.0, total - 0.5), float(mus.get("start", 0)))
+            span = max(0.5, total - at) if mus.get("dur") is None else max(0.5, min(float(mus["dur"]), total - at))
+            q = node_tl("addMedia", {**q, "media": [x for x in q["media"] if x["id"] != mus_rec["id"]]}, mus_rec,
+                        {"targetTrack": "m1", "at": at})
+            new = q["clips"][-1]
+            src_in = float(mus.get("from", 0))
+            new.update(srcIn=round(src_in, 3), srcOut=round(min(float(mus_rec["duration"]), src_in + span), 3),
+                       volume=float(mus.get("volume", 0.12)), fadeIn=float(mus.get("fadeIn", 1.2)),
+                       fadeOut=float(mus.get("fadeOut", 2.0)), origin="plan")
+        q.setdefault("mix", {})["duck"] = bool(mus_list[0].get("duck", True))
     live = plan.get("liveSound")
     if live is not None:  # M09: görüntünün öz səsi (standart söndürülür), seçilmiş kartlarda (alqış, gülüş) saxlanılır
         card_of = {c["id"]: c.get("cardId") for c in q["clips"] if c["track"] == "v1"}
@@ -2539,6 +2543,43 @@ def cmd_choose(a: argparse.Namespace) -> None:
     _remember_choice(a.pid, plan, Path(a.plan).stem)
 
 
+def cmd_music(a: argparse.Namespace) -> None:
+    """Musiqini Claude özü seçir (soruşulmur): profil/növə görə sorğu, Freesound YALNIZ CC0, 2–3 namizəd + dinləmə nümunələri +
+    plana hazır `music` hissəsi (kurs dərsi — yalnız açılış və sonluq, çox yumşaq)."""
+    from montaj import music, quality
+
+    p = store.load(a.pid)
+    br = p.get("brand") or {}
+    prof = expert_profile(br["name"]) if br.get("name") else None
+    vt = (p.get("videoType") or {}).get("type")
+    total = sum(c["srcOut"] - c["srcIn"] for c in node_tl("videoClips", node_tl("migrate", p))) or float(
+        max((m.get("duration") or 0) for m in p["media"]) if p["media"] else 60)
+    query, avoid = (a.query, music.AVOID) if a.query else music.auto_query(prof, vt, ", ".join((p.get("options") or {}).get("goal") or []))
+    lo = 20 if vt == 15 else max(20, min(total, 60) * 0.6)
+    hi = 180 if vt == 15 else max(60, total + 30)
+    try:
+        sounds = music.search(query, avoid, lo, hi, a.n)
+    except RuntimeError as e:
+        raise UserError(str(e), "FREESOUND_API_KEY mühitə əlavə olunmalıdır (pulsuz) — açar chat-a yazılmır.") from None
+    if not sounds:
+        raise UserError(f"“{query}” üçün CC0 musiqi tapılmadı.", "--query ilə başqa ingiliscə sorğu verin (məs. 'happy ukulele').")
+    done = music.download(sounds, out_dir(a.pid) / "musiqi")
+    try:
+        speech = _latest_render(a.pid)
+    except UserError:
+        m = next((x for x in p["media"] if x.get("hasAudio") and x.get("hasVideo")), None)
+        speech = store.project_dir(a.pid) / m["file"] if m else None
+    print(f"sorğu: “{query}” (yalnız CC0; qaçınılan: {', '.join(avoid[:4])}…)")
+    for d in done:
+        prev = out_dir(a.pid) / f"musiqi_{d['n']}.m4a"
+        if speech:
+            quality.music_preview(speech, Path(d["file"]), prev, 20, 0.12)
+        print(f"{d['n']}: {d['name']} — {float(d['duration'] or 0):.0f} s, {d['license']} → dinləmə {prev if speech else '—'}")
+    tpl = music.placement(vt, total)
+    print("plan üçün (seçilən faylı qoy):", json.dumps([{**t, "file": done[0]["file"]} for t in tpl], ensure_ascii=False))
+    print("qərar mesajında 2–3 nümunəni göndər (“musiqi 1/2/3”); necə qoyulacağını SORUŞMA — yerləşmə standartdır")
+
+
 def cmd_music_preview(a: argparse.Namespace) -> None:
     """Hər musiqi faylı üçün qısa dinləmə nümunəsi: danışığın başlanğıcı + musiqi (danışıqda azalır)."""
     from montaj import quality
@@ -2629,6 +2670,10 @@ def main(argv: list[str] | None = None) -> int:
     sk.add_argument("--kind", choices=["video", "image"], default="video")
     sk.add_argument("--n", type=int, default=8)
     sk.add_argument("--source", choices=["mixkit", "pixabay", "wikimedia"])
+    mu = sub.add_parser("music", help="musiqi: Claude seçir (Freesound CC0), 2–3 namizəd + dinləmə + plan hissəsi")
+    mu.add_argument("pid")
+    mu.add_argument("--query", help="istəyə görə ingiliscə sorğu (standart — profil/növə görə)")
+    mu.add_argument("--n", type=int, default=3)
     cf = sub.add_parser("captions-file", help="altyazı faylı SRT/VTT (sayt pleyeri üçün)")
     cf.add_argument("pid")
     cf.add_argument("--format", choices=["srt", "vtt", "both"], default="both")
@@ -2768,7 +2813,7 @@ def main(argv: list[str] | None = None) -> int:
         {"new": cmd_new, "storyboard": cmd_storyboard, "edit": cmd_edit, "apply": cmd_apply,
          "render": cmd_render, "export": cmd_export, "editor": cmd_editor,
          "apply-edits": cmd_apply_edits, "set-client": cmd_set_client, "plan": cmd_plan, "looks": cmd_looks,
-         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "highlights": cmd_highlights, "extract": cmd_extract, "mg-scan": cmd_mg_scan, "tale-plan": cmd_tale_plan, "carousel-plan": cmd_carousel_plan, "types": cmd_types, "event-scan": cmd_event_scan, "event-plan": cmd_event_plan, "qa-plan": cmd_qa_plan, "duo": cmd_duo, "multicam": cmd_multicam, "slowmo": cmd_slowmo, "bg": cmd_bg, "captions-file": cmd_captions_file, "stock": cmd_stock, "intake": cmd_intake, "bg-lib": cmd_bg_lib, "set-type": cmd_set_type, "carousel": cmd_carousel, "fix-word": cmd_fix_word,
+         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "highlights": cmd_highlights, "extract": cmd_extract, "mg-scan": cmd_mg_scan, "tale-plan": cmd_tale_plan, "carousel-plan": cmd_carousel_plan, "types": cmd_types, "event-scan": cmd_event_scan, "event-plan": cmd_event_plan, "qa-plan": cmd_qa_plan, "duo": cmd_duo, "multicam": cmd_multicam, "slowmo": cmd_slowmo, "bg": cmd_bg, "captions-file": cmd_captions_file, "music": cmd_music, "stock": cmd_stock, "intake": cmd_intake, "bg-lib": cmd_bg_lib, "set-type": cmd_set_type, "carousel": cmd_carousel, "fix-word": cmd_fix_word,
          "variants": cmd_variants, "choose": cmd_choose, "music-preview": cmd_music_preview}[a.cmd](a)
     except UserError as err:
         print(f"XƏTA: {err.message}\nNƏ ETMƏLİ: {err.hint}", file=sys.stderr)
