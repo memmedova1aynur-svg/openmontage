@@ -1402,3 +1402,25 @@ def test_music_auto_cc0_and_course_placement(tmp_path, monkeypatch):
     q = session.apply_plan(pid, store.load(pid), plan)
     m1 = sorted((c for c in q["clips"] if c["track"] == "m1"), key=lambda c: c["start"])
     assert len(m1) == 2 and abs(m1[0]["srcOut"] - m1[0]["srcIn"] - 6.2) < 0.05 and m1[1]["start"] > 0
+
+
+def test_music_mixkit_fallback(monkeypatch):
+    """Mixkit musiqisi (açarsız): kateqoriya səhifəsindən ad, müəllif, etiket, müddət; piano/yavaş və bayram mövzusu atılır;
+    Freesound açarı yoxdursa yalnız Mixkit."""
+    from montaj import music
+
+    def card(mid, title, tags, dur):
+        links = "".join(f'<a class="meta-links__link" data-x="1" href="/free-stock-music/tag/{t}/">{t}</a>' for t in tags)
+        return (f'<div class="item-grid__item"><div data-audio-player-item-id-value="{mid}" x="1"></div>'
+                f'<h2 class="item-grid-card__title"> {title} </h2><p class="item-grid-music-preview__author"> by A B </p>{links}'
+                f'<div class="item-grid-music-preview__meta-time" data-test-id="duration"> {dur} </div></div>')
+    html = card(1, "Classical vibes", ["Piano", "Slow"], "1:53") + card(2, "Happy Christmas", ["Happy"], "2:00") + \
+        card(3, "Smile", ["Happy", "Fun"], "1:37") + card(4, "Tiny", ["Happy"], "0:10")
+    got = music.mixkit_search("kids happy", music.AVOID, 20, 200, 3, get=lambda u: html)
+    assert [g["id"] for g in got] == ["mixkit-3"] and got[0]["duration"] == 97 and got[0]["username"] == "A B"
+    assert got[0]["previews"]["preview-hq-mp3"].endswith("/music/3/3.mp3") and "qeydi tələb etmir" in got[0]["license"]
+    assert music._mixkit_pages("kids happy ukulele")[0] == "children/"
+    monkeypatch.delenv("FREESOUND_API_KEY", raising=False)
+    monkeypatch.setattr(music, "mixkit_search", lambda *a, **k: [{"id": "mixkit-9", "source": "mixkit"}])
+    tracks, notes = music.find("kids", music.AVOID, 20, 200, 3)
+    assert tracks == [{"id": "mixkit-9", "source": "mixkit"}] and any("yalnız Mixkit" in x for x in notes)

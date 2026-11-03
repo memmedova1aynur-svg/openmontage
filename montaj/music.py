@@ -1,6 +1,7 @@
 """Musiqi — Claude özü seçir, istifadəçidən "necə qoyum" soruşulmur.
 
-* Mənbə: Freesound, YALNIZ CC0 (müəllif qeydi tələb etmir) — `FREESOUND_API_KEY` (pulsuz).
+* Mənbələr: Freesound — YALNIZ CC0 (`FREESOUND_API_KEY`, pulsuz); Mixkit — Stock Music Free License (kommersiya pulsuz,
+  müəllif qeydi tələb etmir; açar lazım deyil). Freesound-da kifayət qədər uyğun trek yoxdursa və ya açar yoxdursa — Mixkit.
 * Sorğu avtomatik: müştəri profilinin `music` sahəsi (query, avoid), yoxdursa video növü / mövzu üzrə standart.
   İstifadəçi qaydası (2026-11-01, bütün müştərilər): piano / yavaş / kədərli YOX; uşaq inkişafı mövzusunda şən kids,
   təhsil reklamında educational/corporate.
@@ -19,7 +20,7 @@ from pathlib import Path
 from typing import Any
 
 API = "https://freesound.org/apiv2/search/text/"
-AVOID = ["piano", "sad", "slow", "dark", "horror", "ambient drone"]
+AVOID = ["piano", "sad", "slow", "dark", "horror", "ambient drone", "christmas", "holiday", "halloween", "xmas"]  # bayram mövzusu da yox
 CC0 = 'license:"Creative Commons 0"'
 
 # video növü → standart sorğu (müştəri profilində `music.query` varsa o üstündür)
@@ -71,6 +72,72 @@ def search(query: str, avoid: list[str], min_dur: float, max_dur: float, n: int 
     return out
 
 
+MIXKIT = "https://mixkit.co/free-stock-music/"
+MIXKIT_LICENSE = "Mixkit Stock Music Free License (kommersiya istifadəsi pulsuz, müəllif qeydi tələb etmir)"
+# sorğudakı söz → Mixkit kateqoriyası (janr və ya əhval)
+MIXKIT_PAGES = [(("kids", "children", "fairy", "ukulele"), "children/"), (("corporate", "educational", "inspiring", "technology", "soft"), "corporate-music/"),
+                (("happy", "upbeat", "positive", "funny", "motivational", "acoustic", "warm"), "mood/happy/")]
+
+
+def _mixkit_pages(query: str) -> list[str]:
+    q = query.lower()
+    pages = [pg for words, pg in MIXKIT_PAGES if any(w in q for w in words)]
+    return list(dict.fromkeys(pages + ["mood/happy/"]))
+
+
+def _dur(t: str) -> float:
+    m = re.match(r"\s*(\d+):(\d\d)", t or "")
+    return int(m.group(1)) * 60 + int(m.group(2)) if m else 0.0
+
+
+def mixkit_search(query: str, avoid: list[str], min_dur: float, max_dur: float, n: int = 3,
+                  get=None) -> list[dict[str, Any]]:
+    """Mixkit musiqisi (açar lazım deyil): kateqoriya səhifəsindən treklər — ad, müəllif, etiketlər, müddət; piano/yavaş atılır."""
+    get = get or (lambda u: urllib.request.urlopen(urllib.request.Request(u, headers={"User-Agent": "Mozilla/5.0"}), timeout=30).read().decode("utf-8", "ignore"))
+    out, seen = [], set()
+    bad = [w.split()[0].lower() for w in avoid]
+    for pg in _mixkit_pages(query):
+        html = get(MIXKIT + pg)
+        for part in html.split('data-audio-player-item-id-value="')[1:]:
+            mid = part.split('"', 1)[0]
+            if not mid.isdigit() or mid in seen:
+                continue
+            seen.add(mid)
+            title = re.search(r'item-grid-card__title">\s*([^<]+?)\s*<', part)
+            author = re.search(r'music-preview__author">\s*by\s*([^<]+?)\s*<', part)
+            tags = [x.lower() for x in re.findall(r'meta-links__link"[^>]*href="/free-stock-music/[^"]*">([^<]+)<', part.split("item-grid__item")[0])]
+            dur = _dur((re.search(r'data-test-id="duration">\s*([\d:]+)', part) or [None, ""])[1])
+            name = (title.group(1) if title else f"mixkit {mid}").strip()
+            text = " ".join(tags) + " " + name.lower()
+            if any(re.search(rf"\b{re.escape(w)}\b", text) for w in bad) or not (min_dur <= dur <= max_dur):
+                continue
+            out.append({"id": f"mixkit-{mid}", "name": name, "duration": dur, "username": author.group(1).strip() if author else "Mixkit",
+                        "tags": tags, "source": "mixkit", "license": MIXKIT_LICENSE,
+                        "previews": {"preview-hq-mp3": f"https://assets.mixkit.co/music/{mid}/{mid}.mp3"},
+                        "page": MIXKIT + pg})
+            if len(out) >= n:
+                return out
+    return out
+
+
+def find(query: str, avoid: list[str], min_dur: float, max_dur: float, n: int = 3) -> tuple[list[dict[str, Any]], list[str]]:
+    """Freesound (CC0, açar varsa) + Mixkit (açarsız) — birlikdə n namizəd. Qaytarır: (treklər, qeydlər)."""
+    notes, out = [], []
+    if os.environ.get("FREESOUND_API_KEY"):
+        try:
+            out += search(query, avoid, min_dur, max_dur, n)
+        except Exception as e:  # noqa: BLE001
+            notes.append(f"Freesound işləmədi: {str(e)[:100]}")
+    else:
+        notes.append("FREESOUND_API_KEY yoxdur — yalnız Mixkit")
+    if len(out) < n:
+        try:
+            out += mixkit_search(query, avoid, min_dur, max_dur, n - len(out))
+        except Exception as e:  # noqa: BLE001
+            notes.append(f"Mixkit işləmədi: {str(e)[:100]}")
+    return out[:n], notes
+
+
 def download(sounds: list[dict[str, Any]], dst: Path) -> list[dict[str, Any]]:
     dst.mkdir(parents=True, exist_ok=True)
     done = []
@@ -82,9 +149,11 @@ def download(sounds: list[dict[str, Any]], dst: Path) -> list[dict[str, Any]]:
         if not f.is_file():
             with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "montaj"}), timeout=60) as r:
                 f.write_bytes(r.read())
+        mk = s.get("source") == "mixkit"
         done.append({"n": i, "file": str(f), "id": s["id"], "name": s.get("name"), "duration": s.get("duration"),
-                     "author": s.get("username"), "license": "CC0 (Freesound)",
-                     "url": f"https://freesound.org/people/{s.get('username', '')}/sounds/{s['id']}/"})
+                     "author": s.get("username"), "source": "mixkit" if mk else "freesound",
+                     "license": s["license"] if mk else "CC0 (Freesound)",
+                     "url": s.get("page") if mk else f"https://freesound.org/people/{s.get('username', '')}/sounds/{s['id']}/"})
     (dst / "manifest.json").write_text(json.dumps(done, ensure_ascii=False, indent=1), encoding="utf-8")
     return done
 
