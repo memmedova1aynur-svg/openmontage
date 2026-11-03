@@ -49,8 +49,9 @@ bölümlər ondan başlayır, kurs boyu eyni görünüş.
   seçimlər üçün `choice` (məs. biberon seçimləri: 2–3 variant, uyğunu yaşıl yanır + “ding”), mövzu üzrə hazır görüntü (`stock` →
   `add-broll`, qısa insert və ya kənarda). Sıfırdan qrafik dizayn yox — hazır, pulsuz və müəllif qeydi tələb etməyən material.
   Mətn yalnız Suranın danışığından; tibbi məlumatı danışıqdakından daha qəti etmə.
-- Reels effekti yoxdur: zoom, tez-tez kəsim, whoosh/pop, hook, rəng/üslub dəyişkənliyi yoxdur. Musiqi — istəsəm, yalnız açılış/
-  bağlanışda çox yumşaq.
+- Reels effekti yoxdur: zoom, tez-tez kəsim, whoosh/pop, hook, rəng/üslub dəyişkənliyi yoxdur.
+- Musiqi — soruşma: `music <pid>` özü seçir (yalnız CC0); dərs boyu musiqi yoxdur, yalnız açılışda və sonda çox yumşaq.
+  Üslub mərhələsində 2–3 nümunəni göstər, mən bir dəfə seçirəm — sonra bütün bölümlərdə eyni musiqi.
 - `render` → `verify` → `words`; `!` olanları düzəlt.
 
 ## 6. Təhvil
