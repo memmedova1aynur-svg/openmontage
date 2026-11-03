@@ -1,0 +1,25 @@
+{
+  "name": "Xəyyam Hüseynov",
+  "status": "active",
+  "palette": {
+    "family": "tünd meşə yaşılı (qaraya yaxın), laym / açıq neon-yaşıl vurğu, ağ mətn, krem-ağ kartlar"
+  },
+  "video_types": "kameraya danışıq, reklam, qarışıq",
+  "cautions": [
+    "Vizual istinad (istifadəçi, 2026-11-03): Instagram səhifəsi tünd yaşıl fon + laym vurğu; ağ yuvarlaq künclü kartlar/qutular, laym 'pill' düymələr, laym vurğulu söz (marker effekti), qalın sans-serif başlıq, bəzən italik serif vurğu sözü. Altyazı, kart, qutu bu üsluba uyğun.",
+    "Ümumi istifadəçi qaydası (2026-11-01, bütün müştərilər, soruşmadan): rəng həmişə looks C (təmiz-neytral). Musiqi: piano/yavaş YOX (yalnız CC0). B-roll başı örtmür: bölünmüş ekran — danışan yuxarıda, B-roll sinədən aşağı (pip y≈0.70, tam en), həmin anda altyazı başın üstündə (y≈0.17). Arxa fon bulanıqlaşdırılmır və qaraldılmır — fon orijinal qalır. Danışılmayan boş saniyələr (pauzalar ≥0.45 s) kəsilir, söz kəsilmir; kəsimdən sonra söz təkrarı olmadığını yoxla. Güzgü çevirmə (hflip) yoxdur.",
+    "İş qaydası: videolar bir-bir render edilir və göndərilir; hər birindən əvvəl storyboard."
+  ],
+  "theme_source": "istifadəçinin göndərdiyi 16 nümunə şəkil (tünd yaşıl + laym)",
+  "theme": {
+    "primary": "#0F3B2E",
+    "primaryDeep": "#082219",
+    "accent": "#C8F56A",
+    "accentSoft": "#F4F7EE",
+    "text": "#FFFFFF",
+    "onAccent": "#0B2A20",
+    "cardAlpha": 0.95
+  },
+  "style": {},
+  "history": []
+}
