@@ -267,12 +267,68 @@ def split_graph(sp: dict[str, Any], W: int, H: int, tag: str) -> str:
             f"drawbox=y={h1 - 2}:w=iw:h=4:color=white@0.85:t=fill")
 
 
+LAYOUT_DEFAULT = {"speaker": "left", "width": 0.42, "bg": "#EFEAE4", "zoom": 1.0, "margin": 0.03}  # bg: rəng (standart, sakit) və ya "blur"
+
+
+def layout_geometry(lay: dict[str, Any], W: int, H: int) -> dict[str, int]:
+    """Dərs kadrı: danışanın paneli (PW x H) və onun x mövqeyi; qalan sahə — qrafika/animasiya üçün."""
+    L = {**LAYOUT_DEFAULT, **(lay or {})}
+    pw = _even(W * min(0.8, max(0.25, float(L["width"]))))
+    mg = int(round(W * float(L["margin"])))
+    x = {"left": mg, "right": W - pw - mg, "center": (W - pw) // 2}.get(L["speaker"], mg)
+    return {"pw": pw, "x": max(0, min(W - pw, x))}
+
+
+def layout_side_center(lay: dict[str, Any]) -> float:
+    """Qrafika üçün boş tərəfin mərkəzi (kadr eninin payı) — plan qrafikaları üçün x."""
+    L = {**LAYOUT_DEFAULT, **(lay or {})}
+    w, mg = float(L["width"]), float(L["margin"])
+    if L["speaker"] == "right":
+        return round((1 - w - mg) / 2, 3)
+    if L["speaker"] == "center":
+        return 0.5
+    return round(mg + w + (1 - mg - w) / 2, 3)
+
+
+def _layout_chain(c: dict[str, Any], m: dict[str, Any], W: int, H: int, mirror: bool, adj: dict[str, Any], tag: str) -> str:
+    """Şaquli (və ya istənilən) çəkilişi dərs kadrına yerləşdirir: danışan paneldə, arxada bulanıq kadr və ya rəng."""
+    L = {**LAYOUT_DEFAULT, **(c.get("layout") or {})}
+    g = layout_geometry(L, W, H)
+    pw, x = g["pw"], g["x"]
+    a = pw / H
+    sw, sh = float(m.get("width") or W), float(m.get("height") or H)
+    fr = c.get("frame") or {}
+    k0 = (fr.get("keys") or [{}])[0] if fr.get("mode") in ("auto", "manual") else {}
+    cx, cy = float(k0.get("cx", 0.5)), float(k0.get("cy", 0.42))
+    z = max(1.0, float(L.get("zoom") or 1))
+    if sw / sh > a:
+        ch, cw = sh / z, sh / z * a
+    else:
+        cw, ch = sw / z, sw / z / a
+    cw, ch = _even(cw), _even(ch)
+    crop = (f"crop={cw}:{ch}:{max(0, min(sw - cw, sw * cx - cw / 2)):.0f}:{max(0, min(sh - ch, sh * cy - ch / 2)):.0f}")
+    fg = [crop] + (["hflip"] if mirror else []) + color_filters(adj) + [f"scale={pw}:{H}:flags=lanczos"] + sharpen_filter(adj)
+    bg = L.get("bg") or "blur"
+    if isinstance(bg, str) and bg.startswith("#"):
+        return ",".join(fg) + f",pad={W}:{H}:{x}:0:color=0x{bg.lstrip('#')}"
+    sig = max(8.0, 40.0 * W / 1920)
+    return (f"split=2[{tag}fa][{tag}ba];[{tag}ba]scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},"
+            f"gblur=sigma={sig:.1f},eq=brightness=-0.07:saturation=0.8[{tag}bg];[{tag}fa]{','.join(fg)}[{tag}fg];"
+            f"[{tag}bg][{tag}fg]overlay={x}:0")
+
+
 def video_chain(c: dict[str, Any], m: dict[str, Any], W: int, H: int, fps_str: str,
                 mirror_all: bool, frames: int, tag: str = "x") -> str:
     """Bir video klip üçün filtr zənciri (input → [W x H], yuv420p)."""
     f: list[str] = []
     if m.get("hdr"):
         f.append(HDR_TO_SDR)
+    if c.get("layout"):  # dərs kadrı: danışan paneldə (kadraj yerinə)
+        adj = c.get("adjust") or {}
+        f.append(_layout_chain(c, m, W, H, bool(adj.get("mirror")) ^ bool(mirror_all), adj, tag))
+        f.append(f"setsar=1,fps={fps_str},setpts=PTS-STARTPTS,tpad=stop_mode=clone:stop_duration=1,trim=end_frame={frames},"
+                 f"setpts=PTS-STARTPTS,format=yuv420p")
+        return ",".join(f)
     if c.get("split"):  # iki nəfər: kadraj əvəzinə iki pəncərə
         f.append(split_graph(c["split"], W, H, tag))
         c = {**c, "frame": None}
@@ -350,6 +406,8 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
         c = v["clip"]
         m = with_bg(media[c["media"]])
         k = add_input(m, float(c["srcIn"]), v["dur"])
+        if project.get("layout") and not c.get("broll") and not c.get("split") and m.get("hasVideo") and not m.get("isImage"):
+            c = {**c, "layout": project["layout"]}  # dərs kadrı (B-roll tam ekran qalır)
         filters.append(f"[{k}:v]{video_chain(c, m, W, H, fps_str, mirror_all, v['frames'], tag=f'sp{i}')}[v{i}]")
         vlabels.append(f"[v{i}]")
     main = plan["main"]

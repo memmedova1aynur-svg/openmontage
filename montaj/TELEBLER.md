@@ -248,6 +248,12 @@ real danışıqda səs sinxronu və görünən keyfiyyət, iPhone Safari, Instag
 | 30.3 | Sura Malik profili: sahə (ana-körpə, laktasiya, analıq məktəbi), rəng ailəsi çəhrayı + krem, davamlılıq qaydası | ✅ | Profil |
 | 31.1 | Redaktor paneli — Studiya: ton (ailədən, dərhal önizləmə), altyazı qutu/kontur, fon (orijinal/bulanıq/kitabxana kiçik şəkillərlə), plan ölçüləri, J/L, klip yavaşlatma; seçimlər `requests`-də | ✅ | `e2e_editor_studio.mjs` (Chromium iPhone emulyasiyası, real Safari deyil) |
 | 31.2 | `apply-edits` Studiya seçimlərini icra edir (ton → tema, fon → törəmə video, plan ölçüləri, J/L, yavaşlatma) və render | ✅ | `test_editor_studio_requests` (brauzer → apply-edits → render) |
+| 32.1 | Dərs kadrı: şaquli çəkiliş 16:9-da (`layout`: danışan sol/sağ/mərkəz panel, fon rəng və ya bulanıq), qrafika boş tərəfə | ✅ | `test_lesson_layout_graphics_captions` (piksel) + Günel videosunda vizual |
+| 32.2 | Ad-titul lövhəsi (`lower`), seçim kartı (`choice`: doğru variant yaşıl ✓, şəkil data URI) + avtomatik "ding" (sintez) | ✅ | Test + vizual |
+| 32.3 | Dərs altyazısı (`preset: lesson`: sadə ağ, nazik zolaq, uzun sətir, söz-söz effekti yox), `captions-file` SRT/VTT | ✅ | Test |
+| 32.4 | `stock`: Mixkit video (açarsız), Wikimedia şəkil (yalnız CC0/PD), Pixabay (pulsuz açarla); manifest + kontakt şəkli | ✅ | Test (lisenziya süzgəci) + real axtarış ("breastfeeding" — 3 uyğun video). Pexels/Openverse bu mühitdə bağlıdır |
+| 32.5 | Altyazı lenti (ticker, sağdan sola) | ⛔ | Qurulmadı — dərsdə oxunmur; SRT/VTT + sadə zolaq tövsiyə olunur |
+
 
 
 
