@@ -381,7 +381,12 @@ def video_chain(c: dict[str, Any], m: dict[str, Any], W: int, H: int, fps_str: s
                  f"y='max(0,min(ih-oh,ih*({cy})-oh/2))'")
         push = float(fr.get("push") or 1)
         pull = float(fr.get("pull") or 1)
-        if (push > 1.005 or pull > 1.005) and m.get("width") and m.get("height"):
+        if fr.get("z0") is not None and fr.get("z1") is not None:
+            # davamlı kamera: z0 → z1 xətti (bütün video boyu bir istiqamət, kəsimlərdə miqyas eyni)
+            d = max(0.1, float(c["srcOut"]) - float(c["srcIn"]))
+            z0, z1 = float(fr["z0"]), float(fr["z1"])
+            f.append(zoom_filter(f"({z0:.5f}+{z1 - z0:.5f}*min(n_/30,{d:.3f})/{d:.3f})"))
+        elif (push > 1.005 or pull > 1.005) and m.get("width") and m.get("height"):
             # virtual kamera: push — klip boyu 1 → push (yaxınlaşma), pull — pull → 1 (uzaqlaşma); hamar (smoothstep)
             cwp, chp = _even(float(m["width"]) * bw * s), _even(float(m["height"]) * bh * s)
             d = max(0.1, float(c["srcOut"]) - float(c["srcIn"]))
@@ -651,6 +656,10 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
         else:
             filters.append(f"{''.join(labs)}amix=inputs={len(labs)}:normalize=0:duration=longest,apad,atrim=0:{total:.4f}[bus_{bus}]")
         bus_out.append(bus)
+    if project.get("speechChain") and "speech" in buses:  # danışıq səviyyəsinin bərabərləşdirilməsi (zəif hecalar eşidilsin)
+        filters.append(f"[bus_speech]{project['speechChain']},apad,atrim=0:{total:.4f}[bus_speechL]")
+        bus_out = [b if b != "speech" else "speechL" for b in bus_out]
+        buses["speechL"] = buses.pop("speech")
     if mix.get("duck") and "music" in buses and ("speech" in buses or "voice" in buses):
         key = "speech" if "speech" in buses else "voice"
         filters.append(f"[bus_{key}]asplit=2[bk_main][bk_side]")
