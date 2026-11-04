@@ -51,8 +51,9 @@ APPROACHES: dict[str, dict[str, Any]] = {
     "M13": {"name": "Hərəkətli kartlar", "what": "səhifə-səhifə mətn/qrafika; video-karusel", "engine": ["carousel-plan", "carousel"],
             "status": "partial", "gaps": "ekspertsiz (yalnız kart) səhifələr ayrıca alət deyil"},
     "M14": {"name": "Təlim dərsi montajı", "what": "üfüqi, sakit; dərsin məntiqi ardıcıllığı; Reels ritmi yoxdur",
-            "engine": ["new --aspect 16:9", "cut", "plan: captions, section"], "status": "partial",
-            "gaps": "kursun bölümləri arasında eyni üslubun avtomatik ötürülməsi yoxdur"},
+            "engine": ["new --type 15", "cut", "plan: layout (şaquli çəkiliş 16:9-da), lower (ad-titul), choice (+ding), list, card",
+                       "captions preset lesson", "captions-file (SRT/VTT)", "stock (hazır görüntü)"], "status": "partial",
+            "gaps": "kursun bölümləri arasında eyni üslub plan şablonu ilə ötürülür (avtomatik deyil)"},
 }
 
 # ---------------------------------------------------------------------------
@@ -148,9 +149,12 @@ TYPES: dict[int, dict[str, Any]] = {
          "rules": ["graphic_numbers_spoken"],
          "notes": ["Demədiyi nəticə montajla yaradılmır", "Rəyin konteksti qorunur"]},
     15: {"name": "Saytda yerləşdirilən modul təlim dərsi", "short": "Modul təlim dərsi (üfüqi)", "family": "seminar",
-         "approaches": ["M14", "M03"], "status": "partial", "gaps": "bölümlər arası eyni üslub avtomatik ötürülmür", "aspect": "16:9",
-         "variants": [("M14", "Sakit dərs: başlıq + altyazı"), ("M14+M03", "Dərs + izah qrafikası"), ("M14", "Minimal (altyazısız)")],
-         "commands": ["new --aspect 16:9", "storyboard", "retakes", "cut", "plan", "render", "verify"],
+         "approaches": ["M14", "M03"], "status": "partial", "aspect": "16:9",
+         "gaps": "bölümlər arası eyni üslub plan şablonu ilə (kurs_sablon.json) — avtomatik deyil; altyazı lenti (ticker) yoxdur",
+         "variants": [("M14", "Sakit dərs: ad-titul lövhəsi + sadə altyazı"), ("M14+M03", "Dərs + yan paneldə izah (siyahı, seçim kartı)"),
+                      ("M14+M04", "Dərs + mövzu üzrə hazır görüntülər (stok B-roll)")],
+         "commands": ["new --type 15 --link ... --link ... (üfüqi: mənbə ölçüsü, 4K qalır)", "storyboard", "retakes", "cut", "stock", "plan: layout, lower, choice, captions lesson",
+                      "render", "verify", "captions-file"],
          "rules": ["source_order", "horizontal"],
          "notes": ["Hook yoxdur, Reels ritmi tətbiq edilmir", "Üfüqi dərs şaquliyə çevrilmir"]},
     16: {"name": "Qrafika ağırlıqlı izah (motion graphics)", "short": "Motion graphics (data, IT)", "family": "qrafika",

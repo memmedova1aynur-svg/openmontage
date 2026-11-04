@@ -378,3 +378,117 @@ def test_reframe_suggest_logic():
     assert any("Üz tapılmadı" in w for w in suggest(m, 0, 1, "9:16", 1080, [{"t": 0, "faces": []}])["warnings"])
     assert output_size({"width": 1920, "height": 1080}, "9:16") == (608, 1080)
     assert output_size({"width": 3840, "height": 2160}, "9:16") == (1080, 1920)
+
+
+# --- Drive etibarlılığı: kəsilmədə davam, yarımçıq fayl, Google xəbərdarlıqları, qovluq -----------------------
+
+class _FlakyDrive(http.server.BaseHTTPRequestHandler):
+    payload = b""
+    mode = "ok"
+    hits: list = []
+
+    def _html(self, body: bytes, code: int = 200):
+        self.send_response(code)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def do_GET(self):  # noqa: N802
+        rng = self.headers.get("Range")
+        type(self).hits.append(rng)
+        m = type(self).mode
+        if self.path.startswith("/folder"):
+            fid = "F" * 25
+            body = (f'<div class="flip-entry" id="entry-{"B" * 25}"><a href="https://drive.google.com/file/d/{"B" * 25}/view">'
+                    f'<div class="flip-entry-title">2 esas.mp4</div></a></div>'
+                    f'<div class="flip-entry" id="entry-{fid}"><a href="https://drive.google.com/drive/folders/{fid}">'
+                    f'<div class="flip-entry-title">alt qovluq</div></a></div>'
+                    f'<div class="flip-entry" id="entry-{"A" * 25}"><a href="https://drive.google.com/file/d/{"A" * 25}/view">'
+                    f'<div class="flip-entry-title">1 giris.mp4</div></a></div>').encode()
+            return self._html(body)
+        if m == "quota":
+            return self._html(b"<html>Sorry, you can't view or download this file at this time. Too many users have viewed or downloaded this file recently.</html>")
+        if m == "blocked":
+            return self._html(b"<html>Our systems have detected unusual traffic from your computer network.</html>", 429)
+        data = type(self).payload
+        start = int(rng.split("=")[1].split("-")[0]) if rng else 0
+        part = data[start:]
+        self.send_response(206 if rng else 200)
+        self.send_header("Content-Type", "video/mp4")
+        self.send_header("Content-Length", str(len(part)))
+        if rng:
+            self.send_header("Content-Range", f"bytes {start}-{len(data) - 1}/{len(data)}")
+        self.send_header("Content-Disposition", 'attachment; filename="v.mp4"')
+        self.end_headers()
+        if m == "cut" and not rng:
+            self.wfile.write(part[: len(part) // 3])  # bağlantı ötürmənin ortasında kəsilir
+            self.wfile.flush()
+            self.connection.shutdown(2)
+            return
+        if m == "short":
+            self.wfile.write(part[: len(part) // 2])  # həmişə yarımçıq
+            self.wfile.flush()
+            self.connection.shutdown(2)
+            return
+        self.wfile.write(part)
+
+    def log_message(self, *a):
+        pass
+
+
+@pytest.fixture
+def flaky(monkeypatch):
+    from montaj import drive
+
+    monkeypatch.setattr(drive, "BACKOFF", 0.01)
+    monkeypatch.setattr(drive, "RETRIES", 2)
+    monkeypatch.delenv("GOOGLE_API_KEY", raising=False)
+    monkeypatch.delenv("MONTAJ_DRIVE_API_KEY", raising=False)
+    _FlakyDrive.payload = bytes(range(256)) * 4000
+    _FlakyDrive.hits = []
+    srv = http.server.ThreadingHTTPServer(("127.0.0.1", 0), _FlakyDrive)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    monkeypatch.setattr(drive, "FOLDER_URL", f"http://127.0.0.1:{srv.server_port}/folder")
+    yield f"http://127.0.0.1:{srv.server_port}/download"
+    srv.shutdown()
+
+
+LINK = "https://drive.google.com/file/d/PUBLICPUBLICPUBLICPUBLIC/view"
+
+
+def test_drive_resumes_after_cut(flaky, tmp_path):
+    from montaj import drive
+
+    _FlakyDrive.mode = "cut"
+    out, _ = drive.download(LINK, tmp_path, base_url=flaky)
+    assert out.read_bytes() == _FlakyDrive.payload
+    assert any(h and h.startswith("bytes=") for h in _FlakyDrive.hits), "Range ilə qaldığı yerdən davam etməlidir"
+
+
+def test_drive_rejects_truncated(flaky, tmp_path):
+    from montaj import drive
+    from montaj.errors import UserError
+
+    _FlakyDrive.mode = "short"
+    with pytest.raises(UserError, match="yarımçıq"):
+        drive.download(LINK, tmp_path, base_url=flaky)
+    assert not list(tmp_path.glob("*.part")), "yarımçıq fayl qalmamalıdır"
+
+
+@pytest.mark.parametrize("mode,msg", [("quota", "endirmə limitini"), ("blocked", "müvəqqəti məhdudlaşdırıb")])
+def test_drive_google_warnings(flaky, tmp_path, mode, msg):
+    from montaj import drive
+    from montaj.errors import UserError
+
+    _FlakyDrive.mode = mode
+    with pytest.raises(UserError, match=msg) as e:
+        drive.download(LINK, tmp_path, base_url=flaky)
+    assert "GOOGLE_API_KEY" in e.value.hint
+
+
+def test_drive_folder_expand(flaky):
+    from montaj import drive
+
+    links = drive.expand(["https://drive.google.com/drive/folders/1AbCdEfGhIjKlMnOpQrStUvWxYz0?usp=sharing", LINK])
+    assert links == [f"https://drive.google.com/file/d/{'A' * 25}/view", f"https://drive.google.com/file/d/{'B' * 25}/view", LINK]

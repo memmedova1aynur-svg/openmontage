@@ -63,9 +63,9 @@ def test_session_cli_bad_link_message(tmp_path, monkeypatch, capsys):
     from montaj import session
 
     monkeypatch.setenv("MONTAJ_DATA_DIR", str(tmp_path / "data"))
-    rc = session.main(["new", "--title", "X", "--link", "https://drive.google.com/drive/folders/1AbCdEfGhIjKlMnOpQrStUvWxYz0"])
+    rc = session.main(["new", "--title", "X", "--link", "https://example.com/file/d/1AbCdEfGhIjKlMnOpQrStUvWxYz0"])
     err = capsys.readouterr().err
-    assert rc == 2 and "Qovluq linki" in err and "NƏ ETMƏLİ" in err
+    assert rc == 2 and "Drive linki deyil" in err and "NƏ ETMƏLİ" in err
 
 
 def test_editor_page_and_edits_roundtrip(tmp_path, monkeypatch):
@@ -168,14 +168,15 @@ def test_plan_look_choice_and_manual_color_kept(tmp_path, monkeypatch):
 
 
 def test_looks_sheet(tmp_path, monkeypatch):
-    """`looks`: 3 kadr × (Orijinal, A, B, C) müqayisə şəkli; aralıq fayllar silinir."""
+    """`looks`: 3 kadr × (Orijinal + bütün şablonlar, D yalnız qaranlıqda) müqayisə şəkli; aralıq fayllar silinir."""
     pid = _fixture(tmp_path, monkeypatch)
     from montaj import media, session
 
     assert session.main(["looks", pid]) == 0
     sheet = tmp_path / "out" / pid / "reng_variantlari.jpg"
     info = media.probe(sheet)
-    assert info["width"] == 4 * 360 and info["height"] == 3 * 202, "3 sətir (640x360 mənbə → 360x202)"
+    cols = 1 + len([k for k in session.LOOKS if k != "D"])  # orijinal + şablonlar (D yalnız qaranlıq kadrda)
+    assert info["width"] == cols * 360 and info["height"] == 3 * 202, "3 sətir (640x360 mənbə → 360x202)"
     assert not list((tmp_path / "out" / pid).glob("reng_*.png"))
 
 
@@ -1282,3 +1283,144 @@ def test_editor_studio_requests(tmp_path, monkeypatch):
     assert q["background"] and next(iter(q["background"].values()))["spec"]["lib"] == ed["requests"]["bg"]["lib"]
     assert len(session.node_tl("videoClips", q)) >= 2
     assert session.main(["render", pid]) == 0
+
+
+def test_lesson_layout_graphics_captions(tmp_path, monkeypatch, capsys):
+    """Dərs videosu: şaquli çəkiliş 16:9 kadrda (danışan solda, sağda rəngli sahə), ad-titul lövhəsi, seçim kartı (doğru
+    variant `at` anında) + avtomatik "ding", sadə dərs altyazısı (söz-söz effekti yox), SRT/VTT faylı; stok axtarışında
+    yalnız qeyd tələb etməyən lisenziyalar."""
+    import subprocess
+
+    import numpy as np
+
+    from montaj import graphics, render, stock
+
+    g = render.layout_geometry({"speaker": "left", "width": 0.42}, 1920, 1080)
+    assert g["pw"] == 806 and g["x"] == 58
+    assert render.layout_side_center({"speaker": "left"}) > 0.6 and render.layout_side_center({"speaker": "right"}) < 0.4
+    assert graphics.state_points({"type": "choice", "at": 1.2, "srcIn": 0, "srcOut": 4}) == [0.0, 1.2]
+    assert graphics.state_points({"type": "caption", "plain": True, "words": [{"s": 0.5}], "srcIn": 0, "srcOut": 2}) == [0.0]
+    img = tmp_path / "a.png"
+    from PIL import Image
+    Image.new("RGB", (8, 8), (255, 0, 0)).save(img)
+    inl = graphics._inline_images({"type": "choice", "items": [{"text": "A", "img": str(img)}]})
+    assert inl["items"][0]["img"].startswith("data:image/png;base64,")
+
+    html = '<a href="x"><video src="https://assets.mixkit.co/videos/111/111-720.mp4"></video></a>' \
+           '<source src="https://assets.mixkit.co/videos/111/111-1080.mp4"><source src="https://assets.mixkit.co/videos/222/222-360.mp4">'
+    wiki = {"query": {"pages": {"1": {"pageid": 1, "title": "File:a.jpg", "imageinfo": [{"thumburl": "u1", "extmetadata": {"LicenseShortName": {"value": "CC BY-SA 4.0"}}}]},
+                                "2": {"pageid": 2, "title": "File:b.jpg", "imageinfo": [{"thumburl": "u2", "extmetadata": {"LicenseShortName": {"value": "CC0"}}}]}}}}
+    monkeypatch.setattr(stock, "_get", lambda url, timeout=30: html.encode() if "mixkit" in url else json.dumps(wiki).encode())
+    mk = stock.mixkit("breast feeding", 5)
+    assert [m["id"] for m in mk] == ["111", "222"] and mk[0]["url"].endswith("111-1080.mp4")
+    assert [w["id"] for w in stock.wikimedia("bottle")] == ["2"], "CC BY-SA (müəllif qeydi tələb edir) seçilmir"
+    monkeypatch.delenv("PIXABAY_API_KEY", raising=False)
+    assert stock.pixabay("x") == []
+
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import session, store
+
+    _draft_and_analysis(pid)
+    assert session.main(["apply", pid]) == 0
+    p = store.load(pid)
+    p["width"], p["height"], p["aspect"] = 640, 360, "16:9"
+    store.save(pid, p, p["revision"])
+    plan = tmp_path / "ders.json"
+    plan.write_text(json.dumps({"look": None, "layout": {"speaker": "left", "bg": "#20C040"},
+                                "captions": {"enabled": True, "style": {"preset": "lesson"}},
+                                "graphics": [{"type": "lower", "text": "Sura Malik", "sub": "Mütəxəssis", "start": 0.2, "dur": 2},
+                                             {"type": "choice", "items": [{"text": "A"}, {"text": "B"}], "correct": 1, "at": 0.5, "start": 3, "dur": 2}]}))
+    assert session.main(["plan", pid, str(plan)]) == 0
+    q = store.load(pid)
+    ch = next(c for c in q["clips"] if c.get("type") == "choice")
+    assert ch["x"] > 0.6, "seçim kartı boş tərəfdə"
+    assert any(c["track"] == "s1" and c.get("media") == "sfx_ding" and abs(float(c["start"]) - 3.5) < 0.05 for c in q["clips"])
+    subs = [c for c in q["clips"] if c["track"] == "c1" and c.get("autoSub")]
+    assert subs and all(c.get("plain") and c.get("bg") == "#000000@0.45" for c in subs)
+    assert session.main(["render", pid]) == 0
+    mp4 = sorted((tmp_path / "out" / pid).glob(f"{pid}_r*.mp4"))[-1]
+    raw = subprocess.run(["ffmpeg", "-v", "error", "-ss", "1.0", "-i", str(mp4), "-frames:v", "1", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
+                         capture_output=True, check=True).stdout
+    fr = np.frombuffer(raw, np.uint8).reshape(360, 640, 3).astype(int)
+    px = fr[60, 560]
+    assert px[1] > 150 and px[0] < 90 and px[2] < 110, f"sağ tərəf — layout fonu (yaşıl): {px}"
+    capsys.readouterr()
+    assert session.main(["captions-file", pid, "--format", "srt"]) == 0
+    srt = (tmp_path / "out" / pid / f"{pid}.srt").read_text(encoding="utf-8")
+    assert srt.startswith("1\n00:00:") and " --> " in srt
+
+
+def test_output_size_keeps_landscape_quality():
+    """Üfüqi (dərs) layihə mənbənin keyfiyyətində qalır: 4K → 4K, Full HD → Full HD; şaquli Reels davranışı dəyişmir."""
+    from montaj.reframe import output_size
+
+    assert output_size({"width": 3840, "height": 2160}, "16:9") == (3840, 2160)
+    assert output_size({"width": 1920, "height": 1080}, "16:9") == (1920, 1080)
+    assert output_size({"width": 1080, "height": 1920}, "9:16") == (1080, 1920)
+    assert output_size({"width": 1920, "height": 1080}, "9:16") == (608, 1080)
+
+
+def test_music_auto_cc0_and_course_placement(tmp_path, monkeypatch):
+    """Musiqi soruşulmur: sorğu profil/növə görə, yalnız CC0, piano/yavaş atılır; kurs dərsində yalnız açılış və sonluq
+    (dərs boyu musiqi yoxdur); plan `music` siyahısı (hissə uzunluğu `dur`)."""
+    import io
+    import subprocess
+
+    from montaj import music
+
+    q, avoid = music.auto_query({"activity": "Uşaq inkişafı, laktasiya"}, 1)
+    assert "kids" in q and "piano" in avoid
+    assert music.auto_query({"music": {"query": "happy jazz"}}, 1)[0] == "happy jazz"
+    assert music.auto_query({"activity": "Uşaq inkişafı"}, 15)[0] == music.BY_TYPE[15], "kursda uşaq musiqisi yox"
+    assert music.auto_query(None, 3)[0].startswith("corporate")
+    res = {"results": [
+        {"id": 1, "name": "Sad piano", "tags": ["piano"], "license": "http://creativecommons.org/publicdomain/zero/1.0/", "duration": 60},
+        {"id": 2, "name": "Happy uke", "tags": ["ukulele"], "license": "https://creativecommons.org/licenses/by/4.0/", "duration": 60},
+        {"id": 3, "name": "Happy kids", "tags": ["kids"], "license": "http://creativecommons.org/publicdomain/zero/1.0/", "duration": 60}]}
+    seen = {}
+
+    def fake_open(req, timeout=30):
+        seen["url"] = req.full_url
+        return io.BytesIO(json.dumps(res).encode())
+    monkeypatch.setenv("FREESOUND_API_KEY", "test")
+    monkeypatch.setattr(music.urllib.request, "urlopen", fake_open)
+    got = music.search("kids happy", ["piano"], 20, 90, 3)
+    assert [s["id"] for s in got] == [3], "yalnız CC0, piano atılır"
+    assert "Creative+Commons+0" in seen["url"] or "Creative%20Commons%200" in seen["url"] or "Creative Commons 0" in seen["url"]
+    pl = music.placement(15, 300)
+    assert len(pl) == 2 and pl[0]["dur"] == 7.0 and pl[1]["start"] == 295.0 and all(x["volume"] <= 0.08 for x in pl)
+    assert music.placement(1, 40) == [{"start": 0.0, "volume": 0.12, "fadeIn": 1.2, "fadeOut": 2.0, "duck": True}]
+
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import session, store
+
+    _draft_and_analysis(pid)
+    assert session.main(["apply", pid]) == 0
+    mus = tmp_path / "m.m4a"
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "sine=f=330:d=30", "-c:a", "aac", str(mus)], check=True)
+    plan = {"look": None, "music": [{**x, "file": str(mus)} for x in music.placement(15, 6.2)]}
+    q = session.apply_plan(pid, store.load(pid), plan)
+    m1 = sorted((c for c in q["clips"] if c["track"] == "m1"), key=lambda c: c["start"])
+    assert len(m1) == 2 and abs(m1[0]["srcOut"] - m1[0]["srcIn"] - 6.2) < 0.05 and m1[1]["start"] > 0
+
+
+def test_music_mixkit_fallback(monkeypatch):
+    """Mixkit musiqisi (açarsız): kateqoriya səhifəsindən ad, müəllif, etiket, müddət; piano/yavaş və bayram mövzusu atılır;
+    Freesound açarı yoxdursa yalnız Mixkit."""
+    from montaj import music
+
+    def card(mid, title, tags, dur):
+        links = "".join(f'<a class="meta-links__link" data-x="1" href="/free-stock-music/tag/{t}/">{t}</a>' for t in tags)
+        return (f'<div class="item-grid__item"><div data-audio-player-item-id-value="{mid}" x="1"></div>'
+                f'<h2 class="item-grid-card__title"> {title} </h2><p class="item-grid-music-preview__author"> by A B </p>{links}'
+                f'<div class="item-grid-music-preview__meta-time" data-test-id="duration"> {dur} </div></div>')
+    html = card(1, "Classical vibes", ["Piano", "Slow"], "1:53") + card(2, "Happy Christmas", ["Happy"], "2:00") + \
+        card(3, "Smile", ["Happy", "Fun"], "1:37") + card(4, "Tiny", ["Happy"], "0:10")
+    got = music.mixkit_search("kids happy", music.AVOID, 20, 200, 3, get=lambda u: html)
+    assert [g["id"] for g in got] == ["mixkit-3"] and got[0]["duration"] == 97 and got[0]["username"] == "A B"
+    assert got[0]["previews"]["preview-hq-mp3"].endswith("/music/3/3.mp3") and "qeydi tələb etmir" in got[0]["license"]
+    assert music._mixkit_pages("kids happy ukulele")[0] == "children/"
+    monkeypatch.delenv("FREESOUND_API_KEY", raising=False)
+    monkeypatch.setattr(music, "mixkit_search", lambda *a, **k: [{"id": "mixkit-9", "source": "mixkit"}])
+    tracks, notes = music.find("kids", music.AVOID, 20, 200, 3)
+    assert tracks == [{"id": "mixkit-9", "source": "mixkit"}] and any("yalnız Mixkit" in x for x in notes)

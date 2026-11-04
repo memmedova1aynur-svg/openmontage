@@ -27,6 +27,15 @@ Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq,
      `--compact`. Yaxşı çəkiliş sistemin imkanlarını açır (4K → virtual multikamera, 60 fps → yavaşlatma).
    - Sorğudan sonra Drive linkini istə.
 2. **Drive linki gəlir.** Asılılıqlar yoxdursa `bash scripts/cloud-setup.sh`.
+   **Drive** (`montaj/drive.py`): tək fayl və **qovluq** linkləri qəbul olunur (qovluq ada görə sıralanıb fayllara açılır,
+   alt qovluqlar daxil deyil). Kəsilən ötürmə qaldığı yerdən davam edir, yarımçıq fayl qəbul olunmur. Alınmasa, mesaja görə:
+   - “açıq deyil” → paylaşım “Linki olan hər kəs — Baxan” olmalıdır (fayl başqasının Drive-ındadırsa, sahibi etməlidir);
+   - “endirmə limitini keçib” → Drive-da *Make a copy*, yeni surətin linki; və ya bir neçə saat sonra;
+   - “müvəqqəti məhdudlaşdırıb” → Google bulud serverinin IP-ni yoxlayır; 10–30 dəq sonra.
+   **Daimi həll** (limit/blok təkrarlanırsa): mühitə pulsuz `GOOGLE_API_KEY` (Google Cloud → APIs → Google Drive API
+   aktiv → Credentials → API key; ödəniş tələb etmir) — onda əvvəl rəsmi Drive API işlənir, anonim limitlərdən asılı deyil.
+   Açarı istifadəçidən chat-a yazmasını istəmə — mühit dəyişəni kimi əlavə olunur. Şəbəkə xətası mesajında `proksi:` hissəsi
+   varsa, bu mühitin şəbəkə siyasətidir (başqa sessiyada işləyirsə, mühit ayarlarını müqayisə et).
    `export MONTAJ_DATA_DIR=$HOME/montaj-data MONTAJ_OUT_DIR=$HOME/montaj-data/out`
 3. **Analiz.** `python -m montaj.session new --title "<ad>" --link "<link>" --client "<profil>" --type <N> [--extra <N>]
    [--goal ...] [--subtype ...]` (növ — `types`; qarışıq videoda əsas növ + `--extra`; növ aydın deyilsə `--uncertain "<nə, niyə>"`;
@@ -123,6 +132,33 @@ Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq,
    səs (kadrdakı şəxsin ağzı tərpənmir). `_review`-da hər sual-cavab: sual mətnində ASR səhvini düzəlt (yazı danışıqdandır);
    "kadrdakı şəxs özü soruşur" qeydi varsa ritorik ola bilər — sual-cavab deyilsə bu planları seçmə. Sonra `variants` → `choose`.
    Ekspert alçaldılmır, demədiyi fikir yaradılmır.
+2k. **Təlim dərsləri / onlayn kurs** (növ 15, M14 — saytda satılan modul dərslər; Reels DEYİL: sakit, dinamik effekt yox):
+   - **Əvvəl xəritə, sonra montaj.** Papkadakı bütün faylları transkript et (`new --link` hər fayl üçün, bir bölümün faylları — məs.
+     ayrıca çəkilmiş salamlaşma + əsas hissə — bir layihədə). Hansı fayl hansı bölümə aiddir, giriş harada, sıra, təkrar və
+     lazımsız kadrlar → `kurs_xeritesi.md` (bölüm, fayllar, giriş, mövzular, vaxt kodları, çıxarılacaqlar, qrafika/görüntü yerləri).
+     İstifadəçi ilə razılaş, yalnız sonra montaj. Kartların sırası: `edit --order`.
+   - **Kadr və keyfiyyət**: üfüqi çəkiliş (YouTube ölçüsü) — `new --type 15` (`--size` VERMƏ): çıxış mənbənin öz ölçüsü və
+     keyfiyyətidir (4K mənbə → 3840x2160, kiçildilmir); render H.264 CRF 18 (gözlə fərqlənməz). 4K-da 15 dəqiqəlik render uzun çəkir —
+     bölümləri tək-tək render et. Üfüqi çəkilişdə layout lazım deyil: qrafika kadrın boş tərəfinə (danışanın üzünü örtməsin —
+     `verify` yoxlayır), x-i özün ver. **Rəng korreksiyası məcburidir** (`looks` → variant seçimi; solğun qalmasın, kliplər arası
+     işıq bərabərləşir). Çəkiliş şaquli (telefon) olarsa — `--size 1920x1080` və planda
+     `"layout": {"speaker": "left", "width": 0.42, "bg": "#rəng"}`: danışan solda paneldə, sağ sahə qrafika üçün (plan qrafikalarının
+     `x`-i avtomatik boş tərəfin mərkəzidir); fon müştərinin sakit rəngi (və ya `"blur"`). Üfüqi çəkilişdə layout lazım deyil.
+   - **Bölüm açılışı**: `{"type": "lower", "text": "<ad>", "sub": "<titul>", "start": 0.5, "dur": 5, "anim": {"in": "slide-left"}}`
+     (ad və titul profildən / istifadəçidən — uydurma). Bölüm adı lazım olsa `title`.
+   - **Altyazı**: `"captions": {"enabled": true, "style": {"preset": "lesson"}}` — sadə ağ, nazik yarışəffaf zolaq, uzun sətir,
+     söz-söz effekti yox. Sayt pleyeri üçün əlavə: `captions-file <pid>` → SRT + VTT (izləyici açıb-bağlayır). Sağdan sola axan
+     altyazı lenti (ticker) yoxdur — dərsdə oxunmur, diqqəti yayındırır; istifadəçiyə belə izah et.
+   - **Canlandırma (sakit, mövzuya uyğun, ~hər 30–90 s bir element)**: yan paneldə `list` (addımlar), `card` (əsas fikir),
+     `choice` — 2–3 variant, `at` anında doğrusu yaşıl ✓ + avtomatik "ding" (`"items": [{"text": "...", "img": "<fayl>"}], "correct": 0`),
+     mövzu üzrə hazır görüntü: `stock <pid> --query "<ingiliscə>" [--kind image]` → `secim.jpg`, seçilən fayl `add-broll --file`
+     (planda `broll` insert/cover) və ya seçim kartında `img`. Yalnız qeyd tələb etməyən pulsuz lisenziya (Mixkit, Pixabay —
+     `PIXABAY_API_KEY`, Wikimedia CC0/PD); `manifest.json`-dakı mənbələri təhvildə qısa siyahı ilə ver. Mətn yalnız danışıqdan.
+   - **Yoxdur (dərsdə)**: zoom/punch-in, tez-tez kəsim, whoosh/pop, hook, `variation` (kursda bütün bölümlər EYNİ görünür).
+     Musiqi — soruşma: `music <pid>` (növ 15 → yalnız açılış və sonluqda çox yumşaq; dərs boyu yoxdur).
+   - **Kurs boyu eynilik**: ilk bölümün təsdiqlənmiş planını `kurs_sablon.json` kimi saxla (layout, captions, lower, rəng) və hər
+     bölümdə ondan başla; yalnız bölümə aid qrafika/görüntülər dəyişir.
+   - **Təhvil**: hər bölüm MP4 (1920x1080) + SRT/VTT; fayl adı “Bölüm N — Mövzu”.
 2j. **İki nəfərin söhbəti** (növ 11; iki nəfər BİR kadrda): seçilmiş hissə tətbiq olunandan sonra (`choose`/`apply`):
    - `duo <pid> --mode switch` — kadraj danışana keçir (ağız hərəkəti; ASR iki nəfəri bir cümləyə birləşdirsə də ~2 s hissələrlə
      yoxlanır; 1.5 s-dən qısa növbə birləşir, kəsim sözlər arasındakı boşluğa düşür). Danışma payı çap olunur.
@@ -215,7 +251,13 @@ Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq,
      Fərqli işıqlanan kliplər avtomatik yaxınlaşdırılır (`"matchExposure": true`, ±0.04).
      Dəri rəngi və detal qorunur; güclü doyumluluq, kəskinləşdirmə, “4K effekti” yoxdur;
      retuş/gözəlləşdirmə yalnız ayrıca istəklə.
-   - Musiqi (özün tap, 2–3 namizəd təklif et), lisenziya kommersiya istifadəsinə uyğun olmalıdır:
+   - **Musiqi — SORUŞMA, özün seç**: `music <pid>` → sorğu profil/növə görə avtomatik (profildə `music.query` varsa o; uşaq
+     mövzusu — şən kids, reklam — corporate; piano/yavaş/kədərli/bayram mövzusu YOX), Freesound **yalnız CC0** + **Mixkit** (Stock Music
+     Free License — kommersiya pulsuz, müəllif qeydi tələb etmir; açarsız; Freesound açarı yoxdursa da işləyir), 2–3 namizəd + `musiqi_N.m4a`
+     dinləmə nümunələri + plana hazır `music` hissəsi. Qərar mesajında nümunələri ver (“musiqi 1/2/3”); musiqinin necə, harada
+     qoyulacağını soruşma — yerləşmə standartdır: Reels — bütün video boyu, danışıqda azalır; kurs dərsi — yalnız açılış (~7 s) və
+     sonluq (~5 s), çox yumşaq, dərs boyu musiqi yoxdur. Planda `music` bir obyekt və ya siyahı ola bilər (`start`, `dur`, `volume`).
+     Ətraflı (əl ilə yol), lisenziya kommersiya istifadəsinə uyğun olmalıdır:
      1) **Freesound** (`tools/audio/freesound_music.py`, `FREESOUND_API_KEY` mühit dəyişəni, pulsuz açar) —
         yalnız **CC0** (müəllif qeydi tələb etmir). Açar yoxdursa bu yol bağlıdır.
      2) **Müəllif qeydi tələb edən musiqi (CC BY, məs. Incompetech) İŞLƏDİLMİR** — istifadəçi caption-a ad

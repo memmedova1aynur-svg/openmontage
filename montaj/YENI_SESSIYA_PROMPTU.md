@@ -1,7 +1,7 @@
 # Yeni montaj söhbəti üçün başlanğıc promptu
 
 Yeni Claude Code söhbətini açanda (repo: `memmedova1aynur-svg/openmontage`, **main** branch; mühitdə `FREESOUND_API_KEY`
-olsun, setup skripti: `bash /home/user/openmontage/scripts/cloud-setup.sh || true`) aşağıdakı mətni **ilk mesaj** kimi göndərin.
+və Drive üçün pulsuz `GOOGLE_API_KEY` (tövsiyə — Google endirmə limitlərindən asılı olmur; `IS_AXINI.md` → “Drive”) olsun, setup skripti: `bash /home/user/openmontage/scripts/cloud-setup.sh || true`) aşağıdakı mətni **ilk mesaj** kimi göndərin.
 
 ---
 
@@ -40,7 +40,7 @@ Mən yalnız **Drive linkini** verirəm. Montajın hamısını sən edirsən və
    motion graphics `mg-scan` + `scenes`. B-roll-u özün hazırla (`scenes`, planda `broll[].make`); mətn yalnız danışıqdan.
 4. **Bir qərar mesajı** (hamısı bir mesajda):
    3 storyboard variantı (`variants` → `storyboard_variantlari.jpg`, hər biri 1–2 sətir) + kadraj əvvəl/sonra +
-   rəng variantları (`looks`) + 2–3 musiqi nümunəsi (`music-preview`; Freesound, **yalnız CC0**) + səs əvvəl/sonra
+   rəng variantları (`looks`) + 2–3 musiqi nümunəsi (`music <pid>` — özün seç, necə qoyulacağını SORUŞMA; yalnız CC0) + səs əvvəl/sonra
    (təmizlənibsə) + material qeydləri + (yalnız fon dəyişməsini istəmişəmsə) `bg --auto --preview` → `arxafon.jpg`.
    Yeni imkanları ayrıca soruşma — variantların içinə qoy: davamlılıq tonu (`storyboard` çıxışındakı “bu video üçün təklif” →
    planda `"variation"`), virtual multikamera (`"multicam"`, 4K materialda), J/L-cut (bir neçə kamera olanda `"jl"`).

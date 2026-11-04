@@ -53,13 +53,14 @@
     const color = clip.color || defaults(type, th).color;
     const base = { fontFamily: font, fontWeight: String(weight), fontSize: `${fs}px`, lineHeight: '1.18', color, whiteSpace: 'pre-wrap', textAlign: 'center', boxSizing: 'border-box' };
     if (type === 'caption') {
-      const wrap = node(doc, 'div', { ...base, maxWidth: `${H * 0.52}px`, padding: `${fs * 0.15}px ${fs * 0.3}px`, borderRadius: `${fs * 0.3}px`, background: rgba(clip.bg, 'transparent') });
+      const wrap = node(doc, 'div', { ...base, maxWidth: `${H * (clip.maxW ?? 0.52)}px`, padding: `${fs * 0.15}px ${fs * 0.3}px`,
+        borderRadius: `${fs * (clip.radius ?? 0.3)}px`, background: rgba(clip.bg, 'transparent') });
       const words = clip.words && clip.words.length ? clip.words : String(clip.text || '').split(/\s+/).map((w) => ({ w, s: 0, e: 0 }));
       const stroke = clip.bg && clip.bg !== 'none' ? null : (clip.stroke || 'rgba(0,0,0,0.85)');
       words.forEach((w, i) => {
-        const spoken = tl == null || tl >= w.s;
+        const spoken = clip.plain || tl == null || tl >= w.s;  // plain: sadə altyazı (dərs) — söz-söz effekti yoxdur
         const next = words[i + 1];
-        const active = tl != null && tl >= w.s && (next ? tl < next.s : true);
+        const active = !clip.plain && tl != null && tl >= w.s && (next ? tl < next.s : true);
         const sp = node(doc, 'span', { display: 'inline-block', margin: `0 ${fs * 0.13}px`, opacity: spoken ? '1' : '0.55',
           color: active ? (clip.activeColor || th.accent || '#F2C94C') : color }, w.w);
         if (stroke) { sp.style.webkitTextStroke = `${Math.max(2, fs * 0.09)}px ${stroke}`; sp.style.paintOrder = 'stroke fill'; }
@@ -114,6 +115,39 @@
       b.append(node(doc, 'div', {}, clip.text || ''));
       return b;
     }
+    if (type === 'lower') {  // ad-titul lövhəsi (bölüm açılışı): ad qalın, altında titul; solda vurğu xətti
+      const box = node(doc, 'div', { ...base, textAlign: 'left', display: 'flex', alignItems: 'stretch', gap: `${fs * 0.5}px`,
+        padding: `${fs * 0.45}px ${fs * 0.9}px ${fs * 0.5}px ${fs * 0.6}px`, borderRadius: `${fs * 0.25}px`,
+        background: rgba(clip.bg, 'rgba(255,255,255,0.93)'), boxShadow: '0 6px 18px rgba(0,0,0,0.18)' });
+      box.append(node(doc, 'div', { width: `${Math.max(4, fs * 0.16)}px`, borderRadius: '99px', background: clip.accent || th.primary || '#C9577D', flex: '0 0 auto' }));
+      const col = node(doc, 'div', {});
+      col.append(node(doc, 'div', { fontWeight: '800', fontSize: `${fs}px`, lineHeight: '1.15' }, clip.text || ''));
+      if (clip.sub) col.append(node(doc, 'div', { fontWeight: '500', fontSize: `${fs * 0.6}px`, opacity: '0.85', marginTop: `${fs * 0.14}px` }, clip.sub));
+      box.append(col);
+      return box;
+    }
+    if (type === 'choice') {  // seçim: 2–3 variant; `at` anında doğrusu (correct) yaşıl çərçivə + ✓, qalanları solğun
+      const reveal = tl == null || tl >= (clip.at ?? 1.5);
+      // padding: ✓ nişanı və böyüyən kart elementin sərhədindən çıxmasın (PNG kəsilməsin)
+      const wrap = node(doc, 'div', { ...base, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: `${fs * 0.55}px`, padding: `${fs * 0.7}px` });
+      if (clip.heading) wrap.append(node(doc, 'div', { fontWeight: '800', fontSize: `${fs * 0.85}px`, padding: `${fs * 0.25}px ${fs * 0.75}px`, borderRadius: '999px',
+        background: rgba(clip.bg, rgba(`${th.primary || '#222222'}@0.92`)), color: th.text || '#FFFFFF' }, clip.heading));
+      const row = node(doc, 'div', { display: 'flex', gap: `${fs * 0.55}px`, justifyContent: 'center', alignItems: 'flex-end' });
+      (clip.items || []).forEach((it, i) => {
+        const ok = reveal && i === clip.correct;
+        const dim = reveal && i !== clip.correct;
+        const card = node(doc, 'div', { position: 'relative', width: `${fs * 5.2}px`, padding: `${fs * 0.35}px`, borderRadius: `${fs * 0.4}px`,
+          background: 'rgba(255,255,255,0.97)', color: '#222222', border: `${Math.max(3, fs * 0.14)}px solid ${ok ? '#2EB872' : 'rgba(0,0,0,0.08)'}`,
+          boxShadow: ok ? `0 0 ${fs * 0.9}px rgba(46,184,114,0.75)` : '0 4px 14px rgba(0,0,0,0.18)', opacity: dim ? '0.45' : '1', transform: ok ? 'scale(1.06)' : 'none' });
+        if (it.img) card.append(node(doc, 'div', { width: '100%', height: `${fs * 4.2}px`, borderRadius: `${fs * 0.25}px`, background: `center/cover no-repeat url("${it.img}")`, marginBottom: `${fs * 0.25}px` }));
+        card.append(node(doc, 'div', { fontSize: `${fs * 0.68}px`, fontWeight: '700', lineHeight: '1.2' }, it.text || ''));
+        if (ok) card.append(node(doc, 'div', { position: 'absolute', top: `${-fs * 0.45}px`, right: `${-fs * 0.45}px`, width: `${fs * 1.2}px`, height: `${fs * 1.2}px`,
+          borderRadius: '50%', background: '#2EB872', color: '#FFFFFF', fontSize: `${fs * 0.8}px`, fontWeight: '900', display: 'flex', alignItems: 'center', justifyContent: 'center' }, '✓'));
+        row.append(card);
+      });
+      wrap.append(row);
+      return wrap;
+    }
     // sadə yazı (köhnə layihələr): drawtext ilə eyni görünüş
     return node(doc, 'div', { ...base, whiteSpace: 'pre', padding: '.25em', background: rgba(clip.bg, 'rgba(0,0,0,.55)'), textShadow: clip.bg === 'none' ? '2px 2px 0 rgba(0,0,0,.7)' : 'none' }, clip.text || '');
   }
@@ -129,19 +163,23 @@
       offer: { size: 0.03, weight: 700, color: th.text || '#FFFFFF' },
       cta: { size: 0.032, weight: 700, color: th.text || '#FFFFFF' },
       badge: { size: 0.022, weight: 800, color: th.text || '#FFFFFF' },
+      lower: { size: 0.034, weight: 800, color: th.primaryDeep || '#222222' },
+      choice: { size: 0.045, weight: 700, color: '#222222' },
     })[type] || { size: 0.06, weight: 700, color: '#FFFFFF' };
   }
 
   /** Altyazı/siyahı üçün vəziyyət dəyişmə anları (element daxili vaxtında) — render bu anlarda PNG dəyişir. */
   function statePoints(clip) {
+    if (clip.type === 'caption' && clip.plain) return [0];
     if (clip.type === 'caption') return [0, ...(clip.words || []).map((w) => w.s)].filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b);
     if (clip.type === 'list') return [0, ...(clip.items || []).map((it) => it.at || 0)].filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b);
+    if (clip.type === 'choice') return [0, clip.at ?? 1.5];
     return [0];
   }
 
   // Standart yer (x, y mərkəz, 0..1) — render (graphics.py DEFAULT_XY) ilə eyni
   const DEFAULT_XY = { caption: [0.5, 0.74], title: [0.5, 0.14], section: [0.5, 0.22], emphasis: [0.5, 0.62], list: [0.5, 0.42], card: [0.5, 0.42],
-    offer: [0.5, 0.58], cta: [0.5, 0.585], badge: [0.5, 0.215] };  // reklam kartları üzün altında, altyazının üstündə
+    offer: [0.5, 0.58], cta: [0.5, 0.585], badge: [0.5, 0.215], lower: [0.24, 0.82], choice: [0.5, 0.45] };  // reklam kartları üzün altında
   function pos(clip) { const d = DEFAULT_XY[clip.type] || [0.5, 0.5]; return [clip.x ?? d[0], clip.y ?? d[1]]; }
 
   root.MG = { ANIMS, animState, build, defaults, statePoints, rgba, pos, DEFAULT_XY };
