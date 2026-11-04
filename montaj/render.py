@@ -356,10 +356,14 @@ def video_chain(c: dict[str, Any], m: dict[str, Any], W: int, H: int, fps_str: s
         f.append(f"crop=w='{cw}':h='{ch}':x='max(0,min(iw-ow,iw*({cx})-ow/2))':"
                  f"y='max(0,min(ih-oh,ih*({cy})-oh/2))'")
         push = float(fr.get("push") or 1)
-        if push > 1.005 and m.get("width") and m.get("height"):  # yavaş yaxınlaşma (virtual kamera): klip boyu 1 → push
+        pull = float(fr.get("pull") or 1)
+        if (push > 1.005 or pull > 1.005) and m.get("width") and m.get("height"):
+            # virtual kamera: push — klip boyu 1 → push (yaxınlaşma), pull — pull → 1 (uzaqlaşma); hamar (smoothstep)
             cwp, chp = _even(float(m["width"]) * bw * s), _even(float(m["height"]) * bh * s)
             d = max(0.1, float(c["srcOut"]) - float(c["srcIn"]))
-            k = f"(1+{push - 1:.4f}*min(t,{d:.3f})/{d:.3f})"
+            u = f"min(t,{d:.3f})/{d:.3f}"
+            e = f"(3*pow({u},2)-2*pow({u},3))" if fr.get("ease") else u
+            k = f"(1+{push - 1:.4f}*{e})" if push > 1.005 else f"({pull:.4f}-{pull - 1:.4f}*{e})"
             f.append(f"scale=w='trunc({cwp}*{k}/2)*2':h='trunc({chp}*{k}/2)*2':eval=frame,crop={cwp}:{chp}")
     adj = c.get("adjust") or {}
     if bool(adj.get("mirror")) ^ bool(mirror_all):
