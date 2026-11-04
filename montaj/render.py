@@ -46,9 +46,10 @@ def retime(m, fps_str):
         dst = float(n) / float(d)
     except (ValueError, ZeroDivisionError, AttributeError):
         src, dst = 0, 0
+    # ortaq vaxt bazası: müxtəlif timebase-li axınlar overlay-də hər 3-cü kadrı təkrarlayırdı
     if src and abs(src - dst) < 0.05:
-        return f"setpts=N/({fps_str})/TB"
-    return f"fps={fps_str},setpts=PTS-STARTPTS"
+        return f"settb=1/90000,setpts=N/({fps_str})/TB"
+    return f"fps={fps_str},settb=1/90000,setpts=PTS-STARTPTS"
 
 def zoom_filter(k):
     """Subpiksel virtual kamera: k(n_) — böyütmə əmsalı (n_ = kadr nömrəsi). scale+crop tam piksel addımları ilə
@@ -504,7 +505,7 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
             x = y = "0"
         filters.append(f"[{k}:v]{chain},setpts=PTS+{o['start']:.4f}/TB[ov{i}]")
         a_t, b_t = o["start"], o["start"] + o["dur"] - 0.5 / fps
-        filters.append(f"[{cur}][ov{i}]overlay=x={x}:y={y}:eof_action=pass:enable='between(t,{a_t:.4f},{b_t:.4f})'[vo{i}]")
+        filters.append(f"[{cur}][ov{i}]overlay=x={x}:y={y}:eof_action=pass:ts_sync_mode=nearest:enable='between(t,{a_t:.4f},{b_t:.4f})'[vo{i}]")
         cur = f"vo{i}"
         if c.get("mode") == "cover_pip":  # danışan: kadrın üz hissəsi dairədə, sol-aşağıda (sağda Reels düymələri var)
             pp = c.get("pip") or {}
@@ -515,8 +516,8 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
             cp_i += 1
             filters.append(f"[{spk_labels[j]}]crop=iw*0.62:iw*0.62:iw*0.19:max(0\\,ih*0.36-iw*0.31),scale={D}:{D},format=rgba[sq{j}];"
                            f"[sq{j}][pm{j}]alphamerge[pc{j}]")
-            filters.append(f"[{cur}][pc{j}]overlay=x={px}:y={py}:enable='between(t,{a_t:.4f},{b_t:.4f})'[vp{j}];"
-                           f"[vp{j}][pr{j}]overlay=x={px - 6}:y={py - 6}:enable='between(t,{a_t:.4f},{b_t:.4f})'[vr{j}]")
+            filters.append(f"[{cur}][pc{j}]overlay=x={px}:y={py}:ts_sync_mode=nearest:enable='between(t,{a_t:.4f},{b_t:.4f})'[vp{j}];"
+                           f"[vp{j}][pr{j}]overlay=x={px - 6}:y={py - 6}:ts_sync_mode=nearest:enable='between(t,{a_t:.4f},{b_t:.4f})'[vr{j}]")
             cur = f"vr{j}"
     from montaj import graphics as G
 
@@ -583,7 +584,7 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
         track = G.caption_track(caps, W, H, fps, main, rast, workdir)
         if track:
             args.extend(["-i", str(track)])
-            filters.append(f"[{idx}:v]format=rgba[capt];[{cur}][capt]overlay=0:0:eof_action=pass[vcap]")
+            filters.append(f"[{idx}:v]format=rgba[capt];[{cur}][capt]overlay=0:0:eof_action=pass:ts_sync_mode=nearest[vcap]")
             idx += 1
             cur = "vcap"
 
