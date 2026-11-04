@@ -5,7 +5,7 @@ yuvarlaqlaşdırılır, bağlı səs həmin başlanğıcı götürür — sürü
 
 Klip parametrləri (hamısı istəyə bağlı, yalnız istifadəçi seçəndə):
   frame  — kadraj (reframe.py), rotate — dərəcə
-  adjust — {mirror, brightness, contrast, saturation, vibrance, depth, temperature, soften, sharpen, denoise, shadows}
+  adjust — {mirror, brightness, contrast, saturation, vibrance, depth, temperature, warmFix, soften, sharpen, denoise, shadows}
 Layihə parametrləri:
   aspect, mix {speech, music, sfx, voice, duck}, branding {logo, end}, mirrorAll
 """
@@ -28,6 +28,11 @@ FONT_CANDIDATES = [
 ]
 HDR_TRC = {"smpte2084", "arib-std-b67"}
 DEFAULT_MIX = {"speech": 1.0, "music": 1.0, "sfx": 1.0, "voice": 1.0, "duck": False}
+# Danışıq aydınlığı (layihədə "voicePolish": true): boğuqluq azalır, sözlər açılır, səviyyə bərabərləşir.
+# Son səviyyəni render-in loudnorm keçidi (−14 LUFS) təyin edir.
+VOICE_POLISH = ("highpass=f=85,equalizer=f=220:t=q:w=1.2:g=-3,equalizer=f=3200:t=q:w=1.0:g=3,"
+                "equalizer=f=9000:t=h:w=2000:g=1.5,deesser=i=0.3,"
+                "acompressor=threshold=-20dB:ratio=3:attack=8:release=120:makeup=2")
 LOGO_POS = {
     "top-left": ("W*0.04", "H*0.03"), "top-right": ("W-w-W*0.04", "H*0.03"),
     "bottom-left": ("W*0.04", "H-h-H*0.03"), "bottom-right": ("W-w-W*0.04", "H-h-H*0.03"),
@@ -245,6 +250,11 @@ def color_filters(adj: dict[str, Any]) -> list[str]:
     temp = float(adj.get("temperature") or 6500)
     if abs(temp - 6500) > 50:
         f.append(f"colortemperature=temperature={temp:.0f}")
+    wf = float(adj.get("warmFix") or 0)
+    if wf > 0.01:  # sarı/isti otaq işığının neytrallaşdırılması (ağ köynək ağ görünür, dəri tonu qorunur)
+        k = min(wf, 1.5)
+        f.append(f"colorbalance=rs={-0.06 * k:.3f}:bs={0.08 * k:.3f}:rm={-0.11 * k:.3f}:gm={-0.01 * k:.3f}:bm={0.11 * k:.3f}"
+                 f":rh={-0.06 * k:.3f}:bh={0.06 * k:.3f}")
     return f
 
 
@@ -605,11 +615,13 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
                        f"asetpts=PTS-STARTPTS,atrim=0:{a['dur']:.4f},volume={vol:.3f}{_afades(c, a['dur'], a.get('edgeIn', 0.0), a.get('edgeOut', 0.0))},adelay=delays={ms}:all=1[a{i}]")
         buses.setdefault(bus, []).append(f"[a{i}]")
     bus_out = []
+    polish = VOICE_POLISH if project.get("voicePolish") else ""
     for bus, labs in buses.items():
+        extra = f",{polish}" if polish and bus in ("speech", "voice") else ""
         if len(labs) == 1:
-            filters.append(f"{labs[0]}apad,atrim=0:{total:.4f}[bus_{bus}]")
+            filters.append(f"{labs[0]}apad,atrim=0:{total:.4f}{extra}[bus_{bus}]")
         else:
-            filters.append(f"{''.join(labs)}amix=inputs={len(labs)}:normalize=0:duration=longest,apad,atrim=0:{total:.4f}[bus_{bus}]")
+            filters.append(f"{''.join(labs)}amix=inputs={len(labs)}:normalize=0:duration=longest,apad,atrim=0:{total:.4f}{extra}[bus_{bus}]")
         bus_out.append(bus)
     if mix.get("duck") and "music" in buses and ("speech" in buses or "voice" in buses):
         key = "speech" if "speech" in buses else "voice"

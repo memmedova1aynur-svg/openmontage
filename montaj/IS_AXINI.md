@@ -11,6 +11,10 @@ Ara düzəliş raundları təklif etmə.
 
 Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq, ritm, J/L-cut, etika): [`KINO_DILI.md`](KINO_DILI.md).
 
+**Standart görünüş və səs (bütün müştərilər, soruşmadan):** [`STANDART_USLUB.md`](STANDART_USLUB.md) — güzgü yoxlaması,
+rəng C/N, `framefix`, `tighten` (boş pauzalar), `"jumpcut"`, `"voicePolish"`, `"captionsAboveBroll"`, B-roll və karusel qaydaları,
+yeni söhbət üçün hazır prompt. Müştəri profili xüsusi qayda verirsə, profil üstündür.
+
 ## Addımlar
 
 1. **Əvvəl qısa sorğu — Drive linkindən ÖNCƏ.** İstifadəçi yeni video istəyəndə (və ya link sorğusuz gəlsə)

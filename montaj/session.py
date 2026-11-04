@@ -807,10 +807,12 @@ LOOKS: dict[str, dict[str, float]] = {
     "E": {"contrast": 1.08, "saturation": 1.02, "depth": 1.0, "vibrance": 0.05, "sharpen": 0.45, "temperature": 6600},  # kəskin-kontrast
     "F": {"brightness": 0.01, "contrast": 1.05, "saturation": 1.05, "depth": 0.6, "temperature": 6000, "sharpen": 0.3},  # isti premium
     "G": {"contrast": 1.07, "saturation": 0.93, "depth": 0.9, "temperature": 7300, "sharpen": 0.35},  # sərin-kino
+    "N": {"warmFix": 1.0, "brightness": 0.055, "contrast": 1.07, "saturation": 1.04, "sharpen": 0.55},  # sarı işıqlı otaq: neytral, işıqlı
 }
 LOOK_LABELS = {"A": "orijinala yaxın, təbii", "B": "yumşaq və isti", "C": "təmiz və neytral", "D": "zəif işıq: dən azalır, kölgə açılır",
-               "E": "kəskin və kontrastlı", "F": "isti premium", "G": "sərin, kino tonu"}
-LOOK_KEYS = ("brightness", "contrast", "saturation", "vibrance", "depth", "sharpen", "temperature", "denoise", "shadows", "gamma")
+               "E": "kəskin və kontrastlı", "F": "isti premium", "G": "sərin, kino tonu",
+               "N": "sarı işığı götürür: neytral, işıqlı, kəskin"}
+LOOK_KEYS = ("brightness", "contrast", "saturation", "vibrance", "depth", "sharpen", "temperature", "warmFix", "denoise", "shadows", "gamma")
 DARK_LUMA = 85  # 8-bit orta parlaqlıq bundan aşağıdırsa — zəif işıq (D variantı təklif olunur)
 DEFAULT_LOOK = "A"
 
@@ -1204,8 +1206,61 @@ def apply_plan(pid: str, p: dict[str, Any], plan: dict[str, Any], plan_name: str
     for c in q["clips"]:  # plan qərarları "əl ilə" sayılmır
         if c["id"] not in was_manual and c.get("origin") in ("plan", "ai", "import", "auto", None):
             c["manual"] = False
+    _snap_to_frames(q)  # kəsim sərhədləri kadr şəbəkəsinə — yarım kadr fərqi donmuş/təkrar kadr yaratmasın
+    if plan.get("jumpcut"):  # sərt kəsimi yumşaltmaq: ardıcıl hissələrdə növbə ilə yüngül yaxınlaşma (plan ölçüsü)
+        _soften_jumpcuts(q, plan["jumpcut"])
+    if plan.get("voicePolish") is not None:  # danışıq aydınlığı (render.VOICE_POLISH)
+        q["voicePolish"] = bool(plan["voicePolish"])
+    if plan.get("captionsAboveBroll"):  # B-roll aşağıda olanda altyazı başın üstünə qalxır
+        _captions_above_broll(q, plan["captionsAboveBroll"])
     q["planApplied"] = {"at": __import__("time").time(), "file": plan_name, "look": look_name}
     return q
+
+
+def _snap_to_frames(q: dict[str, Any]) -> None:
+    """Əsas danışıq kliplərinin mənbə sərhədlərini 1/fps şəbəkəsinə yuvarlaqlaşdırır (B-roll, musiqi, SFX toxunulmur)."""
+    fps = float(q.get("fps") or 30) or 30.0
+    for c in q["clips"]:
+        if c["track"] in ("v1", "a1") and not c.get("broll") and not str(c.get("media", "")).startswith(("sfx", "music")):
+            for k in ("srcIn", "srcOut"):
+                if c.get(k) is not None:
+                    c[k] = round(round(float(c[k]) * fps) / fps, 4)
+
+
+def _soften_jumpcuts(q: dict[str, Any], spec: Any) -> None:
+    """Ardıcıl danışıq hissələrindən hər ikincisi `zoom` qədər yaxınlaşır (standart 0.93 — 7%). Kadraj (əyrilik,
+    ortalama) qorunur; punch-in olan hissəyə toxunulmur."""
+    z = float((spec or {}).get("zoom", 0.93)) if isinstance(spec, dict) else 0.93
+    segs = [c for c in node_tl("videoClips", q) if not c.get("broll")]
+    for i, c in enumerate(segs):
+        fr = dict(c.get("frame") or {})
+        if fr.get("planZoom"):
+            continue
+        base = float(fr.get("_s0", fr.get("s", 1)) or 1)
+        if fr.get("rotate") and base > 0.93:  # fırladılmış kadrda kənar boşluğu qalmasın
+            base = 0.93
+        fr["_s0"] = base
+        fr["s"] = round(base * (z if i % 2 == 1 else 1.0), 4)
+        if fr.get("mode") in (None, "none"):
+            fr.update(mode="auto", aspect=fr.get("aspect", q.get("aspect") or "source"), baseW=fr.get("baseW", 1),
+                      baseH=fr.get("baseH", 1), keys=fr.get("keys") or [{"t": c["srcIn"], "cx": 0.5, "cy": 0.45}])
+        c["frame"] = fr
+
+
+def _captions_above_broll(q: dict[str, Any], spec: Any) -> None:
+    """Aşağı yarıda olan B-roll (pip y>0.5, sticker) zamanı altyazı sətirləri başın üstünə (y) qalxır."""
+    y = float((spec or {}).get("y", 0.17)) if isinstance(spec, dict) else 0.17
+    wins = [(float(c.get("start") or 0), float(c.get("start") or 0) + float(c["srcOut"]) - float(c["srcIn"]))
+            for c in q["clips"] if c["track"] == "v2" and ((c.get("pip") or {}).get("y", 0) > 0.5 or c.get("mode") == "sticker")]
+    style = {k: v for k, v in ((q.get("subtitles") or {}).get("style") or {}).items() if k not in ("position", "y")}
+    for c in q["clips"]:
+        if c["track"] != "c1":
+            continue
+        s0 = float(c.get("start") or 0)
+        e0 = s0 + float(c["srcOut"]) - float(c["srcIn"])
+        if any(s0 < b - 0.05 and e0 > a + 0.05 for a, b in wins):
+            c.update(style)
+            c.update(y=y, position="top", manual=True)
 
 
 def cmd_plan(a: argparse.Namespace) -> None:
@@ -1422,6 +1477,9 @@ def cmd_cut(a: argparse.Namespace) -> None:
         words = (ans.get(mid) or {}).get("words") or []
         out_t, ok1 = quality.safe_boundary(rms, x, "out", words, ref)
         in_t, ok2 = quality.safe_boundary(rms, y, "in", words, ref)
+        if in_t - out_t < 0.05:  # sakit sərhəd tapılmadı və hissələr üst-üstə düşür — söz təkrarlanmasın deyə kəsilmir
+            print(f"keçildi {mid} {x:.2f}–{y:.2f}: sakit sərhəd tapılmadı (söz təkrarı olardı), material saxlanıldı")
+            continue
         new_cards = []
         for c in sb["cards"]:
             if c not in cands:
@@ -1442,6 +1500,70 @@ def cmd_cut(a: argparse.Namespace) -> None:
     o = out_dir(a.pid)
     contact_sheet(a.pid, sb, o / "storyboard.jpg")
     (o / "storyboard.md").write_text(summary(a.pid, sb), encoding="utf-8")
+
+
+def silent_pauses(audio_rms: Any, thr_db: float = -16.0, min_len: float = 0.45) -> list[tuple[float, float]]:
+    """Danışıq səviyyəsindən `thr_db` aşağı, `min_len`-dən uzun sakit aralıqlar (saniyə; 60 ms hamarlanmış)."""
+    import numpy as np
+    from montaj import quality
+
+    ref = quality.speech_level(audio_rms)
+    db = 20 * np.log10(np.maximum(audio_rms, 1e-9) / max(ref, 1e-9))
+    sm = np.convolve(db, np.ones(6) / 6, mode="same")
+    quiet = sm < thr_db
+    out, i, n = [], 0, len(quiet)
+    while i < n:
+        if quiet[i]:
+            j = i
+            while j < n and quiet[j]:
+                j += 1
+            if (j - i) * quality.HOP >= min_len:
+                out.append((round(i * quality.HOP, 2), round(j * quality.HOP, 2)))
+            i = j
+        else:
+            i += 1
+    return out
+
+
+def cmd_tighten(a: argparse.Namespace) -> None:
+    """Danışılmayan boş saniyələri qaralamadan çıxarır (pauza ≥ --min). Hər pauzada 0.12 s nəfəs payı qalır, söz
+    kəsilmir (`cut` sərhədi ən sakit yerə çəkir, sakit yer yoxdursa keçir). `--keep` — saxlanılacaq mənalı pauzalar."""
+    from montaj import media as mediautil
+    from montaj import quality
+
+    sb = _load_draft(a.pid)
+    p = store.load(a.pid)
+    media = {m["id"]: m for m in p["media"]}
+    keep = [float(k) for k in (a.keep or [])]
+    ranges: list[str] = []
+    rms_cache: dict[str, Any] = {}
+    for c in sb["cards"]:
+        if not c.get("include", True) or str(c["mediaId"]).startswith(("sfx", "music")):
+            continue
+        mid = c["mediaId"]
+        m = media.get(mid)
+        if not m or m.get("role") == "broll" or not m.get("hasAudio"):
+            continue
+        if mid not in rms_cache:
+            rms_cache[mid] = silent_pauses(quality.frame_rms(mediautil.read_mono(store.project_dir(a.pid) / m["file"], quality.SR)),
+                                           a.db, a.min)
+        for x0, y0 in rms_cache[mid]:
+            if any(x0 - 0.05 <= k <= y0 + 0.05 for k in keep):
+                continue
+            x0, y0 = max(x0, c["srcIn"]), min(y0, c["srcOut"])
+            if y0 - x0 < a.min:
+                continue
+            x = c["srcIn"] if x0 <= c["srcIn"] + 0.05 else x0 + 0.12
+            y = c["srcOut"] if y0 >= c["srcOut"] - 0.05 else y0 - 0.12
+            if y >= c["srcOut"] - 0.01:
+                x = x0 + 0.3
+            if y - x > 0.2:
+                ranges.append(f"{mid}:{x:.2f}-{y:.2f}")
+    if not ranges:
+        print("boş pauza tapılmadı")
+        return
+    cmd_cut(argparse.Namespace(pid=a.pid, ranges=ranges))
+    print(f"boş pauza çıxarıldı: {len(ranges)} yer (≥{a.min} s). Təsdiq üçün `apply {a.pid}` və ya `choose`.")
 
 
 def type_checks(pid: str, p: dict[str, Any], rep: dict[str, Any]) -> dict[str, Any]:
@@ -2649,6 +2771,11 @@ def main(argv: list[str] | None = None) -> int:
     ct = sub.add_parser("cut", help="qaralamadan mənbə aralığını çıxar: [media:]başla-son")
     ct.add_argument("pid")
     ct.add_argument("ranges", nargs="+")
+    tg = sub.add_parser("tighten", help="danışılmayan boş saniyələri (pauzaları) qaralamadan çıxar")
+    tg.add_argument("pid")
+    tg.add_argument("--min", type=float, default=0.45, help="ən qısa pauza, s")
+    tg.add_argument("--db", type=float, default=-16.0, help="danışıq səviyyəsinə nisbətən sakitlik həddi, dB")
+    tg.add_argument("--keep", type=float, action="append", help="saxlanılacaq mənalı pauzanın mənbə vaxtı (s)")
     vf = sub.add_parser("verify", help="yekun render yoxlaması")
     vf.add_argument("pid")
     vf.add_argument("--mp4")
@@ -2813,7 +2940,7 @@ def main(argv: list[str] | None = None) -> int:
         {"new": cmd_new, "storyboard": cmd_storyboard, "edit": cmd_edit, "apply": cmd_apply,
          "render": cmd_render, "export": cmd_export, "editor": cmd_editor,
          "apply-edits": cmd_apply_edits, "set-client": cmd_set_client, "plan": cmd_plan, "looks": cmd_looks,
-         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "highlights": cmd_highlights, "extract": cmd_extract, "mg-scan": cmd_mg_scan, "tale-plan": cmd_tale_plan, "carousel-plan": cmd_carousel_plan, "types": cmd_types, "event-scan": cmd_event_scan, "event-plan": cmd_event_plan, "qa-plan": cmd_qa_plan, "duo": cmd_duo, "multicam": cmd_multicam, "slowmo": cmd_slowmo, "bg": cmd_bg, "captions-file": cmd_captions_file, "music": cmd_music, "stock": cmd_stock, "intake": cmd_intake, "bg-lib": cmd_bg_lib, "set-type": cmd_set_type, "carousel": cmd_carousel, "fix-word": cmd_fix_word,
+         "cut": cmd_cut, "tighten": cmd_tighten, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "highlights": cmd_highlights, "extract": cmd_extract, "mg-scan": cmd_mg_scan, "tale-plan": cmd_tale_plan, "carousel-plan": cmd_carousel_plan, "types": cmd_types, "event-scan": cmd_event_scan, "event-plan": cmd_event_plan, "qa-plan": cmd_qa_plan, "duo": cmd_duo, "multicam": cmd_multicam, "slowmo": cmd_slowmo, "bg": cmd_bg, "captions-file": cmd_captions_file, "music": cmd_music, "stock": cmd_stock, "intake": cmd_intake, "bg-lib": cmd_bg_lib, "set-type": cmd_set_type, "carousel": cmd_carousel, "fix-word": cmd_fix_word,
          "variants": cmd_variants, "choose": cmd_choose, "music-preview": cmd_music_preview}[a.cmd](a)
     except UserError as err:
         print(f"XƏTA: {err.message}\nNƏ ETMƏLİ: {err.hint}", file=sys.stderr)
