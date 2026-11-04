@@ -27,6 +27,15 @@ Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq,
      `--compact`. Yaxşı çəkiliş sistemin imkanlarını açır (4K → virtual multikamera, 60 fps → yavaşlatma).
    - Sorğudan sonra Drive linkini istə.
 2. **Drive linki gəlir.** Asılılıqlar yoxdursa `bash scripts/cloud-setup.sh`.
+   **Drive** (`montaj/drive.py`): tək fayl və **qovluq** linkləri qəbul olunur (qovluq ada görə sıralanıb fayllara açılır,
+   alt qovluqlar daxil deyil). Kəsilən ötürmə qaldığı yerdən davam edir, yarımçıq fayl qəbul olunmur. Alınmasa, mesaja görə:
+   - “açıq deyil” → paylaşım “Linki olan hər kəs — Baxan” olmalıdır (fayl başqasının Drive-ındadırsa, sahibi etməlidir);
+   - “endirmə limitini keçib” → Drive-da *Make a copy*, yeni surətin linki; və ya bir neçə saat sonra;
+   - “müvəqqəti məhdudlaşdırıb” → Google bulud serverinin IP-ni yoxlayır; 10–30 dəq sonra.
+   **Daimi həll** (limit/blok təkrarlanırsa): mühitə pulsuz `GOOGLE_API_KEY` (Google Cloud → APIs → Google Drive API
+   aktiv → Credentials → API key; ödəniş tələb etmir) — onda əvvəl rəsmi Drive API işlənir, anonim limitlərdən asılı deyil.
+   Açarı istifadəçidən chat-a yazmasını istəmə — mühit dəyişəni kimi əlavə olunur. Şəbəkə xətası mesajında `proksi:` hissəsi
+   varsa, bu mühitin şəbəkə siyasətidir (başqa sessiyada işləyirsə, mühit ayarlarını müqayisə et).
    `export MONTAJ_DATA_DIR=$HOME/montaj-data MONTAJ_OUT_DIR=$HOME/montaj-data/out`
 3. **Analiz.** `python -m montaj.session new --title "<ad>" --link "<link>" --client "<profil>" --type <N> [--extra <N>]
    [--goal ...] [--subtype ...]` (növ — `types`; qarışıq videoda əsas növ + `--extra`; növ aydın deyilsə `--uncertain "<nə, niyə>"`;

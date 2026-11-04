@@ -2,7 +2,7 @@
 
 Yeni Claude Code söhbətini açanda (repo: `memmedova1aynur-svg/openmontage`, **main**; setup:
 `bash /home/user/openmontage/scripts/cloud-setup.sh || true`; mühitdə `FREESOUND_API_KEY`, məhsul şəkilləri üçün pulsuz
-`PIXABAY_API_KEY`) aşağıdakı mətni ilk mesaj kimi göndərin.
+`PIXABAY_API_KEY`, Drive üçün pulsuz `GOOGLE_API_KEY` — tövsiyə) aşağıdakı mətni ilk mesaj kimi göndərin.
 
 ---
 
