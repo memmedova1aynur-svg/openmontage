@@ -1,0 +1,226 @@
+{
+ "n": 3,
+ "title": "03 Öyrənməyi öyrən — REKLAM PRO",
+ "file": "03_OyrenmeyiOyren_REKLAM",
+ "ad": true,
+ "scenes": [
+  {
+   "kind": "lower",
+   "from": "Öyrənməyə sərf",
+   "dur": 2.85,
+   "lead": 0,
+   "p": {
+    "text": "Vaxtınızın qarşılığını\nala bilirsinizmi?",
+    "icon": "hourglass",
+    "fs": 66
+   }
+  },
+  {
+   "kind": "kinetic",
+   "from": "Öyrənməyi öyrən təlimində",
+   "dur": 2.0,
+   "pal": "lime",
+   "p": {
+    "lines": [
+     "ÖYRƏNMƏYİ",
+     "ÖYRƏN"
+    ],
+    "fs": 120,
+    "echo": "ÖYRƏN",
+    "badge": "TƏLİMİ",
+    "badgeAt": 0.55,
+    "ts": [
+     0.05,
+     0.22
+    ]
+   }
+  },
+  {
+   "kind": "split",
+   "from": "bu vaxtı",
+   "dur": 3.3,
+   "p": {
+    "type": "icons",
+    "items": [
+     [
+      "calendar",
+      "Planlaşdır"
+     ],
+     [
+      "check",
+      "Nəticəni yoxla"
+     ]
+    ],
+    "ts": [
+     "planlaşdırmağı",
+     "yoxlamağı"
+    ],
+    "arrows": true,
+    "fs": 46
+   }
+  },
+  {
+   "kind": "top",
+   "from": "bütün prosesi",
+   "dur": 2.3,
+   "p": {
+    "text": "Addım-addım",
+    "icon": "layers"
+   }
+  },
+  {
+   "kind": "cols",
+   "from": "Fasiləli təkrar",
+   "dur": 2.4,
+   "p": {
+    "left": [
+     "refresh",
+     "Fasiləli<br>təkrar"
+    ],
+    "right": [
+     "brain",
+     "Aktiv<br>xatırlama"
+    ],
+    "ts": [
+     0.05,
+     "aktiv"
+    ],
+    "y": 760
+   }
+  },
+  {
+   "kind": "split",
+   "from": "Mətnə baxmadan",
+   "dur": 4.2,
+   "p": {
+    "type": "steps",
+    "items": [
+     [
+      "brain",
+      "Xatırla"
+     ],
+     [
+      "chat",
+      "İzah et"
+     ],
+     [
+      "check",
+      "Yoxla"
+     ]
+    ],
+    "ts": [
+     0.3,
+     "izah",
+     "Hansı"
+    ],
+    "check": true,
+    "hl": 0
+   }
+  },
+  {
+   "kind": "lower",
+   "from": "Bütün tapşırıqları",
+   "dur": 2.5,
+   "p": {
+    "text": "Tapşırıqları\naddımlara bölün.",
+    "icon": "list"
+   }
+  },
+  {
+   "kind": "split",
+   "from": "Nədən başlayacağınızı",
+   "dur": 4.0,
+   "p": {
+    "type": "steps",
+    "title": "Sizin planınız",
+    "items": [
+     [
+      "target",
+      "İlk addım"
+     ],
+     [
+      "clock",
+      "Vaxt"
+     ],
+     [
+      "refresh",
+      "Təkrar"
+     ]
+    ],
+    "ts": [
+     0.2,
+     "vaxt ayıracağınızı",
+     "təkrar"
+    ],
+    "check": true
+   }
+  },
+  {
+   "kind": "top",
+   "from": "Bu texnikaları",
+   "dur": 2.4,
+   "p": {
+    "text": "Öz mövzunuzda tətbiq",
+    "icon": "target"
+   }
+  },
+  {
+   "kind": "kinetic",
+   "from": "Beləcə",
+   "dur": 2.0,
+   "pal": "lime",
+   "p": {
+    "lines": [
+     "SİZƏ UYĞUN",
+     "PLAN"
+    ],
+    "fs": 104,
+    "echo": "PLAN",
+    "ts": [
+     "uyğun",
+     "planını"
+    ]
+   }
+  },
+  {
+   "kind": "icons",
+   "from": "Öyrənməyi öyrən təlimi",
+   "dur": 4.0,
+   "p": {
+    "title": "Kimlər üçün?",
+    "items": [
+     [
+      "globe",
+      "Dil öyrənənlər"
+     ],
+     [
+      "grad",
+      "İmtahana hazırlaşanlar"
+     ],
+     [
+      "chart",
+      "Yeni bacarıq istəyənlər"
+     ]
+    ],
+    "ts": [
+     "dil",
+     "imtahana",
+     "yeni"
+    ],
+    "fs": 60
+   }
+  },
+  {
+   "kind": "lower",
+   "from": "Təlim proqramı",
+   "toEnd": true,
+   "p": {
+    "text": "Proqram və iştirak\nhaqqında məlumat",
+    "btn": "Bizə yazın",
+    "btnAt": "yazın",
+    "fs": 60
+   }
+  }
+ ],
+ "text": "<danışığın tam mətni (ASR və ya ssenari)>"
+}

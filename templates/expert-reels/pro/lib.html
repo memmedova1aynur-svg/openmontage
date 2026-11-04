@@ -1,0 +1,159 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&family=Lora:ital@1&display=block" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:transparent;font-family:Montserrat,sans-serif}
+#s{position:absolute;inset:0;overflow:hidden}.abs{position:absolute}
+.gbg{position:absolute;inset:0;background:radial-gradient(115% 80% at 30% 30%,var(--bg) 0%,var(--bg2) 55%,var(--bg3) 100%)}
+.pbg{position:absolute;inset:0;background:radial-gradient(100% 80% at 50% 40%,var(--paper) 0%,var(--paper) 55%,var(--paper2) 100%)}
+.ic{display:inline-block;vertical-align:middle}
+</style></head><body><div id="s"></div>
+<script>
+const C=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));const eo=x=>{x=C(x);return 1-Math.pow(1-x,3)};const eio=x=>{x=C(x);return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2};
+const back=x=>{x=C(x);const c1=1.5,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)};
+const S=document.getElementById('s');
+const rv=(t,at,d=0.32)=>eo((t-at)/d);
+const rise=(r,px=26)=>`opacity:${r};transform:translateY(${px*(1-r)}px);filter:blur(${5*(1-r)}px)`;
+const pop=(r)=>`opacity:${C(r*1.6)};transform:scale(${0.6+0.4*back(r)})`;
+const IC={
+book:'<path d="M2 5c3-1.5 7-1.5 10 1 3-2.5 7-2.5 10-1v14c-3-1.5-7-1.5-10 1-3-2.5-7-2.5-10-1z"/><path d="M12 6v14"/>',
+bookc:'<path d="M5 3h12a2 2 0 0 1 2 2v16H7a2 2 0 0 1-2-2z"/><path d="M5 19a2 2 0 0 1 2-2h12"/>',
+brain:'<path d="M9 4a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 3 3V4z"/><path d="M15 4a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-3 3V4z"/>',
+clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+check:'<circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/>',
+headphones:'<path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/>',
+play:'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9l5 3-5 3z"/>',
+mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+pencil:'<path d="M4 20l4-1 11-11-3-3L5 16z"/><path d="M14 6l3 3"/>',
+eye:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+question:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1 1-1 1.7M12 17h.01"/>',
+target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+layers:'<path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/>',
+chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+refresh:'<path d="M20 11a8 8 0 0 0-14-4L4 9M4 4v5h5"/><path d="M4 13a8 8 0 0 0 14 4l2-2M20 20v-5h-5"/>',
+chat:'<path d="M4 5h16v11H9l-5 4z"/>',
+grad:'<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/>',
+globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',
+bulb:'<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.5c1 1 1 2 1 3h6c0-1 0-2 1-3A6 6 0 0 0 12 3z"/>',
+marker:'<path d="M15 4l5 5-8 8H7v-5z"/><path d="M4 20h7"/>',
+list:'<path d="M9 6h12M9 12h12M9 18h12"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/>',
+aa:'<path d="M3 19l5-14 5 14M5 14h6"/><path d="M15 12a3 3 0 1 1 6 0v7M21 15.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>',
+gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>',
+send:'<path d="M3 11l18-8-8 18-2-8z"/>',
+hourglass:'<path d="M6 3h12M6 21h12M7 3c0 6 10 6 10 9s-10 3-10 9M17 3c0 6-10 6-10 9"/>'
+};
+const ico=(n,sz,col,sw=1.9)=>`<svg class="ic" width="${sz}" height="${sz}" viewBox="0 0 24 24" style="fill:none;stroke:${col};stroke-width:${sw};stroke-linecap:round;stroke-linejoin:round">${IC[n]||''}</svg>`;
+const fade=(t,D,d=0.28)=>Math.min(eo(t/d),1-eo((t-D+d)/d));
+// ---------- ÜSTDƏKİ YAZILAR (danışan görünür) ----------
+function lower(t,D,p){const a=fade(t,D,0.3);const fs=p.fs||64;const lines=p.text.split('\n');let h='';
+ lines.forEach((ln,i)=>{const r=rv(t,(p.lineAt?p.lineAt[i]||0:0)+0.04+i*0.09,0.34);h+=`<div style="${rise(r,22)}">${ln}${(p.dot&&i==lines.length-1)?` <span style="display:inline-block;width:${fs*.38}px;height:${fs*.38}px;border-radius:50%;background:var(--acc);transform:scale(${back(rv(t,p.dotAt||0.8,0.35))});vertical-align:middle"></span>`:''}</div>`});
+ const y=p.y||(1650-lines.length*fs*1.13);
+ const box=p.box?`background:var(--bg2);padding:26px 34px 30px;border-radius:30px;box-shadow:0 18px 40px rgba(0,0,0,.25);`:'text-shadow:0 2px 16px rgba(0,0,0,.4);';
+ const bar=p.box?'':`<div style="margin-top:16px;height:8px;border-radius:5px;background:var(--acc);width:${90*rv(t,0.3,0.4)}px"></div>`;
+ const icon=p.icon?`<div style="margin-bottom:18px;${pop(rv(t,0.02,0.4))}">${ico(p.icon,74,'var(--acc)',2)}</div>`:'';
+ const btn=p.btn?`<div style="margin-top:26px;display:inline-flex;align-items:center;gap:18px;padding:20px 38px;border-radius:999px;background:var(--acc);color:var(--ink);font-size:46px;font-weight:800;${pop(rv(t,p.btnAt||0.5,0.4))};transform-origin:0 50%">${ico('send',44,'var(--ink)',2.4)}${p.btn}</div>`:'';
+ S.innerHTML=`<div class="abs" style="left:0;right:0;bottom:0;height:${p.gh||600}px;opacity:${a};background:linear-gradient(180deg,rgba(4,14,10,0) 0%,rgba(4,14,10,.42) 50%,rgba(4,14,10,.62) 100%)"></div>
+ <div class="abs" style="left:${p.x||72}px;${p.btn?'top:'+(y-150):'top:'+y}px;opacity:${Math.min(1,a*1.4)};color:${p.box?'var(--txt)':'#fff'};font-weight:800;font-size:${fs}px;line-height:1.12;letter-spacing:-.8px;max-width:940px;${box}">${icon}${h}${bar}${btn}</div>`}
+function topcard(t,D,p){const a=fade(t,D,0.3);const r=rv(t,0.03,0.4);
+ S.innerHTML=`<div class="abs" style="left:${p.x||70}px;top:${(p.y||150)-30*(1-r)}px;opacity:${a};display:flex;align-items:center;gap:26px;padding:24px 40px 24px 26px;border-radius:999px;background:var(--bg2);box-shadow:0 16px 40px rgba(0,0,0,.28);color:var(--txt);font-weight:800;font-size:${p.fs||50}px;white-space:nowrap">
+ <div style="width:84px;height:84px;border-radius:50%;background:var(--acc);display:flex;align-items:center;justify-content:center;${pop(rv(t,0.12,0.4))}">${ico(p.icon||'bulb',50,'var(--ink)',2.2)}</div><div style="${rise(rv(t,0.15,0.35),12)}">${p.text}</div></div>`}
+function topchips(t,D,p){const a=fade(t,D,0.3);let h='';
+ p.items.forEach((it,i)=>{const r=rv(t,p.ts[i],0.38);h+=`<div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:26px 30px;border-radius:30px;background:var(--bg2);box-shadow:0 14px 34px rgba(0,0,0,.25);${pop(r)}">${ico(it[0],70,'var(--acc)',2)}<div style="color:var(--txt);font-weight:800;font-size:38px;white-space:nowrap">${it[1]}</div></div>`});
+ S.innerHTML=`<div class="abs" style="left:0;right:0;top:${p.y||130}px;display:flex;justify-content:center;gap:26px;opacity:${a}">${h}</div>`}
+// ---------- TAM EKRAN ----------
+const FULL={
+ kinetic(t,D,p){const fs=p.fs||150;let h='';p.lines.forEach((ln,i)=>{const r=rv(t,p.ts?p.ts[i]:0.05+i*0.14,0.36);h+=`<div style="${rise(r,40)};color:${i==(p.hl??-1)?'var(--acc)':'var(--txt)'}">${ln}</div>`});
+  let echo='';if(p.echo)for(let i=0;i<7;i++)echo+=`<div class="abs" style="left:-40px;top:${100+i*250}px;opacity:${.07*rv(t,i*.04,.4)};color:var(--txt);font-weight:900;font-size:230px;letter-spacing:-6px;white-space:nowrap;transform:translateX(${(i%2?-1:1)*40*t}px)">${p.echo} ${p.echo}</div>`;
+  const icon=p.icon?`<div class="abs" style="left:80px;top:${(p.y||620)-200}px;${pop(rv(t,0.02,0.45))}">${ico(p.icon,140,'var(--acc)',1.8)}</div>`:'';
+  const badge=p.badge?`<div style="margin-top:34px;display:inline-block;padding:16px 34px;border-radius:999px;background:var(--acc);color:var(--ink);font-size:52px;font-weight:800;letter-spacing:3px;${pop(rv(t,p.badgeAt||0.45,0.4))};transform-origin:0 50%">${p.badge}</div>`:'';
+  return `<div class="gbg"></div>${echo}${icon}<div class="abs" style="left:80px;top:${p.y||620}px;font-weight:900;font-size:${fs}px;line-height:.98;letter-spacing:-4px">${h}<div style="margin-top:30px;height:12px;border-radius:6px;background:var(--acc);width:${170*rv(t,0.4,0.4)}px"></div>${badge}</div>`},
+ stack(t,D,p){ // axan SONRA sətirləri + mərkəzdə böyüyən laym SONRA (fasiləsiz hərəkət)
+  let h='';const rows=9;
+  for(let i=0;i<rows;i++){const dir=i%2?1:-1;const sp=260+40*(i%3);const x=-400+dir*sp*t-(i%2?600:0);const center=i==4;
+   const k=C((t-0.04*Math.abs(i-4))/0.35);
+   h+=`<div class="abs" style="left:0;top:${70+i*200}px;white-space:nowrap;transform:translateX(${x}px);opacity:${center?0:(0.10+0.05*(4-Math.abs(i-4)))*k};font-weight:900;font-size:190px;letter-spacing:-6px;color:var(--txt)">${(p.word+' · ').repeat(8)}</div>`}
+  const g=eio(C(t/D));const r=back(C(t/0.45));
+  h+=`<div class="abs" style="left:50%;top:960px;transform:translate(-50%,-50%) scale(${(0.55+0.45*r)*(1+0.12*g)});font-weight:900;font-size:190px;letter-spacing:-7px;color:var(--ink);background:var(--acc);padding:0 40px;border-radius:28px;white-space:nowrap;box-shadow:0 30px 80px rgba(0,0,0,.45)">${p.word}</div>`;
+  return `<div class="gbg"></div>${h}`},
+ forget(t,D,p){let h='<div class="gbg"></div>';p.words.forEach((w,wi)=>{let s='';[...w].forEach((ch,ci)=>{const t0=(p.start||0.5)+wi*0.18+((ci*7+wi*3)%w.length)*0.08;const k=eo((t-t0)/0.5);s+=`<span style="display:inline-block;opacity:${1-k*.95};filter:blur(${16*k}px);transform:translateY(${-24*k}px)">${ch}</span>`});
+  h+=`<div class="abs" style="left:84px;top:${560+wi*240}px;opacity:${rv(t,wi*.08,.3)};color:${wi==1?'var(--acc)':'var(--txt)'};font-weight:900;font-size:${p.fs||140}px;letter-spacing:-3px;white-space:nowrap">${s}</div>`});
+  if(p.cap)h+=`<div class="abs" style="left:88px;top:1380px;${rise(rv(t,(p.start||0.5)+0.6,.4))};color:var(--muted);font-weight:700;font-size:52px">${p.cap}</div>`;return h},
+ page(t,D,p){let h=`<div class="pbg"></div><div class="abs" style="inset:0;opacity:.32;filter:blur(3px);background:repeating-linear-gradient(180deg,transparent 0 58px,rgba(0,0,0,.08) 58px 60px)"></div>
+  <div class="abs" style="left:80px;top:170px;width:920px;opacity:.16;filter:blur(5px);font-family:Lora;font-style:italic;font-size:42px;line-height:58px;color:#3B4A40">Oxuduğumuz hər səhifə yaddaşda iz buraxır. Yaddaş xatırlamaqla güclənir, təkrar və fasilə ilə möhkəmlənir…</div>`;
+  if(p.icon)h+=`<div class="abs" style="left:84px;top:${(p.y||700)-190}px;${pop(rv(t,0.02,.4))}">${ico(p.icon,120,'var(--ink)',1.8)}</div>`;
+  let y=p.y||700;const fs=p.fs||112;p.lines.forEach((ln,i)=>{const r=rv(t,p.ts[i],.34);h+=`<div class="abs" style="left:84px;top:${y}px;${rise(r)};color:var(--ink);font-weight:800;font-size:${fs}px;line-height:1.02;letter-spacing:-3px;white-space:nowrap">${ln}</div>`;
+   if(p.marks&&p.marks.includes(i))h+=`<div class="abs" style="left:76px;top:${y+fs*0.52}px;height:${fs*0.42}px;border-radius:8px;background:var(--acc);opacity:.55;width:${(p.markW||520)*rv(t,p.ts[i]+0.22,0.35)}px;z-index:-1"></div>`;y+=fs*1.22});
+  (p.sub||[]).forEach((sb,i)=>{h+=`<div class="abs" style="left:88px;top:${y+40+i*80}px;${rise(rv(t,p.subTs[i],.35),14)};color:var(--muted);font-weight:700;font-size:52px">${sb}</div>`});return h},
+ contrast(t,D,p){let e='';for(let i=0;i<9;i++)e+=`<div class="abs" style="left:${-60+(i%2)*120}px;top:${120+i*200}px;opacity:${.08*rv(t,i*.05,.4)};color:var(--txt);font-weight:900;font-size:220px;letter-spacing:-4px;white-space:nowrap;transform:translateX(${-40*t}px)">${p.bg} ${p.bg}</div>`;
+  let h='';p.lines.forEach((ln,i)=>{h+=`<div style="${rise(rv(t,p.ts[i],.34),30)}">${ln}</div>`});
+  return `<div class="gbg"></div>${e}<div class="abs" style="left:84px;top:${p.y||760}px;color:var(--txt);font-weight:800;font-size:${p.fs||104}px;line-height:1.06;letter-spacing:-2px">${h}<div style="margin-top:28px;height:10px;border-radius:5px;background:var(--acc);width:${130*rv(t,p.ts[p.ts.length-1]+.25,.35)}px"></div></div>`},
+ transform(t,D,p){const a=rv(t,0.05,.35);const u=eio(C((t-p.u)/0.6));const sk=p.strike!=null?eo(C((t-p.strike)/0.35)):0;const fw=String(p.from).split(/(<br>| )/).filter(x=>x.trim()&&x!=' ');
+  return `<div class="pbg"></div>
+  <div class="abs" style="left:84px;top:${560-170*u}px;transform:scale(${1-0.35*u});transform-origin:0 0;filter:blur(${6*u}px);opacity:${a*(1-0.6*u)};color:var(--ink);font-weight:700;font-size:88px;line-height:1.08"><div style="transform:scale(${1+0.06*Math.sin(t*3)})">${ico(p.icon1||'target',90,'var(--ink)')}</div><span style="position:relative;display:inline-block">${fw.map((w,i)=>w=='<br>'?'<br>':`<span style="display:inline-block;margin-right:22px;${rise(rv(t,0.08+i*0.16,.3),16)};background:linear-gradient(#E0625B,#E0625B) no-repeat 0 58%/${100*sk}% 9px">${w}</span>`).join('')}</span></div>
+  <div class="abs" style="left:96px;top:${820}px;opacity:${u};transform:translateY(${-30*(1-u)}px)">${ico('arrowd',90,'var(--ink)',2.6)}</div>
+  <div class="abs" style="left:84px;top:${980+40*(1-u)}px;opacity:${u};color:var(--ink);font-weight:900;font-size:118px;line-height:1.02;letter-spacing:-3px">${p.to}</div>
+  <div class="abs" style="left:84px;top:1380px;display:flex;align-items:center;gap:22px;padding:18px 34px;border-radius:999px;background:var(--ink);color:var(--paper);font-size:48px;font-weight:800;${pop(rv(t,p.u+0.45,.4))};transform-origin:0 50%">${ico(p.icon2||'headphones',52,'var(--acc)',2.2)}${p.chip}</div>`},
+ cols(t,D,p){let h='<div class="gbg"></div>';if(p.title)h+=`<div class="abs" style="left:84px;top:420px;${rise(rv(t,.02,.35))};color:var(--txt);font-weight:800;font-size:84px;line-height:1.04">${p.title}</div>`;
+  h+=`<div class="abs" style="left:540px;top:${p.y||860}px;width:3px;height:${560*rv(t,.1,.5)}px;background:var(--muted);opacity:.5"></div>`;
+  [p.left,p.right].forEach((c,i)=>{const r=rv(t,p.ts[i],.36);h+=`<div class="abs" style="left:${i?600:84}px;top:${p.y||860}px;width:420px;${rise(r)};color:var(--txt);font-weight:800;font-size:${p.fs||66}px;line-height:1.12"><div style="margin-bottom:26px">${ico(c[0],110,i==0?'var(--acc)':'var(--txt)',1.8)}</div>${c[1]}</div>`});return h},
+ icons(t,D,p){let h='<div class="gbg"></div>';h+=`<div class="abs" style="left:84px;top:${p.y||420}px;${rise(rv(t,.02,.35))};color:var(--txt);font-weight:800;font-size:${p.tfs||92}px;line-height:1.04">${p.title}</div>`;
+  p.items.forEach((it,i)=>{const r=rv(t,p.ts[i],.4);const y=(p.y||420)+(p.gap0||260)+i*250;h+=`<div class="abs" style="left:84px;top:${y}px;display:flex;align-items:center;gap:40px;${pop(r)};transform-origin:0 50%"><div style="width:170px;height:170px;border-radius:44px;background:var(--acc);display:flex;align-items:center;justify-content:center">${ico(it[0],100,'var(--ink)',2)}</div><div style="color:var(--txt);font-weight:800;font-size:${p.fs||70}px;white-space:nowrap">${it[1]}</div></div>`});return h},
+ stripes(t,D,p){
+  const V=(c1,c2,w)=>`repeating-linear-gradient(90deg,${c1} 0 ${w}px,${c2} ${w}px ${2*w}px)`,Hh=(c1,c2,w)=>`repeating-linear-gradient(0deg,${c1} 0 ${w}px,${c2} ${w}px ${2*w}px)`;
+  const labx=(txt,y,r)=>`<div class="abs" style="left:48px;top:${y}px;padding:22px 32px;border-radius:24px;background:var(--bg2);${rise(r,14)};color:var(--txt);font-weight:800;font-size:50px;line-height:1.1;box-shadow:0 10px 30px rgba(0,0,0,.35)">${txt}<div style="margin-top:10px;height:7px;width:70px;border-radius:4px;background:var(--acc)"></div></div>`;
+  if(p.mode==='single'){const z=1.06-0.06*eo(t/D);return `<div class="abs" style="inset:0;transform:scale(${z});background:${V('#F2F2F2','#111',64)}"></div>${p.bwLabel?labx(p.bwLabel,150,rv(t,0.15,.35)):''}`}
+  if(p.mode==='duo'){const ph=Math.floor(t/0.9)%2;const top=ph?Hh('#2E9A4A','#111',56):V('#C8302B','#111',56);
+   const q=(a,b)=>`background:${a}`;const bw=`<div class="abs" style="left:0;top:0;width:540px;height:470px;background:${V('#F2F2F2','#111',56)}"></div><div class="abs" style="left:540px;top:0;width:540px;height:470px;background:${Hh('#F2F2F2','#111',56)}"></div><div class="abs" style="left:0;top:470px;width:540px;height:470px;background:${Hh('#F2F2F2','#111',56)}"></div><div class="abs" style="left:540px;top:470px;width:540px;height:470px;background:${V('#F2F2F2','#111',56)}"></div>`;
+   const br=rv(t,p.bwAt??0.6,.45);
+   return `<div class="abs" style="left:0;top:0;width:1080px;height:960px;background:${top}"></div>
+   <div class="abs" style="left:0;top:980px;width:1080px;height:940px;overflow:hidden;background:#111">${bw}<div class="abs" style="inset:0;background:#111;opacity:${0.7*(1-br)}"></div></div>
+   <div class="abs" style="left:0;top:958px;width:1080px;height:24px;background:var(--bg3)"></div>
+   ${labx(p.topLabel||'',120,rv(t,0.1,.35))}${labx(p.bwLabel||'',1040,br)}
+   ${p.note?`<div class="abs" style="right:48px;top:1700px;padding:20px 30px;border-radius:999px;background:var(--acc);color:var(--ink);font-weight:800;font-size:44px;${pop(rv(t,p.noteAt,.4))};transform-origin:100% 50%">${p.note}</div>`:''}`}
+const mode=(p.switchAt!=null&&t>=p.switchAt)?'bw':p.mode;let pat;
+  if(mode==='color')pat=`<div class="abs" style="left:0;top:0;width:1080px;height:960px;background:repeating-linear-gradient(90deg,#C8302B 0 60px,#111 60px 120px)"></div><div class="abs" style="left:0;top:960px;width:1080px;height:960px;background:repeating-linear-gradient(0deg,#2E9A4A 0 60px,#111 60px 120px)"></div>`;
+  else{const v='repeating-linear-gradient(90deg,#F2F2F2 0 60px,#111 60px 120px)',hz='repeating-linear-gradient(0deg,#F2F2F2 0 60px,#111 60px 120px)';pat=`<div class="abs" style="left:0;top:0;width:540px;height:960px;background:${v}"></div><div class="abs" style="left:540px;top:0;width:540px;height:960px;background:${hz}"></div><div class="abs" style="left:0;top:960px;width:540px;height:960px;background:${hz}"></div><div class="abs" style="left:540px;top:960px;width:540px;height:960px;background:${v}"></div>`}
+  const fl=p.switchAt!=null?Math.max(0,1-Math.abs(t-p.switchAt)/0.12):0;const lab=mode==='bw'?(p.bwLabel||''):(p.colorLabel||'');const r=rv(t,mode==='bw'&&p.switchAt!=null?p.switchAt:0.05,.35);
+  return `<div class="abs" style="inset:0;transform:scale(${1.04-0.04*eo(t/D)})">${pat}</div><div class="abs" style="inset:0;background:#fff;opacity:${0.6*fl}"></div>${lab?`<div class="abs" style="left:56px;top:150px;padding:30px 40px;border-radius:28px;background:var(--bg2);${rise(r,16)};color:var(--txt);font-weight:800;font-size:64px;line-height:1.1">${lab}<div style="margin-top:14px;height:8px;width:90px;border-radius:4px;background:var(--acc)"></div></div>`:''}`},
+ dots(t,D,p){let h=`<div class="gbg"></div><div class="abs" style="left:84px;top:520px;${rise(rv(t,.02,.35))};color:var(--txt);font-weight:800;font-size:124px;line-height:1.02;letter-spacing:-3px">${p.title}</div>`;
+  const y=1150;h+=`<div class="abs" style="left:96px;top:${y}px;height:4px;border-radius:2px;background:var(--muted);width:${880*eio(C((t-.25)/1.0))}px"></div>`;
+  [0,.28,.6,1].forEach((x,i)=>{const k=rv(t,.25+x*1.0,.25);h+=`<div class="abs" style="left:${96+880*x-16}px;top:${y-14}px;width:32px;height:32px;border-radius:50%;background:${i==3?'var(--acc)':'var(--txt)'};${pop(k)}"></div>`;if(p.labels)h+=`<div class="abs" style="left:${96+880*x-30}px;top:${y+44}px;opacity:${k};color:var(--muted);font-weight:700;font-size:36px;white-space:nowrap">${p.labels[i]}</div>`});return h}
+};
+// ---------- BÖLÜNMÜŞ EKRAN PANELİ (aşağı 860 px) ----------
+const PANEL={
+ icons(t,D,p){let h=p.title?`<div style="${rise(rv(t,.15,.35))};color:var(--txt);font-weight:800;font-size:58px;margin-bottom:46px">${p.title}</div>`:'';h+='<div style="display:flex;gap:30px;align-items:stretch">';
+  p.items.forEach((it,i)=>{const r=rv(t,p.ts[i],.38);h+=(i&&p.arrows?`<div style="align-self:center;opacity:${r}">${ico('arrowd',60,'var(--acc)',2.6).replace('<svg','<svg style="transform:rotate(-90deg)"')}</div>`:'')+`<div style="flex:1;padding:34px 20px;border-radius:34px;background:var(--bg);display:flex;flex-direction:column;align-items:center;gap:20px;${pop(r)}">${ico(it[0],96,'var(--acc)',1.9)}<div style="color:var(--txt);font-weight:800;font-size:${p.fs||42}px;text-align:center;line-height:1.1">${it[1]}</div></div>`});return h+'</div>'},
+ steps(t,D,p){let h=p.title?`<div style="${rise(rv(t,.15,.35))};color:var(--muted);font-weight:700;font-size:44px;margin-bottom:30px">${p.title}</div>`:'';
+  p.items.forEach((it,i)=>{const r=rv(t,p.ts[i],.36);h+=`<div style="display:flex;align-items:center;gap:30px;margin:0 0 26px;${rise(r,20)}"><div style="width:104px;height:104px;border-radius:30px;background:${i==(p.hl??-1)?'var(--acc)':'var(--bg)'};display:flex;align-items:center;justify-content:center;flex:0 0 auto">${ico(it[0],60,i==(p.hl??-1)?'var(--ink)':'var(--acc)',2)}</div><div style="color:var(--txt);font-weight:800;font-size:${p.fs||58}px;white-space:nowrap">${it[1]}</div>${p.check&&r>.8?`<div style="margin-left:auto;${pop(rv(t,p.ts[i]+.25,.3))}">${ico('check',56,'var(--acc)',2.2)}</div>`:''}</div>`});return h},
+ text(t,D,p){return `<div style="${pop(rv(t,.12,.4))};transform-origin:0 50%">${ico(p.icon||'question',110,'var(--acc)',1.8)}</div><div style="margin-top:26px;${rise(rv(t,.3,.36))};color:var(--txt);font-weight:800;font-size:${p.fs||78}px;line-height:1.06;letter-spacing:-1.5px">${p.text}</div>`},
+ blocks(t,D,p){const sp=eio(C((t-p.split)/0.4));let h=`<div style="position:relative;height:640px">`;
+  const br=1+0.025*Math.sin(t*4);h+=`<div class="abs" style="left:0;right:0;top:0;height:${430*(1-sp)+14*sp}px;border-radius:30px;transform:scale(${br});background:linear-gradient(110deg,var(--bg) 40%,rgba(255,255,255,.14) 50%,var(--bg) 60%) ${-600+900*((t*0.6)%1.6)}px 0/300% 100%;opacity:${1-sp};display:flex;align-items:center;justify-content:center;gap:24px;color:var(--txt);font-weight:800;font-size:64px;letter-spacing:4px">${ico('layers',80,'var(--acc)')}${p.big}</div>`;
+  const PT=p.parts||['İlk addım','2-ci hissə','3-cü hissə','4-cü hissə'];PT.forEach((lb,i)=>{const r=rv(t,p.split+.05+i*.09,.32);const on=i==0&&rv(t,p.hl,.3)>.05;
+   h+=`<div class="abs" style="left:0;right:0;top:${20+i*150}px;height:124px;border-radius:28px;display:flex;align-items:center;gap:28px;padding:0 34px;opacity:${r};transform:translateX(${(1-r)*60}px);background:${on?'var(--acc)':'rgba(255,255,255,.07)'};border:2px solid ${on?'var(--acc)':'rgba(255,255,255,.12)'}"><span style="width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:36px;background:${on?'var(--ink)':'transparent'};border:3px solid ${on?'var(--ink)':'var(--muted)'};color:${on?'var(--acc)':'var(--muted)'}">${i+1}</span><span style="font-weight:800;font-size:${i==0?54:44}px;color:${on?'var(--ink)':'var(--txt)'};opacity:${i==0?1:.75}">${lb}</span></div>`});
+  h+=`</div>`;return h},
+ curve(t,D,p){const L=eio(C((t-.2)/1.6));const W=936,H=520;const f=(x)=>{let y=1,last=0;for(const r of [.33,.62])if(x>=r){last=r}let k=x-last;let base=last==0?1:(last==.33?1:1);const dec=last==0?2.6:(last==.33?1.5:.8);return 0.12+0.82*Math.exp(-dec*k*3)};
+  let d='';for(let i=0;i<=120;i++){const x=i/120;if(x>L)break;const y=f(x);d+=(i?'L':'M')+(x*W).toFixed(1)+' '+((1-y)*H).toFixed(1)}
+  let h=`<div style="${rise(rv(t,.1,.35))};color:var(--txt);font-weight:800;font-size:56px;margin-bottom:36px">${p.title}</div><svg width="${W}" height="${H+60}" style="overflow:visible"><path d="M0 ${H} H${W}" style="stroke:var(--muted);stroke-width:3;opacity:.5"/><path d="${d}" style="stroke:var(--acc);stroke-width:9;fill:none;stroke-linecap:round"/>`;
+  [0,.33,.62].forEach((x,i)=>{const k=rv(t,.2+x*1.6,.3);h+=`<circle cx="${x*W}" cy="${(1-f(x+0.0001))*H}" r="16" style="fill:var(--txt)" opacity="${k}"/><text x="${x*W}" y="${H+52}" style="fill:var(--muted)" font-size="34" font-weight="700" font-family="Montserrat" opacity="${k}">${p.labels[i]}</text>`});return h+'</svg>'},
+ vs(t,D,p){let h=`<div style="display:flex;gap:40px">`;[p.a,p.b].forEach((c,i)=>{const r=rv(t,p.ts[i],.38);h+=`<div style="flex:1;padding:44px 34px;border-radius:36px;background:${i?'var(--acc)':'var(--bg)'};${pop(r)}">${ico(c[0],100,i?'var(--ink)':'var(--acc)',1.9)}<div style="margin-top:26px;color:${i?'var(--ink)':'var(--txt)'};font-weight:800;font-size:${p.fs||56}px;line-height:1.08">${c[1]}</div>${c[2]?`<div style="margin-top:16px;color:${i?'var(--ink)':'var(--muted)'};font-weight:700;font-size:38px;opacity:.85">${c[2]}</div>`:''}</div>`});return h+'</div>'},
+ book(t,D,p){const c=eio(C((t-p.close)/0.45));return `<div style="display:flex;align-items:center;gap:50px"><div style="position:relative;width:300px;height:230px;${pop(rv(t,.1,.4))}">
+  <div class="abs" style="left:150px;top:0;width:150px;height:230px;border-radius:0 16px 16px 0;background:var(--paper);box-shadow:inset 6px 0 0 rgba(0,0,0,.08)"></div>
+  <div class="abs" style="left:0;top:0;width:150px;height:230px;border-radius:16px 0 0 16px;background:${c>.5?'var(--acc)':'var(--paper)'};transform-origin:100% 50%;transform:perspective(600px) rotateY(${-180*c}deg)"></div>
+  ${[0,1,2,3].map(i=>`<div class="abs" style="left:182px;top:${42+i*40}px;width:90px;height:8px;border-radius:4px;background:#9AA59D;opacity:${1-c}"></div>`).join('')}</div>
+  <div style="color:var(--txt);font-weight:800;font-size:${p.fs||70}px;line-height:1.08">${p.lines.map((l,i)=>`<div style="${rise(rv(t,p.ts[i],.35))}">${l}</div>`).join('')}</div></div>`},
+ bars(t,D,p){let h=`<div style="${rise(rv(t,.1,.35))};color:var(--txt);font-weight:800;font-size:54px;margin-bottom:40px">${p.title}</div><div style="display:flex;align-items:flex-end;gap:70px;height:420px;padding-left:20px">`;
+  p.items.forEach((it,i)=>{const r=eo(C((t-p.ts[i])/0.6));h+=`<div style="display:flex;flex-direction:column;align-items:center;gap:20px;width:300px"><div style="width:200px;height:${it[1]*380*r}px;border-radius:20px 20px 6px 6px;background:${i?'var(--acc)':'var(--muted)'}"></div><div style="color:var(--txt);font-weight:700;font-size:38px;text-align:center;line-height:1.15;opacity:${r}">${it[0]}</div></div>`});
+  return h+'</div>'}
+};
+function split(t,D,p){const a=eo(t/0.36),b=1-eo((t-D+0.32)/0.32);const k=Math.min(a,b);const inner=PANEL[p.type](t,D,p);
+ S.innerHTML=`<div class="abs" style="left:0;right:0;top:${1060+(1-k)*900}px;height:860px;border-radius:48px 48px 0 0;background:linear-gradient(180deg,var(--bg2),var(--bg3));box-shadow:0 -18px 50px rgba(0,0,0,.35);overflow:hidden">
+ <div class="abs" style="left:50%;top:18px;width:90px;height:8px;margin-left:-45px;border-radius:4px;background:var(--muted);opacity:.35"></div><div class="abs" style="left:72px;right:72px;top:${p.pt||90}px;transform:translateY(${-10*eio(C(t/D))}px) scale(${1+0.02*eio(C(t/D))})">${inner}</div></div>`}
+window.renderAt=(n,t,D,p)=>{const pal=p.pal||{};for(const k in pal)document.documentElement.style.setProperty('--'+k,pal[k]);
+ S.style.opacity='1';S.style.transform='none';S.style.filter='none';S.style.transformOrigin='50% 50%';
+ if(n==='lower')lower(t,D,p);else if(n==="top")topcard(t,D,p);else if(n==='topchips')topchips(t,D,p);else if(n==='split')split(t,D,p);
+ else{S.innerHTML=FULL[n](t,D,p);const sf=p.safe||1;
+  if(p.soft){const ai=p.noIn?1:eio(C(t/0.5)),ao=eio(C((t-D+0.45)/0.45));S.style.opacity=String(Math.min(1,ai*1.6,(1-ao)*1.6));S.style.transform=`scale(${(1.06-0.06*ai)*(1-0.03*ao)*(1+0.025*eio(C(t/D)))})`;S.style.filter=`blur(${6*(1-ai)+5*ao}px)`;}
+  else{const ai=p.noIn?1:eo(t/0.34),ao=eio(C((t-D+0.3)/0.3));S.style.opacity=String(Math.min(1,ai*1.8,(1-ao)*1.8));S.style.transform=`scale(${(1.22-0.22*ai)*(1-0.08*ao)*(1+0.045*eio(C(t/D)))})`;S.style.filter=`blur(${18*(1-ai)+14*ao}px)`;}}
+ if(p.safe&&n!=='split'){for(const el of S.querySelectorAll(':scope > *')){const r=el.getBoundingClientRect();if(r.width>=1060)continue;el.style.transformOrigin=`${540-r.left}px ${960-r.top}px`;el.style.scale=String(p.safe);}}};
+</script></body></html>

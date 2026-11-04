@@ -1,0 +1,87 @@
+{
+  "_doc": "Ev qaydaları: hər videoya avtomatik tətbiq olunur. Video konfiqində eyni açar yazılsa, o üstün gəlir.",
+  "common": {
+    "push": 1.045,
+    "softFx": true,
+    "glide": [
+      1.0,
+      1.06
+    ],
+    "safe": 0.86,
+    "sfxset": "premium",
+    "sfxScale": 0.5,
+    "dropSfx": [
+      "pop"
+    ],
+    "tight": {
+      "d": 0.25,
+      "after": 0.2,
+      "before": 0.15
+    },
+    "speechChain": "highpass=f=70,acompressor=threshold=0.05:ratio=3:attack=10:release=200:makeup=2,dynaudnorm=f=150:g=9:p=0.9:m=3:s=8",
+    "fy": 0.41,
+    "cap": {
+      "x": 0.067,
+      "y": 0.8,
+      "align": "left",
+      "underline": true,
+      "size": 0.032,
+      "font": "Montserrat",
+      "weight": 800,
+      "color": "#FFFFFF",
+      "activeColor": "#6CC57E",
+      "bg": "none",
+      "stroke": "rgba(0,0,0,0.35)",
+      "maxWords": 3,
+      "maxW": 0.4
+    }
+  },
+  "talk": {
+    "pal": "forest"
+  },
+  "ad": {
+    "ad": true,
+    "pal": "adgreen",
+    "tight": {
+      "d": 0.18,
+      "after": 0.14,
+      "before": 0.1
+    },
+    "cap": {
+      "x": 0.5,
+      "y": 0.77,
+      "align": null,
+      "underline": false,
+      "size": 0.0326,
+      "font": "Montserrat",
+      "weight": 800,
+      "color": "#0F3B2C",
+      "activeColor": "#6CC57E",
+      "bg": "#6CC57E@0.97",
+      "stroke": "rgba(0,0,0,0.35)",
+      "maxWords": 3,
+      "maxW": 0.4
+    }
+  },
+  "forbiddenColors": [
+    "#C5E01F",
+    "#DDF25A",
+    "#A6C10F",
+    "#C8F56A",
+    "#E8F57A"
+  ],
+  "forbiddenSfx": [
+    "pop",
+    "softclick",
+    "paperclick"
+  ],
+  "qa": {
+    "lufs": [
+      -16.0,
+      -12.5
+    ],
+    "peakMax": -1.0,
+    "freezeFrames": 6,
+    "minItemShow": 0.9
+  }
+}

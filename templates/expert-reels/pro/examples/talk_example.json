@@ -1,0 +1,150 @@
+{
+ "n": 1,
+ "title": "04 Oxu, xatırla, yoxla — PRO",
+ "file": "04_OxuXatirlaYoxla",
+ "scenes": [
+  {
+   "kind": "lower",
+   "from": "Deyək ki",
+   "dur": 2.6,
+   "lead": 0,
+   "p": {
+    "text": "Çox mətn.\nAz vaxt.",
+    "icon": "clock",
+    "lineAt": [
+     0,
+     "vaxtınız"
+    ],
+    "box": true
+   }
+  },
+  {
+   "kind": "top",
+   "from": "Bəs bunu",
+   "dur": 1.5,
+   "p": {
+    "text": "Necə edəcəksiniz?",
+    "icon": "question"
+   }
+  },
+  {
+   "kind": "page",
+   "from": "ağla gələn",
+   "dur": 2.5,
+   "p": {
+    "lines": [
+     "Bütün mətni",
+     "dəfələrlə",
+     "oxumaq?"
+    ],
+    "ts": [
+     "bütün",
+     "dəfələrlə",
+     "oxumaqdır"
+    ],
+    "fs": 118,
+    "icon": "refresh",
+    "marks": [
+     1
+    ],
+    "markW": 520
+   }
+  },
+  {
+   "kind": "top",
+   "from": "Amma gəlin",
+   "dur": 2.6,
+   "p": {
+    "text": "Daha az yoran üsul",
+    "icon": "bulb"
+   }
+  },
+  {
+   "kind": "split",
+   "from": "Əlinizdəki",
+   "dur": 3.6,
+   "p": {
+    "type": "book",
+    "lines": [
+     "1. Bir dəfə oxuyun",
+     "2. Kitabı bağlayın"
+    ],
+    "ts": [
+     0.25,
+     "kitabı"
+    ],
+    "close": "bağlayın",
+    "fs": 62
+   }
+  },
+  {
+   "kind": "lower",
+   "from": "və öyrəndiklərinizi",
+   "dur": 2.1,
+   "p": {
+    "text": "3. Özünüzə danışın.",
+    "icon": "chat",
+    "box": true
+   }
+  },
+  {
+   "kind": "split",
+   "from": "Öyrəndiyiniz mətndəki",
+   "dur": 4.0,
+   "p": {
+    "type": "steps",
+    "items": [
+     [
+      "list",
+      "Prinsipləri sadalayın"
+     ],
+     [
+      "check",
+      "Mətnlə yoxlayın"
+     ]
+    ],
+    "ts": [
+     0.25,
+     "nələri yanlış"
+    ],
+    "check": true
+   }
+  },
+  {
+   "kind": "kinetic",
+   "from": "Çünki beyin",
+   "dur": 2.2,
+   "pal": "forest",
+   "p": {
+    "lines": [
+     "Beyin təxmin",
+     "etməyi sevir."
+    ],
+    "fs": 104,
+    "icon": "brain",
+    "ts": [
+     0.05,
+     0.25
+    ],
+    "y": 760
+   }
+  },
+  {
+   "kind": "lower",
+   "from": "İkinci oxumada",
+   "toEnd": true,
+   "p": {
+    "text": "Oxu.\nXatırla.\nYoxla.",
+    "dot": true,
+    "dotAt": "verəcək",
+    "lineAt": [
+     0,
+     0.5,
+     1.0
+    ],
+    "fs": 72
+   }
+  }
+ ],
+ "text": "<danışığın tam mətni (ASR və ya ssenari)>"
+}
