@@ -58,6 +58,33 @@ def download(link: str, dst_dir: Path, progress: Callable[[float], None] | None 
     except requests.RequestException as e:
         raise UserError("Drive-a qoşulmaq alınmadı.", "Bir az sonra yenidən cəhd edin.", detail=str(e)) from e
     ctype = r.headers.get("content-type", "")
+    if r.status_code == 200 and ctype.startswith("text/html"):
+        # Böyük fayllarda Drive "virus scan warning" forması qaytarır: gizli sahələrlə (uuid) yenidən istə.
+        html = r.text
+        r.close()
+        if "Quota exceeded" in html:
+            raise UserError(
+                "Google Drive bu faylın endirmə limitini keçib (Quota exceeded) — paylaşım düzgündür.",
+                "Drive-da faylın surətini çıxarın (Make a copy) və YENİ surətin linkini göndərin, "
+                "və ya bir neçə saat sonra yenidən cəhd edin.",
+                detail="quota exceeded",
+            )
+        fields = dict(re.findall(r'<input type="hidden" name="([^"]+)" value="([^"]*)"', html))
+        if fields.get("id") == fid and "uuid" in fields:
+            action = re.search(r'action="([^"]+)"', html)
+            try:
+                r = s.get(action.group(1) if action else base_url, params=fields, stream=True, timeout=60)
+            except requests.RequestException as e:
+                raise UserError("Drive-a qoşulmaq alınmadı.", "Bir az sonra yenidən cəhd edin.", detail=str(e)) from e
+            ctype = r.headers.get("content-type", "")
+            if ctype.startswith("text/html") and "Quota exceeded" in r.text:
+                r.close()
+                raise UserError(
+                    "Google Drive bu faylın endirmə limitini keçib (Quota exceeded) — paylaşım düzgündür.",
+                    "Drive-da faylın surətini çıxarın (Make a copy) və YENİ surətin linkini göndərin, "
+                    "və ya bir neçə saat sonra yenidən cəhd edin.",
+                    detail="quota exceeded",
+                )
     if r.status_code in (401, 403, 404) or ctype.startswith("text/html"):
         r.close()
         raise UserError(
