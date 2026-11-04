@@ -82,6 +82,6 @@
     ],
     "peakMax": -1.0,
     "freezeFrames": 6,
-    "minItemShow": 0.9
+    "minItemShow": 0.85
   }
 }
