@@ -63,9 +63,9 @@ def test_session_cli_bad_link_message(tmp_path, monkeypatch, capsys):
     from montaj import session
 
     monkeypatch.setenv("MONTAJ_DATA_DIR", str(tmp_path / "data"))
-    rc = session.main(["new", "--title", "X", "--link", "https://drive.google.com/drive/folders/1AbCdEfGhIjKlMnOpQrStUvWxYz0"])
+    rc = session.main(["new", "--title", "X", "--link", "https://example.com/file/d/1AbCdEfGhIjKlMnOpQrStUvWxYz0"])
     err = capsys.readouterr().err
-    assert rc == 2 and "Qovluq linki" in err and "NƏ ETMƏLİ" in err
+    assert rc == 2 and "Drive linki deyil" in err and "NƏ ETMƏLİ" in err
 
 
 def test_editor_page_and_edits_roundtrip(tmp_path, monkeypatch):

@@ -1,7 +1,7 @@
 # Yeni montaj söhbəti üçün başlanğıc promptu
 
 Yeni Claude Code söhbətini açanda (repo: `memmedova1aynur-svg/openmontage`, **main** branch; mühitdə `FREESOUND_API_KEY`
-olsun, setup skripti: `bash /home/user/openmontage/scripts/cloud-setup.sh || true`) aşağıdakı mətni **ilk mesaj** kimi göndərin.
+və Drive üçün pulsuz `GOOGLE_API_KEY` (tövsiyə — Google endirmə limitlərindən asılı olmur; `IS_AXINI.md` → “Drive”) olsun, setup skripti: `bash /home/user/openmontage/scripts/cloud-setup.sh || true`) aşağıdakı mətni **ilk mesaj** kimi göndərin.
 
 ---
 

@@ -78,7 +78,7 @@ def cmd_new(a: argparse.Namespace) -> None:
     base = node_tl("migrate", node_tl("newProject", {"id": "tmp", "title": a.title}))
     p = store.create(a.title, base)
     pid = p["id"]
-    for link in a.link or []:
+    for link in drive.expand(a.link):  # qovluq linki fayllara açılır
         tmp, name = drive.download(link, store.originals_dir(pid), lambda x: None)
         r = server._register(pid, tmp, name, {"type": "drive", "id": drive.parse_link(link)["id"]})
         print(f"media: {r['media']['name']}  {r['media'].get('width')}x{r['media'].get('height')}  "
@@ -1340,7 +1340,7 @@ def cmd_add_broll(a: argparse.Namespace) -> None:
     from montaj import server
 
     added = []
-    for link in a.link or []:
+    for link in drive.expand(a.link):
         tmp, name = drive.download(link, store.originals_dir(a.pid), lambda x: None)
         added.append(server._register(a.pid, tmp, name, {"type": "drive", "id": drive.parse_link(link)["id"]})["media"])
     for f in a.file or []:
