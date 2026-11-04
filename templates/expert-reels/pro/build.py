@@ -256,7 +256,14 @@ if CFG.get("glide"):
         if fr.get("mode") in ("auto", "manual") and c["media"] == mid:
             fr["z0"] = round(G0 + (G1 - G0) * acc_ / vtot, 5); fr["z1"] = round(G0 + (G1 - G0) * (acc_ + d_) / vtot, 5); c["frame"] = fr
         acc_ += d_
-if CFG.get("speechChain"): q["speechChain"] = CFG["speechChain"]
+chain_ = CFG.get("speechChain") or ""
+if CFG.get("muteGaps"):  # söz aralarında (danışan susanda) kənar səsləri −20 dB yumşaq azalt; danışığa toxunmur
+    tw = sorted((tl(w["s"]), tl(w["e"])) for w in WORDS)
+    gaps = [(e0 + 0.06, s1 - 0.04) for (_, e0), (s1, _) in zip(tw, tw[1:]) if s1 - e0 >= 0.18]
+    gaps += [(tw[-1][1] + 0.08, TOTAL + HOLD + 1)] if tw else []
+    r_ = 0.03; g_ = "+".join(f"clip(min((t-{a0:.3f})/{r_},({b0:.3f}-t)/{r_}),0,1)" for a0, b0 in gaps if b0 - a0 > 0.05)
+    if g_: chain_ = f"volume='1-0.9*min(1,{g_})':eval=frame" + ("," + chain_ if chain_ else "")
+if chain_: q["speechChain"] = chain_
 else: q.pop("speechChain", None)
 store.save(pid, q, store.load(pid)["revision"]); q = store.load(pid)
 # 8) kompozit cover kliplər: danışan (əsas videonun eyni kadrı) + qrafika
