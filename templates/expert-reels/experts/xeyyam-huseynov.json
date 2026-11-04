@@ -239,6 +239,42 @@
    "captions": "stroke",
    "tone": "#0F3B2C",
    "anim": "fade"
+  },
+  {
+   "video": "Xeyyam video 2",
+   "date": "2026-11-04",
+   "engine": "montaj",
+   "type": 1,
+   "approach": "M01+M02+M03",
+   "variant": "McCollough effekti",
+   "look": "W",
+   "captions": "stroke",
+   "tone": "#0F3B2C",
+   "anim": "fade"
+  },
+  {
+   "video": "Xeyyam video 5",
+   "date": "2026-11-04",
+   "engine": "montaj",
+   "type": 1,
+   "approach": "M01+M02+M03",
+   "variant": "Sözlər yadınıza düşmür — premium",
+   "look": "W",
+   "captions": "stroke",
+   "tone": "#0F3B2C",
+   "anim": "fade"
+  },
+  {
+   "video": "Xeyyam video 4",
+   "date": "2026-11-04",
+   "engine": "montaj",
+   "type": 1,
+   "approach": "M01+M02+M03",
+   "variant": "Bu yaşda yadda saxlayım?",
+   "look": "W",
+   "captions": "stroke",
+   "tone": "#0F3B2C",
+   "anim": "fade"
   }
  ]
 }
