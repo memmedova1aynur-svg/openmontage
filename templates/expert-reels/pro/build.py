@@ -8,7 +8,16 @@ from pathlib import Path
 A = Path(__file__).resolve().parent
 HOUSE = json.load(open(A / "house.json"))
 _raw = json.load(open(sys.argv[1]))
-CFG = {**HOUSE["common"], **HOUSE["ad" if _raw.get("ad") or _raw.get("type") == "ad" else "talk"], **HOUSE.get("themes", {}).get(_raw.get("theme"), {}), **_raw}
+def _brand(name):
+    """Müştəri brend kiti: <PRO_BRANDS | repo/instagram-clients>/<ad>/brand_kit.json (müştəri faylları repoya düşmür)."""
+    if not name: return {}
+    for d in (os.environ.get("PRO_BRANDS"), str(A.parent.parent.parent / "instagram-clients")):
+        f = Path(d or "", name, "brand_kit.json")
+        if d and f.exists(): return json.load(open(f))
+    raise SystemExit(f"Brend kiti tapılmadı: {name} (instagram-clients/{name}/brand_kit.json)")
+BRAND = _brand(_raw.get("brand"))
+THEME = _raw.get("theme") or BRAND.get("theme")
+CFG = {**HOUSE["common"], **HOUSE["ad" if _raw.get("ad") or _raw.get("type") == "ad" else "talk"], **HOUSE.get("themes", {}).get(THEME, {}), **BRAND.get("cfg", {}), **_raw}
 n = CFG["n"]; pid = CFG.get("pid") or f"xeyyam-video-{n}"
 STEP = sys.argv[2] if len(sys.argv) > 2 else "all"
 DATA = Path(os.environ.get("MONTAJ_DATA_DIR", "/root/montaj-data"))
@@ -123,6 +132,13 @@ PALS = {
  "midnight": {"bg":"#174A53","bg2":"#0B2E33","bg3":"#05181B","acc":"#6CC57E","txt":"#EEF6F5","ink":"#0B2E33","paper":"#FFFFFF","paper2":"#DCE8E6","muted":"#93B4B2"},
  "editorial": {"bg":"#2B1D1A","bg2":"#1E1412","bg3":"#120B0A","acc":"#7A1E3A","acc2":"#C9687F","txt":"#F4EDE4","ink":"#2B1D1A","paper":"#F3ECDF","paper2":"#E4D8C4","muted":"#A8968A"},
  "emerald": {"bg":"#1E8564","bg2":"#11604A","bg3":"#09382B","acc":"#9DDCAA","txt":"#F2FAF5","ink":"#0B4434","paper":"#FFFFFF","paper2":"#DDEEE3","muted":"#A9D6C2"}}
+if BRAND.get("palette"):  # brend rəngləri seçilmiş palitranın üstünə yazılır
+    PALS["brand"] = {**PALS[CFG.get("pal", "forest")], **BRAND["palette"]}; CFG["pal"] = "brand"
+LOOKS = {  # rəng presetləri (yalnız danışan kadra; kartlara toxunmur)
+    "warm_cinematic": {"temperature": 5700, "contrast": 1.06, "saturation": 0.92, "depth": 1.0, "highlights": 0.6, "shadows": 0.1, "sharpen": 0.25},
+    "clean_studio": {"brightness": 0.015, "contrast": 1.03, "vibrance": 0.15, "highlights": 0.5, "sharpen": 0.3},
+    "natural": {"vibrance": 0.1, "shadows": 0.3, "highlights": 0.3, "sharpen": 0.2},
+    "moody": {"temperature": 5400, "contrast": 1.10, "saturation": 0.85, "depth": 1.5, "gamma": 0.97, "sharpen": 0.25}}
 PAL = PALS[CFG["pal"]]; FPS = 30
 OVER = {"lower", "top", "topchips", "equote", "esticker", "ename"}
 SC = []; cur = 0
@@ -231,6 +247,29 @@ SFX = [x for x in SFX if x["kind"] not in CFG.get("dropSfx", [])]
 SFX.sort(key=lambda x: x["t"])
 plan = {"title": CFG["title"], "approach": "M01+M02+M03", "look": "W", "captions": {"enabled": True, "style": CFG["cap"]}, "zooms": [], "sfx": SFX, "graphics": [],
         "broll": ([{"name": endimg.name, "mode": "insert", "at": round(TOTAL - 0.06, 2), "dur": HOLD}] if HOLD > 0 else [])}
+plan["corrections"] = list(BRAND.get("glossary", [])) + list(CFG.get("corrections", []))  # altyazı düzəliş lüğəti
+MUS = CFG.get("music")
+if MUS and MUS.get("file"):  # bütöv musiqi yatağı; danışıqda avtomatik aşağı enir (sidechain ducking)
+    plan["music"] = [{"start": 0.0, "file": str(MUS["file"]), "volume": MUS.get("volume", 0.12), "fadeIn": MUS.get("fadeIn", 1.0), "fadeOut": MUS.get("fadeOut", 2.0), "duck": True}]
+FULLR = [(s_["t0"], s_["t1"]) for s_ in SC if s_["kind"] not in OVER]
+def _free(a, b): return all(b <= x0 or a >= x1 for x0, x1 in FULLR)
+PUNCH = CFG.get("punch")
+if PUNCH == "auto":  # cümlə başlanğıclarında, ən az 10 s aralıqla, tam ekran kartlardan kənarda yüngül yaxınlaşma
+    last = -99.0
+    for j, w in enumerate(WORDS[1:], 1):
+        if WORDS[j - 1]["w"].rstrip().endswith((".", "?", "!")):
+            a_ = tl(w["s"]); b_ = min(a_ + 2.2, TOTAL - 0.3)
+            if a_ - last >= 10 and b_ - a_ > 1.0 and _free(a_, b_):
+                plan["zooms"].append({"from": round(a_, 2), "to": round(b_, 2), "scale": CFG.get("punchScale", 1.08), "cy": 0.42}); last = a_
+elif PUNCH:
+    for z in PUNCH:
+        a_, wi_ = at_word(z["from"]); b_ = end_word(z["until"], wi_)[0] + 0.2 if z.get("until") else a_ + z.get("dur", 2.0)
+        if _free(a_, b_): plan["zooms"].append({"from": round(a_, 2), "to": round(min(b_, TOTAL - 0.3), 2), "scale": z.get("scale", 1.1), "cy": 0.42})
+for br in CFG.get("broll", []):  # müştərinin öz kadrları (sinif, studiya) sözə bağlı
+    r = run(["python", "-m", "montaj.session", "add-broll", pid, "--file", str(br["file"])])
+    if r.returncode: raise SystemExit("b-roll: " + r.stderr[-400:])
+    plan["broll"].append({"name": Path(br["file"]).name, "mode": br.get("mode", "cover"), "at": round(at_word(br["from"])[0], 2), "dur": br.get("dur", 2.5),
+                          **({"srcIn": br["srcIn"]} if "srcIn" in br else {}), "volume": br.get("volume", 0)})
 json.dump(plan, open(W_DIR / "plan.json", "w"), ensure_ascii=False, indent=1)
 r = run(["python", "-m", "montaj.session", "choose", pid, str(W_DIR / "plan.json")])
 print("\n".join(l for l in (r.stdout + r.stderr).splitlines() if "plan tətbiq" in l or "XƏTA" in l or "NƏ ET" in l or "Error" in l))
@@ -240,6 +279,7 @@ q = store.load(pid); PUSH = CFG.get("push", 1.045); k_ = 0
 for c in q["clips"]:
     if c["track"] == "v1" and c["media"] == mid:
         c.setdefault("adjust", {})["mirror"] = True
+        if CFG.get("look") in LOOKS: c["adjust"].update(LOOKS[CFG["look"]])
         fr = c.get("frame") or {}
         if fr.get("mode") in ("auto", "manual"):
             fr.pop("push", None); fr.pop("pull", None); fr["ease"] = True
@@ -350,13 +390,14 @@ def composite(s_):
     else: base = "A"
     fl.append(f"[{g_idx}:v]format=rgba,settb=1/90000,setpts=N/30/TB[G]"); fl.append(f"[{base}][G]overlay=0:0:format=auto:ts_sync_mode=nearest,format=yuv420p[o]")
     r = subprocess.run(["ffmpeg", "-v", "error", "-y", *inputs, "-filter_complex", ";".join(fl), "-map", "[o]", "-frames:v", str(N), "-r", "30",
-                        "-c:v", "libx264", "-crf", "15", "-preset", "medium", "-pix_fmt", "yuv420p", "-an", str(out)], capture_output=True, text=True)
+                        "-c:v", "libx264", "-crf", "14", "-preset", os.environ.get("PRO_COMP_PRESET", "faster"), "-pix_fmt", "yuv420p", "-an", str(out)], capture_output=True, text=True)
     if r.returncode: raise SystemExit(f"kompozit xətası {out.name}: {r.stderr[-1500:]}")
     return out
 tick("kompozitlər")
-outs = []
-for s_ in SC:
-    o = composite(s_); outs.append(o)
+from concurrent.futures import ThreadPoolExecutor
+with ThreadPoolExecutor(max_workers=int(os.environ.get("PRO_COMP_JOBS", "2"))) as ex_:  # səhnə kompozitləri paralel
+    outs = list(ex_.map(composite, SC))
+for s_, o in zip(SC, outs):
     r = run(["python", "-m", "montaj.session", "add-broll", pid, "--file", str(o)])
     if r.returncode: raise SystemExit("add-broll: " + r.stderr[-500:])
     shutil.rmtree(s_["dir"], ignore_errors=True)
@@ -380,11 +421,17 @@ r = run(["python", "-m", "montaj.session", "render", pid]); print((r.stdout.stri
 if r.returncode: raise SystemExit("render xətası: " + r.stderr[-1500:])
 f = sorted((DATA / "out" / pid).glob(f"{pid}_r*.mp4"), key=lambda p: p.stat().st_mtime)[-1]
 dst = f"{SCR}/PRO_{CFG['file']}.mp4"; subprocess.run(["cp", str(f), dst]); print("HAZIR", dst)
+if BRAND.get("handle") and CFG.get("watermark", BRAND.get("watermark", False)):
+    subprocess.run([sys.executable, str(A / "postfx.py"), "watermark", sys.argv[1], dst], check=True)
 tick("render bitdi")
 # 9) QA darvazası: keçməsə çıxış kodu 3 (video göndərilmir)
 qa = subprocess.run([sys.executable, str(A / "qa.py"), sys.argv[1], dst], capture_output=True, text=True)
 print(qa.stdout.strip()); tick("QA")
 if qa.returncode: raise SystemExit(3)
+for step in ("exports", "cover", "brief"):  # QA keçəndən sonra: əlavə formatlar, üz qabığı, caption/hook paketi
+    if step == "exports" and not CFG.get("exports", BRAND.get("exports")): continue
+    pr = subprocess.run([sys.executable, str(A / ("brief.py" if step == "brief" else "postfx.py")), *([] if step == "brief" else [step]), sys.argv[1], dst], capture_output=True, text=True)
+    print((pr.stdout.strip().splitlines() or [pr.stderr[-300:]])[-1])
 for old in sorted((DATA / "out" / pid).glob(f"{pid}_r*.mp4"), key=lambda p: p.stat().st_mtime)[:-1]: old.unlink()
 for o in outs: o.unlink(missing_ok=True)
 r = run(["python", "-m", "montaj.session", "verify", pid])

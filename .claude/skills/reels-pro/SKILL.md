@@ -76,6 +76,30 @@ Konfiqə `"theme": "editorial"` yazanda house.json-dakı `themes.editorial` qat�
 
 Qaydalar: hook salamsız — sitat və ya rəqəmlə (`equote`) başlayır; hər 15–20 s bir kart; bir videoda 6–10 kart; vurğu rəngi yalnız bir; musiqi yalnız müştəri icazə verirsə (Xəyyam: musiqi yoxdur). Müştərinin öz rəngi varsa, `pal` üzərindən `acc` dəyişdirilir.
 
+## Peşəkar alətlər (brend kiti, musiqi, rəng, punch-in, b-roll, formatlar)
+
+**Brend kiti** — `instagram-clients/<müştəri>/brand_kit.json` (şablon: `brand_kit_template.json`; repoya düşmür). Video konfiqində `"brand": "<müştəri>"`. Sıra: house → tema → kit.cfg → video konfiqi. Kitdə: `handle`, `theme`, `palette` (məs. `{"acc": "#..."}`), `cfg` (look, music, punch, cta, exports, watermark), `glossary` (daimi altyazı düzəlişləri), `forbiddenColors` (QA yoxlayır), `hashtags`, `rules`.
+
+| açar (kit.cfg və ya video konfiqi) | nə edir |
+|---|---|
+| `"music": {"file": "...", "volume": 0.12}` | bütöv musiqi yatağı, danışıqda avtomatik aşağı (sidechain). `null` = musiqi yoxdur (Xəyyam) |
+| `"look": "warm_cinematic \| clean_studio \| natural \| moody"` | rəng preseti, yalnız danışan kadra |
+| `"punch": "auto"` və ya `[{"from": "söz", "until": "söz", "scale": 1.1}]` | vacib yerdə yüngül yaxınlaşma (tam ekran kartlarda yox) |
+| `"broll": [{"file": "...", "from": "söz", "dur": 2.5, "mode": "cover"}]` | müştərinin öz kadrları sözə bağlı |
+| `"corrections": [{"from": "...", "to": "..."}]` | bu videonun altyazı düzəlişləri |
+| `"exports": ["4x5", "short15"]` | QA-dan sonra 4:5 lent versiyası + 15 s qısa kəsim |
+| `"watermark": true` (+ kitdə `handle`) | sağ yuxarıda kiçik @handle (QA-dan əvvəl) |
+| `"coverTitle": "Başlıq *vurğu*"`, `"coverAt": 12.4` | üz qabığı başlığı / konkret kadr |
+
+**Alətlər** (`templates/expert-reels/pro/`):
+- `words_check.py <vN.json>` — render-dən ƏVVƏL: ASR-in əmin olmadığı sözlər → `vN_yoxla.md`. Şübhəli sözü düzəlt (corrections/glossary), sonra build.
+- `postfx.py watermark|exports|cover` — build.py özü çağırır; əl ilə də işləyir. Üz qabığı montajın üz modeli ilə ən kəskin, mərkəzdə olan kadrı seçir → `_cover.jpg` + `_cover_grid.jpg` (3:4).
+- `brief.py` — `_paket.md`: hook namizədləri, kartlar, mətn, caption şablonu. Son caption-ı Claude danışığa sadiq yazır.
+- `review_page.py <mp4>` — `_baxis.html`: telefonda açılır, saniyəyə qeyd yazılır, "Kopyala" ilə chat-a.
+- Sürət: səhnə kompozitləri paralel (`PRO_COMP_JOBS`, default 2), ara fayllar `PRO_COMP_PRESET=faster`.
+
+Brend "möhürü" (videonun əvvəlinə 0.5 s logo) bilərəkdən qurulmayıb: hook-u gecikdirir, izləmə müddətini azaldır. Brendlik handle işarəsi və seriya final kartı ilə verilir.
+
 ## Göndərmə
 
 Yalnız `HAZIR (QA keçdi)` siyahısındakı faylları göndər. Hər video üçün bir sətir: QA nəticəsi (kəsim sayı, LUFS, donma 0). WARN-ları dürüst yaz.

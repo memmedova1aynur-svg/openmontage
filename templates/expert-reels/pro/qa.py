@@ -19,7 +19,8 @@ import numpy as np
 A = Path(__file__).resolve().parent
 HOUSE = json.load(open(A / "house.json")); Q = HOUSE["qa"]
 raw = json.load(open(sys.argv[1])); MP4 = sys.argv[2]
-CFG = {**HOUSE["common"], **HOUSE["ad" if raw.get("ad") or raw.get("type") == "ad" else "talk"], **HOUSE.get("themes", {}).get(raw.get("theme"), {}), **raw}
+import kit
+CFG, BRAND, _ = kit.load(sys.argv[1])  # house + tema + brend kiti + video konfiqi (build.py ilə eyni sıra)
 n = CFG["n"]; pid = CFG.get("pid") or f"xeyyam-video-{n}"
 DATA = Path(os.environ.get("MONTAJ_DATA_DIR", "/root/montaj-data"))
 WORK = Path(os.environ.get("PRO_WORK", str(DATA / "plans" / "pro"))); W_DIR = WORK / f"v{n}"
@@ -94,7 +95,7 @@ res["info"]["sfx"] = len(plan.get("sfx", []))
 
 # --- 5. qadağan rəng ---
 txt = open(sys.argv[1]).read().upper() + json.dumps([s["p"].get("pal", {}) for s in SC]).upper()
-badc = [c for c in HOUSE["forbiddenColors"] if c.upper() in txt]
+badc = [c for c in HOUSE["forbiddenColors"] + BRAND.get("forbiddenColors", []) if c.upper() in txt]
 if badc: res["fail"].append({"color": badc})
 
 # --- 6. kart bəndləri kifayət qədər görünür ---
