@@ -19,11 +19,11 @@ import numpy as np
 A = Path(__file__).resolve().parent
 HOUSE = json.load(open(A / "house.json")); Q = HOUSE["qa"]
 raw = json.load(open(sys.argv[1])); MP4 = sys.argv[2]
-CFG = {**HOUSE["common"], **HOUSE["ad" if raw.get("ad") or raw.get("type") == "ad" else "talk"], **raw}
+CFG = {**HOUSE["common"], **HOUSE["ad" if raw.get("ad") or raw.get("type") == "ad" else "talk"], **HOUSE.get("themes", {}).get(raw.get("theme"), {}), **raw}
 n = CFG["n"]; pid = CFG.get("pid") or f"xeyyam-video-{n}"
 DATA = Path(os.environ.get("MONTAJ_DATA_DIR", "/root/montaj-data"))
 WORK = Path(os.environ.get("PRO_WORK", str(DATA / "plans" / "pro"))); W_DIR = WORK / f"v{n}"
-FULL_OVER = {"lower", "top", "topchips"}
+FULL_OVER = {"lower", "top", "topchips", "equote", "esticker", "ename"}
 res = {"fail": [], "warn": [], "info": {}}
 
 

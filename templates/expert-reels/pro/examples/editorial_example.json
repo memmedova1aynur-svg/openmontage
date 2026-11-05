@@ -1,0 +1,19 @@
+{
+ "_doc": "Editorial tema nümunəsi (Vəfa Əli üslubu). 'from' və 'ts' danışıqdakı SÖZLƏRDİR — real videonun vN_words.txt faylına uyğun yaz. Mətnlər nümunədir.",
+ "n": 1, "theme": "editorial", "type": "talk",
+ "title": "01 Nümunə — Editorial", "file": "01_Numune_Editorial",
+ "text": "(ingest.py danışıq mətnini bura yazır)",
+ "scenes": [
+  {"kind": "equote", "from": "<sitatın ilk sözü>", "dur": 4.0, "lead": 0,
+   "p": {"mark": true, "lines": [["iki", "s"], ["zidd", "m"], ["fikri eyni anda", "s"], ["zehində", "b"]], "ts": [0.1, "<söz>", "<söz>", "<söz>"]}},
+  {"kind": "equote", "from": "<il>", "dur": 3.0,
+   "p": {"kicker": "Sitat", "big": "1936", "lines": [["-cı ildə", "s"]], "by": "F. Scott Fitzgerald", "byNote": "demişdi.", "byAt": "<müəllif adı>"}},
+  {"kind": "esticker", "from": "<açar söz>", "dur": 2.4, "p": {"small": "qeyri-müəyyənlik", "text": "təhlükə", "arrow": true}},
+  {"kind": "escale", "from": "<söz>", "dur": 4.0, "p": {"title": "Və bununla da", "left": ["dəqiqliyi", "mürəkkəbliyin"], "right": ["əminlik", "bahasına"], "ts": ["<söz>", "<söz>"]}},
+  {"kind": "elist", "from": "<söz>", "dur": 4.0, "p": {"head": "Müəllim", "idx": "01 / 04", "a": "qaydanı izah edir,", "b": "şagirdə tapdırır", "ts": ["<söz>", "<söz>", "<söz>"]}},
+  {"kind": "evenn", "from": "<söz>", "dur": 3.5, "p": {"title": "İki şey", "mid": "eyni anda", "a": "oyun", "b": "öyrənmə"}},
+  {"kind": "eword", "from": "<söz>", "dur": 3.5, "p": {"word": "Problem", "sub": "metodda yox,", "frame": "çərçivədədir", "ts": ["<söz>", "<söz>"]}},
+  {"kind": "ename", "from": "<sonlara yaxın söz>", "dur": 3.0, "p": {"name": "Ad", "role": "Peşə / mövqe"}},
+  {"kind": "eseries", "from": "<son söz>", "toEnd": true, "p": {"series": "SERİYA", "title": "Mövzu", "sub": "alt başlıq", "ep": "BİRİNCİ EPİZOD"}}
+ ]
+}

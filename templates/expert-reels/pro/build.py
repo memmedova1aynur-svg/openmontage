@@ -8,7 +8,7 @@ from pathlib import Path
 A = Path(__file__).resolve().parent
 HOUSE = json.load(open(A / "house.json"))
 _raw = json.load(open(sys.argv[1]))
-CFG = {**HOUSE["common"], **HOUSE["ad" if _raw.get("ad") or _raw.get("type") == "ad" else "talk"], **_raw}
+CFG = {**HOUSE["common"], **HOUSE["ad" if _raw.get("ad") or _raw.get("type") == "ad" else "talk"], **HOUSE.get("themes", {}).get(_raw.get("theme"), {}), **_raw}
 n = CFG["n"]; pid = CFG.get("pid") or f"xeyyam-video-{n}"
 STEP = sys.argv[2] if len(sys.argv) > 2 else "all"
 DATA = Path(os.environ.get("MONTAJ_DATA_DIR", "/root/montaj-data"))
@@ -121,9 +121,10 @@ PALS = {
  "teal": {"bg":"#1A6E69","bg2":"#0E4D4A","bg3":"#062C2A","acc":"#6CC57E","txt":"#F1F7F4","ink":"#0E4D4A","paper":"#FFFFFF","paper2":"#DDEBE6","muted":"#9CC2B9"},
  "sage": {"bg":"#5F7C56","bg2":"#3F5B3A","bg3":"#24361F","acc":"#B5E9CF","txt":"#F7FAF6","ink":"#2F4A2B","paper":"#FFFFFF","paper2":"#E0EBDD","muted":"#C3CFB4"},
  "midnight": {"bg":"#174A53","bg2":"#0B2E33","bg3":"#05181B","acc":"#6CC57E","txt":"#EEF6F5","ink":"#0B2E33","paper":"#FFFFFF","paper2":"#DCE8E6","muted":"#93B4B2"},
+ "editorial": {"bg":"#2B1D1A","bg2":"#1E1412","bg3":"#120B0A","acc":"#7A1E3A","acc2":"#C9687F","txt":"#F4EDE4","ink":"#2B1D1A","paper":"#F3ECDF","paper2":"#E4D8C4","muted":"#A8968A"},
  "emerald": {"bg":"#1E8564","bg2":"#11604A","bg3":"#09382B","acc":"#9DDCAA","txt":"#F2FAF5","ink":"#0B4434","paper":"#FFFFFF","paper2":"#DDEEE3","muted":"#A9D6C2"}}
 PAL = PALS[CFG["pal"]]; FPS = 30
-OVER = {"lower", "top", "topchips"}
+OVER = {"lower", "top", "topchips", "equote", "esticker", "ename"}
 SC = []; cur = 0
 for i, sc in enumerate(CFG["scenes"]):
     t0, wi = at_word(sc["from"], cur); t0 = max(0.0, t0 - sc.get("lead", 0.1))
@@ -149,7 +150,7 @@ for i, sc in enumerate(CFG["scenes"]):
         anc = [a_ - sh for a_ in anc]
     if sc.get("until"): t1 = max(t1, end_word(sc["until"], wi)[0] + 0.35)
     TAIL = 1.0 + (0.45 if CFG.get("softFx") else 0.3)  # son bənd ən az 1 s tam görünsün + bağlanma keçidi
-    if sc["kind"] not in ("lower", "top", "topchips", "split") and not sc.get("toEnd") and not sc.get("hold") and t1 - t0 > 4.5: t1 = t0 + 4.5  # tam ekran kart uzun qalmır
+    if sc["kind"] not in (*OVER, "split", "eseries") and not sc.get("toEnd") and not sc.get("hold") and t1 - t0 > 4.5: t1 = t0 + 4.5  # tam ekran kart uzun qalmır
     if anc and not sc.get("toEnd"): t1 = max(t1, t0 + max(anc) + TAIL)  # kart yazı deyilib görünənə qədər qalır (limitdən üstündür)
     SC.append({"i": i, "kind": sc["kind"], "t0": round(t0, 3), "t1": round(t1, 3), "p": p, "sfx": sc.get("sfx", [])})
     cur = wi
@@ -157,7 +158,7 @@ for a_, b_ in zip(SC, SC[1:]):
     if a_["t1"] > b_["t0"] - 0.04:
         anc_ = [v for k in ("ts", "lineAt", "subTs") for v in a_["p"].get(k, []) if isinstance(v, (int, float))]
         need = a_["t0"] + (max(anc_) if anc_ else 0) + 1.0 + (0.45 if CFG.get("softFx") else 0.3)
-        if need > b_["t0"] - 0.04 and b_["kind"] in ("lower", "top", "topchips"):  # növbəti kiçik kartı sürüşdür, bəndlər yarımçıq qalmasın
+        if need > b_["t0"] - 0.04 and b_["kind"] in OVER:  # növbəti kiçik kartı sürüşdür, bəndlər yarımçıq qalmasın
             sh = need + 0.04 - b_["t0"]; b_["t0"] = round(b_["t0"] + sh, 3); b_["t1"] = round(max(b_["t1"], b_["t0"] + 1.2), 3)
             for k in ("ts", "lineAt", "subTs"):
                 if k in b_["p"]: b_["p"][k] = [round(max(0.05, v - sh), 3) if isinstance(v, (int, float)) else v for v in b_["p"][k]]

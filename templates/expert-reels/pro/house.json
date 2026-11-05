@@ -83,5 +83,31 @@
     "peakMax": -1.0,
     "freezeFrames": 6,
     "minItemShow": 0.85
+  },
+  "themes": {
+    "editorial": {
+      "_doc": "Vəfa Əli üslubu: kinematik danışıq + kağız metafora kartları + bordo vurğu. Musiqiyə icazə verən müştərilər üçün.",
+      "pal": "editorial",
+      "softFx": true,
+      "glide": [
+        1.0,
+        1.05
+      ],
+      "cap": {
+        "x": 0.5,
+        "y": 0.74,
+        "align": null,
+        "underline": false,
+        "size": 0.026,
+        "font": "Montserrat",
+        "weight": 800,
+        "color": "#FFFFFF",
+        "activeColor": "#E9A1B3",
+        "bg": "none",
+        "stroke": "rgba(0,0,0,0.45)",
+        "maxWords": 4,
+        "maxW": 0.6
+      }
+    }
   }
 }

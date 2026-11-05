@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset="utf-8">
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&family=Lora:ital@1&display=block" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&family=Lora:ital,wght@1,500;1,600&display=block" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:1080px;height:1920px;overflow:hidden;background:transparent;font-family:Montserrat,sans-serif}
@@ -7,6 +7,11 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:transparent;font
 .gbg{position:absolute;inset:0;background:radial-gradient(115% 80% at 30% 30%,var(--bg) 0%,var(--bg2) 55%,var(--bg3) 100%)}
 .pbg{position:absolute;inset:0;background:radial-gradient(100% 80% at 50% 40%,var(--paper) 0%,var(--paper) 55%,var(--paper2) 100%)}
 .ic{display:inline-block;vertical-align:middle}
+.ebg{position:absolute;inset:0;background:radial-gradient(110% 80% at 50% 45%,var(--paper) 0%,var(--paper) 60%,var(--paper2) 100%)}
+.ebg:before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(60,30,20,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(60,30,20,.045) 1px,transparent 1px);background-size:54px 54px}
+.ebg:after{content:"";position:absolute;left:-30%;top:18%;width:160%;height:140%;border-radius:50%;border:3px solid rgba(122,30,58,.10)}
+.es{font-family:Lora,serif;font-style:italic;font-weight:500}
+
 </style></head><body><div id="s"></div>
 <script>
 const C=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));const eo=x=>{x=C(x);return 1-Math.pow(1-x,3)};const eio=x=>{x=C(x);return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2};
@@ -146,14 +151,80 @@ const PANEL={
   p.items.forEach((it,i)=>{const r=eo(C((t-p.ts[i])/0.6));h+=`<div style="display:flex;flex-direction:column;align-items:center;gap:20px;width:300px"><div style="width:200px;height:${it[1]*380*r}px;border-radius:20px 20px 6px 6px;background:${i?'var(--acc)':'var(--muted)'}"></div><div style="color:var(--txt);font-weight:700;font-size:38px;text-align:center;line-height:1.15;opacity:${r}">${it[0]}</div></div>`});
   return h+'</div>'}
 };
+
+// ---------- EDITORIAL TEMA (kağız kartlar + video üstü sitat) ----------
+const EW=(t,at,d=.45)=>rise(rv(t,at,d),18);
+const emark=w=>`<span style="background:var(--acc);color:var(--paper);padding:0 .16em;border-radius:.08em">${w}</span>`;
+const EOV={
+ // video qaralır, mərkəzdə sitat/rəqəm: p.kicker, p.big, p.lines[[text,'s'|'b'|'m']], p.ts, p.by
+ equote(t,D,p){const a=fade(t,D,.45);let h=`<div class="abs" style="inset:0;background:radial-gradient(90% 70% at 50% 45%,rgba(20,12,10,.55),rgba(12,7,6,.82));opacity:${a}"></div>
+  <div class="abs" style="left:90px;right:90px;top:${p.y||620}px;text-align:center;color:var(--txt);opacity:${a}">`;
+  if(p.kicker)h+=`<div style="${EW(t,.05)};font:600 26px Montserrat;letter-spacing:.35em;text-transform:uppercase;opacity:.75;margin-bottom:18px">${p.kicker}</div>`;
+  if(p.mark)h+=`<div style="${EW(t,.05)};font:700 130px/1 Lora;color:var(--acc2,#C9687F);margin-bottom:-20px">“</div>`;
+  if(p.big)h+=`<div style="${EW(t,.08,.5)};font:900 230px/1 Montserrat;letter-spacing:-.03em">${p.big}</div>`;
+  (p.lines||[]).forEach(([x,st],i)=>{const at=(p.ts||[])[i]??(.25+i*.35);const f=st==='b'?'800 78px/1.1 Montserrat':st==='m'?'800 78px/1.1 Montserrat':'500 64px/1.15 Lora';
+   h+=`<div style="${EW(t,at)};font:${f};${st==='s'?'font-style:italic;':''}margin-top:10px">${st==='m'?emark(x):x}</div>`});
+  if(p.by)h+=`<div style="${EW(t,p.byAt||1.0)};margin-top:34px"><div class="es" style="font-size:54px">${p.by}</div>${p.byNote?`<div class="es" style="font-size:40px;opacity:.75;display:inline-block;border-bottom:3px solid var(--acc2,#C9687F);padding-bottom:4px;margin-top:6px">${p.byNote}</div>`:''}</div>`;
+  return h+'</div>'},
+ // ağ etiket kart: p.small (italik), p.text (qalın), p.arrow
+ esticker(t,D,p){const a=fade(t,D,.3),r=rv(t,.05,.4);return `<div class="abs" style="left:0;right:0;top:${p.y||560}px;text-align:center;opacity:${a}">
+  <div style="display:inline-block;background:#FBF7F0;color:var(--ink);border-radius:18px;padding:22px 44px 26px;box-shadow:0 18px 50px rgba(0,0,0,.35);${pop(r)}">
+  ${p.small?`<div class="es" style="font-size:44px;opacity:.8">${p.small}</div>`:''}<div style="font:800 64px/1.1 Montserrat;color:var(--acc)">${p.arrow?'→ ':''}${p.text}</div></div></div>`},
+ // sonda ad zolağı: p.name, p.role
+ ename(t,D,p){const a=fade(t,D,.4),r=rv(t,.05,.5);return `<div class="abs" style="left:70px;top:${p.y||1330}px;opacity:${a};transform:translateX(${-40*(1-r)}px)">
+  <div style="background:var(--acc);color:#fff;padding:22px 34px 20px;border-radius:6px;box-shadow:0 14px 40px rgba(0,0,0,.35)">
+  <div class="es" style="font-size:66px;line-height:1">${p.name}</div><div style="font:700 22px Montserrat;letter-spacing:.22em;text-transform:uppercase;margin-top:12px;opacity:.9">${p.role}</div></div></div>`}
+};
+const EFULL={
+ // tərəzi: p.title, p.left[ad,izah], p.right[ad,izah], p.note, p.tilt(-1..1)
+ escale(t,D,p){const r=rv(t,.3,.9),tl=(p.tilt??-1)*8*eio(C((t-.6)/.9));return `<div class="ebg"></div><div class="abs" style="left:80px;right:80px;top:470px;text-align:center;color:var(--ink)">
+  <div class="es" style="font-size:72px;${EW(t,.05)}">${p.title||''}</div>
+  <div style="position:relative;height:520px;margin-top:120px">
+   <div class="abs" style="left:50%;top:150px;width:880px;margin-left:-440px;height:8px;border-radius:4px;background:var(--ink);transform:rotate(${tl}deg)"></div>
+   <div class="abs" style="left:50%;top:158px;margin-left:-60px;width:0;height:0;border-left:60px solid transparent;border-right:60px solid transparent;border-bottom:110px solid var(--ink)"></div>
+   <div class="abs" style="left:20px;top:${150-440*Math.sin(tl*Math.PI/180)-195}px;text-align:left;${EW(t,(p.ts||[.5,1.0])[0])}"><div class="es" style="font-size:44px">${p.left[1]||''}</div><div style="font:800 64px Montserrat">${p.left[0]}</div></div>
+   <div class="abs" style="right:20px;top:${150+440*Math.sin(tl*Math.PI/180)-195}px;text-align:right;${EW(t,(p.ts||[.5,1.0])[1])}"><div class="es" style="font-size:44px">${p.right[1]||''}</div><div style="font:800 64px Montserrat;color:var(--acc)">${p.right[0]}</div></div>
+   ${p.note?`<div class="abs es" style="left:0;right:0;top:300px;font-size:52px;${EW(t,(p.ts||[0,0,1.5])[2]||1.5)}">${p.note}</div>`:''}</div></div>`},
+ // Venn: p.title, p.mid, p.a, p.b
+ evenn(t,D,p){const r=eio(C((t-.3)/.9));return `<div class="ebg"></div><div class="abs" style="left:0;right:0;top:500px;text-align:center;color:var(--ink)">
+  <div class="es" style="font-size:80px;${EW(t,.05)}">${p.title||''}</div>
+  <div style="position:relative;height:560px;margin-top:80px">
+   <div class="abs" style="left:${270+90*(1-r)}px;top:40px;width:420px;height:420px;border-radius:50%;border:6px solid var(--ink)"></div>
+   <div class="abs" style="left:${390-90*(1-r)}px;top:40px;width:420px;height:420px;border-radius:50%;background:var(--acc);opacity:.92"></div>
+   <div class="abs" style="left:${270+90*(1-r)}px;top:40px;width:420px;height:420px;border-radius:50%;border:6px solid var(--ink)"></div>
+   ${p.a?`<div class="abs" style="left:150px;top:500px;width:300px;font:700 40px Montserrat;${EW(t,(p.ts||[])[0]??.8)}">${p.a}</div>`:''}
+   ${p.b?`<div class="abs" style="right:150px;top:500px;width:300px;font:700 40px Montserrat;color:var(--acc);${EW(t,(p.ts||[])[1]??1.1)}">${p.b}</div>`:''}
+   <div class="abs es" style="left:0;right:0;top:220px;font-size:46px;color:#fff;${EW(t,(p.ts||[])[2]??1.2)}">${p.mid||''}</div></div></div>`},
+ // nömrələnmiş seriya kartı: p.head, p.idx "02 / 04", p.a, p.or, p.b (b çərçivədə)
+ elist(t,D,p){const at=p.ts||[.35,.8,1.3];return `<div class="ebg"></div><div class="abs" style="left:90px;right:90px;top:480px;text-align:center;color:var(--ink)">
+  <div class="es" style="font-size:96px;${EW(t,.05)}">${p.head}</div><div style="width:120px;height:5px;background:var(--acc);margin:26px auto 22px"></div>
+  <div style="font:600 26px Montserrat;letter-spacing:.3em;opacity:.7">${p.idx||''}</div>
+  <div style="margin-top:90px;${EW(t,at[0])}"><div class="es" style="font-size:52px">${p.pre||'Ya'}</div><div style="font:800 82px/1.1 Montserrat">${p.a}</div></div>
+  <div class="es" style="font-size:52px;margin-top:30px;${EW(t,at[1])}">${p.or||'ya da'}</div>
+  <div style="display:inline-block;margin-top:14px;border:4px solid var(--acc);padding:10px 30px;${EW(t,at[2])}"><div style="font:800 76px/1.1 Montserrat;color:var(--acc)">${p.b}</div></div>
+  <div class="abs" style="right:-10px;top:-20px;font-size:70px;color:var(--acc)">✦</div></div>`},
+ // açar söz kartı: p.word, p.sub, p.frame (çərçivəli söz), p.small
+ eword(t,D,p){const at=p.ts||[.5,1.1];return `<div class="ebg"></div><div class="abs" style="left:90px;right:90px;top:560px;text-align:center;color:var(--ink)">
+  <div style="font:900 150px/1 Montserrat;color:var(--acc);letter-spacing:-.03em;${EW(t,.05,.5)}">${p.word}</div>
+  ${p.sub?`<div class="es" style="font-size:62px;line-height:1.2;margin-top:30px;${EW(t,at[0])}">${p.sub}</div>`:''}
+  ${p.frame?`<div style="display:inline-block;margin-top:70px;border:5px solid var(--ink);padding:16px 44px;${EW(t,at[1])}"><span style="font:800 82px Montserrat">${p.frame}</span></div>`:''}
+  ${p.small?`<div class="es" style="font-size:46px;margin-top:20px;${EW(t,at[2]??1.5)}">${p.small}</div>`:''}</div>`},
+ // seriya final kartı: p.series, p.title, p.sub, p.ep
+ eseries(t,D,p){const r=eio(C(t/1.0));return `<div class="abs" style="inset:0;background:radial-gradient(90% 70% at 50% 45%,#3A2E2A,#1B1412)"></div><div class="abs" style="left:0;right:0;top:640px;text-align:center;color:var(--paper)">
+  <div style="position:relative;height:200px;width:340px;margin:0 auto"><div class="abs" style="left:${40+30*(1-r)}px;top:0;width:190px;height:190px;border-radius:50%;border:5px solid var(--paper)"></div><div class="abs" style="left:${130-30*(1-r)}px;top:0;width:190px;height:190px;border-radius:50%;background:var(--acc)"></div></div>
+  <div style="font:600 24px Montserrat;letter-spacing:.4em;opacity:.7;margin-top:40px;${EW(t,.3)}">${p.series||'SERİYA'}</div>
+  <div style="font:900 120px/1 Montserrat;color:#E9B5C2;margin-top:16px;${EW(t,.45,.5)}">${p.title}</div>
+  <div class="es" style="font-size:96px;margin-top:4px;${EW(t,.65,.5)}">${p.sub||''}</div>
+  <div style="display:inline-block;margin-top:40px;border:3px solid var(--paper);border-radius:999px;padding:12px 34px;font:700 26px Montserrat;letter-spacing:.25em;${EW(t,.9)}">${p.ep||'BİRİNCİ EPİZOD'}</div></div>`}
+};
 function split(t,D,p){const a=eo(t/0.36),b=1-eo((t-D+0.32)/0.32);const k=Math.min(a,b);const inner=PANEL[p.type](t,D,p);
  S.innerHTML=`<div class="abs" style="left:0;right:0;top:${1060+(1-k)*900}px;height:860px;border-radius:48px 48px 0 0;background:linear-gradient(180deg,var(--bg2),var(--bg3));box-shadow:0 -18px 50px rgba(0,0,0,.35);overflow:hidden">
  <div class="abs" style="left:50%;top:18px;width:90px;height:8px;margin-left:-45px;border-radius:4px;background:var(--muted);opacity:.35"></div><div class="abs" style="left:72px;right:72px;top:${p.pt||90}px;transform:translateY(${-10*eio(C(t/D))}px) scale(${1+0.02*eio(C(t/D))})">${inner}</div></div>`}
 window.renderAt=(n,t,D,p)=>{const pal=p.pal||{};for(const k in pal)document.documentElement.style.setProperty('--'+k,pal[k]);
  S.style.opacity='1';S.style.transform='none';S.style.filter='none';S.style.transformOrigin='50% 50%';
- if(n==='lower')lower(t,D,p);else if(n==="top")topcard(t,D,p);else if(n==='topchips')topchips(t,D,p);else if(n==='split')split(t,D,p);
- else{S.innerHTML=FULL[n](t,D,p);const sf=p.safe||1;
+ if(EOV[n]){S.innerHTML=EOV[n](t,D,p);}else if(n==='lower')lower(t,D,p);else if(n==="top")topcard(t,D,p);else if(n==='topchips')topchips(t,D,p);else if(n==='split')split(t,D,p);
+ else{S.innerHTML=(EFULL[n]||FULL[n])(t,D,p);const sf=p.safe||1;
   if(p.soft){const ai=p.noIn?1:eio(C(t/0.5)),ao=eio(C((t-D+0.45)/0.45));S.style.opacity=String(Math.min(1,ai*1.6,(1-ao)*1.6));S.style.transform=`scale(${(1.06-0.06*ai)*(1-0.03*ao)*(1+0.025*eio(C(t/D)))})`;S.style.filter=`blur(${6*(1-ai)+5*ao}px)`;}
   else{const ai=p.noIn?1:eo(t/0.34),ao=eio(C((t-D+0.3)/0.3));S.style.opacity=String(Math.min(1,ai*1.8,(1-ao)*1.8));S.style.transform=`scale(${(1.22-0.22*ai)*(1-0.08*ao)*(1+0.045*eio(C(t/D)))})`;S.style.filter=`blur(${18*(1-ai)+14*ao}px)`;}}
- if(p.safe&&n!=='split'){for(const el of S.querySelectorAll(':scope > *')){const r=el.getBoundingClientRect();if(r.width>=1060)continue;el.style.transformOrigin=`${540-r.left}px ${960-r.top}px`;el.style.scale=String(p.safe);}}};
+ if(p.safe&&n!=='split'&&!EOV[n]&&!EFULL[n]){for(const el of S.querySelectorAll(':scope > *')){const r=el.getBoundingClientRect();if(r.width>=1060)continue;el.style.transformOrigin=`${540-r.left}px ${960-r.top}px`;el.style.scale=String(p.safe);}}};
 </script></body></html>

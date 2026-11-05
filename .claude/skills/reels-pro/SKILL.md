@@ -59,6 +59,23 @@ python3 batch.py --all          # və ya batch.py v9.json v10.json
 - Kart müddəti: `TAIL = 1.0 + keçid`; növbəti kiçik kart lazım olsa sürüşdürülür.
 - Kadraj: framefix nəticəsi (`storyboard_draft.json`) və ya konfiqdə `crop: {s, cx, cy}`; oturma xətti altda qalmasın.
 
+## Editorial tema (Vəfa Əli üslubu) — `"theme": "editorial"`
+
+Konfiqə `"theme": "editorial"` yazanda house.json-dakı `themes.editorial` qatılır: bordo vurğu (#7A1E3A), krem kağız kartlar, tünd isti fon, kiçik altyazı (vurğu sözü çəhrayı-bordo). Nümunə: `examples/editorial_example.json`.
+
+| səhnə | növ | nə üçün |
+|---|---|---|
+| `equote` | video üstü | video qaralır, mərkəzdə sitat / rəqəm / müəllif (`lines` stil: s=italik, b=qalın, m=bordo blok) |
+| `esticker` | video üstü | ağ etiket: "qeyri-müəyyənlik → təhlükə" |
+| `ename` | video üstü | ad zolağı — **sonda** verilir, başda yox |
+| `escale` | kağız kart | tərəzi: iki tərəfin qarşılaşdırılması |
+| `evenn` | kağız kart | iki anlayış "eyni anda" |
+| `elist` | kağız kart | seriyalı siyahı "02 / 04: ya …, ya da [çərçivə]" |
+| `eword` | kağız kart | açar söz + çərçivəli nəticə |
+| `eseries` | final kartı | "SERİYA · Başlıq · BİRİNCİ EPİZOD" (`toEnd`) |
+
+Qaydalar: hook salamsız — sitat və ya rəqəmlə (`equote`) başlayır; hər 15–20 s bir kart; bir videoda 6–10 kart; vurğu rəngi yalnız bir; musiqi yalnız müştəri icazə verirsə (Xəyyam: musiqi yoxdur). Müştərinin öz rəngi varsa, `pal` üzərindən `acc` dəyişdirilir.
+
 ## Göndərmə
 
 Yalnız `HAZIR (QA keçdi)` siyahısındakı faylları göndər. Hər video üçün bir sətir: QA nəticəsi (kəsim sayı, LUFS, donma 0). WARN-ları dürüst yaz.
