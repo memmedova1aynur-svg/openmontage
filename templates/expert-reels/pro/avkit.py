@@ -139,3 +139,34 @@ def cover(video, t, out, vf="null"):
     """Üz qabığı kadrı (altyazısız mənbədən götürmək üçün vf ilə kəsim/rəng verilə bilər)."""
     run(["ffmpeg", "-v", "error", "-y", "-ss", f"{t:.3f}", "-i", str(video), "-frames:v", "1", "-vf", vf, "-q:v", "2", str(out)])
     return out
+
+
+# --- sintez SFX (lisenziya problemi yoxdur)
+def _env(n, a=.002, dec=.05):
+    t = np.arange(n) / SR; return np.minimum(1, t / a) * np.exp(-t / dec)
+
+
+def synth(kind):
+    """swoosh | pop | ding | buzz | wobble → (N,2) massiv."""
+    rng = np.random.default_rng(5)
+    def tone(fr, dur, dec): n = int(dur * SR); t = np.arange(n) / SR; return sum(np.sin(2 * np.pi * f * t) * w for f, w in fr) * _env(n, .003, dec)
+    if kind == "swoosh":
+        n = int(.3 * SR); f = np.linspace(400, 2200, n); s = rng.standard_normal(n) * .4 + np.sin(2 * np.pi * np.cumsum(f) / SR) * .2
+        s = np.convolve(s, np.ones(30) / 30, "same") * np.sin(np.pi * np.linspace(0, 1, n)) ** 2
+    elif kind == "pop": s = tone([(330, 1), (660, .4)], .2, .06)
+    elif kind == "ding": s = tone([(880, 1), (1320, .5), (1760, .25)], .9, .25)
+    elif kind == "buzz":
+        n = int(.45 * SR); t = np.arange(n) / SR; s = np.sign(np.sin(2 * np.pi * 140 * t)) * .5 * _env(n, .004, .18) + np.sin(2 * np.pi * 110 * t) * .5 * _env(n, .004, .2)
+        s = np.convolve(s, np.ones(8) / 8, "same")
+    elif kind == "wobble":
+        n = int(.6 * SR); t = np.arange(n) / SR; s = np.sin(2 * np.pi * (520 + 60 * np.sin(2 * np.pi * 7 * t)) * t) * _env(n, .004, .25)
+    else: raise ValueError(kind)
+    return np.stack([s, s], 1)
+
+
+def add_sfx(mix, sig, at, lvl):
+    """sig-i at saniyəsinə lvl dBFS RMS səviyyəsində əlavə et."""
+    i = int(max(0, at) * SR); m = min(len(sig), len(mix) - i)
+    if m <= 0: return mix
+    nz = np.abs(sig).max(1) > 1e-4; g = 10 ** ((lvl - rms_db(sig[nz] if nz.any() else sig)) / 20)
+    mix[i:i + m] += sig[:m] * g; return mix

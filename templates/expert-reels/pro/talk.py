@@ -32,7 +32,13 @@ def brand_talk(name):
         f = Path(d or "", name, "brand_kit.json")
         if d and f.exists(): return json.load(open(f)).get("talk", {})
     raise SystemExit(f"brand_kit tapılmadı: {name}")
-B = {**{"zooms": [1.0, 1.1], "cy": 0.45, "gap": 0.6, "mv": 560, "fontsize": 68}, **brand_talk(P.get("brand")), **P}
+def style(name):
+    f = Path(__file__).resolve().parent / "styles" / f"{name}.json"
+    if not f.exists(): raise SystemExit(f"tərz tapılmadı: {name} (styles/ qovluğuna bax)")
+    return {k: v for k, v in json.load(open(f)).items() if not k.startswith("_")}
+# sıra: default < müştəri (kim: kadraj, güzgü, rəng) < tərz (necə: montaj) < video planı
+B = {**{"zooms": [1.0, 1.1], "cy": 0.45, "gap": 0.6, "mv": 560, "fontsize": 68, "sub": "lines", "accent": "#FFD84D"},
+     **brand_talk(P.get("brand")), **style(P.get("style", "sade")), **P}
 
 
 def transcribe(src, out):
@@ -99,11 +105,32 @@ for c in chunks:
     else: m.append(c)
 chunks = m
 ts = lambda x: f"{int(x // 3600)}:{int(x % 3600 // 60):02d}:{x % 60:05.2f}"
-ev = []
-for j, c in enumerate(chunks):
-    s, e = c[0]["s"], c[-1]["e"] + 0.25
-    if j + 1 < len(chunks): e = min(e, chunks[j + 1][0]["s"])
-    ev.append(f"Dialogue: 0,{ts(s)},{ts(min(e, T))},S,,0,0,0,,{' '.join(x['t'] for x in c).rstrip(',.;:')}")
+def bgr(h, a="00"): h = h.lstrip("#"); return f"&H{a}{h[4:6]}{h[2:4]}{h[0:2]}"
+ACC = B["accent"]; ev = []
+if B["sub"] == "lines":
+    for j, c in enumerate(chunks):
+        s0, e = c[0]["s"], c[-1]["e"] + 0.25
+        if j + 1 < len(chunks): e = min(e, chunks[j + 1][0]["s"])
+        ev.append(f"Dialogue: 1,{ts(s0)},{ts(min(e, T))},S,,0,0,0,,{' '.join(x['t'] for x in c).rstrip(',.;:')}")
+elif B["sub"] == "words":  # dinamik: iri, söz-söz, aktiv söz vurğu rəngində "pop"
+    for j, c in enumerate(chunks):
+        endc = min(c[-1]["e"] + 0.2, chunks[j + 1][0]["s"] if j + 1 < len(chunks) else T)
+        for i, w in enumerate(c):
+            e = c[i + 1]["s"] if i + 1 < len(c) else endc
+            parts = [(f"{{\\c{bgr(ACC)}\\t(0,90,\\fscx112\\fscy112)\\t(90,180,\\fscx100\\fscy100)}}{x['t']}{{\\r}}" if x is w else x["t"]) for x in c]
+            ev.append(f"Dialogue: 1,{ts(w['s'])},{ts(e)},D,,0,0,0,,{' '.join(parts).rstrip(',.;:')}")
+for t0, dur, txt in B.get("questions", []):  # müsahibə: sual kartı
+    ev.append(f"Dialogue: 2,{ts(t0)},{ts(t0 + dur)},Q,,0,0,0,,{{\\fad(220,220)}}{txt}")
+for t0, t1, txt in B.get("statements", []):  # mif/fakt: iddia kartı
+    ev.append(f"Dialogue: 2,{ts(t0)},{ts(t1)},L,,0,0,0,,{{\\fad(200,150)}}MİF, YOXSA FAKT?")
+    ev.append(f"Dialogue: 2,{ts(t0)},{ts(t1)},Q,,0,0,0,,{{\\fad(200,150)}}{txt}")
+VC = {"mif": ("#E5484D", "MİF ✕"), "fakt": ("#30A46C", "FAKT ✓"), "yari": ("#F5B700", "ASILIDIR")}
+for t0, kind in B.get("verdicts", []):
+    col, lab = VC[kind]
+    ev.append(f"Dialogue: 0,{ts(t0)},{ts(t0 + 0.9)},F,,0,0,0,,{{\\an7\\pos(0,0)\\p1\\c{bgr(col)}\\alpha&H70&\\t(0,900,\\alpha&HFF&)}}m 0 0 l 1080 0 l 1080 1920 l 0 1920{{\\p0}}")
+    ev.append(f"Dialogue: 3,{ts(t0)},{ts(t0 + 1.8)},V,,0,0,0,,{{\\pos(540,760)\\3c{bgr(col)}\\fad(0,250)\\fscx40\\fscy40\\t(0,180,\\fscx110\\fscy110)\\t(180,300,\\fscx100\\fscy100)}}{lab}")
+for t0, t1, txt in B.get("cards", []):  # minimal: açar söz kartı
+    ev.append(f"Dialogue: 2,{ts(t0)},{ts(t1)},C,,0,0,0,,{{\\fad(300,300)\\blur0.6}}{txt}")
 ASS = WORK / "sub.ass"
 ASS.write_text(f"""[Script Info]
 ScriptType: v4.00+
@@ -114,6 +141,12 @@ WrapStyle: 0
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: S,Inter,{B['fontsize']},&H00FFFFFF,&H00FFFFFF,&H00000000,&H64000000,-1,0,0,0,100,100,0,0,1,3.2,1.5,2,90,90,{B['mv']},1
+Style: D,Inter,{B.get('word_size', 92)},&H00FFFFFF,&H00FFFFFF,&H00101010,&H78000000,-1,0,0,0,100,100,0,0,1,6,2,2,70,70,{B.get('word_mv', 640)},1
+Style: Q,Inter,{B.get('q_size', 54)},&H00FFFFFF,&H00FFFFFF,{bgr(B.get('q_bg', '#0B2A20'))},{bgr(B.get('q_bg', '#0B2A20'))},-1,0,0,0,100,100,0,0,3,26,0,8,110,110,300,1
+Style: L,JetBrains Mono,30,{bgr(ACC)},&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,4,0,1,0,0,8,110,110,250,1
+Style: V,Inter,110,&H00FFFFFF,&H00FFFFFF,&H00FFFFFF,&H00000000,-1,0,0,0,100,100,0,0,3,34,0,5,80,80,0,1
+Style: F,Inter,20,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,7,0,0,0,1
+Style: C,Inter,{B.get('card_size', 104)},&H00FFFFFF,&H00FFFFFF,&H00000000,&H50000000,-1,0,0,0,100,100,-2,0,1,0,6,5,90,90,0,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -141,13 +174,20 @@ K.run(["ffmpeg", "-v", "error", "-y", *INP, "-filter_complex", ";".join(fc), "-m
 # --- səs
 SP = WORK / "speech.wav"; K.loudnorm_2pass(RAW, SP, I=-16, pre=K.SPEECH_CHAIN)
 FINAL = WORK / "final.wav"
+sp = K.load(SP); n = len(sp); mix = sp.copy()
+if B.get("cut_sfx"):  # dinamik: hər kəsikdə yüngül swoosh
+    off = 0.0
+    for a, b, z in segs[:-1]:
+        off += b - a; mix = K.add_sfx(mix, K.synth("swoosh"), off - 0.12, B.get("cut_sfx_db", -30))
+for t0, kind in B.get("verdicts", []):
+    mix = K.add_sfx(mix, K.synth({"mif": "buzz", "fakt": "ding", "yari": "wobble"}[kind]), t0, -22)
+for q in B.get("questions", []): mix = K.add_sfx(mix, K.synth("pop"), q[0], -30)
+for c in B.get("statements", []): mix = K.add_sfx(mix, K.synth("pop"), c[0], -28)
 if B.get("music"):
-    sp = K.load(SP); n = len(sp); mask = np.zeros(n, bool)
+    mask = np.zeros(n, bool)
     for w in nw: mask[int(w["s"] * K.SR):int(w["e"] * K.SR)] = True
-    mu = B["music"]; bed = K.music_bed(K.load(rp(mu["file"])), n, mask, level=mu.get("level", -29), duck_db=mu.get("duck", 4))
-    MIX = WORK / "mix.wav"; K.save(sp + bed, MIX); K.finalize(MIX, FINAL)
-else:
-    K.finalize(SP, FINAL)
+    mu = B["music"]; mix = mix + K.music_bed(K.load(rp(mu["file"])), n, mask, level=mu.get("level", -29), duck_db=mu.get("duck", 4))
+MIX = WORK / "mix.wav"; K.save(mix, MIX); K.finalize(MIX, FINAL)
 K.export_ig(VID, FINAL, OUT, copy_video=True)
 
 # --- story, üz qabığı, QA
