@@ -170,3 +170,16 @@ def add_sfx(mix, sig, at, lvl):
     if m <= 0: return mix
     nz = np.abs(sig).max(1) > 1e-4; g = 10 ** ((lvl - rms_db(sig[nz] if nz.any() else sig)) / 20)
     mix[i:i + m] += sig[:m] * g; return mix
+
+
+def ensure_font(family):
+    """Tərzin istədiyi şrift sistemdə yoxdursa Google Fonts-dan ~/.fonts-a yüklə (OFL lisenziyalı)."""
+    if not family or family == "Inter": return
+    have = subprocess.run(["fc-list", ":", "family"], capture_output=True, text=True).stdout
+    if family.lower() in have.lower(): return
+    css = subprocess.run(["curl", "-sS", "-A", "Mozilla/4.0", f"https://fonts.googleapis.com/css2?family={family.replace(' ', '+')}:ital,wght@0,600;0,700;1,600"],
+                         capture_output=True, text=True).stdout
+    d = Path.home() / ".fonts"; d.mkdir(exist_ok=True)
+    for u in re.findall(r"https://[^)]+\.ttf", css):
+        subprocess.run(["curl", "-sS", "-o", str(d / Path(u).name), u])
+    subprocess.run(["fc-cache", "-f"], capture_output=True)

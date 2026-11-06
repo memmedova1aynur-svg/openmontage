@@ -19,6 +19,13 @@ Birləşmə sırası: default → müştəri → tərz → video planı (sonrak�
 | `musahibe` | talk.py | Sual-cavab; sual kartı, geniş/yaxın plan növbəsi | `questions: [[san, müddət, "Sual"]]` |
 | `mif_fakt` | talk.py | İddia kartı + jestə sinxron qırmızı/yaşıl/sarı işıq və səs | `statements: [[başla, son, "İddia"]]`, `verdicts: [[san, "mif"\|"fakt"\|"yari"]]` |
 | `minimal` | talk.py | Reklam, tanıtım; davamlı altyazı yox, iri açar söz kartları, sakit rəng | `cards: [[başla, son, "Söz"]]` |
+| `dinamik_qalin` | talk.py | Ən güclü hook, cəsarətli fikir; 1–2 sözlük iri BÖYÜK HƏRFLİ altyazı, açar sözlər ikinci rəngdə | `keywords: ["söz"]` |
+| `hook_basliq` | talk.py | Universal: video boyu yuxarıda sabit başlıq (səssiz izləyən də anlayır) + izləmə xətti | `headline: "Başlıq"` |
+| `siyahi` | talk.py | "3 səhv", "4 addım": hər bənd deyiləndə nömrə ilə düşür və qalır, sonda tam siyahı ekranda (yadda saxlama gətirir) | `items: [[san, "Bənd"]]` |
+| `serh_cavab` | talk.py | İzləyicinin real şərhinə video cavab; Instagram şərh balonu (yalnız real şərh, icazə ilə) | `comment: {t0, t1, user, text}` |
+| `sekil_izah` | talk.py | Sxem, ekran görüntüsü, sənəd: split ekran (yuxarıda şəkil, aşağıda danışan) və ya tam ekran + dairəvi PiP | `inserts: [[başla, son, "şəkil.png", "split"\|"full"]]` |
+| `kinematik` | talk.py | Hekayə, motivasiya: kino çərçivəsi, dən, vinyet, isti-soyuq rəng, kursiv serif altyazı | — (musiqi tövsiyə olunur) |
+| `taymer` | talk.py | "60 saniyədə 3 məsləhət": küncdə geri sayım + dinamik altyazı | `timer: {t0, dur, label}` |
 | `senedli` | editorial.py | Elmi mövzu; qrafik səhnələr, məqalə, kamera hərəkəti, kino dənəsi | plan editorial.py başlığında |
 | `oyun` | game.py | Ekspertsiz interaktiv animasiya (yaddaş, Stroop, diqqət, boşluq) | `page`, `name`, `music` |
 
@@ -36,6 +43,14 @@ Hər nəticə `_vN` versiyası ilə yazılır (təsdiqlənmiş fayl qorunur), ya
 
 ## Yeni tərz əlavə etmək
 
-`styles/<ad>.json` faylı yarat. `_` ilə başlayan açarlar (`_ad`, `_nə_vaxt`) yalnız sənəddir. Mövcud parametrlər: `sub` (`lines`/`words`/`none`), `zooms`, `gap`, `cut_sfx`, `word_size`, `word_mv`, `q_size`, `q_bg`, `card_size`, `color` (ffmpeg rəng zənciri), `accent`.
+`styles/<ad>.json` faylı yarat. `_` ilə başlayan açarlar (`_ad`, `_nə_vaxt`) yalnız sənəddir. Mövcud parametrlər:
+- altyazı: `sub` (`lines`/`words`/`none`), `font`, `fontsize`, `sub_bold`, `sub_italic`, `sub_outline`, `mv`, `upper`, `max_words`, `max_chars`, `keywords`, `word_size`, `word_mv`
+- tempo və kadr: `zooms`, `gap`, `cut_sfx`, `cut_sfx_db`, `color` (ffmpeg rəng zənciri), `letterbox`, `grain`
+- elementlər: `progress`, `headline`, `items`, `comment`, `inserts`, `timer`, `questions`, `statements`, `verdicts`, `cards`
+- rəng: `accent` (müştəri kitindən də gələ bilər), `accent2`, `q_bg`, `split_bg`, `full_bg`
+
+Hər element istənilən tərzlə birləşə bilər: məs. `dinamik` + `headline` + `progress`.
+
+Tərzin istədiyi şrift (məs. `Lora`) sistemdə yoxdursa, avtomatik yüklənir (Google Fonts, OFL).
 
 Qayda: oyun videoları həftədə 1-dən çox olmasın (kontent bəsit görünməsin).

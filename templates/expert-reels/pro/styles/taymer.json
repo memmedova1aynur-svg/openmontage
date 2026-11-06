@@ -1,0 +1,2 @@
+{"_ad": "Taymer çağırışı", "_nə_vaxt": "\"60 saniyədə 3 məsləhət\" formatı. Yuxarı küncdə geri sayım; tempi hiss etdirir, sona qədər saxlayır.",
+ "_alət": "talk.py", "_plan": "timer: {t0, dur, label}", "sub": "words", "zooms": [1.0, 1.15], "gap": 0.4, "cut_sfx": true, "cut_sfx_db": -33, "word_size": 88}

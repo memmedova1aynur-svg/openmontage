@@ -96,7 +96,7 @@ chunks, cur = [], []
 for i, w in enumerate(nw):
     cur.append(w); txt = " ".join(x["t"] for x in cur if x["t"]); nx = nw[i + 1] if i + 1 < len(nw) else None
     short = len(txt) <= 4 and nx is not None and nx["k"] == w["k"]
-    if nx is None or nx["k"] != w["k"] or (not short and (re.search(r"[.,?!:;]$", w["t"]) or len(txt) >= 16 or len(cur) >= 3 or nx["s"] - w["e"] > 0.35)):
+    if nx is None or nx["k"] != w["k"] or (not short and (re.search(r"[.,?!:;]$", w["t"]) or len(txt) >= B.get("max_chars", 16) or len(cur) >= B.get("max_words", 3) or nx["s"] - w["e"] > 0.35)):
         chunks.append(cur); cur = []
 chunks = [[x for x in c if x["t"]] for c in chunks]; chunks = [c for c in chunks if c]
 m = []
@@ -111,13 +111,17 @@ if B["sub"] == "lines":
     for j, c in enumerate(chunks):
         s0, e = c[0]["s"], c[-1]["e"] + 0.25
         if j + 1 < len(chunks): e = min(e, chunks[j + 1][0]["s"])
-        ev.append(f"Dialogue: 1,{ts(s0)},{ts(min(e, T))},S,,0,0,0,,{' '.join(x['t'] for x in c).rstrip(',.;:')}")
+        sp_on = any(m != "full" and a0 - 0.05 <= s0 < b0 for a0, b0, _, m in B.get("inserts", []))  # split ekranda sərhədə
+        ev.append(f"Dialogue: 1,{ts(s0)},{ts(min(e, T))},S,,0,0,0,,{'{\\an5\\pos(540,962)}' if sp_on else ''}{' '.join(x['t'] for x in c).rstrip(',.;:')}")
 elif B["sub"] == "words":  # dinamik: iri, söz-söz, aktiv söz vurğu rəngində "pop"
     for j, c in enumerate(chunks):
         endc = min(c[-1]["e"] + 0.2, chunks[j + 1][0]["s"] if j + 1 < len(chunks) else T)
         for i, w in enumerate(c):
             e = c[i + 1]["s"] if i + 1 < len(c) else endc
-            parts = [(f"{{\\c{bgr(ACC)}\\t(0,90,\\fscx112\\fscy112)\\t(90,180,\\fscx100\\fscy100)}}{x['t']}{{\\r}}" if x is w else x["t"]) for x in c]
+            U = (lambda x: x.upper().replace("i", "İ") if B.get("upper") else x)
+            KW = set(k.lower() for k in B.get("keywords", []))
+            parts = [(f"{{\\c{bgr(ACC)}\\t(0,90,\\fscx112\\fscy112)\\t(90,180,\\fscx100\\fscy100)}}{U(x['t'])}{{\\r}}" if x is w else
+                      (f"{{\\c{bgr(B.get('accent2', '#7CE0A3'))}}}{U(x['t'])}{{\\r}}" if re.sub(r"[^\\w]", "", x["t"].lower()) in KW else U(x["t"]))) for x in c]
             ev.append(f"Dialogue: 1,{ts(w['s'])},{ts(e)},D,,0,0,0,,{' '.join(parts).rstrip(',.;:')}")
 for t0, dur, txt in B.get("questions", []):  # müsahibə: sual kartı
     ev.append(f"Dialogue: 2,{ts(t0)},{ts(t0 + dur)},Q,,0,0,0,,{{\\fad(220,220)}}{txt}")
@@ -128,9 +132,39 @@ VC = {"mif": ("#E5484D", "MİF ✕"), "fakt": ("#30A46C", "FAKT ✓"), "yari": (
 for t0, kind in B.get("verdicts", []):
     col, lab = VC[kind]
     ev.append(f"Dialogue: 0,{ts(t0)},{ts(t0 + 0.9)},F,,0,0,0,,{{\\an7\\pos(0,0)\\p1\\c{bgr(col)}\\alpha&H70&\\t(0,900,\\alpha&HFF&)}}m 0 0 l 1080 0 l 1080 1920 l 0 1920{{\\p0}}")
-    ev.append(f"Dialogue: 3,{ts(t0)},{ts(t0 + 1.8)},V,,0,0,0,,{{\\pos(540,760)\\3c{bgr(col)}\\fad(0,250)\\fscx40\\fscy40\\t(0,180,\\fscx110\\fscy110)\\t(180,300,\\fscx100\\fscy100)}}{lab}")
+    ev.append(f"Dialogue: 3,{ts(t0)},{ts(t0 + 1.8)},V,,0,0,0,,{{\\pos(540,{B.get('verdict_y', 430)})\\3c{bgr(col)}\\fad(0,250)\\fscx40\\fscy40\\t(0,180,\\fscx110\\fscy110)\\t(180,300,\\fscx100\\fscy100)}}{lab}")
 for t0, t1, txt in B.get("cards", []):  # minimal: açar söz kartı
     ev.append(f"Dialogue: 2,{ts(t0)},{ts(t1)},C,,0,0,0,,{{\\fad(300,300)\\blur0.6}}{txt}")
+def rrect(x, y, w, h, r):  # yuvarlaq künclü düzbucaqlı (ASS çizimi)
+    k = r * 0.45
+    return (f"m {x+r} {y} l {x+w-r} {y} b {x+w-k} {y} {x+w} {y+k} {x+w} {y+r} l {x+w} {y+h-r} b {x+w} {y+h-k} {x+w-k} {y+h} {x+w-r} {y+h} "
+            f"l {x+r} {y+h} b {x+k} {y+h} {x} {y+h-k} {x} {y+h-r} l {x} {y+r} b {x} {y+k} {x+k} {y} {x+r} {y}")
+def circ(cx, cy, r):
+    k = r * 0.552
+    return (f"m {cx} {cy-r} b {cx+k} {cy-r} {cx+r} {cy-k} {cx+r} {cy} b {cx+r} {cy+k} {cx+k} {cy+r} {cx} {cy+r} "
+            f"b {cx-k} {cy+r} {cx-r} {cy+k} {cx-r} {cy} b {cx-r} {cy-k} {cx-k} {cy-r} {cx} {cy-r}")
+if B.get("progress"):  # yuxarıda izləmə xətti (sona qədər baxmağa təşviq)
+    ev.append(f"Dialogue: 6,{ts(0)},{ts(T)},F,,0,0,0,,{{\\an7\\pos(0,0)\\p1\\c{bgr(ACC)}\\fscx0\\t(0,{int(T*1000)},\\fscx100)}}m 0 0 l 1080 0 l 1080 10 l 0 10{{\\p0}}")
+if B.get("headline"):  # bütün video boyu sabit başlıq
+    ev.append(f"Dialogue: 4,{ts(B.get('headline_from', 0))},{ts(T)},H,,0,0,0,,{{\\fad(200,0)}}{B['headline']}")
+items = B.get("items", [])  # siyahı: hər bənd ekranda qalır
+for i, (t0, txt) in enumerate(items):
+    y = B.get("items_y", 330) + i * B.get("items_step", 104)
+    ev.append(f"Dialogue: 4,{ts(t0)},{ts(B.get('items_end', T))},I,,0,0,0,,{{\\an7\\pos(80,{y})\\fad(150,0)\\fscx70\\fscy70\\t(0,160,\\fscx104\\fscy104)\\t(160,260,\\fscx100\\fscy100)}}{{\\c{bgr(ACC)}}}{i+1}{{\\r}}  {txt}")
+cm = B.get("comment")  # şərhə cavab: Instagram şərh balonu
+if cm:
+    x0, y0, w0, h0 = 70, 250, 940, cm.get("h", 190); lay = f"{ts(cm['t0'])},{ts(cm['t1'])}"
+    ev.append(f"Dialogue: 4,{lay},F,,0,0,0,,{{\\an7\\pos(0,0)\\p1\\c&HFFFFFF&\\fad(200,200)\\shad3\\4a&HA0&}}{rrect(x0, y0, w0, h0, 34)}{{\\p0}}")
+    ev.append(f"Dialogue: 5,{lay},F,,0,0,0,,{{\\an7\\pos(0,0)\\p1\\c{bgr(ACC)}\\fad(200,200)}}{circ(x0+70, y0+70, 34)}{{\\p0}}")
+    ev.append(f"Dialogue: 6,{lay},CU,,0,0,0,,{{\\an7\\pos({x0+124},{y0+30})\\fad(200,200)}}{cm['user']}  {{\\c&H8A8A8A&\\b0\\fs30}}şərhinə cavab")
+    ev.append(f"Dialogue: 6,{lay},CT,,0,0,0,,{{\\an7\\pos({x0+124},{y0+78})\\fad(200,200)}}{cm['text']}")
+tm = B.get("timer")  # çağırış taymeri
+if tm:
+    for k in range(int(tm["dur"])):
+        a = tm["t0"] + k
+        ev.append(f"Dialogue: 5,{ts(a)},{ts(min(a + 1, T))},TM,,0,0,0,,{{\\an9\\pos(1010,250)}}{int(tm['dur']) - k}")
+    ev.append(f"Dialogue: 5,{ts(tm['t0'])},{ts(min(tm['t0'] + tm['dur'], T))},TL,,0,0,0,,{{\\an9\\pos(1010,214)}}{tm.get('label', '')}")
+K.ensure_font(B.get("font"))
 ASS = WORK / "sub.ass"
 ASS.write_text(f"""[Script Info]
 ScriptType: v4.00+
@@ -140,12 +174,18 @@ WrapStyle: 0
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: S,Inter,{B['fontsize']},&H00FFFFFF,&H00FFFFFF,&H00000000,&H64000000,-1,0,0,0,100,100,0,0,1,3.2,1.5,2,90,90,{B['mv']},1
+Style: S,{B.get('font', 'Inter')},{B['fontsize']},&H00FFFFFF,&H00FFFFFF,&H00000000,&H64000000,{B.get('sub_bold', -1)},{B.get('sub_italic', 0)},0,0,100,100,0,0,1,{B.get('sub_outline', 3.2)},1.5,2,90,90,{B['mv']},1
 Style: D,Inter,{B.get('word_size', 92)},&H00FFFFFF,&H00FFFFFF,&H00101010,&H78000000,-1,0,0,0,100,100,0,0,1,6,2,2,70,70,{B.get('word_mv', 640)},1
-Style: Q,Inter,{B.get('q_size', 54)},&H00FFFFFF,&H00FFFFFF,{bgr(B.get('q_bg', '#0B2A20'))},{bgr(B.get('q_bg', '#0B2A20'))},-1,0,0,0,100,100,0,0,3,26,0,8,110,110,300,1
+Style: Q,Inter,{B.get('q_size', 54)},&H00FFFFFF,&H00FFFFFF,{bgr(B.get('q_bg', '#0B2A20'))},{bgr(B.get('q_bg', '#0B2A20'))},-1,0,0,0,100,100,0,0,3,26,0,8,110,110,{B.get('q_mv', 330)},1
 Style: L,JetBrains Mono,30,{bgr(ACC)},&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,4,0,1,0,0,8,110,110,250,1
 Style: V,Inter,110,&H00FFFFFF,&H00FFFFFF,&H00FFFFFF,&H00000000,-1,0,0,0,100,100,0,0,3,34,0,5,80,80,0,1
 Style: F,Inter,20,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,7,0,0,0,1
+Style: H,Inter,{B.get('h_size', 58)},{bgr(B.get('h_fg', '#0B2A20'))},&H00FFFFFF,{bgr(ACC)},{bgr(ACC)},-1,0,0,0,100,100,0,0,3,22,0,8,90,90,{B.get('h_mv', 260)},1
+Style: I,Inter,{B.get('i_size', 50)},&H00FFFFFF,&H00FFFFFF,&H00141414,&H96000000,-1,0,0,0,100,100,0,0,3,18,0,7,0,0,0,1
+Style: CU,Inter,34,&H00262626,&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,7,0,0,0,1
+Style: CT,Inter,40,&H00141414,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,7,0,0,0,1
+Style: TM,JetBrains Mono,96,&H00FFFFFF,&H00FFFFFF,{bgr(ACC)},&H00000000,-1,0,0,0,100,100,0,0,3,20,0,9,0,0,0,1
+Style: TL,Inter,30,&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,2,1,9,0,0,0,1
 Style: C,Inter,{B.get('card_size', 104)},&H00FFFFFF,&H00FFFFFF,&H00000000,&H50000000,-1,0,0,0,100,100,-2,0,1,0,6,5,90,90,0,1
 
 [Events]
@@ -165,7 +205,26 @@ for i, (a, b, z) in enumerate(segs):
     fc.append(f"[{i}:a]asetpts=PTS-STARTPTS,aresample={K.SR},afade=t=in:d=0.012,afade=t=out:st={b - a - 0.015:.3f}:d=0.015[a{i}]")
     cat += f"[v{i}][a{i}]"
 fc.append(f"{cat}concat=n={len(segs)}:v=1:a=1[vc][ac]")
-fc.append(f"[vc]{COLOR},subtitles={ASS}:fontsdir=/usr/share/fonts/opentype/inter,format=yuv420p[v]")
+nxt = len(segs); cur_v = "vc"; post = [f"[vc]{COLOR}[g0]"]; cur_v = "g0"
+for j, (t0, t1, img, mode) in enumerate(B.get("inserts", [])):  # şəkil/ekran görüntüsü əlavəsi
+    INP += ["-loop", "1", "-t", f"{T:.3f}", "-i", rp(img)]; en = f"between(t,{t0},{t1})"
+    if mode == "full":  # tam ekran şəkil + dairəvi PiP (danışan)
+        post.append(f"[{nxt}:v]scale=960:780:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:{B.get('full_img_y', 480)}:color={B.get('full_bg', '0x0B2A20')},format=yuva420p,fade=t=in:st={t0}:d=0.2:alpha=1[im{j}]")
+        post.append(f"[{cur_v}]split[b{j}][p{j}]")
+        post.append(f"[p{j}]crop=760:760:160:{B.get('pip_y', 330)},scale=320:320,format=rgba,geq=r='r(X,Y)':g='g(X,Y)':b='b(X,Y)':a='if(lte(hypot(X-160,Y-160),156),255,0)'[pc{j}]")
+        post.append(f"[b{j}][im{j}]overlay=0:0:enable='{en}'[o{j}];[o{j}][pc{j}]overlay=700:{B.get('pip_top', 130)}:enable='{en}'[q{j}]")
+        cur_v = f"q{j}"
+    else:  # split ekran: şəkil yuxarı yarımda, danışanın üzü aşağı yarımda
+        bg = B.get("split_bg", "0xF4F2EC")
+        post.append(f"[{nxt}:v]scale=1000:880:force_original_aspect_ratio=decrease,pad=1080:960:(ow-iw)/2:(oh-ih)/2+40:color={bg},format=yuva420p,fade=t=in:st={t0}:d=0.2:alpha=1[im{j}]")
+        post.append(f"[{cur_v}]split[b{j}][p{j}];[p{j}]crop=1080:960:0:{B.get('split_y', 560)}[pf{j}]")
+        post.append(f"[b{j}][pf{j}]overlay=0:960:enable='{en}'[o{j}];[o{j}][im{j}]overlay=0:0:enable='{en}'[q{j}]"); cur_v = f"q{j}"
+    nxt += 1
+if B.get("letterbox"):
+    lb = B["letterbox"]; post.append(f"[{cur_v}]drawbox=x=0:y=0:w=iw:h={lb}:color=black:t=fill,drawbox=x=0:y=ih-{lb}:w=iw:h={lb}:color=black:t=fill[lbx]"); cur_v = "lbx"
+if B.get("grain"): post.append(f"[{cur_v}]noise=c0s={B['grain']}:c0f=t+u,vignette=PI/5[gr]"); cur_v = "gr"
+post.append(f"[{cur_v}]subtitles={ASS}:fontsdir=/usr/share/fonts/opentype/inter,format=yuv420p[v]")
+fc += post
 VID, RAW = WORK / "v.mp4", WORK / "speech_raw.wav"
 K.run(["ffmpeg", "-v", "error", "-y", *INP, "-filter_complex", ";".join(fc), "-map", "[v]", "-r", "30", "-c:v", "libx264", "-preset", "slow",
        "-crf", "20", "-maxrate", "4.5M", "-bufsize", "9M", "-profile:v", "high", "-level", "4.0", "-pix_fmt", "yuv420p", "-g", "60", "-an", str(VID),
@@ -182,6 +241,9 @@ if B.get("cut_sfx"):  # dinamik: hər kəsikdə yüngül swoosh
 for t0, kind in B.get("verdicts", []):
     mix = K.add_sfx(mix, K.synth({"mif": "buzz", "fakt": "ding", "yari": "wobble"}[kind]), t0, -22)
 for q in B.get("questions", []): mix = K.add_sfx(mix, K.synth("pop"), q[0], -30)
+for it in B.get("items", []): mix = K.add_sfx(mix, K.synth("pop"), it[0], -29)
+for ins in B.get("inserts", []): mix = K.add_sfx(mix, K.synth("swoosh"), ins[0] - 0.1, -31)
+if B.get("comment"): mix = K.add_sfx(mix, K.synth("pop"), B["comment"]["t0"], -28)
 for c in B.get("statements", []): mix = K.add_sfx(mix, K.synth("pop"), c[0], -28)
 if B.get("music"):
     mask = np.zeros(n, bool)

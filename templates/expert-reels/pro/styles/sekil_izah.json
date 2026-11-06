@@ -1,0 +1,2 @@
+{"_ad": "Şəkil izahlı", "_nə_vaxt": "Danışılanı göstərmək lazım olanda: sxem, ekran görüntüsü, sənəd, məhsul. Şəkil split ekranda (yuxarıda şəkil, aşağıda danışan) və ya tam ekranda (danışan dairəvi pəncərədə) çıxır.",
+ "_alət": "talk.py", "_plan": "inserts: [[başla, son, \"şəkil.png\", \"top\"|\"full\"]]", "sub": "lines", "zooms": [1.0, 1.1], "gap": 0.55}
