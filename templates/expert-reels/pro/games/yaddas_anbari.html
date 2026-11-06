@@ -1,0 +1,75 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&family=Lora:ital,wght@1,500;1,600;1,700&family=JetBrains+Mono:wght@500;600;700&display=block" rel="stylesheet">
+<link rel="stylesheet" href="base.css">
+<style>
+.tile{position:absolute;border-radius:28px;background:var(--tile);border:2px solid var(--gb);display:flex;align-items:center;justify-content:center;font-family:'Noto Color Emoji';box-shadow:0 16px 34px rgba(0,0,0,.18)}
+.slot{position:absolute;border-radius:28px;border:4px dashed var(--acc);display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--acc);font-size:80px}
+#status{left:72px;right:72px;top:1390px}
+#stxt{font-weight:800;font-size:44px;color:var(--txt);margin-bottom:18px;display:flex;justify-content:space-between;align-items:center}
+#stxt span{font-family:'JetBrains Mono',monospace;font-size:44px;color:var(--acc)}
+#lvl{left:72px;top:690px}
+#ans{left:72px;right:72px;top:1390px;font-weight:800;font-size:46px;color:var(--txt)}
+#ans b{color:var(--acc)}
+#outro{left:72px;right:72px;top:1390px}
+</style></head><body>
+<div id="bg"></div><div id="dots"></div>
+<div class="a chip" id="chip"><i></i>Ekspert</div>
+<div class="a mono" id="lab" style="left:72px;top:372px">Mini oyun · Yaddaş</div>
+<div class="a t1" id="t1" style="left:72px;top:428px">Yaddaş anbarı</div>
+<div class="a t1" id="t2" style="left:66px;top:540px;font-size:82px"><mark>Hansı yoxa çıxdı?</mark></div>
+<div class="a sub" id="sub" style="left:72px;right:72px;top:720px">3 səviyyə. Hər biri bir az daha çətin.</div>
+<div class="a pill" id="lvl">Səviyyə 1</div>
+<div class="a" id="stage" style="left:0;top:0;width:1080px;height:1920px"></div>
+<div class="a" id="status"><div id="stxt"><div id="sl">Yadda saxla</div><span id="sn">3</span></div><div class="bar"><i id="sb"></i></div></div>
+<div class="a" id="ans"></div>
+<div class="a sub" id="sci" style="left:72px;right:72px;top:900px;font-size:44px;line-height:1.35;color:var(--txt);font-weight:700">Qısamüddətli yaddaş eyni anda <em>məhdud</em> sayda məlumat saxlaya bilir.<br><br><span style="color:var(--mut);font-weight:500;font-size:38px">Ona görə hər yeni əşya işi bir az da çətinləşdirir.</span></div>
+<div class="a card" id="outro"><div class="ic" style="color:var(--onacc)">CHAT</div><div><div class="k">SƏNİN NÖVBƏN</div><div class="v">Neçə səviyyə keçdin? Şərhdə yaz: 1, 2, yoxsa 3?</div></div></div>
+<script src="base.js"></script>
+<script>
+theme('dark'); $('outro').querySelector('.ic').innerHTML=CHAT;
+const NAMES={"📚":"kitablar","⏰":"saat","🔑":"açar","☕":"fincan","🎧":"qulaqlıq","🍎":"alma","✏️":"karandaş","📱":"telefon","💡":"lampa","🎒":"çanta","👓":"eynək","⚽":"top","🧩":"pazl","📎":"sancaq","🌙":"ay","🚲":"velosiped"};
+const LV=[
+ {items:["📚","⏰","🔑","☕","🎧","🍎"],cols:3,miss:3,M:3,perm:null},
+ {items:["✏️","📱","💡","🎒","👓","⚽","🧩","📎","🌙"],cols:3,miss:4,M:4,perm:null},
+ {items:["📚","🎧","🔑","🚲","🍎","⏰","💡","📎","☕","🎒","🧩","✏️"],cols:4,miss:3,M:5,perm:[7,2,10,0,5,11,1,8,4,9,6,3]}];
+const GX=72,GW=936,GY=860,GAP=22;
+let L0=2.6;
+LV.forEach((l,k)=>{l.L=L0;l.show=L0+1.2;l.hide=l.show+l.M;l.g0=l.hide+0.6;l.rev=l.g0+3;l.end=l.rev+1.6;L0=l.end+0.2;
+  ev(l.L,'pop');l.items.forEach((_,i)=>ev(l.L+0.9+i*0.05,'pop2',i));for(let s=0;s<l.M;s++)ev(l.show+s,'tick');ev(l.hide,'whoosh');ev(l.g0,'pop');
+  for(let s=0;s<3;s++)ev(l.g0+s,'tickhi');ev(l.rev,'ding',k)});
+const OUT=L0+0.1, TOTAL=OUT+3.8; ev(OUT,'bell'); window.TIMES={TOTAL};
+const st=$('stage'); const tiles=[];
+LV.forEach((l,k)=>{const rows=Math.ceil(l.items.length/l.cols);const w=(GW-GAP*(l.cols-1))/l.cols;const h=l.cols==3?150:140;
+  l.pos=i=>({x:GX+(i%l.cols)*(w+GAP),y:GY+Math.floor(i/l.cols)*(h+GAP),w,h});
+  l.el=l.items.map((e,i)=>{const d=document.createElement('div');d.className='tile';d.textContent=e;d.style.fontSize=(l.cols==3?92:80)+'px';st.appendChild(d);return d});
+  const s=document.createElement('div');s.className='slot';s.textContent='?';st.appendChild(s);l.slot=s});
+function place(el,p,sc,op){el.style.left=p.x+'px';el.style.top=p.y+'px';el.style.width=p.w+'px';el.style.height=p.h+'px';el.style.transform=`scale(${sc})`;el.style.opacity=op}
+window.renderFrame=function(t){
+  inn(chip,t,0);inn(lab,t,.15);inn(t1,t,.3,60);const m=back((t-.65)/.45);t2.style.opacity=cl((t-.65)/.2);t2.style.transform=`scale(${.6+.4*m})`;t2.style.transformOrigin='left center';
+  inn(sub,t,1.1,30,.6); if(t>LV[0].L-.2) sub.style.opacity=1-cl((t-LV[0].L+.2)/.3);
+  let cur=LV.findIndex(l=>t>=l.L&&t<l.end+0.2); if(t>=OUT) cur=-1;
+  const lvlEl=$('lvl'); if(cur>=0){const l=LV[cur];lvlEl.textContent=`Səviyyə ${cur+1} · ${l.items.length} əşya`;const p=back((t-l.L)/.4);lvlEl.style.opacity=cl((t-l.L)/.15);lvlEl.style.transform=`scale(${.6+.4*p})`;lvlEl.style.transformOrigin='left center'}else lvlEl.style.opacity=0;
+  LV.forEach((l,k)=>{const on=k===cur;
+    l.el.forEach((el,i)=>{if(!on){el.style.opacity=0;return}
+      let sc=0,op=0,p=l.pos(i);
+      if(t<l.hide){const q=back((t-l.L-0.9-i*0.05)/.35);sc=.4+.6*q;op=cl((t-l.L-0.9-i*0.05)/.15)}
+      else if(t<l.g0){const q=cl((t-l.hide)/.3);sc=1-q;op=1-q}
+      else{const j=l.perm?l.perm.indexOf(i):i;p=l.pos(j);
+        if(i===l.miss){if(t<l.rev){op=0}else{const q=back((t-l.rev)/.4);sc=.3+.7*q;op=cl((t-l.rev)/.12)}}
+        else{const q=back((t-l.g0-i*0.03)/.35);sc=.4+.6*q;op=cl((t-l.g0-i*0.03)/.15)}}
+      place(el,p,sc,op);
+      if(i===l.miss&&t>=l.rev){el.style.boxShadow=`0 0 0 6px var(--acc),0 0 60px rgba(108,197,126,.6)`}else el.style.boxShadow='';});
+    const j=l.perm?l.perm.indexOf(l.miss):l.miss; const sp=l.pos(j);
+    place(l.slot,sp,on&&t>=l.g0&&t<l.rev?1:.8,on&&t>=l.g0&&t<l.rev?cl((t-l.g0)/.2):0)});
+  // status
+  const S=$('status'),A=$('ans');
+  if(cur>=0){const l=LV[cur];
+    if(t>=l.show&&t<l.hide){S.style.opacity=1;$('sl').textContent='Yadda saxla';const r=l.hide-t;$('sn').textContent=Math.ceil(r);$('sb').style.width=(r/l.M*100)+'%'}
+    else if(t>=l.g0&&t<l.rev){S.style.opacity=1;$('sl').textContent=l.perm?'Yerlər də dəyişdi! Hansı yoxdur?':'Hansı yoxa çıxdı?';const r=l.rev-t;$('sn').textContent=Math.ceil(r);$('sb').style.width=(r/3*100)+'%'}
+    else S.style.opacity=0;
+    if(t>=l.rev){A.style.opacity=cl((t-l.rev)/.2);A.innerHTML=`Cavab: <b>${NAMES[l.items[l.miss]]}</b>`}else A.style.opacity=0;
+  }else{S.style.opacity=0;A.style.opacity=0}
+  if(t>=OUT){inn($('outro'),t,OUT+.5,50,.5);inn($('sci'),t,OUT,40,.5)}else{$('outro').style.opacity=0;$('sci').style.opacity=0}
+};
+window.renderFrame(0);
+</script></body></html>
