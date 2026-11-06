@@ -100,6 +100,22 @@ Qaydalar: hook salamsız — sitat və ya rəqəmlə (`equote`) başlayır; hər
 
 Brend "möhürü" (videonun əvvəlinə 0.5 s logo) bilərəkdən qurulmayıb: hook-u gecikdirir, izləmə müddətini azaldır. Brendlik handle işarəsi və seriya final kartı ilə verilir.
 
+## Ölçmə, planlaşdırma, çəkiliş, əlavə məzmun
+
+| alət | nə vaxt | nə edir |
+|---|---|---|
+| `metrics_report.py <müştəri> <metrics.json>` | ayda 1 | Metricool reel göstəriciləri → `hesabat_<tarix>.html` + brend kitinə `learnings` (hook növü, uzunluq üzrə). Teqlər `instagram-clients/<müştəri>/posted.json`-dan; qrupda ən az 2 reel olmasa nəticə çıxarılmır |
+| `schedule_plan.py <müştəri> <plan.json>` | paylaşımdan əvvəl | ən yaxşı saatlar (getBestTimeToPostByNetwork) + grid qaydası → cədvəl və Metricool qaralamaları (draft). Media = Drive linki (Drive Metricool-a bağlı olmalıdır). **Göndərmə yalnız istifadəçi təsdiqindən sonra** |
+| `preflight.py <sınaq.mp4>` | çəkiliş günü, ilk 10–20 s | istiqamət, keyfiyyət, fps, danışıq səviyyəsi, fon küyü, klip, işıq, üz ölçüsü/mərkəz/baş üstü → HAZIR / DİQQƏT / DÜZƏLT + nə etmək |
+| `shoot_sheet.py <çəkiliş.json>` | çəkilişdən əvvəl | bir səhifəlik vərəq: texniki checklist, videolar paltara görə qruplaşdırılmış, suallar |
+| `carousel_from_cards.py <vN.json> <mp4>` | QA-dan sonra | videonun tam ekran kartlarından 4:5 karusel (üz qabığı + kartlar + çağırış) |
+| `story_pack.py <vN.json> <mp4>` | QA-dan sonra | tizer (ilk cümlə + "Tam video profildə"), sorğu kadrı, kart kadrı |
+| `ab_hook.py <vN.json> <mp4> "Hook B"` | test | ilk 2.8 s fərqli açılış → `_B.mp4`; Trial Reel kimi paylaşılır, view rate müqayisə olunur |
+| `docs/razilig_formasi.md` | uşaq/üçüncü şəxs kadrda | valideyn razılıq forması |
+
+Build özü: köhnə nəticə `versiyalar/PRO_x_vN.mp4` kimi saxlanılır; musiqi işlənəndə `vN/musiqi_lisenziya.txt` (konfiqdə `music.source`, `music.license`).
+Metricool-da hazırda yalnız @1aynurmemmedova qoşuludur; müştərilər üçün onların səhifəsi Metricool-a əlavə olunmalıdır.
+
 ## Göndərmə
 
 Yalnız `HAZIR (QA keçdi)` siyahısındakı faylları göndər. Hər video üçün bir sətir: QA nəticəsi (kəsim sayı, LUFS, donma 0). WARN-ları dürüst yaz.

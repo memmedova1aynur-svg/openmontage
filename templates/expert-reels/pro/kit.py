@@ -38,3 +38,9 @@ def scenes(cfg):
 
 
 OVER = {"lower", "top", "topchips", "equote", "esticker", "ename"}
+
+
+def on_acc(pal):
+    """Vurğu rənginin üstündəki yazı: tünd vurğuda ağ, açıqda tünd (oxunaqlılıq)."""
+    a = pal.get("acc", "#6CC57E"); l = int(a[1:3], 16) * .299 + int(a[3:5], 16) * .587 + int(a[5:7], 16) * .114
+    return "#FFFFFF" if l < 150 else pal.get("ink", "#111111")

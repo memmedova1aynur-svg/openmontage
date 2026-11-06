@@ -420,7 +420,13 @@ tick("yekun render")
 r = run(["python", "-m", "montaj.session", "render", pid]); print((r.stdout.strip().splitlines() or [r.stderr[-800:]])[-1])
 if r.returncode: raise SystemExit("render xətası: " + r.stderr[-1500:])
 f = sorted((DATA / "out" / pid).glob(f"{pid}_r*.mp4"), key=lambda p: p.stat().st_mtime)[-1]
-dst = f"{SCR}/PRO_{CFG['file']}.mp4"; subprocess.run(["cp", str(f), dst]); print("HAZIR", dst)
+dst = f"{SCR}/PRO_{CFG['file']}.mp4"
+if Path(dst).exists():  # əvvəlki versiya itmir: versiyalar/PRO_x_v1.mp4, v2 …
+    vd = Path(SCR) / "versiyalar"; vd.mkdir(exist_ok=True); k_ = len(list(vd.glob(f"PRO_{CFG['file']}_v*.mp4"))) + 1
+    shutil.move(dst, vd / f"PRO_{CFG['file']}_v{k_}.mp4"); print(f"əvvəlki versiya → versiyalar/PRO_{CFG['file']}_v{k_}.mp4")
+subprocess.run(["cp", str(f), dst]); print("HAZIR", dst)
+if MUS and MUS.get("file"):  # musiqi lisenziyası qeydi (reklamda vacibdir)
+    (W_DIR / "musiqi_lisenziya.txt").write_text(f"fayl: {MUS['file']}\nmənbə: {MUS.get('source', '?')}\nlisenziya: {MUS.get('license', '?')}\nvideo: {dst}\n", encoding="utf-8")
 if BRAND.get("handle") and CFG.get("watermark", BRAND.get("watermark", False)):
     subprocess.run([sys.executable, str(A / "postfx.py"), "watermark", sys.argv[1], dst], check=True)
 tick("render bitdi")

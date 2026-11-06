@@ -76,7 +76,7 @@ def cover():
 <style>*{{margin:0}}body{{width:1080px;height:1920px;background:url("{bg.as_uri()}") center/cover;font-family:Montserrat;position:relative;overflow:hidden}}
 .g{{position:absolute;inset:0;background:linear-gradient(transparent 45%,rgba(0,0,0,.72) 82%)}}
 .t{{position:absolute;left:80px;right:80px;top:1180px;color:#fff;font-weight:900;font-size:96px;line-height:1.02;letter-spacing:-.02em;text-shadow:0 6px 30px rgba(0,0,0,.4)}}
-.t span{{background:{PAL["acc"]};color:{"#FFFFFF" if sum(int(PAL["acc"][i:i+2],16)*w for i,w in ((1,.299),(3,.587),(5,.114))) < 150 else PAL["ink"]};padding:0 .14em;border-radius:.1em}}</style></head>
+.t span{{background:{PAL["acc"]};color:{kit.on_acc(PAL)};padding:0 .14em;border-radius:.1em}}</style></head>
 <body><div class="g"></div><div class="t">{title.replace("*", "<span>", 1).replace("*", "</span>", 1)}</div><script>document.fonts.ready.then(()=>document.title="done")</script></body></html>''', encoding="utf-8")
     out = f"{stem}_cover.jpg"
     js = f"""const {{chromium}}=require('/opt/node22/lib/node_modules/playwright');(async()=>{{const b=await chromium.launch();const p=await b.newPage({{viewport:{{width:1080,height:1920}}}});
