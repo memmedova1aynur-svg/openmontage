@@ -125,9 +125,14 @@ def cmd_media():
             f = md / f"{k}.mp4"
             if used >= budget: notes.append("transkript büdcəsi bitdi")
             elif dl(p.get("videoUrl"), f):
-                txt, src, dur = stt(f); used += dur
-                if txt.strip(): p["transkript"] = txt; p["mənbə"].append(src)
-                else: notes.append("danışıq tapılmadı")
+                has_audio = "audio" in subprocess.run(["ffprobe", "-v", "error", "-show_entries", "stream=codec_type", "-of", "csv=p=0", str(f)], capture_output=True, text=True).stdout
+                if not has_audio: notes.append("videoda səs yolu yoxdur (transkript mümkün deyil)")
+                else:
+                    try:
+                        txt, src, dur = stt(f); used += dur
+                        if txt.strip(): p["transkript"] = txt; p["mənbə"].append(src)
+                        else: notes.append("danışıq tapılmadı")
+                    except Exception as e: notes.append(f"transkript alınmadı ({type(e).__name__})")
             else: notes.append("video yüklənmədi (link vaxtı bitmiş ola bilər)")
         imgs = p.get("images") or []
         texts = []
