@@ -54,3 +54,73 @@ Hər element istənilən tərzlə birləşə bilər: məs. `dinamik` + `headline
 Tərzin istədiyi şrift (məs. `Lora`) sistemdə yoxdursa, avtomatik yüklənir (Google Fonts, OFL).
 
 Qayda: oyun videoları həftədə 1-dən çox olmasın (kontent bəsit görünməsin).
+
+## Planlaşdırılan tərzlər (#15–#48)
+
+Hələ preset faylı yoxdur; seçiləndə `styles/`-ə əlavə olunur. Hazırlıq: hazır elementlərlə / kiçik əlavə / xüsusi iş.
+
+### Oyun və şou formatları
+_Ekspert kadrda; izləyici oynayır, sona qədər qalır_
+
+| # | Tərz | Təsvir | Hazırlıq |
+|---|---|---|---|
+| 15 | 💰 Final sualı | Viktorina şousu janrı: 4 variant (A–D), geri sayım, gərgin musiqi, "50/50" köməyi, bal pilləkəni. Öz dizaynımızda. | kiçik əlavə |
+| 16 | ✅ Düz / səhv sprint | 5 iddia, hər birinə 3 saniyə. Ekspert ✓ və ya ✕ göstərir, sonda izah. | hazır elementlərlə |
+| 17 | 🕵️ Mif ovçusu | Mif/fakt seriyası: hər videoda 3 mif, "ovlanan" miflər sayğacda toplanır. | kiçik əlavə |
+| 18 | 🔢 Təxmin et | Rəqəm sualı, slayder hərəkət edir, düz cavab sayğac animasiyası ilə açılır. | kiçik əlavə |
+| 19 | ⚖️ Bu, yoxsa o? | İki seçim yan-yana, ekspert birini seçib 1 cümlə ilə izah edir. | hazır elementlərlə |
+| 20 | ⚡ Blitz | Sürətli suallar, qəfil cavablar, "ding" və gülməli pauza kartları. | hazır elementlərlə |
+| 21 | 🎯 Səviyyə testi | Asan → orta → çətin sual. Sonda: "Sən hansı səviyyədəsən?" | kiçik əlavə |
+| 22 | ⏸️ Pauza et | "Ekranı dayandır və tap" — gizli detal, təkrar izləmə gətirir. | kiçik əlavə |
+| 23 | 🗣️ Kim deyib? | Məşhur sitat, 3 ad variantı, ekspert kontekstini izah edir. | kiçik əlavə |
+
+### Yumor və səmimiyyət
+_Ekspertin insani tərəfi, paylaşılma gətirir_
+
+| # | Tərz | Təsvir | Hazırlıq |
+|---|---|---|---|
+| 24 | 🎬 Bir neçə dəqiqə sonra… | Sitkom kartları, plastinka cızıltısı, dondurulmuş kadr: "Bəli, bu mənəm". | hazır elementlərlə |
+| 25 | 🧊 Dondurulmuş kadr | Ən ifadəli anda kadr dayanır, üstünə komik yazı və səs. | hazır elementlərlə |
+| 26 | 👂 Deyir / eşidir | "Valideyn deyir" və "Uşaq eşidir" — eyni cümlənin iki versiyası. | kiçik əlavə |
+| 27 | 👀 POV | "POV: uşaq 10-cu dəfə 'niyə?' soruşur" — mətn kartı və ekspertin reaksiyası. | hazır elementlərlə |
+| 28 | 🪞 Gözlənti / reallıq | Split ekran: gözlənti və reallıq kadrları yan-yana. | kiçik əlavə |
+| 29 | 💬 Şərhləri oxuyuram | Real şərhləri oxuyub cavablayır (icazə ilə, mənfi şərhlər yox). | hazır elementlərlə |
+| 30 | 😂 Uğursuz dubllar | Ayda bir: çəkilişdən gülməli səhvlər, "blooper" səsləri. | hazır elementlərlə |
+
+### Təhsil və izah
+_Ekspertliyi göstərir, yadda saxlanır_
+
+| # | Tərz | Təsvir | Hazırlıq |
+|---|---|---|---|
+| 31 | ✍️ Lövhə | Açar sözlər danışdıqca əl yazısı kimi ekranda yazılır. | kiçik əlavə |
+| 32 | 🧭 Sxem animasiyası | Proses addım-addım çəkilir, oxlar və bloklar danışığa sinxron. | kiçik əlavə |
+| 33 | 📊 Rəqəm kartı | İri rəqəm sayğac animasiyası ilə çıxır, altında mənbə. | kiçik əlavə |
+| 34 | ❌ Səhv / düz üsul | Sol tərəfdə qırmızı ✕ (səhv üsul), sağda yaşıl ✓ (düz üsul). | hazır elementlərlə |
+| 35 | 👐 Addım-addım | Təlimat: nömrəli addımlar, əllərin yaxın planı, "evdə et" kartı. | hazır elementlərlə |
+| 36 | ⏱️ 1 dəqiqəlik dərs | Problem → səbəb → həll; xronometr və 3 hissəlik çubuq. | kiçik əlavə |
+| 37 | 📖 Termin lüğəti | Yeni termin kartı: söz, tələffüz, sadə izah, gündəlik nümunə. | hazır elementlərlə |
+
+### Hekayə və emosiya
+_Bağ qurur, sona qədər izlənir_
+
+| # | Tərz | Təsvir | Hazırlıq |
+|---|---|---|---|
+| 38 | 📽️ Hekayə qarmağı | "Bir gün kabinetə bir ana gəldi…" — kinematik tərz, anonim hekayə. | hazır elementlərlə |
+| 39 | 🗓️ Mənimlə bir gün | Kamera arxası: saat kartları, sürətlənmiş kadrlar, günün anları. | hazır elementlərlə |
+| 40 | ✉️ Məktub | Ekspert izləyiciyə məktub oxuyur, kağız teksturası, yumşaq musiqi. | hazır elementlərlə |
+| 41 | 🖋️ Sitat kartı | Ekspertin ən güclü cümləsi iri tipoqrafiya ilə, səs fonda. | hazır elementlərlə |
+
+### Trend və platforma formatları
+_Instagram alqoritminin sevdiyi mexanikalar_
+
+| # | Tərz | Təsvir | Hazırlıq |
+|---|---|---|---|
+| 42 | 🟩 Yaşıl ekran | Ekspert məqalə, xəbər və ya ekran görüntüsünün önündə danışır (fon avtomatik çıxarılır). | xüsusi iş |
+| 43 | 🔀 Duet / stitch | Başqa videoya (icazə ilə) split ekranda reaksiya və düzəliş. | kiçik əlavə |
+| 44 | 🖼️ Karuseldən reel | Hazır karusel slaydları hərəkətli slayd-şou kimi, səs və keçidlərlə. | kiçik əlavə |
+| 45 | ❓ Sual qutusu | Story sual stikeri görünüşündə sual, ekspert cavabı. | hazır elementlərlə |
+| 46 | 🎧 Səs-ASMR | Sensor oyuncaqların yaxın plan səsləri (Lamiyə üçün ideal). | hazır elementlərlə |
+| 47 | 📆 Gün 1/30 | Çağırış seriyası: hər videoda gün sayğacı, seriyaya bağlılıq. | hazır elementlərlə |
+| 48 | 🔁 Loop video | Sonu əvvəlinə bitişik, izləyici dövrəni hiss etmir — təkrar izlənmə. | kiçik əlavə |
+
+Qeyd: "Final sualı" viktorina şousu janrıdır — konkret televiziya şousunun loqosu, musiqisi və dizaynı istifadə olunmur.
