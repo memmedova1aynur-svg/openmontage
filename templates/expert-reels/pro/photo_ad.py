@@ -91,6 +91,7 @@ VID = WORK / "v.mp4"
 K.run(["ffmpeg", "-v", "error", "-y", "-framerate", "30", "-i", str(FR / "%05d.jpg"), "-c:v", "libx264", "-preset", "slow", "-crf", "18", "-maxrate", "4.5M", "-bufsize", "9M",
        "-profile:v", "high", "-level", "4.0", "-pix_fmt", "yuv420p", "-r", "30", "-g", "60", str(VID)])
 K.export_ig(VID, FIN, OUT, copy_video=True)
+K.cover_first(OUT, P.get("cover_t", 1.2))  # üz qabığı ilk kadrda: Instagram-da ayrıca seçmək lazım deyil
 K.cover(OUT, P.get("cover_t", 1.2), OUT.parent / (OUT.stem + "_kadr.jpg")); shutil.rmtree(FR)
 q = K.qa(OUT); json.dump(q, open(OUT.parent / (OUT.stem + "_qa.json"), "w"), ensure_ascii=False, indent=1)
 print(f"{'OK' if q['ok'] else 'YOXLA'} {OUT} {q}")

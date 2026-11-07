@@ -80,6 +80,7 @@ if B.get("music"):
 if B.get("sfx"): mix = K.place_sfx(mix, [(rp(f), at, lv) for f, at, lv in B["sfx"]])
 MIX, FIN = WORK / "mix.wav", WORK / "final.wav"; K.save(mix, MIX); K.finalize(MIX, FIN)
 K.export_ig(VID, FIN, OUT, copy_video=True)
+K.cover_first(OUT, B.get("cover_t", 1.0))  # üz qabığı ilk kadrda: Instagram-da ayrıca seçmək lazım deyil
 K.cover(BASE, B.get("cover_t", 1.0), OUT.parent / (OUT.stem + "_kadr_altyazisiz.jpg"))  # üz qabığı üçün təmiz kadr
 if B.get("story"): K.story_clips(OUT, B["story"], OUT.parent / "story", label=B.get("story_label"))
 q = K.qa(OUT); json.dump(q, open(OUT.parent / (OUT.stem + "_qa.json"), "w"), ensure_ascii=False, indent=1)

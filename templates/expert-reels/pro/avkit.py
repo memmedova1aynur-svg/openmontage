@@ -183,3 +183,19 @@ def ensure_font(family):
     for u in re.findall(r"https://[^)]+\.ttf", css):
         subprocess.run(["curl", "-sS", "-o", str(d / Path(u).name), u])
     subprocess.run(["fc-cache", "-f"], capture_output=True)
+
+
+def cover_first(video, t=None, image=None, frames=3):
+    """Üz qabığını videonun ilk kadrlarına yerləşdir (Instagram default üz qabığı = ilk kadr).
+    t: videodan götürüləcək kadrın saniyəsi, və ya image: hazır üz qabığı şəkli. Fayl yerində yenilənir."""
+    video = Path(video); tmp_img = video.with_suffix(".cover.png"); out = video.with_suffix(".cf.mp4")
+    if image is None: run(["ffmpeg", "-v", "error", "-y", "-ss", f"{t or 1.0:.3f}", "-i", str(video), "-frames:v", "1", str(tmp_img)]); image = tmp_img
+    d = frames / 30
+    run(["ffmpeg", "-v", "error", "-y", "-loop", "1", "-t", f"{d:.4f}", "-framerate", "30", "-i", str(image), "-i", str(video),
+         "-filter_complex", f"[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,setsar=1,fps=30,format=yuv420p[cv];"
+                            f"anullsrc=r=44100:cl=stereo,atrim=0:{d:.4f}[ca];[1:v]setsar=1,fps=30,format=yuv420p[mv];[1:a]aresample=44100,alimiter=limit=0.79:attack=2:release=50:level=false[ma];"
+                            f"[cv][ca][mv][ma]concat=n=2:v=1:a=1[v][a]",
+         "-map", "[v]", "-map", "[a]", "-c:v", "libx264", "-preset", "slow", "-crf", "20", "-maxrate", "4.5M", "-bufsize", "9M",
+         "-profile:v", "high", "-level", "4.0", "-pix_fmt", "yuv420p", "-r", "30", "-g", "60", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", str(out)])
+    out.replace(video); tmp_img.unlink(missing_ok=True)
+    return video

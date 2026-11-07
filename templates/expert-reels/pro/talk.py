@@ -296,6 +296,7 @@ if B.get("music"):
     mu = B["music"]; mix = mix + K.music_bed(K.load(rp(mu["file"])), n, mask, level=mu.get("level", -29), duck_db=mu.get("duck", 4))
 MIX = WORK / "mix.wav"; K.save(mix, MIX); K.finalize(MIX, FINAL)
 K.export_ig(VID, FINAL, OUT, copy_video=True)
+K.cover_first(OUT, B.get("cover_t", 1.0))  # üz qabığı ilk kadrda: Instagram-da ayrıca seçmək lazım deyil
 
 # --- story, üz qabığı, QA
 st = B.get("story") or [[0, min(10, T)]]
