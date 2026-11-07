@@ -21,6 +21,7 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import avkit as K
 
+import time; T_START = time.time()
 P = json.load(open(sys.argv[1])); ROOT = Path(sys.argv[1]).resolve().parent
 rp = lambda x: str((ROOT / x).resolve()) if x and not os.path.isabs(x) else x
 SRC = rp(P["src"]); OUT = K.next_version(rp(P["out"])); WORK = OUT.parent / (OUT.stem + "_work"); WORK.mkdir(parents=True, exist_ok=True)
@@ -61,8 +62,11 @@ def transcribe(src, out):
             if "words" in d: json.dump(d, open(out, "w"), ensure_ascii=False); return
             print("Scribe alınmadı:", r[:200])
         except Exception: print("Scribe cavabı oxunmadı")
+    print("XƏBƏRDARLIQ: lokal transkript (faster-whisper) Azərbaycan dilində zəifdir — altyazını diqqətlə yoxla")
+    import numpy as np
     from faster_whisper import WhisperModel
-    segs, _ = WhisperModel("small", compute_type="int8").transcribe(str(wav), language="az", word_timestamps=True)
+    pcm = np.frombuffer(subprocess.run(["ffmpeg", "-v", "error", "-i", str(wav), "-f", "f32le", "-ac", "1", "-ar", "16000", "-"], capture_output=True).stdout, np.float32)
+    segs, _ = WhisperModel("small", compute_type="int8").transcribe(pcm, language="az", word_timestamps=True)  # raw PCM: PyAV metadata xətası olmur
     words = [{"type": "word", "text": w.word.strip(), "start": w.start, "end": w.end} for s in segs for w in s.words]
     json.dump({"words": words}, open(out, "w"), ensure_ascii=False)
 
@@ -231,6 +235,7 @@ if len(sys.argv) > 2 and sys.argv[2] == "storyboard":
     (OUT.parent / (OUT.stem + "_storyboard.md")).write_text("\n".join(md) + "\n")
     print("STORYBOARD", SB); sys.exit()
 
+T_ANALIZ = time.time() - T_START  # transkript + seqment + altyazı planı
 # --- video (hər seqment ayrıca giriş: uzun mənbədə yaddaş partlamır)
 bc = B.get("base")
 pre = ("hflip," if B.get("hflip") else "")
@@ -294,5 +299,7 @@ K.export_ig(VID, FINAL, OUT, copy_video=True)
 st = B.get("story") or [[0, min(10, T)]]
 K.story_clips(OUT, st, OUT.parent / "story", label=B.get("story_label"))
 K.cover(OUT, B.get("cover_t", 1.0), OUT.parent / (OUT.stem + "_kadr.jpg"))
-q = K.qa(OUT); json.dump({"seqmentlər": segs, "qa": q}, open(OUT.parent / (OUT.stem + "_qa.json"), "w"), ensure_ascii=False, indent=1)
+T_RENDER = time.time() - T_START - T_ANALIZ
+q = K.qa(OUT); q["vaxt"] = {"analiz_san": round(T_ANALIZ, 1), "render_san": round(T_RENDER, 1), "cəmi_san": round(time.time() - T_START, 1)}
+json.dump({"seqmentlər": segs, "qa": q}, open(OUT.parent / (OUT.stem + "_qa.json"), "w"), ensure_ascii=False, indent=1)
 print(f"{'OK' if q['ok'] else 'YOXLA'} {OUT}  {T:.1f}s  {len(segs)} seqment  {len(chunks)} altyazı  {q}")
