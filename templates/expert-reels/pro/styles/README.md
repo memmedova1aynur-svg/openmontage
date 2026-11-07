@@ -124,3 +124,16 @@ _Instagram alqoritminin sevdiyi mexanikalar_
 | 48 | 🔁 Loop video | Sonu əvvəlinə bitişik, izləyici dövrəni hiss etmir — təkrar izlənmə. | kiçik əlavə |
 
 Qeyd: "Final sualı" viktorina şousu janrıdır — konkret televiziya şousunun loqosu, musiqisi və dizaynı istifadə olunmur.
+
+## Agentlik S-kod kataloqu (S01–S36)
+
+Agentliyin öz montaj kataloqu (PDF, S01–S36) və kod → tərz xəritəsi açıq repoda deyil, `instagram-clients/_agency/` qovluğundadır (`s_kodlar.json`; yol `PRO_AGENCY` ilə dəyişdirilə bilər). Video planında `"style": "S01"` yazmaq kifayətdir: kod uyğun tərzə çevrilir. Kod mövcud alətlə alınmırsa (B-roll, xüsusi çəkiliş), skript nə lazım olduğunu deyib dayanır.
+
+İş qaydası (kataloqdan):
+1. Müştəri, mövzu, məqsəd, material, kod, müddət, brend qaydaları oxunur; fayl və səs əvvəl yoxlanır.
+2. Əvvəl storyboard: `python3 talk.py plan.json storyboard` → `_storyboard.jpg` + `_storyboard.md` (seqmentlər, vaxt, mətn, elementlər). Təsdiqdən sonra render. Müştəri storyboard təsdiqini ləğv edibsə, birbaşa render.
+3. Bir əsas tərz + ən çox bir köməkçi tərz. Brend rəngini dəyişmək yeni tərz yaratmır.
+4. Mənbəsiz statistika və sitat yoxdur; musiqi, mənbə video və şəkillərin istifadə hüququ yoxlanır; məşhur şouların loqo və musiqisi təkrarlanmır.
+5. Danışanın səsi, ifadəsi və mənalı pauzaları qorunur; ardıcıl işlərdə eyni açılış təkrarlanmır.
+6. Son video açılıb yoxlanmadan "hazır" deyilmir (QA: kadr sayı, səs, pik, altyazı sahəsi).
+7. Hər kodun ilk real işi "Sınaq", təsdiqdən sonra "Yoxlanıb" statusu alır.

@@ -33,6 +33,13 @@ def brand_talk(name):
         if d and f.exists(): return json.load(open(f)).get("talk", {})
     raise SystemExit(f"brand_kit tapılmadı: {name}")
 def style(name):
+    if re.fullmatch(r"S\d{2}", name or ""):  # agentliyin S-kod kataloqu (instagram-clients/_agency/s_kodlar.json)
+        m = Path(os.environ.get("PRO_AGENCY", str(Path(__file__).resolve().parents[3] / "instagram-clients" / "_agency"))) / "s_kodlar.json"
+        if not m.exists(): raise SystemExit(f"S-kod xəritəsi tapılmadı: {m}")
+        e = json.load(open(m)).get(name) or {}
+        if not e.get("preset"):
+            raise SystemExit(f"{name} {e.get('ad', '')}: talk.py ilə alınmır (alət: {e.get('alət')}, status: {e.get('status')}). Material: {e.get('material', '—')}")
+        print(f"{name} {e['ad']} → tərz: {e['preset']} ({e['status']})"); name = e["preset"]
     f = Path(__file__).resolve().parent / "styles" / f"{name}.json"
     if not f.exists(): raise SystemExit(f"tərz tapılmadı: {name} (styles/ qovluğuna bax)")
     return {k: v for k, v in json.load(open(f)).items() if not k.startswith("_")}
@@ -192,6 +199,37 @@ Style: C,Inter,{B.get('card_size', 104)},&H00FFFFFF,&H00FFFFFF,&H00000000,&H5000
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 """ + "\n".join(ev) + "\n")
 (OUT.parent / (OUT.stem + "_altyazi.txt")).write_text("\n".join(" ".join(x["t"] for x in c) for c in chunks))
+
+# --- storyboard (render-dən əvvəl təsdiq üçün): python3 talk.py plan.json storyboard
+if len(sys.argv) > 2 and sys.argv[2] == "storyboard":
+    from PIL import Image, ImageDraw, ImageFont
+    bc0 = B.get("base"); vf0 = ("hflip," if B.get("hflip") else "")
+    if bc0: vf0 += f"crop=iw*{bc0['s']}:ih*{bc0['s']}:iw*{bc0['cx'] - bc0['s'] / 2:.4f}:ih*{bc0['cy'] - bc0['s'] / 2:.4f},"
+    fb = ImageFont.truetype("/usr/share/fonts/opentype/inter/Inter-Bold.otf", 20); fr = ImageFont.truetype("/usr/share/fonts/opentype/inter/Inter-Medium.otf", 17)
+    cols = 4; Wt, Ht = 270, 480; rows = (len(segs) + cols - 1) // cols
+    sheet = Image.new("RGB", (cols * Wt, rows * (Ht + 120) + 70), "white"); d = ImageDraw.Draw(sheet)
+    d.text((12, 18), f"Storyboard · tərz: {P.get('style', 'sade')} · {T:.1f} san · {len(segs)} seqment", fill="black", font=fb)
+    md = [f"# Storyboard: {OUT.stem}", "", f"Tərz: {P.get('style', 'sade')} · müddət {T:.1f} s", "", "| # | Vaxt | Mənbə | Mətn |", "|---|---|---|---|"]
+    off = 0.0
+    for i, (a, b, z) in enumerate(segs):
+        fj = WORK / f"sb{i}.jpg"
+        K.run(["ffmpeg", "-v", "error", "-y", "-ss", f"{(a + b) / 2:.3f}", "-i", SRC, "-frames:v", "1", "-vf", f"{vf0}scale={Wt}:{Ht}", str(fj)])
+        txt = " ".join(w["t"] for w in nw if w["k"] == i and w["t"])
+        x, y = (i % cols) * Wt, 70 + (i // cols) * (Ht + 120); sheet.paste(Image.open(fj), (x, y))
+        d.rectangle([x, y, x + 64, y + 30], fill="black"); d.text((x + 8, y + 5), f"{i + 1:02d}", fill="white", font=fb)
+        d.text((x + 6, y + Ht + 6), f"{off:.1f}–{off + b - a:.1f} s", fill="#555", font=fr)
+        lines, cur = [], ""
+        for wd in txt.split():
+            if len(cur) + len(wd) > 26: lines.append(cur); cur = wd
+            else: cur = (cur + " " + wd).strip()
+        lines.append(cur)
+        for j, ln in enumerate(lines[:4]): d.text((x + 6, y + Ht + 30 + j * 21), ln, fill="black", font=fr)
+        md.append(f"| {i + 1} | {off:.1f}–{off + b - a:.1f} | {a:.2f}–{b:.2f} | {txt} |"); off += b - a
+    for k_ in ("headline", "items", "questions", "statements", "verdicts", "cards", "comment", "inserts", "timer"):
+        if B.get(k_): md.append(f"\n**{k_}:** `{json.dumps(B[k_], ensure_ascii=False)}`")
+    SB = OUT.parent / (OUT.stem + "_storyboard.jpg"); sheet.save(SB, quality=88)
+    (OUT.parent / (OUT.stem + "_storyboard.md")).write_text("\n".join(md) + "\n")
+    print("STORYBOARD", SB); sys.exit()
 
 # --- video (hər seqment ayrıca giriş: uzun mənbədə yaddaş partlamır)
 bc = B.get("base")
