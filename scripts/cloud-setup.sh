@@ -16,6 +16,7 @@
 #   storage.googleapis.com             — MediaPipe üz modeli (kadraj)
 #   api.anthropic.com                  — yalnız ANTHROPIC_API_KEY verilsə (paneldaxili AI)
 #   drive.usercontent.google.com       — Drive linkindən fayl yükləmə
+#   api.apify.com                      — Instagram açıq profil analizi (ig_analyze.py; açar: mühitin network secret-i)
 # Gizli açar tələb olunmur. Açarları bu fayla YAZMAYIN — mühitin
 # "Environment variables" bölməsindən verin.
 # Heç bir addım bütün quraşdırmanı dayandırmır: səhvlər toplanır və sonda siyahı verilir (çıxış kodu 0).
@@ -49,6 +50,11 @@ step "Montaj asılılıqları (faster-whisper, mediapipe, Pillow, fonttools…)"
 
 if ! ldconfig -p 2>/dev/null | grep -q libEGL.so.1 && command -v apt-get >/dev/null 2>&1; then
   step "libegl1/libgles2 (avtomatik kadraj üçün)" bash -c "($SUDO apt-get update -qq >/dev/null 2>&1 || true); $SUDO apt-get install -y -qq libegl1 libgles2 >/dev/null 2>&1"
+fi
+
+# OCR (Instagram karusel/şəkil mətni, ig_analyze.py): tesseract + Azərbaycan dili
+if ! command -v tesseract >/dev/null 2>&1 && command -v apt-get >/dev/null 2>&1; then
+  step "tesseract-ocr + aze (OCR)" bash -c "($SUDO apt-get update -qq >/dev/null 2>&1 || true); $SUDO apt-get install -y -qq tesseract-ocr tesseract-ocr-aze >/dev/null 2>&1"
 fi
 
 # Arxa səs təmizləmə: əvvəl torch CPU (yoxsa deepfilternet PyPI-dən böyük CUDA torch çəkər)
