@@ -57,6 +57,11 @@ if ! command -v tesseract >/dev/null 2>&1 && command -v apt-get >/dev/null 2>&1;
   step "tesseract-ocr + aze (OCR)" bash -c "($SUDO apt-get update -qq >/dev/null 2>&1 || true); $SUDO apt-get install -y -qq tesseract-ocr tesseract-ocr-aze >/dev/null 2>&1"
 fi
 
+# 3D obyekt renderi (brend postları: kub, mikrofon, zibil qabı və s.): Blender
+if ! command -v blender >/dev/null 2>&1 && command -v apt-get >/dev/null 2>&1; then
+  step "blender (3D post obyektləri)" bash -c "($SUDO apt-get update -qq >/dev/null 2>&1 || true); $SUDO apt-get install -y -qq blender >/dev/null 2>&1"
+fi
+
 # Arxa səs təmizləmə: əvvəl torch CPU (yoxsa deepfilternet PyPI-dən böyük CUDA torch çəkər)
 if ! python3 -c "import torch" >/dev/null 2>&1; then
   step "torch CPU (arxa səs təmizləmə)" python3 -m pip install -q --index-url https://download.pytorch.org/whl/cpu torch torchaudio
