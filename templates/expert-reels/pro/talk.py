@@ -44,7 +44,7 @@ def style(name):
     if not f.exists(): raise SystemExit(f"tərz tapılmadı: {name} (styles/ qovluğuna bax)")
     return {k: v for k, v in json.load(open(f)).items() if not k.startswith("_")}
 # sıra: default < müştəri (kim: kadraj, güzgü, rəng) < tərz (necə: montaj) < video planı
-B = {**{"zooms": [1.0, 1.1], "cy": 0.45, "gap": 0.6, "mv": 560, "fontsize": 68, "sub": "lines", "accent": "#FFD84D"},
+B = {**{"zooms": [1.0, 1.1], "cy": 0.45, "gap": 0.6, "mv": 560, "fontsize": 68, "sub": "lines", "accent": "#FFD84D", "font": "Montserrat"},
      **brand_talk(P.get("brand")), **style(P.get("style", "sade")), **P}
 
 
@@ -171,7 +171,7 @@ if tm:
         a = tm["t0"] + k
         ev.append(f"Dialogue: 5,{ts(a)},{ts(min(a + 1, T))},TM,,0,0,0,,{{\\an9\\pos(1010,250)}}{int(tm['dur']) - k}")
     ev.append(f"Dialogue: 5,{ts(tm['t0'])},{ts(min(tm['t0'] + tm['dur'], T))},TL,,0,0,0,,{{\\an9\\pos(1010,214)}}{tm.get('label', '')}")
-K.ensure_font(B.get("font"))
+FONT = B.get("font", "Montserrat"); K.ensure_font(FONT); K.ensure_font(B.get("ui_font", "Montserrat")); UI = B.get("ui_font", "Montserrat")
 ASS = WORK / "sub.ass"
 ASS.write_text(f"""[Script Info]
 ScriptType: v4.00+
@@ -181,19 +181,19 @@ WrapStyle: 0
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: S,{B.get('font', 'Inter')},{B['fontsize']},&H00FFFFFF,&H00FFFFFF,&H00000000,&H64000000,{B.get('sub_bold', -1)},{B.get('sub_italic', 0)},0,0,100,100,0,0,1,{B.get('sub_outline', 3.2)},1.5,2,90,90,{B['mv']},1
-Style: D,Inter,{B.get('word_size', 92)},&H00FFFFFF,&H00FFFFFF,&H00101010,&H78000000,-1,0,0,0,100,100,0,0,1,6,2,2,70,70,{B.get('word_mv', 640)},1
-Style: Q,Inter,{B.get('q_size', 54)},&H00FFFFFF,&H00FFFFFF,{bgr(B.get('q_bg', '#0B2A20'))},{bgr(B.get('q_bg', '#0B2A20'))},-1,0,0,0,100,100,0,0,3,26,0,8,110,110,{B.get('q_mv', 330)},1
+Style: S,{FONT},{B['fontsize']},&H00FFFFFF,&H00FFFFFF,&H00000000,&H64000000,{B.get('sub_bold', -1)},{B.get('sub_italic', 0)},0,0,100,100,0,0,1,{B.get('sub_outline', 3.2)},1.5,2,90,90,{B['mv']},1
+Style: D,{UI},{B.get('word_size', 92)},&H00FFFFFF,&H00FFFFFF,&H00101010,&H78000000,-1,0,0,0,100,100,0,0,1,6,2,2,70,70,{B.get('word_mv', 640)},1
+Style: Q,{UI},{B.get('q_size', 54)},&H00FFFFFF,&H00FFFFFF,{bgr(B.get('q_bg', '#0B2A20'))},{bgr(B.get('q_bg', '#0B2A20'))},-1,0,0,0,100,100,0,0,3,26,0,8,110,110,{B.get('q_mv', 330)},1
 Style: L,JetBrains Mono,30,{bgr(ACC)},&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,4,0,1,0,0,8,110,110,250,1
-Style: V,Inter,110,&H00FFFFFF,&H00FFFFFF,&H00FFFFFF,&H00000000,-1,0,0,0,100,100,0,0,3,34,0,5,80,80,0,1
-Style: F,Inter,20,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,7,0,0,0,1
-Style: H,Inter,{B.get('h_size', 58)},{bgr(B.get('h_fg', '#0B2A20'))},&H00FFFFFF,{bgr(ACC)},{bgr(ACC)},-1,0,0,0,100,100,0,0,3,22,0,8,90,90,{B.get('h_mv', 260)},1
-Style: I,Inter,{B.get('i_size', 50)},&H00FFFFFF,&H00FFFFFF,&H00141414,&H96000000,-1,0,0,0,100,100,0,0,3,18,0,7,0,0,0,1
-Style: CU,Inter,34,&H00262626,&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,7,0,0,0,1
-Style: CT,Inter,40,&H00141414,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,7,0,0,0,1
+Style: V,{UI},110,&H00FFFFFF,&H00FFFFFF,&H00FFFFFF,&H00000000,-1,0,0,0,100,100,0,0,3,34,0,5,80,80,0,1
+Style: F,{UI},20,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,7,0,0,0,1
+Style: H,{UI},{B.get('h_size', 58)},{bgr(B.get('h_fg', '#0B2A20'))},&H00FFFFFF,{bgr(ACC)},{bgr(ACC)},-1,0,0,0,100,100,0,0,3,22,0,8,90,90,{B.get('h_mv', 260)},1
+Style: I,{UI},{B.get('i_size', 50)},&H00FFFFFF,&H00FFFFFF,&H00141414,&H96000000,-1,0,0,0,100,100,0,0,3,18,0,7,0,0,0,1
+Style: CU,{UI},34,&H00262626,&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,7,0,0,0,1
+Style: CT,{UI},40,&H00141414,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,7,0,0,0,1
 Style: TM,JetBrains Mono,96,&H00FFFFFF,&H00FFFFFF,{bgr(ACC)},&H00000000,-1,0,0,0,100,100,0,0,3,20,0,9,0,0,0,1
-Style: TL,Inter,30,&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,2,1,9,0,0,0,1
-Style: C,Inter,{B.get('card_size', 104)},&H00FFFFFF,&H00FFFFFF,&H00000000,&H50000000,-1,0,0,0,100,100,-2,0,1,0,6,5,90,90,0,1
+Style: TL,{UI},30,&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,2,1,9,0,0,0,1
+Style: C,{UI},{B.get('card_size', 104)},&H00FFFFFF,&H00FFFFFF,&H00000000,&H50000000,-1,0,0,0,100,100,-2,0,1,0,6,5,90,90,0,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text

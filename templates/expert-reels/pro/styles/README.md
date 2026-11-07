@@ -8,7 +8,7 @@ Müştəri **kim** olduğunu, tərz isə videonun **necə** montaj olunacağın�
 | Tərz | altyazı tipi, kəsim tempi, zoom, kartlar, SFX, rəng | `styles/<tərz>.json` |
 | Video | kəsim aralıqları, hook, düzəlişlər, kart mətnləri | video planı (`plan.json`) |
 
-Birləşmə sırası: default → müştəri → tərz → video planı (sonrakı üstün gəlir). Yəni eyni müştəri hər videoda fərqli tərz seçə bilər, kadrajı və rəngi isə avtomatik qalır.
+Şrift verilməyibsə default **Montserrat** (Azərbaycan hərfləri; yoxdursa avtomatik yüklənir). Birləşmə sırası: default → müştəri → tərz → video planı (sonrakı üstün gəlir). Yəni eyni müştəri hər videoda fərqli tərz seçə bilər, kadrajı və rəngi isə avtomatik qalır.
 
 ## Tərzlər
 
@@ -131,7 +131,7 @@ Agentliyin öz montaj kataloqu (PDF, S01–S36) və kod → tərz xəritəsi aç
 
 İş qaydası (kataloqdan):
 1. Müştəri, mövzu, məqsəd, material, kod, müddət, brend qaydaları oxunur; fayl və səs əvvəl yoxlanır.
-2. Əvvəl storyboard: `python3 talk.py plan.json storyboard` → `_storyboard.jpg` + `_storyboard.md` (seqmentlər, vaxt, mətn, elementlər). Təsdiqdən sonra render. Müştəri storyboard təsdiqini ləğv edibsə, birbaşa render.
+2. Standart rejim avtomatik təhvildir. Storyboard yalnız istənəndə: `python3 talk.py plan.json storyboard` → `_storyboard.jpg` + `_storyboard.md` (seqmentlər, vaxt, mətn, elementlər); təsdiqdən sonra render.
 3. Bir əsas tərz + ən çox bir köməkçi tərz. Brend rəngini dəyişmək yeni tərz yaratmır.
 4. Mənbəsiz statistika və sitat yoxdur; musiqi, mənbə video və şəkillərin istifadə hüququ yoxlanır; məşhur şouların loqo və musiqisi təkrarlanmır.
 5. Danışanın səsi, ifadəsi və mənalı pauzaları qorunur; ardıcıl işlərdə eyni açılış təkrarlanmır.

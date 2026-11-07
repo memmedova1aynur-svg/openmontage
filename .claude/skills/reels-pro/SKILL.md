@@ -119,3 +119,8 @@ Metricool-da hazırda yalnız @1aynurmemmedova qoşuludur; müştərilər üçü
 ## Göndərmə
 
 Yalnız `HAZIR (QA keçdi)` siyahısındakı faylları göndər. Hər video üçün bir sətir: QA nəticəsi (kəsim sayı, LUFS, donma 0). WARN-ları dürüst yaz.
+
+
+## Agentlik qaydaları (üstündür)
+
+`instagram-clients/_agency/` qovluğunda agentliyin iş sənədi (`studiya_qaydalari.md`, PDF) və montaj kataloqu (`s_kodlar.json`, S01–S36) varsa, işə başlamazdan əvvəl oxu; bu qaydalar bu faylla ziddiyyət təşkil edərsə onlar üstündür. Standart rejim avtomatik təhvildir; storyboard yalnız istənəndə (`talk.py plan.json storyboard`). Tərz kataloqu: `templates/expert-reels/pro/styles/README.md`.
