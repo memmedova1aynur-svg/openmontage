@@ -73,6 +73,7 @@ def transcribe(src, out):
 
 WJ = rp(P.get("words")) if P.get("words") else str(WORK / "words.json")
 if not Path(WJ).exists(): transcribe(SRC, WJ)
+T_TRANSKRIPT = time.time() - T_START  # analiz: transkript
 W = [w for w in json.load(open(WJ))["words"] if w.get("type", "word") == "word"]
 FIX = B.get("fix", {})
 
@@ -236,6 +237,7 @@ if len(sys.argv) > 2 and sys.argv[2] == "storyboard":
     print("STORYBOARD", SB); sys.exit()
 
 T_ANALIZ = time.time() - T_START  # transkript + seqment + altyazı planı
+T_MONTAJ = T_ANALIZ - T_TRANSKRIPT
 # --- video (hər seqment ayrıca giriş: uzun mənbədə yaddaş partlamır)
 bc = B.get("base")
 pre = ("hflip," if B.get("hflip") else "")
@@ -300,6 +302,6 @@ st = B.get("story") or [[0, min(10, T)]]
 K.story_clips(OUT, st, OUT.parent / "story", label=B.get("story_label"))
 K.cover(OUT, B.get("cover_t", 1.0), OUT.parent / (OUT.stem + "_kadr.jpg"))
 T_RENDER = time.time() - T_START - T_ANALIZ
-q = K.qa(OUT); q["vaxt"] = {"analiz_san": round(T_ANALIZ, 1), "render_san": round(T_RENDER, 1), "cəmi_san": round(time.time() - T_START, 1)}
+q = K.qa(OUT); q["vaxt"] = {"analiz_transkript_san": round(T_TRANSKRIPT, 1), "montaj_plan_san": round(T_MONTAJ, 1), "render_san": round(T_RENDER, 1), "cəmi_san": round(time.time() - T_START, 1)}
 json.dump({"seqmentlər": segs, "qa": q}, open(OUT.parent / (OUT.stem + "_qa.json"), "w"), ensure_ascii=False, indent=1)
 print(f"{'OK' if q['ok'] else 'YOXLA'} {OUT}  {T:.1f}s  {len(segs)} seqment  {len(chunks)} altyazı  {q}")

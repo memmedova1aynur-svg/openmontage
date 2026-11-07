@@ -1,0 +1,30 @@
+{
+ "_qeyd": "Pullu sınaqların uğurlu nəticələri. caps_check.py --paid yeniləyir. Açar və şəxsi məlumat yoxdur.",
+ "pullu_sınaqlar": {
+  "transkript (Scribe)": {
+   "tarix": "2026-11-07",
+   "qeyd": "ElevenLabs Scribe v1, language_code=aze, söz vaxtları ilə; real ekspert videosunda işlədi"
+  },
+  "səsləndirmə (Azərbaycan)": {
+   "tarix": "2026-11-07",
+   "qeyd": "eleven_multilingual_v2, 132 simvol; geri transkript oxşarlığı 97%. DİQQƏT: rəsmi sənəddə Azərbaycan dili v2-də siyahıda YOXDUR (yalnız eleven_v3/v4). İş üçün eleven_v3 istifadə et; v3 hələ sınanmayıb. Qulaqla tələffüz yoxlanmayıb"
+  },
+  "musiqi generasiyası": {
+   "tarix": "2026-11-06",
+   "qeyd": "ElevenLabs music, 33–40 s instrumental trek, force_instrumental=true; 3 trek uğurlu"
+  }
+ },
+ "elevenlabs_quota": {
+  "tarix": "2026-11-07",
+  "limit": 10000,
+  "qalıq": 24,
+  "mənbə": "TTS xəta cavabı (quota_exceeded)"
+ },
+ "elevenlabs_xərc_ölçüsü": {
+  "TTS": "≈0.22 kredit/simvol (ölçülüb: 6+132 simvol = 30 kredit; 132 simvol sorğusu 29 kredit tələb etdi)",
+  "STT": "≈10 kredit/audio dəqiqə (ölçülüb: ~40 s = 7 kredit, ~3.6 dəq = 34 kredit; gün sərhədi səbəbindən təxmini)",
+  "Music": "≈14 kredit/saniyə (ölçülüb: 3 trek ≈109 s = 1491 kredit)",
+  "Sound Effects": "ölçülməyib (əməliyyat başına ayrılmayıb)"
+ },
+ "elevenlabs_qeyd": "/v1/usage/character-stats köhnəlib (deprecated); yeni: /v1/workspace/analytics/query/usage-by-product-over-time. Dəqiq qalıq: GET /v1/user/subscription (ehtimal: user_read icazəsi)."
+}

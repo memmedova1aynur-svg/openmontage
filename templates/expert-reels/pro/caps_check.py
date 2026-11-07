@@ -1,15 +1,19 @@
 """Mühitin faktiki imkan yoxlaması (AI prodakşn sənədi: "Başlanğıc yoxlaması").
 Hər funksiya real kiçik sınaqla yoxlanır; nəticə caps_report.json və ekrana.
 
-İstifadə:  python3 caps_check.py [nümunə_video.mov] [iş_qovluğu]
-Nümunə video verilməzsə test videosu sintez olunur.
+İstifadə:  python3 caps_check.py [nümunə_video.mov] [iş_qovluğu]          → pulsuz yoxlama (standart)
+           python3 caps_check.py [video] [qovluq] --paid                  → əlavə olaraq pullu sınaqlar (STT, TTS, musiqi)
+Standart rejim heç bir pullu çağırış etmir: giriş (açarlar), lokal alətlər və qalıq limit.
+Pullu sınaqların uğurlu nəticələri caps_history.json-a yazılır və sonrakı sessiyalarda təkrarlanmır.
 """
 import json, os, subprocess, sys, time, difflib, re
 from pathlib import Path
 A = Path(__file__).resolve().parent; sys.path.insert(0, str(A))
 import avkit as K
 
-W = Path(sys.argv[2] if len(sys.argv) > 2 else "/tmp/caps_check"); W.mkdir(parents=True, exist_ok=True)
+PAID = "--paid" in sys.argv; ARGS = [a for a in sys.argv[1:] if a != "--paid"]
+W = Path(ARGS[1] if len(ARGS) > 1 else "/tmp/caps_check"); W.mkdir(parents=True, exist_ok=True)
+HIST = A / "caps_history.json"; H = json.load(open(HIST)) if HIST.exists() else {}
 R = {}
 def check(name, fn):
     t0 = time.time()
@@ -18,7 +22,7 @@ def check(name, fn):
     R[name] = {"işləyir": ok, "qeyd": note, "san": round(time.time() - t0, 1)}
     print(f"{'✅' if ok else '❌'} {name:28s} {R[name]['san']:6.1f}s  {note}")
 
-SRC = sys.argv[1] if len(sys.argv) > 1 else None
+SRC = ARGS[0] if ARGS else None
 if not SRC:
     SRC = str(W / "synth.mp4")
     K.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "testsrc2=s=1080x1920:r=30:d=4", "-f", "lavfi", "-i", "sine=f=440:d=4", "-shortest", "-c:v", "libx264", "-pix_fmt", "yuv420p", SRC])
@@ -39,7 +43,7 @@ def stt_scribe():
     d = scribe(WAV)
     if "words" not in d: return False, str(d)[:160]
     return True, f"ElevenLabs Scribe (aze): {len([w for w in d['words'] if w.get('type') == 'word'])} söz, söz vaxtları var"
-check("transkript (Scribe)", stt_scribe)
+if PAID: check("transkript (Scribe)", stt_scribe)
 def stt_whisper():
     import numpy as np
     from faster_whisper import WhisperModel
@@ -73,7 +77,7 @@ def segmentation():
     seg = vision.ImageSegmenter.create_from_options(vision.ImageSegmenterOptions(base_options=BaseOptions(model_asset_path=str(mdl)), output_confidence_masks=True))
     rgb = cv2.cvtColor(cv2.imread(str(W / "frame.jpg")), cv2.COLOR_BGR2RGB)
     m = np.squeeze(seg.segment(mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)).confidence_masks[0].numpy_view())
-    return True, f"mediapipe ImageSegmenter: insan payı {float((m > .5).mean()):.0%} — kitabxana işləyir, yaşıl ekran montaj aləti hələ qurulmayıb"
+    return True, f"mediapipe ImageSegmenter: tək kadrda insan payı {float((m > .5).mean()):.0%}. Uzun podkast və hərəkətli videoda SINANMAYIB; yaşıl ekran montaj aləti qurulmayıb"
 check("fon ayırma (yaşıl ekran)", segmentation)
 
 TXT = "Salam! Bu gün yaddaşı gücləndirən üç sadə üsul haqqında danışacağıq. Əvvəlcə kitabı bağlayın və öyrəndiyinizi xatırlamağa çalışın."
@@ -81,13 +85,13 @@ def tts_az():
     out = W / "tts.mp3"
     code = subprocess.run(["curl", "-sS", "-o", str(out), "-w", "%{http_code}", "-X", "POST", "https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM",
                            "-H", f"xi-api-key: {os.environ.get('ELEVENLABS_API_KEY', '')}", "-H", "Content-Type: application/json",
-                           "-d", json.dumps({"text": TXT, "model_id": "eleven_multilingual_v2"})], capture_output=True, text=True).stdout
+                           "-d", json.dumps({"text": TXT, "model_id": "eleven_v3"})], capture_output=True, text=True).stdout
     if code != "200": return False, f"HTTP {code}: {out.read_text(errors='ignore')[:120]}"
     d = scribe(out); back = " ".join(w["text"] for w in d.get("words", []) if w.get("type") == "word")
     norm = lambda s: re.sub(r"[^\wəğıöüşç ]", "", s.lower().replace("İ", "i").replace("I", "ı"))
     sim = difflib.SequenceMatcher(None, norm(TXT), norm(back)).ratio()
-    return sim > 0.85, f"ElevenLabs multilingual_v2 → geri transkript oxşarlığı {sim:.0%}. Tələffüz qulaqla da yoxlanmalıdır (tts.mp3)"
-check("səsləndirmə (Azərbaycan)", tts_az)
+    return sim > 0.85, f"ElevenLabs eleven_v3 → geri transkript oxşarlığı {sim:.0%}. Tələffüz qulaqla da yoxlanmalıdır (tts.mp3)"
+if PAID: check("səsləndirmə (Azərbaycan)", tts_az)
 def music():
     out = W / "m.mp3"
     code = subprocess.run(["curl", "-sS", "-o", str(out), "-w", "%{http_code}", "-X", "POST", "https://api.elevenlabs.io/v1/music?output_format=mp3_44100_128",
@@ -95,7 +99,7 @@ def music():
                            "-d", json.dumps({"prompt": "calm minimal piano, no vocals", "music_length_ms": 10000, "force_instrumental": True})], capture_output=True, text=True).stdout
     if code != "200": return False, f"HTTP {code}: {re.sub(r'\\s+', ' ', out.read_text(errors='ignore'))[:140]}"
     return True, "ElevenLabs music işləyir"
-check("musiqi generasiyası", music)
+if PAID: check("musiqi generasiyası", music)
 def render():
     K.run(["ffmpeg", "-v", "error", "-y", "-i", str(W / "sub.mp4"), "-i", str(WAV), "-map", "0:v", "-map", "1:a", "-c:v", "libx264", "-preset", "slow", "-crf", "20",
            "-maxrate", "4.5M", "-bufsize", "9M", "-pix_fmt", "yuv420p", "-c:a", "aac", "-shortest", "-movflags", "+faststart", str(W / "final.mp4")])
@@ -106,5 +110,30 @@ def ai_video():
     return bool(keys), ("açar var: " + ", ".join(keys)) if keys else "AI video / Magnific / OpusClip açarı yoxdur"
 check("AI video generasiyası", ai_video)
 
+def el_limits():
+    key = os.environ.get("ELEVENLABS_API_KEY")
+    if not key: return False, "ELEVENLABS_API_KEY yoxdur"
+    e = int(time.time() * 1000); st = e - 60 * 86400 * 1000
+    r = json.loads(subprocess.run(["curl", "-sS", "-H", f"xi-api-key: {key}", f"https://api.elevenlabs.io/v1/usage/character-stats?start_unix={st}&end_unix={e}&breakdown_type=product_type"],
+                                  capture_output=True, text=True).stdout)
+    if "usage" not in r: return False, str(r)[:160]
+    tot = {k: round(sum(v)) for k, v in r["usage"].items() if sum(v)}
+    sub = json.loads(subprocess.run(["curl", "-sS", "-H", f"xi-api-key: {key}", "https://api.elevenlabs.io/v1/user/subscription"], capture_output=True, text=True).stdout)
+    if "character_limit" in sub:
+        lim = f"limit {sub['character_limit']}, istifadə {sub['character_count']}, qalıq {sub['character_limit'] - sub['character_count']}, yenilənmə {sub.get('next_character_count_reset_unix')}"
+    else:
+        q = H.get("elevenlabs_quota", {}); lim = f"dəqiq qalıq oxunmur (açara user_read icazəsi lazımdır); son məlum: {q}" if q else "dəqiq qalıq oxunmur (açara user_read icazəsi lazımdır)"
+    R["_elevenlabs_istifadə_60gün"] = tot
+    return True, f"60 gün istifadə (kredit): {tot}. {lim}"
+check("ElevenLabs limit (pulsuz)", el_limits)
+# uğurlu pullu sınaqları tarixçəyə yaz, əvvəlkiləri saxla
+for k, v in R.items():
+    if k.startswith("_") or not isinstance(v, dict): continue
+    if v["işləyir"] and k in ("transkript (Scribe)", "səsləndirmə (Azərbaycan)", "musiqi generasiyası"):
+        H.setdefault("pullu_sınaqlar", {})[k] = {"tarix": time.strftime("%Y-%m-%d"), "qeyd": v["qeyd"]}
+json.dump(H, open(HIST, "w"), ensure_ascii=False, indent=1)
+if not PAID and H.get("pullu_sınaqlar"):
+    print("\nƏvvəlki uğurlu pullu sınaqlar (təkrarlanmadı):")
+    for k, v in H["pullu_sınaqlar"].items(): print(f"  ✅ {k} ({v['tarix']}): {v['qeyd']}")
 json.dump(R, open(W / "caps_report.json", "w"), ensure_ascii=False, indent=1)
 print("hesabat:", W / "caps_report.json")
