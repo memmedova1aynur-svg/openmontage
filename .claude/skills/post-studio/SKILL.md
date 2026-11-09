@@ -8,8 +8,8 @@ description: Instagram post, karusel və qısa animasiyalı video (4:5 / 9:16) h
 Bir posta 6 addım. Hər addımın skripti `scripts/` qovluğundadır; əl ilə Playwright/ffmpeg kodu yazma.
 
 ## 1. Brif və rol
-- Müştəri/brendin qaydalarını əvvəl oxu (Aynur üçün `aynur-brend` skill-i; digər müştərilər üçün `instagram-clients/<client>/voice.md`).
-- Postun rolunu seç: Güldürür · Öyrədir · Göstərir · Analiz edir · Pərdə arxası · Fikir bildirir · Danışdırır (satış mərhələsində + Təklif edir). Eyni rol ard-arda gəlməsin.
+- Əvvəl `marketinq-sistemi` skill-i ilə müştərini müəyyən et və `instagram-clients/<müştəri>/brand.md` qaydalarını oxu (rənglər, şriftlər, qadağalar oradan gəlir).
+- Postun rolunu seç (brand.md-də başqa sistem yoxdursa): Güldürür · Öyrədir · Göstərir · Analiz edir · Pərdə arxası · Fikir bildirir · Danışdırır (satışda + Təklif edir). Eyni rol ard-arda gəlməsin.
 
 ## 2. HTML
 - Bir HTML faylı = bir post. Karusel üçün bir fayl, slaydlar `#s1 #s2 ...` hash-ı ilə (`const P={}; P.s1=()=>{...}; P[location.hash.slice(1)]()`).
@@ -34,10 +34,10 @@ SFX: `pop` (klik/kart), `swoosh` (keçid), `ding` (final). Səviyyə -18…-30 d
 ## 5. Təhvil
 - Faylları **tək-tək** göndər (SendUserFile, display: render). Zip göndərmə.
 - Karusel slaydlarını sıra ilə bir çağırışda göndər.
-- Caption: 1-2 təbii cümlə, klişe sual yox (şəkildə sual varsa, caption-da olmasın).
+- Caption: müştərinin brand.md üslubunda; klişe sual yox (şəkildə sual varsa, caption-da olmasın).
 
 ## 6. Yaddaş
-Təhvildən sonra müştərinin kontekst faylına (məs. `instagram-clients/aynur-memmedova/master_context.md`) bir sətir əlavə et: tarix, post adı, fayl yolu, verilən rəy.
+Təhvildən sonra müştərinin `context.md` (və ya `master_context.md`) faylına bir sətir: tarix, post adı, fayl yolu, verilən rəy.
 
 ## Ev qaydaları (hamı üçün)
 - Fakt, rəqəm, statistika uydurma; real şirkət loqosu və brend dizaynını təqlid etmə (yalnız adla analiz).

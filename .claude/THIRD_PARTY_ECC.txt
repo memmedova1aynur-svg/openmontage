@@ -11,5 +11,5 @@ Marketing/brand/design skills (installed 2026-11-09):
 - coreyhaines31/marketingskills (MIT): social, copywriting, copy-editing, marketing-psychology, competitor-profiling, reverse-engineer-marketing, lead-magnets, ad-creative, marketing-plan, offers.
 - arnabbagxd/Brand-building-skills (MIT): brand-context, personal-brand, brand-voice, brand-positioning, brand-audit, brand-guidelines, brand-identity, brand-messaging, brand-story, target-audience, ugc-strategy, competitor-branding, meta-ads, influencer-marketing.
 - anthropics/skills (Apache-2.0, LICENSE.txt in each folder): canvas-design, theme-factory, frontend-design.
-Own skills: post-studio (render pipeline), aynur-brend (brand rules; private details stay in gitignored master_context.md).
+Own skills: post-studio (render pipeline), marketinq-sistemi (client hub: routing, QA, delivery, new_client.sh). Client brand rules live in instagram-clients/<client>/brand.md (private).
 Not installed: mvanhorn/last30days-skill (needs paid API keys), SEO/SaaS-only skills.
