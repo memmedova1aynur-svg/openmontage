@@ -13,6 +13,7 @@ fs.mkdirSync(out, { recursive: true });
     await p.waitForFunction(() => document.title === 'done', null, { timeout: 30000 }).catch(() => console.error('title!=done, render davam edir'));
     await p.waitForTimeout(200);
     const [w, h] = await p.evaluate(() => [parseInt(getComputedStyle(document.body).width) || 1080, parseInt(getComputedStyle(document.body).height) || 1350]);
+    await p.setViewportSize({ width: w, height: h }); await p.waitForTimeout(100);
     const f = path.join(out, (id || path.basename(html, '.html')) + '.png');
     await p.screenshot({ path: f, clip: { x: 0, y: 0, width: w, height: h } }); console.log(f, w + 'x' + h);
   }

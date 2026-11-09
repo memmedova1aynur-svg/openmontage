@@ -10,6 +10,7 @@ fs.mkdirSync(out, { recursive: true });
   await p.goto('file://' + path.resolve(html) + (hash ? '#' + hash : ''));
   await p.waitForFunction(() => document.title === 'done', null, { timeout: 30000 });
   const [w, h, T] = await p.evaluate(() => [parseInt(getComputedStyle(document.body).width), parseInt(getComputedStyle(document.body).height), window.TIMES.TOTAL]);
+  await p.setViewportSize({ width: w, height: h });
   const n = Math.round(T * fps);
   for (let i = 0; i < n; i++) { await p.evaluate(t => renderFrame(t), i / fps); await p.screenshot({ path: path.join(out, String(i).padStart(5, '0') + '.png'), clip: { x: 0, y: 0, width: w, height: h } }); }
   console.log(JSON.stringify({ frames: n, w, h, T, fps })); await b.close();
