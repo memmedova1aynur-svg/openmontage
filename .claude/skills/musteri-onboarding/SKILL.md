@@ -5,11 +5,18 @@ description: Premium müştəri onboarding-i — yeni müştəriyə göndərilə
 
 # Müştəri onboarding-i (Anket → 24 saat → Strateji paket → İş rejimi)
 
-## A. Anketi göndər
+## Prinsip
+Strategiyanı, rəngləri, çəkiliş mövzularını **biz** qərarlaşdırırıq. Anket müştərinin keçmişini, diplomlarını, büdcəsini soruşmur — yalnız qərarlarımızı istiqamətləndirən üstünlükləri və sərhədləri: sevdiyi/sevmədiyi rənglər, əhval, kamera rahatlığı, göstərmək istəmədikləri, mövzular, mətni kim yazır, story-ləri kim paylaşır, təsdiq.
+
+## A. Müştəriyə gedən sənədlər
 ```bash
-python3 .claude/skills/musteri-onboarding/scripts/build_anket.py <outDir>
+python3 .claude/skills/musteri-onboarding/scripts/build_anket.py <outDir>            # Brend_Anketi.pdf + .docx (23 sual, çoxu seçimli)
+python3 .claude/skills/musteri-onboarding/scripts/build_doc.py .claude/skills/musteri-onboarding/assets/xidmetler.json <outDir>/Xidmet_paketleri.pdf
 ```
-`Brend_Anketi.pdf` (təqdimat, çap/baxış) və `Brend_Anketi.docx` (müştəri cavabları boz qutulara yazır) yaranır. Suallar tək mənbədədir: `assets/anket.json` — sual əlavə/dəyişmək üçün yalnız onu redaktə et. Müştəriyə hər iki faylı tək-tək göndər (zip yox).
+- Suallar: `assets/anket.json`; paketlər: `assets/xidmetler.json` (Start / Pro / Premium, mütləq işlər, əlavə xidmətlər, daxil olmayanlar, qaydalar). Qiymətlər `[qiymət]` — yalnız Aynur yazır, uydurma.
+- `build_doc.py` ümumi premium sənəd mühərrikidir (təklif, hesabat, brend kitabı üçün də): blok tipləri skriptin başında yazılıb.
+- Aynurun öz brend kitabı: `instagram-clients/aynur-memmedova/brandbook.json` (məxfi) → `build_doc.py`.
+- Faylları tək-tək göndər (zip yox).
 
 ## B. Anket geri gəldi (docx, pdf, ekran şəkli və ya mesaj mətni)
 1. Cavabları oxu (docx: `python-docx`; şəkil: gözlə oxu). Müştərinin adını, sahəsini, linklərini çıxar.
