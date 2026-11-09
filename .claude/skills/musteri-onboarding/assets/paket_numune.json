@@ -1,0 +1,450 @@
+{
+ "agency": {
+  "name": "Aynur Məmmədova",
+  "sub": "Brend Menecment",
+  "contact": "@1aynurmemmedova"
+ },
+ "client": "NÜMUNƏ · Dental Smile (uydurma nümunə)",
+ "date": "Noyabr 2026",
+ "summary": {
+  "oneliner": "Qorxulu stomatologiyanı sakit, izahlı və insani təcrübəyə çevirən ailə klinikası.",
+  "mission": "Hər pasiyent kreslodan çıxanda nə edildiyini başa düşsün və növbəti dəfə qorxmadan gəlsin.",
+  "goal": "Mərhələ: güvən. 3 ay ərzində Instagram-ı əsas müraciət kanalına çevirmək.",
+  "words": [
+   "Sakit",
+   "Dəqiq",
+   "Səmimi"
+  ],
+  "kpi": [
+   "Aylıq Direct müraciəti (anketdə verilən baza əsasında)",
+   "Reels baxış sayı və saxlama",
+   "Profil ziyarəti → link kliki"
+  ]
+ },
+ "personas": [
+  {
+   "name": "Leyla, 34, iki uşaq anası",
+   "desc": "İşləyir, vaxtı azdır, ailənin sağlamlığına cavabdehdir.",
+   "pains": [
+    "Uşağın stomatoloq qorxusu",
+    "Növbə və vaxt itkisi"
+   ],
+   "wants": [
+    "Bir klinikada bütün ailə",
+    "Aydın qiymət və plan"
+   ],
+   "objections": [
+    "\"Uşaq ağlayacaq\"",
+    "\"Bahalı olacaq\""
+   ]
+  },
+  {
+   "name": "Murad, 41, menecer",
+   "desc": "Uzun müddət həkimə getməyib, problem böyüyüb.",
+   "pains": [
+    "Ağrı qorxusu",
+    "Utanc: \"çox gec qalmışam\""
+   ],
+   "wants": [
+    "Ağrısız, sürətli müalicə",
+    "Mühakiməsiz münasibət"
+   ],
+   "objections": [
+    "\"İmplant çox çəkəcək\""
+   ]
+  }
+ ],
+ "positioning": {
+  "statement": "Bakıda stomatoloqdan qorxan ailələr üçün Dental Smile hər addımı əvvəlcədən izah edən yeganə klinikadır, çünki müalicədən əvvəl planı göstəririk.",
+  "diff": [
+   "Müalicədən əvvəl vizual plan",
+   "Uşaq qəbulu üçün ayrıca proses",
+   "Səmimi, mühakiməsiz ünsiyyət"
+  ],
+  "competitors": [
+   "Rəqiblər əsasən qiymət və aksiyalarla danışır",
+   "Ekspert izahı və pərdə arxası azdır"
+  ]
+ },
+ "voice": {
+  "tone": [
+   "sakit",
+   "izahedici",
+   "isti"
+  ],
+  "address": "\"Siz\" — hörmətli, amma soyuq deyil.",
+  "say": [
+   "\"Narahat olmayın, əvvəlcə göstərək.\"",
+   "Sadə dil, misallar"
+  ],
+  "dont": [
+   "Qorxutma (\"gecikməsəniz…\")",
+   "Tibbi zəmanət iddiaları"
+  ]
+ },
+ "visual": {
+  "palette": [
+   [
+    "Əsas",
+    "#0E3B43"
+   ],
+   [
+    "Vurğu",
+    "#7FD1C6"
+   ],
+   [
+    "Fon",
+    "#F4F1EC"
+   ],
+   [
+    "Ağ",
+    "#FFFFFF"
+   ],
+   [
+    "Mətn",
+    "#1C2327"
+   ]
+  ],
+  "fonts": [
+   "Başlıq: Inter Display Black",
+   "Mətn: Inter"
+  ],
+  "style": [
+   "Real komanda və real klinika",
+   "Təbii işıq, isti ton",
+   "Steril, amma soyuq olmayan kadrlar"
+  ]
+ },
+ "profile": {
+  "name": "Dental Smile | Ailə stomatologiyası",
+  "category": "Diş həkimi",
+  "bio": "Qorxusuz stomatologiya — əvvəl izah edirik\nUşaq və böyüklər üçün\n📍 [ünvan anketdən]",
+  "link": "[müraciət linki]",
+  "highlights": [
+   "Qəbul",
+   "Komanda",
+   "Əvvəl/sonra",
+   "Uşaqlar",
+   "Suallar"
+  ],
+  "pinned": [
+   "Klinika ilə tanışlıq (Reels)",
+   "Ən çox verilən suallar (karusel)",
+   "Pasiyent hekayəsi (icazə ilə)"
+  ],
+  "grid": "Reels və karusellər növbələşir; hər 3 postdan biri üzlü."
+ },
+ "pillars": [
+  {
+   "name": "Öyrədir",
+   "why": "Güvən və ekspertlik",
+   "examples": [
+    "Mif/həqiqət",
+    "60 saniyəlik izah"
+   ],
+   "share": 30
+  },
+  {
+   "name": "Göstərir",
+   "why": "Sübut",
+   "examples": [
+    "Əvvəl/sonra",
+    "Prosedur addımları"
+   ],
+   "share": 20
+  },
+  {
+   "name": "Pərdə arxası",
+   "why": "İnsaniləşdirmə",
+   "examples": [
+    "Komanda",
+    "Sterilizasiya"
+   ],
+   "share": 15
+  },
+  {
+   "name": "Danışdırır",
+   "why": "Alqoritm və əlaqə",
+   "examples": [
+    "Sorğu",
+    "Sual-cavab"
+   ],
+   "share": 15
+  },
+  {
+   "name": "Güldürür",
+   "why": "Paylaşım",
+   "examples": [
+    "Tanış hallar"
+   ],
+   "share": 10
+  },
+  {
+   "name": "Fikir / Analiz",
+   "why": "Fərqlənmə",
+   "examples": [
+    "Sahədə yanlışlar"
+   ],
+   "share": 10
+  }
+ ],
+ "rhythm": "Həftədə 5 post (3 Reels, 2 karusel/post), gündəlik 3–5 story. Ayda 2 çəkiliş günü.",
+ "roadmap": [
+  {
+   "month": "1-ci ay",
+   "goal": "Profil və güvən bazası",
+   "actions": [
+    "Profil, bio, highlight-lar",
+    "İlk çəkiliş: 10 Reels",
+    "Rəqib analizi"
+   ],
+   "kpi": "Ardıcıl 20 paylaşım"
+  },
+  {
+   "month": "2-ci ay",
+   "goal": "Müraciət axını",
+   "actions": [
+    "Sual-cavab seriyası",
+    "Pasiyent hekayələri",
+    "Story sorğuları"
+   ],
+   "kpi": "Müraciət sayında artım (baza ilə müqayisə)"
+  },
+  {
+   "month": "3-cü ay",
+   "goal": "Sistem və reklam",
+   "actions": [
+    "Ən yaxşı 3 Reels-i reklama çıxarmaq",
+    "Aylıq hesabat",
+    "Növbəti rüb planı"
+   ],
+   "kpi": "Reklamla müraciət qiyməti"
+  }
+ ],
+ "calendar": [
+  {
+   "day": "1",
+   "format": "Reels",
+   "role": "Öyrədir",
+   "topic": "Diş ağrısı gecə başlayanda nə etməli?"
+  },
+  {
+   "day": "2",
+   "format": "Karusel",
+   "role": "Göstərir",
+   "topic": "Təmizlikdən əvvəl və sonra"
+  },
+  {
+   "day": "3",
+   "format": "Post",
+   "role": "Güldürür",
+   "topic": "Stomatoloq kreslosunda düşündüklərimiz"
+  },
+  {
+   "day": "4",
+   "format": "Reels",
+   "role": "Danışdırır",
+   "topic": "Diş fırçanızı neçə ayda dəyişirsiniz? (sorğu)"
+  },
+  {
+   "day": "5",
+   "format": "Story seriyası",
+   "role": "Pərdə arxası",
+   "topic": "Klinikada səhər 08:00"
+  },
+  {
+   "day": "6",
+   "format": "Reels",
+   "role": "Fikir bildirir",
+   "topic": "Ağ diş = sağlam diş? Mif"
+  },
+  {
+   "day": "7",
+   "format": "Karusel",
+   "role": "Analiz edir",
+   "topic": "Gülüş dizaynı necə planlanır"
+  },
+  {
+   "day": "8",
+   "format": "Reels",
+   "role": "Öyrədir",
+   "topic": "Uşağı ilk dəfə stomatoloqa necə gətirmək olar"
+  },
+  {
+   "day": "9",
+   "format": "Karusel",
+   "role": "Göstərir",
+   "topic": "Həkimimizlə tanış olun"
+  },
+  {
+   "day": "10",
+   "format": "Post",
+   "role": "Güldürür",
+   "topic": "Diş həkimi bingosu"
+  },
+  {
+   "day": "11",
+   "format": "Reels",
+   "role": "Danışdırır",
+   "topic": "Hansı fırça: yumşaq, yoxsa orta?"
+  },
+  {
+   "day": "12",
+   "format": "Story seriyası",
+   "role": "Pərdə arxası",
+   "topic": "Sterilizasiya prosesi"
+  },
+  {
+   "day": "13",
+   "format": "Reels",
+   "role": "Fikir bildirir",
+   "topic": "Ağartma hər kəsə uyğundurmu?"
+  },
+  {
+   "day": "14",
+   "format": "Karusel",
+   "role": "Analiz edir",
+   "topic": "Pasiyent hekayəsi (icazə ilə)"
+  },
+  {
+   "day": "15",
+   "format": "Reels",
+   "role": "Öyrədir",
+   "topic": "İmplant nədir? 60 saniyədə"
+  },
+  {
+   "day": "16",
+   "format": "Karusel",
+   "role": "Göstərir",
+   "topic": "Qəbul günü necə keçir"
+  },
+  {
+   "day": "17",
+   "format": "Post",
+   "role": "Güldürür",
+   "topic": "Şirniyyat və diş: həqiqət"
+  },
+  {
+   "day": "18",
+   "format": "Reels",
+   "role": "Danışdırır",
+   "topic": "Sizin sualınız, bizim cavab"
+  },
+  {
+   "day": "19",
+   "format": "Story seriyası",
+   "role": "Pərdə arxası",
+   "topic": "Yeni avadanlıq"
+  },
+  {
+   "day": "20",
+   "format": "Reels",
+   "role": "Fikir bildirir",
+   "topic": "Diş ipi lazımdırmı?"
+  },
+  {
+   "day": "21",
+   "format": "Karusel",
+   "role": "Analiz edir",
+   "topic": "Rəqəmsal rentgen niyə təhlükəsizdir"
+  },
+  {
+   "day": "22",
+   "format": "Reels",
+   "role": "Öyrədir",
+   "topic": "Breket yoxsa elayner?"
+  },
+  {
+   "day": "23",
+   "format": "Karusel",
+   "role": "Göstərir",
+   "topic": "Komanda: assistentlər"
+  },
+  {
+   "day": "24",
+   "format": "Post",
+   "role": "Güldürür",
+   "topic": "Qorxu: \"iynə ağrıdacaq\""
+  },
+  {
+   "day": "25",
+   "format": "Reels",
+   "role": "Danışdırır",
+   "topic": "Gülüşünüzü 1 sözlə təsvir edin"
+  },
+  {
+   "day": "26",
+   "format": "Story seriyası",
+   "role": "Pərdə arxası",
+   "topic": "Bir günün xülasəsi"
+  },
+  {
+   "day": "27",
+   "format": "Reels",
+   "role": "Fikir bildirir",
+   "topic": "Sağlam diş üçün 3 vərdiş"
+  },
+  {
+   "day": "28",
+   "format": "Karusel",
+   "role": "Analiz edir",
+   "topic": "Ay ərzində ən çox verilən 5 sual"
+  },
+  {
+   "day": "29",
+   "format": "Reels",
+   "role": "Öyrədir",
+   "topic": "Klinikanın hekayəsi"
+  },
+  {
+   "day": "30",
+   "format": "Karusel",
+   "role": "Göstərir",
+   "topic": "Növbəti ay nələr gəlir"
+  }
+ ],
+ "week1": [
+  {
+   "title": "Diş ağrısı gecə başlayanda nə etməli?",
+   "format": "Reels · 35 san",
+   "hook": "\"Gecə saat 2-də diş ağrısı. Səhərə qədər nə etmək olar?\"",
+   "body": "1) Nə etməmək lazımdır\n2) Müvəqqəti rahatlama yolları (həkim təsdiqi ilə)\n3) Nə vaxt təcili müraciət etməli",
+   "caption": "Gecə ağrısı həmişə ən pis vaxtda gəlir. Bu videonu ehtiyac olacaq birinə göndərin."
+  },
+  {
+   "title": "Təmizlikdən əvvəl və sonra",
+   "format": "Karusel · 6 slayd",
+   "hook": "\"Bu, 45 dəqiqəlik fərqdir.\"",
+   "body": "Real pasiyent (icazə ilə), addım-addım nə edildi, nə qədər çəkdi, kimə lazımdır.",
+   "caption": ""
+  }
+ ],
+ "process": [
+  {
+   "t": "Çəkiliş",
+   "d": "Ayda 2 dəfə, 2 saat; ssenarilər 3 gün əvvəl göndərilir."
+  },
+  {
+   "t": "Təsdiq",
+   "d": "Həftəlik paket bazar ertəsi; cavab 24 saat ərzində."
+  },
+  {
+   "t": "Paylaşım",
+   "d": "Təsdiqdən sonra planlanır (Metricool); story-lər gündəlik."
+  },
+  {
+   "t": "Hesabat",
+   "d": "Ayın sonunda: nə işlədi, nə dəyişir, növbəti ay."
+  }
+ ],
+ "next": [
+  "Paketi birlikdə nəzərdən keçirmək (30 dəq görüş)",
+  "Profil dəyişikliklərini tətbiq etmək",
+  "1-ci çəkiliş tarixini təyin etmək"
+ ],
+ "missing": [
+  "Ünvan və müraciət linki",
+  "Müraciət sayının bazası",
+  "Pasiyent hekayələri üçün razılıqlar"
+ ]
+}

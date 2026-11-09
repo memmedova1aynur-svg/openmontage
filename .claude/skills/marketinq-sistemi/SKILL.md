@@ -8,7 +8,7 @@ description: Aynurun marketinq/brend menecment iş sisteminin mərkəzi — büt
 ## 0. Müştərini müəyyən et
 - Müştərilər: `instagram-clients/<qovluq>/` (məxfi, git-ə düşmür; əsas nüsxə Google Drive `instagram-clients`). Siyahı: `ls instagram-clients`.
 - Ad çəkilməyibsə və söhbətdən aydın deyilsə — soruş. Bir müştərinin səsini, rəqəmini, planını başqasına daşıma.
-- **Yeni müştəri**: `sh .claude/skills/marketinq-sistemi/scripts/new_client.sh <slug> "<Ad>"` → sonra `brand.md`-ni müştəridən aldığın faktlarla doldur (bax: §2 Onboarding).
+- **Yeni müştəri**: `musteri-onboarding` skill-i — əvvəl Brend Anketi göndərilir, cavablar gələndə qovluq (`new_client.sh`), brand.md və Strateji paket 1 iş günündə hazırlanır.
 
 ## 1. Hər işdən əvvəl oxu (bu ardıcıllıqla)
 1. `instagram-clients/<müştəri>/brand.md` — səs, vizual, qadağalar (ən üstün qaydalar).
@@ -21,7 +21,7 @@ Fayl yoxdursa: işi dayandırma, ehtiyatlı defolt götür, sonda nəyin çatı�
 ## 2. Tapşırıq → skill
 | Tapşırıq | Skill(lər) |
 |---|---|
-| Yeni müştəri onboarding | `brand-context` → `target-audience` → `brand-voice` → `brand-audit` (və ya `ig-profile`, `ig-analiz`) → brand.md doldur |
+| Yeni müştəri onboarding (anket, strateji paket) | `musteri-onboarding` (Anket → 24 saat → Strateji paket → İş rejimi) |
 | Brend strategiyası, mövqe | `personal-brand`, `brand-positioning`, `brand-messaging`, `brand-story`, `brand-identity`, `brand-guidelines`, `competitor-branding` |
 | Aylıq / həftəlik plan | `ig-month`, `ig-week`, `ig-plan`, `social`, `marketing-plan` |
 | Reels ssenarisi | `ig-reel` (ekspert danışıq: sakit, izahedici), `social` |

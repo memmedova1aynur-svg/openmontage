@@ -1,0 +1,68 @@
+{
+ "title": "Brend Anketi",
+ "subtitle": "Brendinizi tanımaq üçün 12 bölmə. Cavablarınız əsasında 1 iş günü ərzində strateji paketiniz hazırlanır.",
+ "intro": "Bu anketi doldurmaq təxminən 30–40 dəqiqə çəkir. Hər suala tam cavab vermək məcburi deyil — bilmədiyinizi boş saxlayın, ilk görüşdə birlikdə tamamlayarıq. Nə qədər dürüst və konkret yazsanız, strategiya bir o qədər dəqiq olacaq.",
+ "steps": [["Anket","Siz doldurursunuz"],["24 saat","Analiz və strategiya"],["Strateji paket","Plan, profil, kontent sistemi"],["İş rejimi","Davamlı kontent istehsalı"]],
+ "sections": [
+  {"t":"Əsas məlumat","q":[
+   "Brendin / şirkətin adı və sahəsi",
+   "Instagram, vebsayt və digər sosial şəbəkə linkləri",
+   "Şəhər / ölkə, xidmət göstərdiyiniz ərazi",
+   "Əlaqə şəxsi: ad, vəzifə, telefon",
+   "Brend nə vaxtdan fəaliyyət göstərir?"]},
+  {"t":"Biznes və məqsədlər","q":[
+   "Nə satırsınız? Əsas məhsul və ya xidmətləri sadalayın",
+   "Ən çox qazanc gətirən və ya ən çox satmaq istədiyiniz xidmət hansıdır?",
+   "Növbəti 3 ayda Instagram-dan əsas gözləntiniz nədir? (tanınma, müraciət, satış, komanda yığmaq və s.)",
+   "Uğuru necə ölçəcəksiniz? (izləyici, müraciət sayı, satış, baxış)",
+   "Yaxın aylarda planlaşdırdığınız kampaniya, açılış, endirim və ya tədbir varmı?"]},
+  {"t":"Auditoriya","q":[
+   "İdeal müştərinizi təsvir edin: yaş, cins, şəhər, peşə, gəlir səviyyəsi",
+   "Onların əsas problemi və ya istəyi nədir? Sizə hansı səbəblə müraciət edirlər?",
+   "Müştərilər sizi niyə seçir? Rəqiblərdən fərqiniz nədir?",
+   "Ən çox verilən 5 sual hansılardır?",
+   "Satın almazdan əvvəl ən çox hansı tərəddüdlər olur? (qiymət, güvən, vaxt və s.)"]},
+  {"t":"Rəqiblər və ilham","q":[
+   "Əsas 3 rəqibiniz kimdir? (Instagram linkləri)",
+   "Rəqiblərdə nəyi bəyənirsiniz, nəyi bəyənmirsiniz?",
+   "Sahənizdən asılı olmayaraq bəyəndiyiniz 3 Instagram səhifəsi və səbəbi",
+   "Heç vaxt bənzəmək istəmədiyiniz üslub və ya səhifə"]},
+  {"t":"Brend şəxsiyyəti","q":[
+   "Brendinizi 3 sözlə təsvir edin",
+   "Brendiniz insan olsaydı, necə biri olardı? (yaş, xarakter, danışıq tərzi)",
+   "Auditoriyaya \"sən\" yoxsa \"siz\" deyə müraciət edirsiniz?",
+   "Yumor sizə uyğundurmu? Hansı dərəcədə?",
+   "İstifadə etmədiyiniz və ya xoşlamadığınız söz və ifadələr"]},
+  {"t":"Vizual kimlik","q":[
+   "Loqonuz varmı? Faylını əlavə edin (mümkünsə vektor)",
+   "Brend rəngləri və şriftləri varmı? (hex kodları, brend kitabı)",
+   "Hazırkı foto və video materiallarınız varmı? Keyfiyyəti necədir?",
+   "Görünüşdə nədən qaçmaq istəyirsiniz? (rənglər, üslublar)"]},
+  {"t":"Üz və çəkilişlər","q":[
+   "Kamera qarşısında kim olacaq? (sahibkar, ekspert, komanda, heç kim)",
+   "Kamera qarşısında danışmaq sizin üçün nə qədər rahatdır? (1–10)",
+   "Ayda neçə dəfə çəkilişə vaxt ayıra bilərsiniz?",
+   "Çəkiliş üçün məkan varmı? (ofis, studiya, salon, ev)"]},
+  {"t":"Kontent","q":[
+   "Hazırda nə qədər tez-tez paylaşırsınız? Hansı paylaşımlar yaxşı nəticə verib?",
+   "Danışmaq istədiyiniz mövzular, bilik və təcrübə sahələriniz",
+   "Toxunmaq istəmədiyiniz mövzular",
+   "Sizin üçün vacib tarixlər: bayramlar, peşə günləri, mövsümlər"]},
+  {"t":"Hekayə və sübutlar","q":[
+   "Necə başladınız? Brendin hekayəsini qısaca yazın",
+   "Müştəri rəyləri, nəticələr, əvvəl/sonra nümunələri varmı? (paylaşmaq icazəsi ilə)",
+   "Sertifikat, mükafat, rəqəmlər (neçə müştəri, neçə il və s.)"]},
+  {"t":"Müraciət və satış","q":[
+   "Müştərilər sizə necə müraciət edir? (Direct, WhatsApp, zəng, sayt)",
+   "Qiymətləri açıq paylaşırsınız, yoxsa fərdi?",
+   "Reklam (Meta Ads) üçün aylıq büdcə düşünürsünüzmü?"]},
+  {"t":"Razılıq və təsdiq","q":[
+   "Kontenti kim təsdiqləyəcək? Cavab müddəti (məs. 24 saat)",
+   "Paylaşımı kim edəcək: biz, yoxsa siz?",
+   "Kimlərin üzü göstərilə bilər? (işçilər, müştərilər — razılıqla)",
+   "Hüquqi məhdudiyyətlər varmı? (tibbi, maliyyə iddiaları və s.)"]},
+  {"t":"Son söz","q":[
+   "Bizimlə işdən ən böyük gözləntiniz",
+   "Əlavə etmək istədiyiniz hər şey"]}
+ ]
+}

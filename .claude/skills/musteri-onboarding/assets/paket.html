@@ -1,0 +1,52 @@
+<!doctype html><html lang="az"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Lora:ital,wght@1,500;1,600&family=JetBrains+Mono:wght@500;700&display=block" rel="stylesheet">
+<style>
+@page{size:A4;margin:16mm 0 14mm}@page:first{margin:0}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:Inter;color:var(--ink);-webkit-print-color-adjust:exact;print-color-adjust:exact;font-size:10.5pt;line-height:1.5}
+:root{--ink:#3B1832;--acc:#CDF46B;--soft:#CFC3F5;--bg:#EFE7D8;--mu:#7A3B6C}
+.mono{font-family:'JetBrains Mono';font-weight:700;letter-spacing:.16em;font-size:8.5pt;text-transform:uppercase}
+.cover{height:297mm;background:var(--ink);color:#FBFAF6;padding:22mm 20mm;position:relative;page-break-after:always}
+.cover h1{font:900 54pt/.95 Inter;letter-spacing:-.04em;margin-top:62mm}.cover h1 span{color:var(--acc)}
+.cover .cl{font:italic 500 20pt/1.3 Lora;color:var(--soft);margin-top:9mm}
+.cover .meta{position:absolute;left:20mm;right:20mm;bottom:16mm;display:flex;justify-content:space-between;color:var(--soft)}
+.toc{position:absolute;left:20mm;right:20mm;bottom:34mm;columns:2;column-gap:10mm;color:#FBFAF6;font-size:9.5pt}.toc div{border-top:.6pt solid rgba(255,255,255,.25);padding:1.6mm 0}.toc b{color:var(--acc);font-family:'JetBrains Mono';margin-right:3mm}
+main{padding:0 20mm}
+section{margin-bottom:10mm}
+.sh{display:flex;align-items:baseline;gap:4mm;border-bottom:1.2pt solid var(--ink);padding-bottom:2.5mm;margin-bottom:5mm;break-after:avoid}
+.sh .n{font:700 10pt 'JetBrains Mono';color:var(--mu)}.sh h2{font:900 21pt Inter;letter-spacing:-.03em}
+.big{font:italic 600 17pt/1.35 Lora;color:var(--mu);margin-bottom:4mm}
+.grid{display:grid;gap:4mm}.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr 1fr}
+.card{background:var(--bg);border-radius:3mm;padding:5mm;break-inside:avoid}.card h3{font:900 12pt Inter;margin-bottom:1.5mm}.card .k{font:700 8pt 'JetBrains Mono';letter-spacing:.12em;color:var(--mu);text-transform:uppercase;margin:2.5mm 0 .8mm}
+.dark{background:var(--ink);color:#FBFAF6}.dark .k{color:var(--acc)}
+ul{padding-left:4.5mm}li{margin:.6mm 0}
+.chips span{display:inline-block;background:var(--soft);border-radius:20mm;padding:1mm 3.5mm;margin:0 1.5mm 1.5mm 0;font-weight:700;font-size:9.5pt}
+.sw{display:flex;gap:3mm}.sw div{flex:1;height:22mm;border-radius:2mm;border:.6pt solid rgba(0,0,0,.15);display:flex;align-items:flex-end;padding:2mm;font:700 7.5pt 'JetBrains Mono'}
+table{width:100%;border-collapse:collapse;font-size:9pt}th{text-align:left;font:700 7.5pt 'JetBrains Mono';letter-spacing:.1em;text-transform:uppercase;color:var(--mu);border-bottom:1pt solid var(--ink);padding:1.5mm}
+td{border-bottom:.5pt solid #D9CFDD;padding:1.6mm;vertical-align:top}tr{break-inside:avoid}
+.bio{background:#fff;border:1pt solid #D9CFDD;border-radius:3mm;padding:5mm;font-size:10pt}.bio b{font-size:11.5pt}
+.ph{display:flex;gap:3mm;margin-top:3mm}.ph div{width:16mm;text-align:center;font-size:7.5pt}.ph i{display:block;width:14mm;height:14mm;border-radius:50%;background:var(--ink);border:1.5mm solid var(--acc);margin:0 auto 1mm}
+.road{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm}.road .card{border-top:2pt solid var(--ink)}
+.bar{height:3mm;background:var(--acc);border-radius:2mm;margin-top:1mm}
+.note{font-size:8pt;color:var(--mu);margin-top:2mm}
+</style></head><body><div id="r"></div>
+<script>
+const P=window.P;const r=document.getElementById('r');const E=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const L=a=>(a||[]).map(x=>`<li>${E(x)}</li>`).join('');
+if(P.colors){const s=document.documentElement.style;['ink','acc','soft','bg','mu'].forEach(k=>P.colors[k]&&s.setProperty('--'+k,P.colors[k]))}
+const S=[];const sec=(t,h)=>{S.push(t);return `<section><div class="sh"><span class="n">${String(S.length).padStart(2,'0')}</span><h2>${E(t)}</h2></div>${h}</section>`};
+let b='';
+b+=sec('Brend xülasəsi',`<div class="big">${E(P.summary.oneliner)}</div><div class="grid g2"><div class="card"><div class="k">Missiya</div>${E(P.summary.mission)}<div class="k">Mərhələ və məqsəd</div>${E(P.summary.goal)}</div><div class="card dark"><div class="k">Brend 3 sözlə</div><div class="chips">${(P.summary.words||[]).map(w=>`<span style="background:var(--acc);color:var(--ink)">${E(w)}</span>`).join('')}</div><div class="k">Uğur ölçüsü (KPI)</div><ul>${L(P.summary.kpi)}</ul></div></div>`);
+b+=sec('Auditoriya',`<div class="grid g2">${P.personas.map(p=>`<div class="card"><h3>${E(p.name)}</h3><div>${E(p.desc)}</div><div class="k">Problemi</div><ul>${L(p.pains)}</ul><div class="k">İstəyi</div><ul>${L(p.wants)}</ul><div class="k">Tərəddüdü</div><ul>${L(p.objections)}</ul></div>`).join('')}</div>`);
+b+=sec('Mövqe',`<div class="card dark" style="margin-bottom:4mm"><div class="k">Mövqe cümləsi</div><div style="font:italic 600 13pt/1.4 Lora">${E(P.positioning.statement)}</div></div><div class="grid g2"><div class="card"><div class="k">Fərqlərimiz</div><ul>${L(P.positioning.diff)}</ul></div><div class="card"><div class="k">Rəqib mənzərəsi</div><ul>${L(P.positioning.competitors)}</ul></div></div>`);
+b+=sec('Səs və ton',`<div class="grid g3"><div class="card"><div class="k">Ton</div><div class="chips">${(P.voice.tone||[]).map(w=>`<span>${E(w)}</span>`).join('')}</div><div class="k">Müraciət</div>${E(P.voice.address)}</div><div class="card"><div class="k">Belə deyirik</div><ul>${L(P.voice.say)}</ul></div><div class="card"><div class="k">Belə demirik</div><ul>${L(P.voice.dont)}</ul></div></div>`);
+b+=sec('Vizual istiqamət',`<div class="sw">${(P.visual.palette||[]).map(([n,h])=>`<div style="background:${h};color:${['#fff','#FBFAF6'].includes(h)?'#000':(parseInt(h.slice(1,3),16)*0.3+parseInt(h.slice(3,5),16)*0.6>140?'#000':'#fff')}">${E(n)}<br>${E(h)}</div>`).join('')}</div><div class="grid g2" style="margin-top:4mm"><div class="card"><div class="k">Şriftlər</div><ul>${L(P.visual.fonts)}</ul></div><div class="card"><div class="k">Foto və video üslubu</div><ul>${L(P.visual.style)}</ul></div></div>`);
+b+=sec('Instagram profili',`<div class="grid g2"><div class="bio"><b>${E(P.profile.name)}</b><div style="color:var(--mu);font-size:9pt">${E(P.profile.category)}</div><div style="margin-top:2mm;white-space:pre-line">${E(P.profile.bio)}</div><div style="color:#2a5bd7">${E(P.profile.link)}</div><div class="ph">${(P.profile.highlights||[]).map(h=>`<div><i></i>${E(h)}</div>`).join('')}</div></div><div class="card"><div class="k">Sancaqlanan 3 post</div><ul>${L(P.profile.pinned)}</ul><div class="k">Qrid prinsipi</div>${E(P.profile.grid)}</div></div>`);
+b+=sec('Kontent sistemi',`<table><tr><th>Sütun / rol</th><th>Nə üçün</th><th>Nümunə mövzular</th><th style="width:22mm">Pay</th></tr>${P.pillars.map(p=>`<tr><td><b>${E(p.name)}</b></td><td>${E(p.why)}</td><td>${E((p.examples||[]).join(' · '))}</td><td>${p.share}%<div class="bar" style="width:${p.share}%"></div></td></tr>`).join('')}</table><div class="card" style="margin-top:4mm"><div class="k">Həftəlik ritm</div>${E(P.rhythm)}</div>`);
+b+=sec('3 aylıq yol xəritəsi',`<div class="road">${P.roadmap.map(m=>`<div class="card"><h3>${E(m.month)}</h3><div style="font-weight:700">${E(m.goal)}</div><div class="k">Addımlar</div><ul>${L(m.actions)}</ul><div class="k">Hədəf</div>${E(m.kpi)}</div>`).join('')}</div>`);
+b+=sec('İlk 30 gün',`<table><tr><th style="width:12mm">Gün</th><th style="width:24mm">Format</th><th style="width:26mm">Rol</th><th>Mövzu</th></tr>${P.calendar.map(c=>`<tr><td>${E(c.day)}</td><td>${E(c.format)}</td><td>${E(c.role)}</td><td>${E(c.topic)}</td></tr>`).join('')}</table>`);
+b+=sec('İlk həftənin materialları',P.week1.map(w=>`<div class="card" style="margin-bottom:3mm"><h3>${E(w.title)} <span class="mono" style="color:var(--mu);font-size:7.5pt;margin-left:2mm">${E(w.format)}</span></h3><div class="k">Hook</div>${E(w.hook)}<div class="k">Məzmun</div><div style="white-space:pre-line">${E(w.body)}</div>${w.caption?`<div class="k">Caption</div>${E(w.caption)}`:''}</div>`).join(''));
+b+=sec('İş rejimi',`<div class="grid g2">${P.process.map((p,i)=>`<div class="card"><h3>${i+1}. ${E(p.t)}</h3>${E(p.d)}</div>`).join('')}</div>`);
+b+=sec('Növbəti addımlar',`<div class="card dark"><ul>${L(P.next)}</ul></div>${P.missing&&P.missing.length?`<div class="note">Anketdə cavabı olmayan və təsdiq gözləyən məqamlar: ${E(P.missing.join('; '))}</div>`:''}`);
+r.innerHTML=`<div class="cover"><div class="mono" style="display:flex;justify-content:space-between;color:var(--soft)"><span>${E(P.agency.name)}</span><span>${E(P.agency.sub)}</span></div><h1>Strateji<br><span>paket</span></h1><div class="cl">${E(P.client)}</div><div class="toc">${S.map((t,i)=>`<div><b>${String(i+1).padStart(2,'0')}</b>${E(t)}</div>`).join('')}</div><div class="meta mono"><span>${E(P.date)} · Məxfi</span><span>${E(P.agency.contact)}</span></div></div><main>${b}</main>`;
+document.fonts.ready.then(()=>document.title='done');
+</script></body></html>
