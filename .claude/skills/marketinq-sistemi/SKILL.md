@@ -37,6 +37,14 @@ Fayl yoxdursa: işi dayandırma, ehtiyatlı defolt götür, sonda nəyin çatı�
 | Satış mərhələsi (yalnız müştəri icazə verəndə) | `offers`, `lead-magnets`, `ad-creative`, `meta-ads` |
 | Səs, musiqi, səsləndirmə | `elevenlabs`, `azure-text-to-speech`, `acestep` |
 
+## 2a. Video montajın dəyişməz qaydaları (bütün müştərilər)
+- **Keçid:** danışıqdakı kəsimlərdə ərimə/dissolve YOX — plan dəyişməsi (bir seqment 1.0, növbəti 1.1 miqyas, üzə görə kadraj). Hiss olunmayan, peşəkar keçid.
+- **Səs effektləri MÜTLƏQDİR:** hər animasiya girişi, başlıq/etiket çıxması, siyahı elementi, üstündən xətt, vurğu üçün SFX. Hər yerdə eyni səs yox — animasiyanın xarakterinə uyğun: kağız etiket → paperclick, giriş → whoosh2/swish, vurğu → p_glint, sayma/siyahı → p_tap/knock, xətt → scratch, başlıq → p_bloom. Səviyyə nitqdən aşağı (-14…-22 dB). Kitabxana: /root/montaj-data/sfx.
+- **Musiqi:** müştəri qadağan etməyibsə, yüngül fon musiqisi (sidechain ilə danışıqda enir), seçim üçün 2–3 versiya; yalnız lisenziyası yoxlanmış CC0/icazəli treklər.
+- **Animasiyalar:** videoda 3–4, hər biri 3–5 s, sözə dəqiq; animasiyalar arasında 1 s boşluq olmasın; animasiya ekranı örtəndə altyazı göstərilmir.
+- **Altyazı yeri:** kadr dəyişəndə obyektin üstünə yox, boş sahəyə.
+- **Kadraj:** oturaq danışıqda oturma xəttindən (ayaqlar görünmür).
+
 ## 3. Kontent ritmi (defolt; brand.md başqa deyirsə ona əməl et)
 Rollar növbə ilə, eyni rol ard-arda yox: Güldürür · Öyrədir · Göstərir · Analiz edir · Pərdə arxası · Fikir bildirir · Danışdırır (+ satışda Təklif edir). Video və statik növbələşir.
 
