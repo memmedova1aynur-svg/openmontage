@@ -1,0 +1,3 @@
+Third-party: everything-claude-code (github.com/WorldFlowAI/everything-claude-code, fork of affaan-m/everything-claude-code), MIT license.
+Installed: agents/*, commands/* (except code-review), skills: backend-patterns, clickhouse-io, coding-standards, continuous-learning, eval-harness, frontend-patterns, project-guidelines-example, strategic-compact, tdd-workflow, verification-loop.
+Not installed: hooks (would block .md file creation used by this project), MCP configs (need tokens), rules/contexts, commands/code-review and skills/security-review (shadow built-in commands).
