@@ -14,9 +14,9 @@
       "pop"
     ],
     "tight": {
-      "d": 0.25,
-      "after": 0.2,
-      "before": 0.15
+      "d": 0.14,
+      "after": 0.09,
+      "before": 0.06
     },
     "speechChain": "highpass=f=95,equalizer=f=4500:t=q:w=1.2:g=2,acompressor=threshold=0.05:ratio=3:attack=10:release=200:makeup=2,dynaudnorm=f=150:g=9:p=0.9:m=3:s=8",
     "fy": 0.41,
@@ -45,9 +45,9 @@
     "ad": true,
     "pal": "adgreen",
     "tight": {
-      "d": 0.18,
-      "after": 0.14,
-      "before": 0.1
+      "d": 0.14,
+      "after": 0.09,
+      "before": 0.06
     },
     "cap": {
       "x": 0.5,

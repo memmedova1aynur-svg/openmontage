@@ -1,6 +1,7 @@
 """Kinematik-sənədli səhnə mühərriki (Xəyyam): divar+işıq, kağız, qaranlıq, kəsim lövhəsi;
 çərçivəli foto, iri başlıq, kursiv söz, etiket, səpələnmiş sözlər. Tam ekran (RGB) və ya şəffaf (RGBA) kadrlar."""
-import numpy as np, subprocess
+import numpy as np, subprocess, math
+from PIL import ImageChops
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance
 W, H, FPS = 1080, 1920, 30
 F = {'pi': '/root/.fonts/nuFRD-vYSZviVYUb_rj3ij__anPXDTnCjmHKM4nYO7KN_pqTbtY.ttf',
@@ -81,6 +82,12 @@ class Photo:
             sh = Image.new('RGBA', im.size, (0, 0, 0, 0)); sh.putalpha(al.point(lambda v: int(v * 0.55)))
             sh = sh.filter(ImageFilter.GaussianBlur(18)); c.alpha_composite(sh, (x + 14, y + 26)) if c.mode == 'RGBA' else c.paste(sh, (x + 14, y + 26), sh)
         c.paste(im, (x, y), im) if c.mode == 'RGB' else c.alpha_composite(im, (max(0, x), max(0, y)) if x >= 0 and y >= 0 else (0, 0)) if False else _paste(c, im, x, y)
+        g = (t - s.at - 0.45) / 0.7
+        if 0 < g < 1:  # şüşə üzərindən keçən işıq zolağı
+            G_ = Image.new('L', im.size, 0); dg = ImageDraw.Draw(G_); bx = -im.height + g * (im.width + 2 * im.height)
+            dg.polygon([(bx, im.height), (bx + 90, im.height), (bx + 90 + im.height * 0.6, 0), (bx + im.height * 0.6, 0)], fill=int(70 * math.sin(g * math.pi)))
+            G_ = G_.filter(ImageFilter.GaussianBlur(25)); G_ = ImageChops.multiply(G_, im.split()[3])
+            Wt = Image.new('RGBA', im.size, (255, 248, 230, 0)); Wt.putalpha(G_); _paste(c, Wt, x, y)
         if s.label and t > s.at + 0.2:
             Tag(s.label, x + 20, y + im.height + 18, s.at + 0.2).draw(c, t)
         if s.sub and t > s.at + 0.3:
@@ -91,16 +98,34 @@ def _paste(c, im, x, y):
         L = Image.new('RGBA', c.size, (0, 0, 0, 0)); L.paste(im, (x, y), im); c.alpha_composite(L)
 
 class Txt:
-    def __init__(s, text, x, y, at, f='pi', size=64, col=(255, 255, 255), anchor='la', dur_in=0.35, rise=24, shadow=True, until=None):
-        s.__dict__.update(text=text, x=x, y=y, at=at, f=f, size=size, col=col, anchor=anchor, di=dur_in, rise=rise, shadow=shadow, until=until)
+    def __init__(s, text, x, y, at, f='pi', size=64, col=(255, 255, 255), anchor='la', dur_in=None, rise=24, shadow=True, until=None, fx=None):
+        s.__dict__.update(text=text, x=x, y=y, at=at, f=f, size=size, col=col, anchor=anchor, rise=rise, shadow=shadow, until=until)
+        s.fx = fx or ('track' if f == 'pblack' else 'blur')
+        s.di = dur_in or (0.5 if s.fx == 'track' else 0.4)
+    def _draw_text(s, d, x, y, fill, sp):
+        fn = font(s.f, s.size)
+        if sp < 0.5: d.text((x, y), s.text, font=fn, fill=fill, anchor=s.anchor); return
+        ws = [fn.getlength(ch) for ch in s.text]; tw0 = sum(ws)
+        sp = min(sp, max(0, (W - 60 - tw0) / max(1, len(s.text) - 1)))  # ekrandan çıxmasın
+        tw = tw0 + sp * (len(s.text) - 1)
+        x0 = x - tw / 2 if s.anchor[0] == 'm' else x - (tw - tw0) / 2
+        x0 = min(max(30, x0), W - 30 - tw)
+        va = 'l' + s.anchor[1]
+        for ch, w_ in zip(s.text, ws): d.text((x0, y), ch, font=fn, fill=fill, anchor=va); x0 += w_ + sp
     def draw(s, c, t):
         if t < s.at or (s.until and t > s.until + 0.3): return
         p = eout((t - s.at) / s.di)
         if s.until and t > s.until: p = min(p, 1 - (t - s.until) / 0.3)
-        L = Image.new('RGBA', c.size, (0, 0, 0, 0)); d = ImageDraw.Draw(L); y = s.y + s.rise * (1 - p)
-        fn = font(s.f, s.size)
-        if s.shadow: d.text((s.x + 3, y + 4), s.text, font=fn, fill=(0, 0, 0, int(140 * p)), anchor=s.anchor)
-        d.text((s.x, y), s.text, font=fn, fill=(*s.col, int(255 * p)), anchor=s.anchor)
+        L = Image.new('RGBA', c.size, (0, 0, 0, 0)); d = ImageDraw.Draw(L)
+        sp = (1 - p) * s.size * 0.22 if s.fx == 'track' else 0
+        y = s.y + (0 if s.fx == 'track' else s.rise * (1 - p))
+        if s.shadow: s._draw_text(d, s.x + 3, y + 4, (0, 0, 0, int(140 * p)), sp)
+        s._draw_text(d, s.x, y, (*s.col, int(255 * p)), sp)
+        if p < 0.98:
+            bb = L.getbbox()
+            if bb:
+                bb = (max(0, bb[0] - 30), max(0, bb[1] - 30), min(W, bb[2] + 30), min(H, bb[3] + 30))
+                L.paste(L.crop(bb).filter(ImageFilter.GaussianBlur(10 * (1 - p))), bb[:2])
         c.alpha_composite(L) if c.mode == 'RGBA' else c.paste(L, (0, 0), L)
 
 class Tag:
@@ -162,28 +187,50 @@ class Search:  # axtarış zolağı (son çağırış)
         c.alpha_composite(L) if c.mode == 'RGBA' else c.paste(L, (0, 0), L)
 
 # ---------- səhnə ----------
+_DUST = np.random.default_rng(7).random((70, 4))
+def dust(c, t):
+    L = Image.new('RGBA', c.size, (0, 0, 0, 0)); d = ImageDraw.Draw(L)
+    for i, (a, b, r, ph) in enumerate(_DUST):
+        y = (b * H * 0.85 - t * (12 + 25 * r)) % (H * 0.85)
+        x = W / 2 + (a - 0.5) * (240 + y * 0.84) + 18 * math.sin(t * 0.6 + ph * 6)
+        k = max(0.0, 1 - abs(x - W / 2) / (120 + y * 0.42)) * (0.5 + 0.5 * math.sin(t * 1.3 + ph * 9))
+        rr = 1.5 + r * 2.5
+        if k > 0.05: d.ellipse([x - rr, y - rr, x + rr, y + rr], fill=(255, 236, 200, int(150 * k)))
+    L = L.filter(ImageFilter.GaussianBlur(1.2)); c.paste(L, (0, 0), L)
+
 def render_scene(sc, out, alpha=False, start_frame=0):
-    """sc: dict(dur, bg, lamp(at), els[list], push(z0,z1), flash)"""
+    """sc: dict(dur, n, bg, lamp, els, push, tin, tout, shake[list of local t])"""
     n = sc.get('n') or int(round(sc['dur'] * FPS))
     if alpha:
         cmd = ['ffmpeg', '-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgba', '-s', f'{W}x{H}', '-r', str(FPS), '-i', '-', '-c:v', 'qtrle', '-pix_fmt', 'argb', out]
     else:
         cmd = ['ffmpeg', '-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', f'{W}x{H}', '-r', str(FPS), '-i', '-', '-c:v', 'libx264', '-crf', '16', '-pix_fmt', 'yuv420p', out]
     p = subprocess.Popen(cmd, stdin=subprocess.PIPE)
-    z0, z1 = sc.get('push', (1.0, 1.05))
+    z0, z1 = sc.get('push', (1.0, 1.05)); z0 += 0.02; z1 += 0.02  # sarsıntı üçün kənar ehtiyatı
+    TIN, TOUT = (7 if sc.get('tin', True) else 0), (5 if sc.get('tout', True) else 0)
     for i in range(n):
         t = i / FPS
         if alpha: c = Image.new('RGBA', (W, H), (0, 0, 0, 0))
         else:
-            la = sc.get('lamp')
-            k = 1.0 if la is None else (0.0 if t < la else min(1, 0.35 + (t - la) / 0.25) if t - la < 0.12 or t - la > 0.2 else 0.5)
-            if la is not None and t >= la and t - la < 0.25: k = [0.0, 1.0, 0.4, 1.0, 1.0][min(4, int((t - la) / 0.05))]
+            la = sc.get('lamp'); k = 1.0
+            if la is not None:
+                k = 0.0 if t < la else 1.0
+                if la <= t < la + 0.25: k = [0.0, 1.0, 0.4, 1.0, 1.0][min(4, int((t - la) / 0.05))]
             c = bg(sc['bg'], t, k)
+            if sc['bg'] in ('wall', 'dark') and k > 0.5: dust(c, t + start_frame / FPS)
         for e in sc['els']: e.draw(c, t)
         if not alpha:
-            z = z0 + (z1 - z0) * ease(t / max(sc['dur'], 0.01))
-            if abs(z - 1) > 1e-3:
-                cw, ch = int(W / z), int(H / z); c = c.crop(((W - cw) // 2, int((H - ch) * 0.45), (W - cw) // 2 + cw, int((H - ch) * 0.45) + ch)).resize((W, H), Image.BILINEAR)
+            z = z0 + (z1 - z0) * ease(t / max(sc['dur'], 0.01)); dx = dy = 0.0; bl = 0.0; fl = 0.0
+            if i < TIN: q = eout((i + 1) / TIN); z *= 1 + 0.14 * (1 - q); bl = 9 * (1 - q); fl = 0.22 * (1 - q)
+            if i >= n - TOUT: q = (i - (n - TOUT) + 1) / TOUT; z *= 1 + 0.12 * q * q; bl = max(bl, 9 * q * q)
+            for st in sc.get('shake', []):
+                u = t - st
+                if 0 <= u < 0.45: a = 16 * math.exp(-u * 9); dx += a * math.sin(u * 70); dy += a * math.cos(u * 53)
+            cw, ch = W / z, H / z; x0 = (W - cw) / 2 + dx; y0 = (H - ch) * 0.45 + dy
+            x0 = min(max(0, x0), W - cw); y0 = min(max(0, y0), H - ch)
+            c = c.crop((int(x0), int(y0), int(x0 + cw), int(y0 + ch))).resize((W, H), Image.BILINEAR)
+            if bl > 0.3: c = c.filter(ImageFilter.GaussianBlur(bl))
+            if fl > 0.01: c = ImageEnhance.Brightness(c).enhance(1 + fl)
             c = grain(c, start_frame + i, 0.06)
         p.stdin.write(c.tobytes())
     p.stdin.close(); p.wait()
