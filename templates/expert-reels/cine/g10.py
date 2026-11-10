@@ -67,9 +67,9 @@ class Cards:  # söz kartları yelpazə kimi açılır + sayğac
             if q <= 0: continue
             cw, ch = 300, 190; im = Image.new('RGBA', (cw + 30, ch + 30), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
             d.rectangle([15, 15, 15 + cw, 15 + ch], fill=(250, 247, 238, int(255 * q)))
-            d.line([15, 60, 15 + cw, 60], fill=(200, 80, 80, int(160 * q)), width=2)
-            for yy in range(95, ch, 34): d.line([15, yy, 15 + cw, yy], fill=(150, 185, 210, int(110 * q)), width=1)
-            d.text((15 + cw / 2, 15 + ch / 2 + 18), wd, font=font('pbi', 44), fill=(*DARK, int(255 * q)), anchor='mm')
+            d.line([15, 58, 15 + cw, 58], fill=(196, 92, 84, int(150 * q)), width=2)  # başlıq xətti
+            for yy in (138, 176): d.line([15, yy, 15 + cw, yy], fill=(150, 185, 210, int(95 * q)), width=1)
+            d.text((15 + cw / 2, 133), wd, font=font('pbi', 44), fill=(*DARK, int(255 * q)), anchor='ms')  # söz xəttin üstündə oturur
             ang = (k - (n - 1) / 2) * 6 * q
             im = im.rotate(-ang, expand=True, resample=Image.BICUBIC)
             x = s.cx + (k - (n - 1) / 2) * 320 * q - im.width / 2; y = s.cy + abs(k - (n - 1) / 2) * 18 * q - im.height / 2 + 40 * (1 - q)
