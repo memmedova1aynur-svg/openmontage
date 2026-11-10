@@ -421,7 +421,8 @@ q["subtitles"]["removed"] = sorted(set((q["subtitles"].get("removed") or []) + r
 store.save(pid, q, store.load(pid)["revision"]); print("altyazı gizlədildi", len(rm))
 for m in store.load(pid)["media"]:  # təkrar qurulmada add-broll eyni faylı köhnə ID ilə qeyd edə bilər — fayl yerində olsun
     f_ = P / m.get("file", "")
-    if m.get("file") and not f_.exists() and (W_DIR / m["name"]).exists(): shutil.copyfile(W_DIR / m["name"], f_); print("bərpa:", m["name"])
+    _src = next((Path(b["file"]) for b in CFG.get("broll", []) if Path(b["file"]).name == m.get("name")), W_DIR / m.get("name", ""))
+    if m.get("file") and not f_.exists() and _src.exists(): shutil.copyfile(_src, f_); print("bərpa:", m["name"])
 tick("yekun render")
 r = run(["python", "-m", "montaj.session", "render", pid]); print((r.stdout.strip().splitlines() or [r.stderr[-800:]])[-1])
 if r.returncode: raise SystemExit("render xətası: " + r.stderr[-1500:])
