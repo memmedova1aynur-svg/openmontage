@@ -243,6 +243,12 @@ if CFG.get("sfxset") == "premium":  # tonal, yumşaq, aşağı səviyyəli effek
             "riser": "p_rise", "pop": "p_glint", "tick2": "p_tap", "ding": "p_glint"}
     VS = CFG.get("sfxScale", 0.5)
     SFX = [{**x, "kind": MAPK.get(x["kind"], x["kind"]), "vol": round(x["vol"] * VS, 3)} for x in SFX if x["kind"] != "riser"]
+if CFG.get("sfxset") == "pro":  # küy əsaslı peşəkar effektlər: tonsuz whoosh, klik, yumşaq zərbə (melodik səs yoxdur)
+    sys.path.insert(0, str(Path(__file__).resolve().parent)); import sfx_premium as _sp; _sp.ensure_pro()
+    MAPK = {"impact": "pro_thump", "shimmer": "pro_air", "whoosh2": "pro_air", "whoosh": "pro_whoosh", "swish": "pro_paper",
+            "pop": "pro_click", "tick2": "pro_click", "ding": "pro_click"}
+    VS = CFG.get("sfxScale", 0.5)
+    SFX = [{**x, "kind": MAPK.get(x["kind"], x["kind"]), "vol": round(x["vol"] * VS, 3)} for x in SFX if x["kind"] != "riser"]
 SFX = [x for x in SFX if x["kind"] not in CFG.get("dropSfx", [])]
 SFX.sort(key=lambda x: x["t"])
 plan = {"title": CFG["title"], "approach": "M01+M02+M03", "look": "W", "captions": {"enabled": True, "style": CFG["cap"]}, "zooms": [], "sfx": SFX, "graphics": [],

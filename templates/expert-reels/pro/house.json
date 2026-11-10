@@ -18,7 +18,7 @@
       "after": 0.2,
       "before": 0.15
     },
-    "speechChain": "highpass=f=70,acompressor=threshold=0.05:ratio=3:attack=10:release=200:makeup=2,dynaudnorm=f=150:g=9:p=0.9:m=3:s=8",
+    "speechChain": "highpass=f=90,afftdn=nr=24:nf=-42:tn=1,anlmdn=s=4:p=0.004:r=0.006,acompressor=threshold=0.05:ratio=3:attack=10:release=200:makeup=2,dynaudnorm=f=150:g=9:p=0.9:m=3:s=8",
     "fy": 0.41,
     "cap": {
       "x": 0.067,
@@ -34,7 +34,8 @@
       "stroke": "rgba(0,0,0,0.35)",
       "maxWords": 3,
       "maxW": 0.4
-    }
+    },
+    "denoise_note": "Fon küyü hər videoda avtomatik təmizlənir (afftdn+anlmdn danışıq zəncirində). Söndürmək üçün speechChain-i dəyiş."
   },
   "talk": {
     "pal": "forest"

@@ -41,3 +41,44 @@ def ensure():
 
 if __name__ == "__main__":
     ensure(); print("premium sfx:", LIB)
+
+
+# ---- "pro" dəsti: küy əsaslı, tonsuz (melodik "uyu" səsləri yoxdur) — Xəyyam üçün standart ----
+def _bp(x, lo, hi):
+    X = np.fft.rfft(x); f = np.fft.rfftfreq(len(x), 1 / SR); X[(f < lo) | (f > hi)] = 0; return np.fft.irfft(X, len(x))
+
+
+def _save2(n, l, r, peak=0.89):
+    m = max(np.max(np.abs(l)), np.max(np.abs(r))); l, r = l / m * peak, r / m * peak
+    d = (np.stack([l, r], 1) * 32767).astype(np.int16)
+    with wave.open(str(LIB / f"{n}.wav"), "wb") as w:
+        w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR); w.writeframes(d.tobytes())
+
+
+def _sweep_noise(dur, f0, f1, seed, att=0.45):
+    rng = np.random.default_rng(seed); n = int(SR * dur); t = np.arange(n) / SR; u = t / dur
+    out = np.zeros(n); seg = 1024
+    src = rng.normal(0, 1, n + seg)
+    for i in range(0, n, seg // 2):  # zamanla dəyişən zolaq (whoosh)
+        c = f0 * (f1 / f0) ** (i / n); blk = src[i:i + seg] * np.hanning(seg)
+        y = _bp(blk, c * 0.55, c * 1.8); j = min(seg, n - i); out[i:i + j] += y[:j]
+    env = np.sin(np.pi * np.clip(u / att, 0, 1) / 2) ** 2 * np.clip((1 - u) / (1 - att), 0, 1) ** 1.6
+    return out * env, u
+
+
+def ensure_pro():
+    LIB.mkdir(parents=True, exist_ok=True)
+    if all((LIB / f"pro_{k}.wav").exists() for k in ("whoosh", "air", "click", "thump", "paper")): return
+    x, u = _sweep_noise(0.38, 500, 2600, 1); pan = 0.5 + 0.35 * (u - 0.5)
+    _save2("pro_whoosh", x * (1 - pan) * 2, x * pan * 2, 0.7)
+    x, u = _sweep_noise(0.7, 300, 1600, 2, 0.6); pan = 0.5 - 0.3 * (u - 0.5)
+    _save2("pro_air", x * (1 - pan) * 2, x * pan * 2, 0.6)
+    rng = np.random.default_rng(3); t = np.arange(int(SR * 0.06)) / SR
+    c = _bp(rng.normal(0, 1, len(t)), 1800, 7000) * np.exp(-t / 0.004) + 0.5 * np.sin(2 * np.pi * 2100 * t) * np.exp(-t / 0.006)
+    _save2("pro_click", c, c, 0.6)
+    t = np.arange(int(SR * 0.32)) / SR
+    th = np.sin(2 * np.pi * 62 * t) * np.exp(-t / 0.07) * np.minimum(1, t / 0.003) + 0.35 * _bp(rng.normal(0, 1, len(t)), 80, 900) * np.exp(-t / 0.02)
+    _save2("pro_thump", th, th, 0.8)
+    t = np.arange(int(SR * 0.3)) / SR; u = t / t[-1]
+    pp = _bp(rng.normal(0, 1, len(t)), 2000, 9000) * (0.6 + 0.4 * np.abs(np.sin(2 * np.pi * 38 * t))) * np.sin(np.pi * u) ** 1.5
+    _save2("pro_paper", pp, pp * 0.9, 0.5)
