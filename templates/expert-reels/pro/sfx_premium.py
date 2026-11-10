@@ -68,14 +68,14 @@ def _sweep_noise(dur, f0, f1, seed, att=0.45):
 
 def ensure_pro():
     LIB.mkdir(parents=True, exist_ok=True)
-    if all((LIB / f"pro_{k}.wav").exists() for k in ("whoosh", "air", "click", "thump", "paper")): return
+    if all((LIB / f"pro_{k}.wav").exists() for k in ("whoosh", "air", "tick", "thump", "paper")): return
     x, u = _sweep_noise(0.38, 500, 2600, 1); pan = 0.5 + 0.35 * (u - 0.5)
     _save2("pro_whoosh", x * (1 - pan) * 2, x * pan * 2, 0.7)
     x, u = _sweep_noise(0.7, 300, 1600, 2, 0.6); pan = 0.5 - 0.3 * (u - 0.5)
     _save2("pro_air", x * (1 - pan) * 2, x * pan * 2, 0.6)
     rng = np.random.default_rng(3); t = np.arange(int(SR * 0.25)) / SR
     c = _bp(rng.normal(0, 1, len(t)), 1800, 7000) * np.exp(-t / 0.004) + 0.5 * np.sin(2 * np.pi * 2100 * t) * np.exp(-t / 0.006)
-    _save2("pro_click", c, c, 0.6)
+    _save2("pro_tick", c, c, 0.6)
     t = np.arange(int(SR * 0.32)) / SR
     th = np.sin(2 * np.pi * 62 * t) * np.exp(-t / 0.07) * np.minimum(1, t / 0.003) + 0.35 * _bp(rng.normal(0, 1, len(t)), 80, 900) * np.exp(-t / 0.02)
     _save2("pro_thump", th, th, 0.8)
