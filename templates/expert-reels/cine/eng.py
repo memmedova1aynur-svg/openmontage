@@ -253,3 +253,28 @@ class Check:  # yaşıl dairə içində işarə
         d.ellipse([s.cx - r, s.cy - r, s.cx + r, s.cy + r], fill=(*GREEN, 255))
         if p > 0.6: d.line([s.cx - 13, s.cy, s.cx - 3, s.cy + 11, s.cx + 15, s.cy - 11], fill=(12, 30, 22, 255), width=7)
         c.alpha_composite(L) if c.mode == 'RGBA' else c.paste(L, (0, 0), L)
+
+class Chat:  # yazışma: mesaj sahəsində yazılır, göndərilir, yaşıl balon kimi yuxarı qalxır
+    def __init__(s, msg, cy, at, send_at, hint='Mesaj yazın…'): s.__dict__.update(msg=msg, cy=cy, at=at, send_at=send_at, hint=hint)
+    def draw(s, c, t):
+        if t < s.at: return
+        p = eout((t - s.at) / 0.4); L = Image.new('RGBA', c.size, (0, 0, 0, 0)); d = ImageDraw.Draw(L)
+        w = 900; x0 = (W - w) // 2; y = s.cy + 50 * (1 - p); fn = font('m6', 33)
+        d.rounded_rectangle([x0, y, x0 + w, y + 104], 52, fill=(250, 248, 242, int(245 * p)))
+        sent = t >= s.send_at
+        if not sent:
+            n = int(len(s.msg) * min(1, max(0, (t - s.at - 0.35) / max(0.3, s.send_at - s.at - 0.55))))
+            m_ = s.msg.replace('\n', ' '); n = min(n, len(m_)); txt = m_[:n] + ('|' if int(t * 4) % 2 else '') if n else s.hint
+            d.text((x0 + 50, y + 52), txt, font=fn, fill=(20, 30, 26, int(255 * p)) if n else (140, 140, 132, int(255 * p)), anchor='lm')
+        else: d.text((x0 + 50, y + 52), s.hint, font=fn, fill=(140, 140, 132, 255), anchor='lm')
+        bx, by = x0 + w - 52, y + 52  # göndər düyməsi (kağız təyyarə)
+        d.ellipse([bx - 36, by - 36, bx + 36, by + 36], fill=(*GREEN, int(255 * p)))
+        d.polygon([(bx - 17, by - 14), (bx + 19, by), (bx - 17, by + 14), (bx - 9, by)], fill=(12, 30, 22, int(255 * p)))
+        if sent:
+            q = eout((t - s.send_at) / 0.35); fb = font('m6', 40)
+            lines = s.msg.split('\n'); tw = max(fb.getlength(l) for l in lines); bh = 40 + 54 * len(lines)
+            rx1 = x0 + w; rx0 = rx1 - tw - 70; ry1 = y - 40 - 60 * (1 - q); ry0 = ry1 - bh
+            d.rounded_rectangle([rx0, ry0, rx1, ry1], 36, fill=(*GREEN, int(255 * q)))
+            for k, l in enumerate(lines): d.text((rx0 + 35, ry0 + 22 + 54 * k), l, font=fb, fill=(12, 30, 22, int(255 * q)))
+            if t > s.send_at + 0.5: d.text((rx1 - 4, ry1 + 14), 'Göndərildi', font=font('m6', 26), fill=(200, 200, 190, int(255 * eout((t - s.send_at - 0.5) / 0.3))), anchor='ra')
+        c.alpha_composite(L) if c.mode == 'RGBA' else c.paste(L, (0, 0), L)
