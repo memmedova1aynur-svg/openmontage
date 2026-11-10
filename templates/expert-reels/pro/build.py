@@ -415,6 +415,7 @@ for s_, o in zip(SC, outs):
     q["clips"].append({"id": "b_" + uuid.uuid4().hex[:10], "track": "v2", "media": m["id"], "srcIn": 0.0, "srcOut": round(min(s_["n"] / FPS, float(m["duration"]) - 0.001), 3),
                        "start": s_["t0"], "mode": "cover", "origin": "plan", "manual": False, "frame": SS._cover_frame(m, W, H)})
 R = [(s_["t0"], s_["t0"] + s_["n"] / FPS) for s_ in SC]
+R += [(b_["at"], b_["at"] + b_["dur"]) for b_ in plan.get("broll", []) if b_.get("mode") == "cover"]  # tam ekran foto/B-roll üstündə altyazı yox
 caps = [c for c in q["clips"] if c["track"] == "c1" and c.get("autoSub")]
 rm = [c["id"] for c in caps if any(c["start"] < b0 - 0.02 and c["start"] + (c["srcOut"] - c["srcIn"]) > a0 + 0.02 for a0, b0 in R)]  # səhnə ilə istənilən üst-üstə düşmə
 q["subtitles"]["removed"] = sorted(set((q["subtitles"].get("removed") or []) + rm)); q["clips"] = [c for c in q["clips"] if c["id"] not in rm]
