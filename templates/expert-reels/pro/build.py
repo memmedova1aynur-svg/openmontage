@@ -251,7 +251,8 @@ if CFG.get("sfxset") == "pro":  # küy əsaslı peşəkar effektlər: tonsuz who
     SFX = [{**x, "kind": MAPK.get(x["kind"], x["kind"]), "vol": round(x["vol"] * VS, 3)} for x in SFX if x["kind"] != "riser"]
 SFX = [x for x in SFX if x["kind"] not in CFG.get("dropSfx", [])]
 SFX.sort(key=lambda x: x["t"])
-plan = {"title": CFG["title"], "approach": "M01+M02+M03", "look": "W", "captions": {"enabled": True, "style": CFG["cap"]}, "zooms": [], "sfx": SFX, "graphics": [],
+json.dump([{"w": w["w"], "s": tl(w["s"]), "e": tl(w["e"])} for w in WORDS], open(W_DIR / "words_tl.json", "w"), ensure_ascii=False)  # yekun zaman xəttində sözlər (xarici kompozisiya üçün)
+plan = {"title": CFG["title"], "approach": "M01+M02+M03", "look": "W", "captions": {"enabled": not CFG.get("noCaps"), "style": CFG["cap"]}, "dropStoryboardText": bool(CFG.get("noCaps")), "zooms": [], "sfx": SFX, "graphics": [],
         "broll": ([{"name": endimg.name, "mode": "insert", "at": round(TOTAL - 0.06, 2), "dur": HOLD}] if HOLD > 0 else [])}
 plan["corrections"] = list(BRAND.get("glossary", [])) + list(CFG.get("corrections", []))  # altyazı düzəliş lüğəti
 MUS = CFG.get("music")

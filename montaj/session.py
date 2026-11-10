@@ -1102,6 +1102,8 @@ def apply_plan(pid: str, p: dict[str, Any], plan: dict[str, Any], plan_name: str
             st = {**LESSON_CAPTIONS, **st}
         q = node_tl("setSubtitleStyle", q, st)
         q["subtitles"]["enabled"] = plan["captions"].get("enabled", True)
+        if not q["subtitles"]["enabled"]:  # altyazı söndürülübsə, düzəlişdən yaranmış ayrıca altyazı kliplərini də çıxar
+            q["clips"] = [c for c in q["clips"] if not (c.get("track") == "c1" and str(c.get("id", "")).startswith("sub_"))]
         q["clips"] = [c for c in q["clips"] if not (c["track"] == "t1" and c.get("origin") == "ai")] if plan.get("dropStoryboardText") else q["clips"]
     br = q.get("brand") or {}
     prof = expert_profile(br["name"]) if br.get("name") else None
