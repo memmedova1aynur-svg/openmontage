@@ -78,7 +78,7 @@ def cmd_new(a: argparse.Namespace) -> None:
     base = node_tl("migrate", node_tl("newProject", {"id": "tmp", "title": a.title}))
     p = store.create(a.title, base)
     pid = p["id"]
-    for link in a.link or []:
+    for link in drive.expand(a.link):  # qovluq linki fayllara açılır
         tmp, name = drive.download(link, store.originals_dir(pid), lambda x: None)
         r = server._register(pid, tmp, name, {"type": "drive", "id": drive.parse_link(link)["id"]})
         print(f"media: {r['media']['name']}  {r['media'].get('width')}x{r['media'].get('height')}  "
@@ -1346,7 +1346,7 @@ def cmd_add_broll(a: argparse.Namespace) -> None:
     from montaj import server
 
     added = []
-    for link in a.link or []:
+    for link in drive.expand(a.link):
         tmp, name = drive.download(link, store.originals_dir(a.pid), lambda x: None)
         added.append(server._register(a.pid, tmp, name, {"type": "drive", "id": drive.parse_link(link)["id"]})["media"])
     for f in a.file or []:
@@ -2563,24 +2563,24 @@ def cmd_music(a: argparse.Namespace) -> None:
     query, avoid = (a.query, music.AVOID) if a.query else music.auto_query(prof, vt, ", ".join((p.get("options") or {}).get("goal") or []))
     lo = 20 if vt == 15 else max(20, min(total, 60) * 0.6)
     hi = 180 if vt == 15 else max(60, total + 30)
-    try:
-        sounds = music.search(query, avoid, lo, hi, a.n)
-    except RuntimeError as e:
-        raise UserError(str(e), "FREESOUND_API_KEY mühitə əlavə olunmalıdır (pulsuz) — açar chat-a yazılmır.") from None
+    sounds, notes = music.find(query, avoid, lo, hi, a.n)
+    for x in notes:
+        print("qeyd:", x)
     if not sounds:
-        raise UserError(f"“{query}” üçün CC0 musiqi tapılmadı.", "--query ilə başqa ingiliscə sorğu verin (məs. 'happy ukulele').")
+        raise UserError(f"“{query}” üçün uyğun lisenziyalı musiqi tapılmadı (Freesound CC0, Mixkit).",
+                        "--query ilə başqa ingiliscə sorğu verin (məs. 'happy ukulele').")
     done = music.download(sounds, out_dir(a.pid) / "musiqi")
     try:
         speech = _latest_render(a.pid)
     except UserError:
         m = next((x for x in p["media"] if x.get("hasAudio") and x.get("hasVideo")), None)
         speech = store.project_dir(a.pid) / m["file"] if m else None
-    print(f"sorğu: “{query}” (yalnız CC0; qaçınılan: {', '.join(avoid[:4])}…)")
+    print(f"sorğu: “{query}” (Freesound CC0 + Mixkit; qaçınılan: {', '.join(avoid[:4])}…)")
     for d in done:
         prev = out_dir(a.pid) / f"musiqi_{d['n']}.m4a"
         if speech:
             quality.music_preview(speech, Path(d["file"]), prev, 20, 0.12)
-        print(f"{d['n']}: {d['name']} — {float(d['duration'] or 0):.0f} s, {d['license']} → dinləmə {prev if speech else '—'}")
+        print(f"{d['n']}: {d['name']} ({d['source']}) — {float(d['duration'] or 0):.0f} s, {d['license']} → dinləmə {prev if speech else '—'}")
     tpl = music.placement(vt, total)
     print("plan üçün (seçilən faylı qoy):", json.dumps([{**t, "file": done[0]["file"]} for t in tpl], ensure_ascii=False))
     print("qərar mesajında 2–3 nümunəni göndər (“musiqi 1/2/3”); necə qoyulacağını SORUŞMA — yerləşmə standartdır")
