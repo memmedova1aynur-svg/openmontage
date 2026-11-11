@@ -939,7 +939,7 @@ def test_virtual_multicam(tmp_path, monkeypatch, capsys):
     assert names[[i for i, g in enumerate(segs) if g["emph"]][0]] == "close"
     chain = render.video_chain({"srcIn": 0, "srcOut": 4, "frame": {"mode": "auto", "s": 0.5, "baseW": 1, "baseH": 1, "push": 1.08,
                                 "keys": [{"t": 0, "cx": 0.5, "cy": 0.5}]}}, {"width": 1920, "height": 1080}, 540, 960, "30", False, 120)
-    assert "eval=frame" in chain and "crop=960:540" in chain
+    assert "eval=frame" in chain and "perspective=" in chain, "yaxınlaşma subpiksel perspective filtri ilə (pilləsiz)"
 
     pid = _fixture(tmp_path, monkeypatch)
     from montaj import session, store
