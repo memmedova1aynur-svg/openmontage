@@ -1,0 +1,63 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&family=Lora:ital,wght@1,500;1,600;1,700&family=JetBrains+Mono:wght@500;600;700&display=block" rel="stylesheet">
+<link rel="stylesheet" href="base.css">
+<style>
+#box{left:72px;right:72px;top:860px;height:420px;border-radius:40px;background:var(--glass);border:3px solid var(--gb);display:flex;align-items:center;justify-content:center;box-shadow:0 24px 60px rgba(15,59,44,.10)}
+#word{font-weight:900;font-size:168px;letter-spacing:-4px}
+#dotsrow{left:72px;right:72px;top:1310px;display:flex;gap:14px;justify-content:center}
+#dotsrow i{width:22px;height:22px;border-radius:50%;background:var(--gb);display:block}
+#dotsrow i.on{background:var(--acc)}
+#tour{left:72px;top:720px}
+#spd{right:72px;top:732px;font-family:'JetBrains Mono',monospace;font-size:30px;color:var(--mut);font-weight:700;letter-spacing:3px}
+#ready{left:0;right:0;top:860px;height:420px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:110px;color:var(--txt)}
+#key{left:72px;right:72px;top:860px}
+#key .h{font-weight:800;font-size:44px;color:var(--txt);margin-bottom:26px}
+#key .g{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+#key .g div{padding:16px 22px;border-radius:18px;background:var(--glass);border:2px solid var(--gb);font-weight:800;font-size:36px;display:flex;gap:16px;align-items:center;color:var(--txt)}
+#key .g div i{width:30px;height:30px;border-radius:50%;display:block;flex:none}
+#key .g div span{font-family:'JetBrains Mono',monospace;color:var(--mut);font-size:28px;width:40px}
+#sci{left:72px;right:72px;top:880px;font-size:44px;line-height:1.35;color:var(--txt);font-weight:700}
+#outro{left:72px;right:72px;top:1390px}
+</style></head><body>
+<div id="bg"></div><div id="dots"></div>
+<div class="a chip" id="chip"><i></i>Ekspert</div>
+<div class="a mono" id="lab" style="left:72px;top:372px">Mini oyun · Diqqət</div>
+<div class="a t1" id="t1" style="left:72px;top:428px">Sözü oxuma.</div>
+<div class="a t1" id="t2" style="left:66px;top:540px"><mark>Rəngini de.</mark></div>
+<div class="a sub" id="sub" style="left:72px;right:72px;top:720px">Hər sözün <em>rəngini</em> səsli de. 3 tur, hər biri daha sürətli.</div>
+<div class="a pill" id="tour">Tur 1</div><div class="a" id="spd"></div>
+<div class="a" id="box"><div id="word"></div></div>
+<div class="a" id="ready"></div>
+<div class="a" id="dotsrow"></div>
+<div class="a" id="key"><div class="h">Tur 3-ün cavabları. Hamısını düz dedin?</div><div class="g" id="kg"></div></div>
+<div class="a" id="sci">Buna <em>Stroop effekti</em> deyilir.<br><br><span style="color:var(--mut);font-weight:500;font-size:38px">Beyin sözü avtomatik oxuyur. Rəngi demək isə əlavə diqqət tələb edir, ona görə dil dolaşır.</span></div>
+<div class="a card" id="outro"><div class="ic" style="color:var(--onacc)"></div><div><div class="k">SƏNİN NÖVBƏN</div><div class="v">Hansı turda dilin dolaşdı? Şərhdə yaz.</div></div></div>
+<script src="base.js"></script>
+<script>
+theme('light'); $('outro').querySelector('.ic').innerHTML=CHAT;
+const C={QIRMIZI:"#D93B3B",MAVİ:"#2F6FD6",SARI:"#E3A500",YAŞIL:"#2F9E4F"}; const K=Object.keys(C);
+let seed=7;const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647};
+const TOURS=[{n:6,d:1.2,lab:"normal"},{n:8,d:.8,lab:"sürətli"},{n:10,d:.5,lab:"çox sürətli"}];
+let t0=2.8,pw=null,pc=null;
+TOURS.forEach((T,k)=>{T.s=t0;T.w0=t0+1.4;T.seq=[];for(let i=0;i<T.n;i++){let w,c;do{w=K[Math.floor(rnd()*4)];c=K[Math.floor(rnd()*4)]}while(w===c||w===pw||c===pc);pw=w;pc=c;T.seq.push([w,c])}
+  T.e=T.w0+T.n*T.d; t0=T.e+0.3; ev(T.s,'pop'); T.seq.forEach((_,i)=>ev(T.w0+i*T.d,'tick'+k))});
+const KEY=TOURS[2].e+0.4, SCI=KEY+3.4, TOTAL=SCI+4.6; ev(TOURS[2].e,'bell'); ev(KEY,'pop'); ev(SCI,'pop2'); window.TIMES={TOTAL};
+const kg=$('kg'); TOURS[2].seq.forEach(([w,c],i)=>{const d=document.createElement('div');d.innerHTML=`<span>${i+1}.</span><i style="background:${C[c]}"></i>${c}`;kg.appendChild(d)});
+window.renderFrame=function(t){
+  inn(chip,t,0);inn(lab,t,.15);inn(t1,t,.3,60);const m=back((t-.65)/.45);t2.style.opacity=cl((t-.65)/.2);t2.style.transform=`scale(${.6+.4*m})`;t2.style.transformOrigin='left center';
+  inn(sub,t,1.1,30,.6); if(t>TOURS[0].s-.2) sub.style.opacity=1-cl((t-TOURS[0].s+.2)/.3);
+  const k=TOURS.findIndex(T=>t>=T.s&&t<T.e+0.3);
+  const box=$('box'),W=$('word'),R=$('ready'),D=$('dotsrow');
+  if(k>=0){const T=TOURS[k];const p=back((t-T.s)/.4);tour.textContent=`Tur ${k+1}`;tour.style.opacity=cl((t-T.s)/.15);tour.style.transform=`scale(${.6+.4*p})`;tour.style.transformOrigin='left center';
+    spd.textContent=T.lab.toUpperCase();spd.style.opacity=cl((t-T.s-.2)/.3);
+    box.style.opacity=1; D.style.opacity=1;
+    if(D.childElementCount!==T.n){D.innerHTML='';for(let i=0;i<T.n;i++)D.appendChild(document.createElement('i'))}
+    if(t<T.w0){W.textContent='';R.style.opacity=1;const r=T.w0-t;R.textContent=k==0?'Hazır?':(k==1?'Daha sürətli!':'Ən çətini!');R.style.transform=`scale(${.8+.2*back((t-T.s)/.4)})`;[...D.children].forEach(x=>x.className='')}
+    else{R.style.opacity=0;const i=Math.min(T.n-1,Math.floor((t-T.w0)/T.d));const [w,c]=T.seq[i];W.textContent=w;W.style.color=C[c];const q=back((t-T.w0-i*T.d)/Math.min(.18,T.d*.4));W.style.transform=`scale(${.85+.15*q})`;
+      [...D.children].forEach((x,j)=>x.className=j<=i?'on':'')}
+  }else{tour.style.opacity=0;spd.style.opacity=0;box.style.opacity=0;R.style.opacity=0;D.style.opacity=0}
+  const KE=$('key'); if(t>=KEY&&t<SCI){KE.style.opacity=cl((t-KEY)/.25)*cl((SCI-t)/.25);[...kg.children].forEach((x,i)=>{const q=back((t-KEY-.2-i*.06)/.3);x.style.opacity=cl((t-KEY-.2-i*.06)/.12);x.style.transform=`scale(${.7+.3*q})`})}else KE.style.opacity=0;
+  if(t>=SCI){inn($('sci'),t,SCI,40,.5);inn($('outro'),t,SCI+.5,50,.5)}else{$('sci').style.opacity=0;$('outro').style.opacity=0}
+};
+window.renderFrame(0);
+</script></body></html>

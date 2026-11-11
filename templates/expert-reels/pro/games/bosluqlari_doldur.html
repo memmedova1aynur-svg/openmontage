@@ -1,0 +1,74 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&family=Lora:ital,wght@1,500;1,600;1,700&family=JetBrains+Mono:wght@500;600;700&display=block" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;font-family:Montserrat,sans-serif;background:#6CC57E}
+#bg{position:absolute;inset:0;background:radial-gradient(120% 70% at 85% 0%,#A5DDB1 0%,#7CCB8C 38%,#62BC75 100%)}
+#dots{position:absolute;inset:0;background-image:radial-gradient(rgba(11,42,32,.09) 2px,transparent 2.5px);background-size:44px 44px}
+.a{position:absolute}
+.chip{left:72px;top:250px;display:inline-flex;align-items:center;gap:14px;padding:14px 30px;border:3px solid #0B2A20;border-radius:999px;font-weight:700;font-size:30px;color:#0B2A20}
+.chip i{width:14px;height:14px;border-radius:50%;background:#0B2A20;display:inline-block}
+.mono{font-family:'JetBrains Mono',monospace;letter-spacing:5px;text-transform:uppercase;color:#2F5A3A;font-size:28px;font-weight:600}
+.t1{font-weight:900;letter-spacing:-3px;line-height:1.05;color:#0B2A20;font-size:106px}
+mark{display:inline-block;background:#0B2A20;color:#7FD08F;padding:.02em .2em .08em;border-radius:.14em;transform:rotate(-1.3deg);box-shadow:0 .08em .25em rgba(0,0,0,.2)}
+.sub{left:72px;right:72px;top:720px;font-size:36px;font-weight:500;color:#2F5A3A;line-height:1.4}
+.sub em{font-family:Lora;font-style:italic;font-weight:600;color:#0B2A20}
+#grid{left:72px;right:72px;top:850px;display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.tile{height:118px;border-radius:26px;background:rgba(255,255,255,.42);border:2px solid rgba(255,255,255,.55);box-shadow:0 14px 30px rgba(11,42,32,.12);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:44px;color:#0B2A20;letter-spacing:1px}
+.tile b{display:inline-block;min-width:.62em;text-align:center;border-bottom:5px solid #0B2A20;line-height:1;margin:0 2px}
+.tile b.on{border-bottom-color:transparent;background:#0B2A20;color:#7FD08F;border-radius:10px;padding:2px 6px}
+.tile.ok{background:rgba(255,255,255,.75)}
+#timer{right:72px;top:236px;width:190px;height:190px}
+#tnum{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:64px;color:#0B2A20}
+#card{left:72px;right:72px;top:1440px;padding:30px 36px;border-radius:30px;background:rgba(255,255,255,.55);border:3px solid #0B2A20;display:flex;gap:28px;align-items:center}
+#card .ic{width:84px;height:84px;border-radius:50%;background:#0B2A20;display:flex;align-items:center;justify-content:center;flex:none}
+#card .k{font-family:'JetBrains Mono',monospace;letter-spacing:5px;font-size:24px;color:#2F5A3A;font-weight:600}
+#card .v{font-size:38px;font-weight:800;color:#0B2A20;margin-top:6px}
+#over{left:0;right:0;top:0;bottom:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+#over div{padding:30px 60px;border-radius:28px;background:#0B2A20;color:#7FD08F;font-weight:900;font-size:96px;letter-spacing:-2px;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+</style></head><body>
+<div id="bg"></div><div id="dots"></div>
+<div class="a chip" id="chip"><i></i>Ekspert</div>
+<div class="a mono" id="lab" style="left:72px;top:372px">Mini test · Yaddaş</div>
+<div class="a t1" id="t1" style="left:72px;top:430px">Boşluqları doldur.</div>
+<div class="a t1" id="t2" style="left:66px;top:552px"><mark>Özün tap.</mark></div>
+<div class="a sub" id="sub">Hərfi özün tapanda söz daha yaxşı yadda qalır. Buna <em>generasiya effekti</em> deyilir.</div>
+<svg class="a" id="timer" viewBox="0 0 190 190"><circle cx="95" cy="95" r="82" fill="rgba(255,255,255,.45)" stroke="rgba(11,42,32,.15)" stroke-width="12"/><circle id="arc" cx="95" cy="95" r="82" fill="none" stroke="#0B2A20" stroke-width="12" stroke-linecap="round" transform="rotate(-90 95 95)" stroke-dasharray="515.2" stroke-dashoffset="0"/></svg>
+<div class="a" id="tbox" style="right:72px;top:236px;width:190px;height:190px"><div id="tnum">15</div></div>
+<div class="a" id="grid"></div>
+<div class="a" id="card"><div class="ic"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#7FD08F" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><div><div class="k">SƏNİN NÖVBƏN</div><div class="v">Neçəsini tapdın? Şərhdə yaz.</div></div></div>
+<div class="a" id="over"><div>Vaxt bitdi!</div></div>
+<script src="base.js"></script>
+<script>
+const W=[["Y","A","DDAŞ"],["DİQQ","Ə","T"],["T","Ə","KRAR"],["PL","A","N"],["V","Ə","RDİŞ"],["F","O","KUS"],["İMT","A","HAN"],["SU","A","L"],["MƏQS","Ə","D"],["YUX","U",""],["X","A","TIRLA"],["ÖYR","Ə","NMƏ"]];
+const G=document.getElementById('grid');
+W.forEach((w,i)=>{const d=document.createElement('div');d.className='tile';d.id='w'+i;d.innerHTML=`${w[0]}<b id="b${i}">&nbsp;</b>${w[2]}`;G.appendChild(d)});
+// zaman xətti (saniyə)
+const T0=3.2, DUR=15, TEND=T0+DUR, REV=TEND+1.1, STEP=0.32;
+window.TIMES={T0,DUR,TEND,REV,STEP,N:W.length,TOTAL:REV+W.length*STEP+0.3+3.4};
+ev(0.65,'pop');W.forEach((_,i)=>ev(1.5+i*0.07,'pop2',i));for(let k=0;k<DUR;k++)ev(T0+k,k>=DUR-3?'tickhi':'tick');ev(TEND,'bell');W.forEach((_,i)=>ev(REV+i*STEP,'note',i));ev(REV+W.length*STEP+0.3,'pop');
+const _cl=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const _eo=x=>1-Math.pow(1-_cl(x),3);
+const _back=x=>{x=_cl(x);const c=1.7;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+function _inn(el,t,t0,dy=40,d=.5){const p=_eo((t-t0)/d);el.style.opacity=p;el.style.transform=`translateY(${(1-p)*dy}px)`}
+window.renderFrame=function(t){
+  _inn(chip,t,0.0); _inn(lab,t,0.15); _inn(t1,t,0.3,60);
+  const m=_back((t-0.65)/.45); t2.style.opacity=_cl((t-0.65)/.2); t2.style.transform=`scale(${.6+.4*m})`; t2.style.transformOrigin='left center';
+  _inn(sub,t,1.0,30,.6);
+  W.forEach((w,i)=>{const el=document.getElementById('w'+i);const s=_back((t-1.5-i*0.07)/.45);el.style.opacity=_cl((t-1.5-i*0.07)/.2);el.style.transform=`scale(${.5+.5*s})`;
+    const b=document.getElementById('b'+i);const r=REV+i*STEP;
+    if(t>=r){b.textContent=w[1];b.className='on';el.classList.add('ok');const k=_back((t-r)/.3);b.style.transform=`scale(${.4+.6*k})`}else{b.innerHTML='&nbsp;';b.className='';el.classList.remove('ok');b.style.transform=''}});
+  // taymer
+  const tp=_cl((t-2.4)/.4); timer.style.opacity=tp; tbox.style.opacity=tp; timer.style.transform=tbox.style.transform=`scale(${.7+.3*_back((t-2.4)/.4)})`;
+  const el=_cl(t-T0,0,DUR); const left=Math.ceil(DUR-el-1e-6);
+  tnum.textContent=t<T0?DUR:Math.max(0,left);
+  arc.setAttribute('stroke-dashoffset',515.2*(el/DUR));
+  const warn=t>TEND-3.0&&t<TEND; const pulse=warn?1+.08*Math.max(0,Math.cos((t-T0)%1*Math.PI*2)) : 1;
+  tnum.style.transform=`scale(${pulse})`; tnum.style.color=warn?'#7A1E1E':'#0B2A20'; arc.setAttribute('stroke',warn?'#7A1E1E':'#0B2A20');
+  // vaxt bitdi
+  const o=t>=TEND&&t<REV; over.style.opacity=o?_cl((t-TEND)/.12)*_cl((REV-t)/.15):0; over.firstChild.style.transform=`scale(${.7+.3*_back((t-TEND)/.35)})`;
+  // son kart
+  const cs=REV+W.length*STEP+0.3; _inn(card,t,cs,50,.5);
+};
+window.renderFrame(0);
+</script></body></html>

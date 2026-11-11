@@ -1,0 +1,19 @@
+{
+ "_doc": "Müştəri brend kiti. Nüsxəsini instagram-clients/<müştəri>/brand_kit.json kimi saxla (repoya düşmür). Video konfiqində \"brand\": \"<müştəri>\".",
+ "name": "Ad Soyad",
+ "handle": "",
+ "theme": null,
+ "palette": {},
+ "cfg": {
+  "look": "natural",
+  "music": null,
+  "punch": null,
+  "cta": "",
+  "exports": [],
+  "watermark": false
+ },
+ "glossary": [],
+ "forbiddenColors": [],
+ "hashtags": [],
+ "rules": []
+}

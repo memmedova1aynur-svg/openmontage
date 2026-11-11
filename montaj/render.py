@@ -35,6 +35,30 @@ LOGO_POS = {
 }
 
 
+
+
+def retime(m, fps_str):
+    """Kadr axını: mənbə layihə ilə eyni fps-dədirsə, kadrları N/fps şəbəkəsinə yenidən nömrələ.
+    fps filtri -ss/trim sonrası kəsr vaxt nişanlarında kadr təkrarlayıb atırdı (ilişmə)."""
+    try:
+        src = float(m.get("fps") or 0)
+        n, d = (fps_str.split("/") + ["1"])[:2]
+        dst = float(n) / float(d)
+    except (ValueError, ZeroDivisionError, AttributeError):
+        src, dst = 0, 0
+    # ortaq vaxt bazası: müxtəlif timebase-li axınlar overlay-də hər 3-cü kadrı təkrarlayırdı
+    if src and abs(src - dst) < 0.05:
+        return f"settb=1/90000,setpts=N/({fps_str})/TB"
+    return f"fps={fps_str},settb=1/90000,setpts=PTS-STARTPTS"
+
+def zoom_filter(k):
+    """Subpiksel virtual kamera: k(n_) — böyütmə əmsalı (n_ = kadr nömrəsi). scale+crop tam piksel addımları ilə
+    "pilləli" hərəkət verirdi; perspective filtri koordinatları kəsr dəqiqliyi ilə interpolyasiya edir."""
+    k = k.replace("n_", "in")
+    hw, hh = f"W/(2*{k})", f"H/(2*{k})"
+    return (f"perspective=x0='W/2-{hw}':y0='H/2-{hh}':x1='W/2+{hw}':y1='H/2-{hh}':"
+            f"x2='W/2-{hw}':y2='H/2+{hh}':x3='W/2+{hw}':y3='H/2+{hh}':interpolation=cubic:eval=frame")
+
 def _font() -> str | None:
     for f in FONT_CANDIDATES:
         if Path(f).is_file():
@@ -235,6 +259,9 @@ def color_filters(adj: dict[str, Any]) -> list[str]:
     if depth > 0.01:  # qaranlıq və işıqlı hissələrə yüngül dərinlik (S-əyri)
         lo, hi = 0.05 - 0.015 * min(depth, 2), 0.95 + 0.015 * min(depth, 2)
         f.append(f"curves=master='0/0 0.05/{lo:.4f} 0.95/{hi:.4f} 1/1'")
+    hl = float(adj.get("highlights") or 0)
+    if hl > 0.01:  # parlaq hissələrə nəzarət (ağ köynək yanmasın): yalnız yuxarı tonlar yumşaq sıxılır
+        f.append(f"curves=master='0/0 0.6/0.6 0.85/{0.85 - 0.03 * hl:.4f} 1/{1 - 0.07 * hl:.4f}'")
     vib = float(adj.get("vibrance") or 0)
     if vib > 0.005:  # solğun rəngləri canlandırır, onsuz da doymuş rənglərə (dəriyə) az təsir edir
         f.append(f"vibrance=intensity={min(vib, 1):.3f}")
@@ -326,7 +353,7 @@ def video_chain(c: dict[str, Any], m: dict[str, Any], W: int, H: int, fps_str: s
     if c.get("layout"):  # dərs kadrı: danışan paneldə (kadraj yerinə)
         adj = c.get("adjust") or {}
         f.append(_layout_chain(c, m, W, H, bool(adj.get("mirror")) ^ bool(mirror_all), adj, tag))
-        f.append(f"setsar=1,fps={fps_str},setpts=PTS-STARTPTS,tpad=stop_mode=clone:stop_duration=1,trim=end_frame={frames},"
+        f.append(f"setsar=1,{retime(m, fps_str)},tpad=stop_mode=clone:stop_duration=1,trim=end_frame={frames},"
                  f"setpts=PTS-STARTPTS,format=yuv420p")
         return ",".join(f)
     if c.get("split"):  # iki nəfər: kadraj əvəzinə iki pəncərə
@@ -353,19 +380,28 @@ def video_chain(c: dict[str, Any], m: dict[str, Any], W: int, H: int, fps_str: s
         f.append(f"crop=w='{cw}':h='{ch}':x='max(0,min(iw-ow,iw*({cx})-ow/2))':"
                  f"y='max(0,min(ih-oh,ih*({cy})-oh/2))'")
         push = float(fr.get("push") or 1)
-        if push > 1.005 and m.get("width") and m.get("height"):  # yavaş yaxınlaşma (virtual kamera): klip boyu 1 → push
+        pull = float(fr.get("pull") or 1)
+        if fr.get("z0") is not None and fr.get("z1") is not None:
+            # davamlı kamera: z0 → z1 xətti (bütün video boyu bir istiqamət, kəsimlərdə miqyas eyni)
+            d = max(0.1, float(c["srcOut"]) - float(c["srcIn"]))
+            z0, z1 = float(fr["z0"]), float(fr["z1"])
+            f.append(zoom_filter(f"({z0:.5f}+{z1 - z0:.5f}*min(n_/30,{d:.3f})/{d:.3f})"))
+        elif (push > 1.005 or pull > 1.005) and m.get("width") and m.get("height"):
+            # virtual kamera: push — klip boyu 1 → push (yaxınlaşma), pull — pull → 1 (uzaqlaşma); hamar (smoothstep)
             cwp, chp = _even(float(m["width"]) * bw * s), _even(float(m["height"]) * bh * s)
             d = max(0.1, float(c["srcOut"]) - float(c["srcIn"]))
-            k = f"(1+{push - 1:.4f}*min(t,{d:.3f})/{d:.3f})"
-            f.append(f"scale=w='trunc({cwp}*{k}/2)*2':h='trunc({chp}*{k}/2)*2':eval=frame,crop={cwp}:{chp}")
+            u = f"min(t,{d:.3f})/{d:.3f}"
+            e = f"(3*pow({u},2)-2*pow({u},3))" if fr.get("ease") else u
+            k = f"(1+{push - 1:.4f}*{e})" if push > 1.005 else f"({pull:.4f}-{pull - 1:.4f}*{e})"
+            f.append(zoom_filter(k.replace("t", "(n_/30)")))
     adj = c.get("adjust") or {}
     if bool(adj.get("mirror")) ^ bool(mirror_all):
         f.append("hflip")
     f += color_filters(adj)
     f.append(f"scale={W}:{H}:force_original_aspect_ratio=decrease:flags=lanczos")
     f += sharpen_filter(adj)
-    f.append(f"pad={W}:{H}:(ow-iw)/2:(oh-ih)/2:color=black,setsar=1,fps={fps_str}")
-    f.append(f"setpts=PTS-STARTPTS,tpad=stop_mode=clone:stop_duration=1,trim=end_frame={frames},"
+    f.append(f"pad={W}:{H}:(ow-iw)/2:(oh-ih)/2:color=black,setsar=1,{retime(m, fps_str)}")
+    f.append(f"tpad=stop_mode=clone:stop_duration=1,trim=end_frame={frames},"
              f"setpts=PTS-STARTPTS,format=yuv420p")
     return ",".join(f)
 
@@ -455,7 +491,7 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
         k = add_input(m, float(c["srcIn"]), o["dur"])
         pip = c.get("pip") if c.get("mode") == "pip" else None
         if c.get("mode") == "sticker":  # şəffaf obraz (ProRes 4444 alfa) — tam kadr ölçüsündə, alfa qorunur
-            chain = (f"scale={W}:{H}:flags=lanczos,fps={fps_str},setpts=PTS-STARTPTS,"
+            chain = (f"scale={W}:{H}:flags=lanczos,{retime(m, fps_str)},"
                      f"tpad=stop_mode=clone:stop_duration=1,trim=end_frame={o['frames']},setpts=PTS-STARTPTS,format=yuva420p")
             x = y = "0"
         elif pip:  # PIP mənbənin öz nisbətində (qara zolaqsız), nazik ağ çərçivə ilə
@@ -464,7 +500,7 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
             adj = c.get("adjust") or {}
             parts = ([HDR_TO_SDR] if m.get("hdr") else []) + color_filters(adj) + [
                 f"scale={_even(W * sc) - 2 * bw}:-2:flags=lanczos"] + sharpen_filter(adj) + [
-                f"pad=iw+{2 * bw}:ih+{2 * bw}:{bw}:{bw}:color=white", f"fps={fps_str}", "setpts=PTS-STARTPTS",
+                f"pad=iw+{2 * bw}:ih+{2 * bw}:{bw}:{bw}:color=white", retime(m, fps_str),
                 f"tpad=stop_mode=clone:stop_duration=1,trim=end_frame={o['frames']}", "setpts=PTS-STARTPTS", "format=yuv420p"]
             chain = ",".join(parts)
             x = f"'max(0,min(W-w,W*{float(pip.get('x', 0.5)):.4f}-w/2))'"
@@ -474,7 +510,7 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
             x = y = "0"
         filters.append(f"[{k}:v]{chain},setpts=PTS+{o['start']:.4f}/TB[ov{i}]")
         a_t, b_t = o["start"], o["start"] + o["dur"] - 0.5 / fps
-        filters.append(f"[{cur}][ov{i}]overlay=x={x}:y={y}:eof_action=pass:enable='between(t,{a_t:.4f},{b_t:.4f})'[vo{i}]")
+        filters.append(f"[{cur}][ov{i}]overlay=x={x}:y={y}:eof_action=pass:ts_sync_mode=nearest:enable='between(t,{a_t:.4f},{b_t:.4f})'[vo{i}]")
         cur = f"vo{i}"
         if c.get("mode") == "cover_pip":  # danışan: kadrın üz hissəsi dairədə, sol-aşağıda (sağda Reels düymələri var)
             pp = c.get("pip") or {}
@@ -485,8 +521,8 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
             cp_i += 1
             filters.append(f"[{spk_labels[j]}]crop=iw*0.62:iw*0.62:iw*0.19:max(0\\,ih*0.36-iw*0.31),scale={D}:{D},format=rgba[sq{j}];"
                            f"[sq{j}][pm{j}]alphamerge[pc{j}]")
-            filters.append(f"[{cur}][pc{j}]overlay=x={px}:y={py}:enable='between(t,{a_t:.4f},{b_t:.4f})'[vp{j}];"
-                           f"[vp{j}][pr{j}]overlay=x={px - 6}:y={py - 6}:enable='between(t,{a_t:.4f},{b_t:.4f})'[vr{j}]")
+            filters.append(f"[{cur}][pc{j}]overlay=x={px}:y={py}:ts_sync_mode=nearest:enable='between(t,{a_t:.4f},{b_t:.4f})'[vp{j}];"
+                           f"[vp{j}][pr{j}]overlay=x={px - 6}:y={py - 6}:ts_sync_mode=nearest:enable='between(t,{a_t:.4f},{b_t:.4f})'[vr{j}]")
             cur = f"vr{j}"
     from montaj import graphics as G
 
@@ -509,6 +545,8 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
         if c.get("x") is not None and c.get("y") is not None:
             # telefonda sürüşdürülmüş yer: mərkəz nöqtəsi (0..1), kadrdan çıxmasın
             xexpr = f"max(0\\,min(w-text_w\\,w*{float(c['x']):.4f}-text_w/2))"
+            if c.get("align") == "left":  # sola düzlənmiş Reels yazısı: x — sol kənar
+                xexpr = f"w*{float(c['x']):.4f}"
             y = f"max(0\\,min(h-text_h\\,h*{float(c['y']):.4f}-text_h/2))"
         color = (c.get("color") or "white").replace("#", "0x")
         bg = c.get("bg") or "black@0.55"
@@ -519,6 +557,13 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
             f"{boxopt}:line_spacing={size // 5}:"
             f"x={xexpr}:y={y}:enable='between(t,{t['start']:.3f},{t['end']:.3f})'[vt{i}]")
         cur = f"vt{i}"
+        if c.get("underline") and c.get("x") is not None and c.get("y") is not None:  # altında qısa vurğu xətti
+            ux = int(W * float(c["x"])) if c.get("align") == "left" else int(W * float(c["x"]) - size * 0.65)
+            uy = int(H * float(c["y"]) + size * 0.78)
+            ucol = (c.get("activeColor") or "#6CC57E").replace("#", "0x")
+            filters.append(f"[{cur}]drawbox=x={ux}:y={uy}:w={int(size * 1.3)}:h={max(3, int(size * 0.1))}:color={ucol}:t=fill:"
+                           f"enable='between(t,{t['start']:.3f},{t['end']:.3f})'[vu{i}]")
+            cur = f"vu{i}"
 
     if gfx:
         theme = (project.get("brand") or {}).get("theme") or {}
@@ -544,7 +589,7 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
         track = G.caption_track(caps, W, H, fps, main, rast, workdir)
         if track:
             args.extend(["-i", str(track)])
-            filters.append(f"[{idx}:v]format=rgba[capt];[{cur}][capt]overlay=0:0:eof_action=pass[vcap]")
+            filters.append(f"[{idx}:v]format=rgba[capt];[{cur}][capt]overlay=0:0:eof_action=pass:ts_sync_mode=nearest[vcap]")
             idx += 1
             cur = "vcap"
 
@@ -611,6 +656,10 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
         else:
             filters.append(f"{''.join(labs)}amix=inputs={len(labs)}:normalize=0:duration=longest,apad,atrim=0:{total:.4f}[bus_{bus}]")
         bus_out.append(bus)
+    if project.get("speechChain") and "speech" in buses:  # danışıq səviyyəsinin bərabərləşdirilməsi (zəif hecalar eşidilsin)
+        filters.append(f"[bus_speech]{project['speechChain']},apad,atrim=0:{total:.4f}[bus_speechL]")
+        bus_out = [b if b != "speech" else "speechL" for b in bus_out]
+        buses["speechL"] = buses.pop("speech")
     if mix.get("duck") and "music" in buses and ("speech" in buses or "voice" in buses):
         key = "speech" if "speech" in buses else "voice"
         filters.append(f"[bus_{key}]asplit=2[bk_main][bk_side]")

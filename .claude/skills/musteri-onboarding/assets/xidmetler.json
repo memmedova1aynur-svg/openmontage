@@ -1,0 +1,205 @@
+{
+ "cover": {
+  "title": "Xidmət<br><span>paketləri</span>",
+  "sub": "Instagram üçün aylıq brend menecment: strategiya, çəkiliş, montaj, dizayn və kontent sistemi.",
+  "steps": [
+   [
+    "Seçim",
+    "Start · Pro · Premium"
+   ],
+   [
+    "Strateji paket",
+    "İlk gün"
+   ],
+   [
+    "İş rejimi",
+    "Hər ay eyni standart"
+   ]
+  ],
+  "foot": "2026"
+ },
+ "blocks": [
+  {
+   "lead": "Aylıq xidmət: siz paketi seçirsiniz, ay ərzində görüləcək işlər əvvəlcədən bəllidir. Strategiyanı, vizual üslubu və kontenti biz idarə edirik — siz brendinizə vaxt ayırırsınız."
+  },
+  {
+   "h": "Paketlər"
+  },
+  {
+   "packages": [
+    {
+     "name": "Start",
+     "tag": "Başlanğıc",
+     "for": "Səhifəni sıfırdan qurmaq və ardıcıl görünmək üçün",
+     "items": [
+      "Strateji paket və brend qaydaları",
+      "Instagram profilinin qurulması: bio, highlight üz qabıqları, vizual stil",
+      "Ayda 1 çəkiliş günü (2 saat)",
+      "8 Reels: ssenari + montaj",
+      "4 post və ya karusel dizaynı",
+      "Aylıq kontent planı",
+      "Bütün caption-lar",
+      "Ayın sonunda qısa hesabat"
+     ],
+     "price": "[qiymət] / ay"
+    },
+    {
+     "name": "Pro",
+     "tag": "Ən çox seçilən",
+     "hi": true,
+     "for": "Böyümək və müraciətləri artırmaq üçün",
+     "items": [
+      "Start paketindəki hər şey",
+      "Ayda 2 çəkiliş günü",
+      "12 Reels: ssenari + montaj",
+      "6–8 post və ya karusel",
+      "Həftəlik story ideyaları və şablonları",
+      "Rəqib və trend analizi",
+      "Aylıq hesabat + strateji görüş (30 dəq)"
+     ],
+     "price": "[qiymət] / ay"
+    },
+    {
+     "name": "Premium",
+     "tag": "Tam idarəetmə",
+     "for": "Brendi tam etibar etmək istəyənlər üçün",
+     "items": [
+      "Pro paketindəki hər şey",
+      "Ayda 3 çəkiliş günü + çəkilişdə rejissorluq",
+      "16–20 Reels",
+      "10–12 post və ya karusel",
+      "Aylıq xüsusi layihə (kampaniya, seriya, poster)",
+      "Highlight-ların yenilənməsi",
+      "Planlama və paylaşımın idarəsi",
+      "Rüblük strategiya sessiyası, prioritet dəstək"
+     ],
+     "price": "[qiymət] / ay"
+    }
+   ]
+  },
+  {
+   "note": "Rəqəmlər paketin əsasıdır; çəkiliş günü və post sayı ayın planına görə müştəri ilə razılaşdırılaraq dəyişdirilə bilər."
+  },
+  {
+   "h": "Hər paketdə mütləq görülən işlər"
+  },
+  {
+   "check": [
+    "Strateji başlanğıc: brend qaydaları və vizual istiqamət",
+    "Aylıq kontent planı və təqvim",
+    "Çəkilişdən 3 gün əvvəl ssenarilər",
+    "Çəkiliş günü üçün hazırlıq siyahısı (geyim, məkan, mövzular)",
+    "Montaj: rəng, altyazı, ritm, səs",
+    "Dizayn: brend rənglərində post və karusellər",
+    "Caption-lar: brendin səsində",
+    "Təsdiq axını: həftəlik paket, 24 saat ərzində rəy",
+    "Keyfiyyət yoxlaması: telefon ölçüsü, yazı səhvi, razılıqlar",
+    "Ayın sonunda: nə işlədi, nə dəyişir, növbəti ay"
+   ]
+  },
+  {
+   "h": "Ayın axını"
+  },
+  {
+   "steps": [
+    [
+     "1-ci həftə",
+     "Plan, mövzular, ssenarilər"
+    ],
+    [
+     "Çəkiliş",
+     "Rejissorluq və materiallar"
+    ],
+    [
+     "İstehsal",
+     "Montaj, dizayn, caption"
+    ],
+    [
+     "Təsdiq",
+     "Həftəlik paket, rəy"
+    ],
+    [
+     "Hesabat",
+     "Nəticə və növbəti ay"
+    ]
+   ]
+  },
+  {
+   "h": "Əlavə xidmətlər"
+  },
+  {
+   "table": {
+    "head": [
+     "Xidmət",
+     "Nə daxildir",
+     "Qiymət"
+    ],
+    "rows": [
+     [
+      "Əlavə çəkiliş günü",
+      "2 saat çəkiliş + materiallar",
+      "[qiymət]"
+     ],
+     [
+      "Reklam videosu",
+      "Ssenari, çəkiliş, dinamik montaj",
+      "[qiymət]"
+     ],
+     [
+      "Poster / afişa",
+      "Tədbir və ya kampaniya üçün dizayn",
+      "[qiymət]"
+     ],
+     [
+      "Tədbir çəkilişi",
+      "Reels + qısa xülasə video",
+      "[qiymət]"
+     ],
+     [
+      "Brend vizual paketi",
+      "Rəng, şrift, highlight, şablonlar",
+      "[qiymət]"
+     ],
+     [
+      "SMM / videoqrafiya təlimi",
+      "Fərdi və ya qrup dərsləri",
+      "[qiymət]"
+     ]
+    ]
+   }
+  },
+  {
+   "h": "Paketə daxil deyil"
+  },
+  {
+   "cards": [
+    {
+     "t": "Reklam idarəetməsi",
+     "d": "Meta reklam kampaniyaları paketə daxil deyil."
+    },
+    {
+     "t": "Gündəlik story paylaşımı",
+     "d": "Story-ləri müştəri özü paylaşır; Pro və Premium-da ideya və şablon veririk."
+    },
+    {
+     "t": "Direct və şərh cavabları",
+     "d": "Müştəri ilə ünsiyyət brendin özündə qalır."
+    }
+   ],
+   "cols": 3
+  },
+  {
+   "h": "Əməkdaşlıq qaydaları"
+  },
+  {
+   "check": [
+    "Müqavilə aylıqdır, ödəniş ayın əvvəlində",
+    "Təsdiq 24 saat ərzində; gecikmə planı sürüşdürür",
+    "Çəkiliş günü 3 gün əvvəl təsdiqlənir",
+    "Paylaşılan materiallarda üzü görünən hər kəsin razılığı alınır",
+    "Fakt, qiymət, nəticə yalnız müştərinin təsdiqi ilə yazılır",
+    "Hazır materiallar müştəriyə tək-tək fayl kimi təhvil verilir"
+   ]
+  }
+ ]
+}

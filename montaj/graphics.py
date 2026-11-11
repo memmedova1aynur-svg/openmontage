@@ -103,7 +103,7 @@ def caption_track(caps: list[dict[str, Any]], W: int, H: int, fps: float, total:
             img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
             el = Image.open(info["file"]).convert("RGBA")
             px, py = pos(c)
-            x = round(px * W - el.width / 2)
+            x = round(px * W) if c.get("align") == "left" else round(px * W - el.width / 2)  # sola düzlənmiş altyazı: x — sol kənar
             y = round(py * H - el.height / 2)
             img.alpha_composite(el, (max(0, min(W - el.width, x)), max(0, min(H - el.height, y))))
             img.save(frame)

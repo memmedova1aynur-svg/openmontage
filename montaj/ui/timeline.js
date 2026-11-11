@@ -729,7 +729,8 @@ function subStyle(p) {
   return { size: st.size ?? (p.subtitles && p.subtitles.size) ?? 0.045, position: st.position || 'bottom',
     font: st.font ?? null, weight: st.weight ?? null, color: st.color ?? null, bg: st.bg ?? null,
     x: st.x ?? null, y: st.y ?? null, activeColor: st.activeColor ?? null, stroke: st.stroke ?? null, type: st.type ?? null,
-    maxW: st.maxW ?? null, radius: st.radius ?? null, plain: st.plain ?? null, maxWords: st.maxWords ?? null, maxDur: st.maxDur ?? null };
+    maxW: st.maxW ?? null, radius: st.radius ?? null, plain: st.plain ?? null, maxWords: st.maxWords ?? null, maxDur: st.maxDur ?? null,
+    align: st.align ?? null, underline: st.underline ?? null };
 }
 
 function rebuildSubtitles(p, lay = layout(p)) {

@@ -1,0 +1,73 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&family=Lora:ital,wght@1,500;1,600;1,700&family=JetBrains+Mono:wght@500;600;700&display=block" rel="stylesheet">
+<link rel="stylesheet" href="base.css">
+<style>
+.cd{position:absolute;border-radius:30px;display:flex;align-items:center;justify-content:center;box-shadow:0 22px 44px rgba(11,42,32,.28)}
+.cd .f,.cd .b{position:absolute;inset:0;border-radius:30px;display:flex;align-items:center;justify-content:center}
+.cd .f{background:#F7FBF8;border:4px solid #0B2A20;font-family:'Noto Color Emoji'}
+.cd .b{background:linear-gradient(160deg,#155540,#0B2A20);border:4px solid #0B2A20;color:#7FD08F;font-weight:900;font-family:Montserrat}
+.cd .b:after{content:"";position:absolute;inset:16px;border:3px dashed rgba(127,208,143,.45);border-radius:20px}
+.num{position:absolute;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:54px;color:#0B2A20;text-align:center}
+#rnd{left:72px;top:720px}
+#status{left:72px;right:72px;top:1390px}
+#stxt{font-weight:800;font-size:44px;color:var(--txt);margin-bottom:18px;display:flex;justify-content:space-between;align-items:center}
+#stxt span{font-family:'JetBrains Mono',monospace;font-size:44px}
+#sci{left:72px;right:72px;top:880px;font-size:44px;line-height:1.35;color:var(--txt);font-weight:700}
+#outro{left:72px;right:72px;top:1390px}
+</style></head><body>
+<div id="bg"></div><div id="dots"></div>
+<div class="a chip" id="chip"><i></i>Ekspert</div>
+<div class="a mono" id="lab" style="left:72px;top:372px">Mini oyun · Diqqət</div>
+<div class="a t1" id="t1" style="left:72px;top:428px">Diqqət tələsi</div>
+<div class="a t1" id="t2" style="left:66px;top:540px;font-size:86px"><mark>Beyni izlə.</mark></div>
+<div class="a sub" id="sub" style="left:72px;right:72px;top:720px">Kartlar qarışacaq. Gözünü 🧠 kartından ayırma.</div>
+<div class="a pill" id="rnd">Raund 1</div>
+<div class="a" id="stage" style="left:0;top:0;width:1080px;height:1920px"></div>
+<div class="a" id="status"><div id="stxt"><div id="sl"></div><span id="sn"></span></div><div class="bar"><i id="sb"></i></div></div>
+<div class="a" id="sci">Diqqət eyni anda bir neçə hərəkət edən obyekti izləməkdə <em>çətinlik</em> çəkir.<br><br><span style="color:var(--mut);font-weight:500;font-size:38px">Sürət artdıqca və kart çoxaldıqca göz geri qalır.</span></div>
+<div class="a card" id="outro"><div class="ic" style="color:var(--onacc)"></div><div><div class="k">SƏNİN NÖVBƏN</div><div class="v">Neçə raundda tapdın? Şərhdə yaz: 0, 1, yoxsa 2?</div></div></div>
+<script src="base.js"></script>
+<script>
+theme('green'); $('outro').querySelector('.ic').innerHTML=CHAT;
+const R=[{n:3,w:270,h:360,tgt:1,sw:[[0,1],[1,2],[0,2],[0,1],[1,2],[0,1]],dur:[.62,.56,.5,.46,.42,.4]},
+         {n:4,w:206,h:280,tgt:2,sw:[[1,2],[0,3],[2,3],[0,1],[1,3],[0,2],[2,3],[0,1],[1,2],[0,3]],dur:[.5,.46,.42,.38,.34,.32,.3,.28,.27,.26]}];
+const CY=1080; let s0=2.8;
+R.forEach((r,k)=>{r.s=s0;r.appear=s0+.5;r.show=s0+.9;r.flip=r.show+1.8;r.mix=r.flip+.6;let tt=r.mix;r.times=r.dur.map(d=>{const a=tt;tt+=d+.04;return a});r.g0=tt+.2;r.rev=r.g0+3;r.end=r.rev+1.8;s0=r.end+.2;
+  const gap=(936-r.n*r.w)/(r.n-1);r.sx=i=>72+i*(r.w+gap);
+  ev(r.s,'pop');for(let i=0;i<r.n;i++)ev(r.appear+i*.07,'pop2',i);ev(r.flip,'flip');r.times.forEach((a,i)=>ev(a,'swish',i));for(let q=0;q<3;q++)ev(r.g0+q,'tickhi');ev(r.rev,'flip');ev(r.rev+.25,'ding',k);
+  r.el=[];for(let i=0;i<r.n;i++){const d=document.createElement('div');d.className='cd';d.innerHTML=`<div class="f" style="font-size:${r.w*.48}px">${i===r.tgt?'🧠':''}</div><div class="b" style="font-size:${r.w*.4}px">?</div>`;d.style.width=r.w+'px';d.style.height=r.h+'px';stage.appendChild(d);r.el.push(d)}
+  r.nums=[];for(let i=0;i<r.n;i++){const d=document.createElement('div');d.className='num';d.textContent=i+1;d.style.width=r.w+'px';d.style.left=r.sx(i)+'px';d.style.top=(CY+r.h/2+26)+'px';stage.appendChild(d);r.nums.push(d)}
+  // hər svapdan sonra kart→yer xəritəsi
+  r.maps=[];let m=[...Array(r.n).keys()];r.maps.push([...m]);r.sw.forEach(([a,b])=>{const ia=m.indexOf(a),ib=m.indexOf(b);m[ia]=b;m[ib]=a;r.maps.push([...m])});});
+const OUT=s0, TOTAL=OUT+4.6; ev(OUT,'bell'); window.TIMES={TOTAL};
+function flipState(el,ang){const c=Math.cos(ang);el.style.transform+=` scaleX(${Math.max(.02,Math.abs(c))})`;el.querySelector('.f').style.opacity=c>0?1:0;el.querySelector('.b').style.opacity=c>0?0:1}
+window.renderFrame=function(t){
+  inn(chip,t,0);inn(lab,t,.15);inn(t1,t,.3,60);const m=back((t-.65)/.45);t2.style.opacity=cl((t-.65)/.2);t2.style.transform=`scale(${.6+.4*m})`;t2.style.transformOrigin='left center';
+  inn(sub,t,1.1,30,.6); if(t>R[0].s-.2) sub.style.opacity=1-cl((t-R[0].s+.2)/.3);
+  const k=R.findIndex(r=>t>=r.s&&t<r.end+.2);
+  if(k>=0){const r=R[k];rnd.textContent=`Raund ${k+1} · ${r.n} kart`;const p=back((t-r.s)/.4);rnd.style.opacity=cl((t-r.s)/.15);rnd.style.transform=`scale(${.6+.4*p})`;rnd.style.transformOrigin='left center'}else rnd.style.opacity=0;
+  R.forEach((r,kk)=>{const on=kk===k;
+    r.el.forEach((el,i)=>{if(!on){el.style.opacity=0;return}
+      // hansı svapdayıq
+      let si=r.times.findIndex((a,j)=>t>=a&&t<a+r.dur[j]); let done=r.times.filter((a,j)=>t>=a+r.dur[j]).length;
+      const mp=r.maps[done]; let slot=mp.indexOf(i); let x=r.sx(slot), y=CY-r.h/2;
+      if(si>=0){const [a,b]=r.sw[si];const pm=r.maps[si];if(i===a||i===b){const from=pm.indexOf(i),to=pm.indexOf(i===a?b:a);const q=eio((t-r.times[si])/r.dur[si]);x=r.sx(from)+(r.sx(to)-r.sx(from))*q;y+=(i===a?-1:1)*130*Math.sin(Math.PI*q)}}
+      el.style.left=x+'px';el.style.top=y+'px';
+      const ap=back((t-r.appear-i*.07)/.35);el.style.opacity=cl((t-r.appear-i*.07)/.15);el.style.transform=`scale(${.4+.6*ap})`;
+      let ang=0; if(t>=r.flip&&t<r.rev) ang=Math.PI*cl((t-r.flip)/.4); if(t>=r.rev) ang=Math.PI*(1-cl((t-r.rev)/.4));
+      if(t<r.show) ang=0; flipState(el,ang);
+      el.style.boxShadow=(t>=r.rev+.3&&i===r.tgt)?'0 0 0 8px #0B2A20,0 0 70px rgba(255,255,255,.7)':'0 22px 44px rgba(11,42,32,.28)';
+      if(t>=r.rev+.3&&i!==r.tgt) el.style.opacity=.45;});
+    r.nums.forEach(nm=>nm.style.opacity=on&&t>=r.g0-.2&&t<r.rev+.3?cl((t-r.g0+.2)/.2):0)});
+  const S=$('status');
+  if(k>=0){const r=R[k];
+    if(t>=r.show&&t<r.flip){S.style.opacity=1;sl.textContent='Beyin hansı kartdadır? Yadda saxla';sn.textContent='';sb.style.width=((r.flip-t)/(r.flip-r.show)*100)+'%'}
+    else if(t>=r.mix&&t<r.g0){S.style.opacity=1;sl.textContent='Gözünü ayırma…';sn.textContent='';sb.style.width='100%'}
+    else if(t>=r.g0&&t<r.rev){S.style.opacity=1;sl.textContent=`Harada qaldı? ${[...Array(r.n).keys()].map(x=>x+1).join(', ')}?`;sn.textContent=Math.ceil(r.rev-t);sb.style.width=((r.rev-t)/3*100)+'%'}
+    else if(t>=r.rev+.3){S.style.opacity=1;const fin=r.maps[r.sw.length].indexOf(r.tgt)+1;sl.textContent=`Cavab: ${fin}-${({1:"ci",2:"ci",3:"cü",4:"cü"})[fin]} kart`;sn.textContent='';sb.style.width='0%'}
+    else S.style.opacity=0;
+  }else S.style.opacity=0;
+  if(t>=OUT){inn($('sci'),t,OUT,40,.5);inn($('outro'),t,OUT+.5,50,.5)}else{$('sci').style.opacity=0;$('outro').style.opacity=0}
+};
+window.renderFrame(0);
+</script></body></html>

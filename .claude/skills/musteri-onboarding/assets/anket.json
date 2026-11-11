@@ -1,0 +1,209 @@
+{
+ "cover": {
+  "title": "Brend<br><span>anketi</span>",
+  "sub": "5–7 dəqiqəlik üstünlüklər anketi. Strategiyanı biz qururuq — burada sizin zövqünüzü və sərhədlərinizi öyrənirik.",
+  "steps": [
+   [
+    "Anket",
+    "5–7 dəqiqə"
+   ],
+   [
+    "24 saat",
+    "Analiz və strategiya"
+   ],
+   [
+    "Strateji paket",
+    "Plan, profil, kontent"
+   ],
+   [
+    "İş rejimi",
+    "Davamlı istehsal"
+   ]
+  ],
+  "foot": "Məxfi · yalnız əməkdaşlıq üçün"
+ },
+ "blocks": [
+  {
+   "lead": "Strategiyanı, vizual üslubu və kontent planını biz qururuq. Bu anketdə yalnız sizin zövqünüzü, sərhədlərinizi və iş rejiminizi öyrənirik ki, qərarlarımız sizə uyğun olsun. Seçimləri işarələyin, lazım olan yerdə qısa yazın."
+  },
+  {
+   "h": "Rəng və görünüş"
+  },
+  {
+   "q": "Sevdiyiniz rənglər",
+   "lines": 1,
+   "hint": "Yazın və ya şəkil/nümunə göndərin"
+  },
+  {
+   "q": "Sevmədiyiniz, istəmədiyiniz rənglər",
+   "lines": 1
+  },
+  {
+   "q": "Hansı əhval sizə daha yaxındır?",
+   "o": [
+    "Sakit və zərif",
+    "Parlaq və enerjili",
+    "Premium və tünd",
+    "Təbii və isti",
+    "Minimalist"
+   ]
+  },
+  {
+   "q": "Bəyəndiyiniz 2–3 Instagram səhifəsi",
+   "lines": 2,
+   "hint": "Sahənizdən olmaya da bilər"
+  },
+  {
+   "q": "Qəti istəmədiyiniz",
+   "o": [
+    "Trend rəqsləri",
+    "Yüksək səsli musiqi",
+    "Mem və zarafatlar",
+    "Çox rəsmi ton",
+    "Çox parlaq rənglər"
+   ],
+   "lines": 1
+  },
+  {
+   "h": "Kamera və çəkiliş"
+  },
+  {
+   "q": "Kamera qarşısında kim olacaq?",
+   "o": [
+    "Özüm",
+    "Komanda üzvü",
+    "Hər ikisi",
+    "Heç kim (məhsul/məkan)"
+   ]
+  },
+  {
+   "q": "Kamerada danışmaq sizə necə rahatdır?",
+   "o": [
+    "Mətni oxuyuram (teleprompter)",
+    "Əzbər danışıram",
+    "Sərbəst danışıram",
+    "Hələ çətindir"
+   ]
+  },
+  {
+   "q": "Çəkiliş üçün uyğun günlər və saatlar",
+   "lines": 1
+  },
+  {
+   "q": "Çəkiliş məkanı",
+   "o": [
+    "Ofis / salon",
+    "Studiya lazımdır",
+    "Ev",
+    "Açıq hava"
+   ]
+  },
+  {
+   "q": "Göstərmək istəmədikləriniz",
+   "o": [
+    "Ailə üzvləri",
+    "Uşaqlar",
+    "Ev",
+    "Müştərilərin üzü",
+    "Qiymətlər"
+   ],
+   "lines": 1
+  },
+  {
+   "h": "Mətnlər və mövzular"
+  },
+  {
+   "q": "Mətn və mövzular necə hazırlansın?",
+   "o": [
+    "Hamısını siz hazırlayın",
+    "Mövzuları mən verirəm, mətni siz",
+    "Mətni özüm yazıram, siz redaktə edin"
+   ]
+  },
+  {
+   "q": "Mütləq danışmaq istədiyiniz mövzular",
+   "lines": 2
+  },
+  {
+   "q": "Toxunmaq istəmədiyiniz mövzular",
+   "lines": 1
+  },
+  {
+   "q": "Auditoriyaya müraciət",
+   "o": [
+    "\"Sən\"",
+    "\"Siz\"",
+    "Fərqi yoxdur"
+   ]
+  },
+  {
+   "q": "Yumor sizə uyğundurmu?",
+   "o": [
+    "Bəli, rahatam",
+    "Az dozada",
+    "İstəmirəm"
+   ]
+  },
+  {
+   "h": "Xidmət və müraciət"
+  },
+  {
+   "q": "Xidmət və məhsullarınızın siyahısı",
+   "lines": 2,
+   "hint": "Adları dəqiq yazılışla — kontentdə səhv olmasın"
+  },
+  {
+   "q": "Müştərilər sizə necə müraciət etsin?",
+   "o": [
+    "Direct",
+    "WhatsApp",
+    "Zəng",
+    "Link (sayt, forma)"
+   ]
+  },
+  {
+   "q": "Yaxın 3 ayda vacib tarixlər",
+   "lines": 1,
+   "hint": "Açılış, endirim, tədbir, bayram kampaniyası"
+  },
+  {
+   "h": "Gündəlik iş"
+  },
+  {
+   "q": "Story-lər",
+   "o": [
+    "Özüm paylaşıram, siz ideya verin",
+    "Özüm paylaşıram, ehtiyac yoxdur",
+    "Siz hazırlayın"
+   ]
+  },
+  {
+   "q": "Kontenti kim təsdiqləyir və neçə saata cavab verə bilir?",
+   "lines": 1
+  },
+  {
+   "q": "Paylaşımı kim edir?",
+   "o": [
+    "Siz (planlama ilə)",
+    "Özüm"
+   ]
+  },
+  {
+   "q": "Hazır materiallar",
+   "o": [
+    "Loqo",
+    "Brend rəngləri / şrift",
+    "Peşəkar fotolar",
+    "Videolar",
+    "Heç biri"
+   ]
+  },
+  {
+   "q": "Əlavə istəyiniz",
+   "lines": 2
+  },
+  {
+   "note": "Anketi doldurduqdan sonra 1 iş günü ərzində sizə Strateji paket təqdim olunur: vizual istiqamət, Instagram profili, kontent sistemi, ilk ayın təqvimi və çəkiliş planı."
+  }
+ ]
+}

@@ -54,7 +54,7 @@
     const base = { fontFamily: font, fontWeight: String(weight), fontSize: `${fs}px`, lineHeight: '1.18', color, whiteSpace: 'pre-wrap', textAlign: 'center', boxSizing: 'border-box' };
     if (type === 'caption') {
       const wrap = node(doc, 'div', { ...base, maxWidth: `${H * (clip.maxW ?? 0.52)}px`, padding: `${fs * 0.15}px ${fs * 0.3}px`,
-        borderRadius: `${fs * (clip.radius ?? 0.3)}px`, background: rgba(clip.bg, 'transparent') });
+        borderRadius: `${fs * (clip.radius ?? 0.3)}px`, background: rgba(clip.bg, 'transparent'), textAlign: clip.align === 'left' ? 'left' : 'center' });
       const words = clip.words && clip.words.length ? clip.words : String(clip.text || '').split(/\s+/).map((w) => ({ w, s: 0, e: 0 }));
       const stroke = clip.bg && clip.bg !== 'none' ? null : (clip.stroke || 'rgba(0,0,0,0.85)');
       words.forEach((w, i) => {
@@ -66,6 +66,13 @@
         if (stroke) { sp.style.webkitTextStroke = `${Math.max(2, fs * 0.09)}px ${stroke}`; sp.style.paintOrder = 'stroke fill'; }
         wrap.append(sp);
       });
+      if (clip.underline) {  // sola düzlənmiş Reels yazısı: altında qısa vurğu xətti
+        const outer = node(doc, 'div', { display: 'inline-block', textAlign: clip.align === 'left' ? 'left' : 'center' });
+        outer.append(wrap);
+        outer.append(node(doc, 'div', { width: `${fs * 1.3}px`, height: `${Math.max(3, fs * 0.1)}px`, borderRadius: '99px',
+          background: clip.activeColor || th.accent || '#F2C94C', margin: clip.align === 'left' ? `${fs * 0.18}px 0 0 ${fs * 0.13}px` : `${fs * 0.18}px auto 0` }));
+        return outer;
+      }
       return wrap;
     }
     if (type === 'title') {

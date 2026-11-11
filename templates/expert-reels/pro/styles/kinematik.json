@@ -1,0 +1,4 @@
+{"_ad": "Kinematik", "_nə_vaxt": "Hekayə, motivasiya, şəxsi baxış. Kino çərçivəsi (letterbox), kino dənəsi və vinyet, isti-soyuq rəng, kursiv serif altyazı, sakit kəsim. Musiqi ilə daha yaxşıdır.",
+ "_alət": "talk.py", "sub": "lines", "font": "Lora", "sub_bold": 0, "sub_italic": -1, "fontsize": 64, "sub_outline": 1.6, "mv": 250,
+ "letterbox": 190, "grain": 7, "zooms": [1.0, 1.06], "gap": 0.8,
+ "color": "eq=contrast=1.08:saturation=0.88:gamma=0.97,colorbalance=rs=-0.04:bs=0.05:rh=0.05:bh=-0.04,curves=master='0/0.03 0.3/0.26 0.7/0.74 1/0.96'"}

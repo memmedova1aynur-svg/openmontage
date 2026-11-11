@@ -1,0 +1,115 @@
+{
+  "_doc": "Ev qaydaları: hər videoya avtomatik tətbiq olunur. Video konfiqində eyni açar yazılsa, o üstün gəlir.",
+  "common": {
+    "push": 1.045,
+    "softFx": true,
+    "glide": [
+      1.0,
+      1.06
+    ],
+    "safe": 0.86,
+    "sfxset": "premium",
+    "sfxScale": 0.5,
+    "dropSfx": [
+      "pop"
+    ],
+    "tight": {
+      "d": 0.14,
+      "after": 0.09,
+      "before": 0.06
+    },
+    "speechChain": "highpass=f=95,equalizer=f=4500:t=q:w=1.2:g=2,acompressor=threshold=0.05:ratio=3:attack=10:release=200:makeup=2,dynaudnorm=f=150:g=9:p=0.9:m=3:s=8",
+    "fy": 0.41,
+    "cap": {
+      "x": 0.067,
+      "y": 0.8,
+      "align": "left",
+      "underline": true,
+      "size": 0.032,
+      "font": "Montserrat",
+      "weight": 800,
+      "color": "#FFFFFF",
+      "activeColor": "#6CC57E",
+      "bg": "none",
+      "stroke": "rgba(0,0,0,0.35)",
+      "maxWords": 3,
+      "maxW": 0.4
+    },
+    "denoise_note": "Fon küyü: söz aralarında −20 dB gate (muteGaps) + 95 Hz highpass. Spektral denoise (afftdn/anlmdn) İSTİFADƏ ETMƏ — səsi boğuq edir (10 noy, Xəyyam).",
+    "muteGaps": true
+  },
+  "talk": {
+    "pal": "forest"
+  },
+  "ad": {
+    "ad": true,
+    "pal": "adgreen",
+    "tight": {
+      "d": 0.14,
+      "after": 0.09,
+      "before": 0.06
+    },
+    "cap": {
+      "x": 0.5,
+      "y": 0.77,
+      "align": null,
+      "underline": false,
+      "size": 0.0326,
+      "font": "Montserrat",
+      "weight": 800,
+      "color": "#0F3B2C",
+      "activeColor": "#6CC57E",
+      "bg": "#6CC57E@0.97",
+      "stroke": "rgba(0,0,0,0.35)",
+      "maxWords": 3,
+      "maxW": 0.4
+    }
+  },
+  "forbiddenColors": [
+    "#C5E01F",
+    "#DDF25A",
+    "#A6C10F",
+    "#C8F56A",
+    "#E8F57A"
+  ],
+  "forbiddenSfx": [
+    "pop",
+    "softclick",
+    "paperclick"
+  ],
+  "qa": {
+    "lufs": [
+      -16.0,
+      -12.5
+    ],
+    "peakMax": -1.0,
+    "freezeFrames": 6,
+    "minItemShow": 0.85
+  },
+  "themes": {
+    "editorial": {
+      "_doc": "Vəfa Əli üslubu: kinematik danışıq + kağız metafora kartları + bordo vurğu. Musiqiyə icazə verən müştərilər üçün.",
+      "pal": "editorial",
+      "softFx": true,
+      "glide": [
+        1.0,
+        1.05
+      ],
+      "cap": {
+        "x": 0.5,
+        "y": 0.74,
+        "align": null,
+        "underline": false,
+        "size": 0.026,
+        "font": "Montserrat",
+        "weight": 800,
+        "color": "#FFFFFF",
+        "activeColor": "#E9A1B3",
+        "bg": "none",
+        "stroke": "rgba(0,0,0,0.45)",
+        "maxWords": 4,
+        "maxW": 0.6
+      }
+    }
+  }
+}

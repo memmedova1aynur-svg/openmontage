@@ -1,0 +1,4 @@
+{"_ad": "Minimal premium", "_nə_vaxt": "Reklam, təlim tanıtımı, güclü tək fikir. Davamlı altyazı yoxdur, yalnız açar sözlər iri kartla çıxır. Sakit rəng, az kəsim.",
+ "_alət": "talk.py", "_plan": "cards: [[başlanğıc, son, \"Açar söz\"]]",
+ "sub": "none", "zooms": [1.0, 1.05], "gap": 0.8, "card_size": 104,
+ "color": "eq=contrast=1.06:saturation=0.82:gamma=0.98,curves=master='0/0.02 0.25/0.22 0.75/0.78 1/0.97',colortemperature=temperature=6800:mix=0.5"}

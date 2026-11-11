@@ -1,0 +1,3 @@
+{"_ad": "Mif / fakt", "_nə_vaxt": "İddia ekranda çıxır, ekspert jestlə cavab verir: qırmızı (mif), yaşıl (fakt), sarı (asılıdır) işıq və səs.",
+ "_alət": "talk.py", "_plan": "statements: [[başlanğıc, son, \"İddia\"]], verdicts: [[saniyə, \"mif\"|\"fakt\"|\"yari\"]]",
+ "sub": "lines", "zooms": [1.0, 1.12], "gap": 0.5}

@@ -8,8 +8,12 @@ müştərinin qovluğunu oxuyur.
 ```
 instagram-clients/
   _template/        yeni müştəri üçün şablon
+    brand.md        brend qaydaları: səs, vizual, qadağalar (ən üstün qaydalar)
     voice.md
+    brand.json
   kafe-nergiz/      nümunə: bir müştəri = bir qovluq
+    brand.md        brend qaydaları
+    context.md      rəylər tarixçəsi, paylaşılanlar, növbəti addımlar
     voice.md        səs profili: kim, kimə, necə danışır, nə deyilmir
     swipe.md        /ig-viral yazır: nişdə işləyən reels-lər
     plan.md         /ig-plan yazır: həftəlik plan
@@ -18,7 +22,17 @@ instagram-clients/
 
 `voice.md`-dən başqa faylları bacarıqlar özləri yaradır.
 
+## Sistem
+
+Bütün müştəri işləri `.claude/skills/marketinq-sistemi` skill-indən keçir:
+müştərini müəyyən edir, `brand.md` → `voice.md` → `context.md` oxuyur,
+tapşırığı uyğun skill-ə yönləndirir (ig-*, post-studio, reels-pro, brand-*,
+copywriting, impeccable və s.), keyfiyyət yoxlamasını və təhvil qaydalarını
+tətbiq edir, sonda rəyi `context.md`-yə yazır.
+
 ## Yeni müştəri əlavə etmək
+
+Ən sürətli yol: `sh .claude/skills/marketinq-sistemi/scripts/new_client.sh dental-smile "Dental Smile"`
 
 1. `_template/` qovluğunu kopyalayın və müştərinin adını verin: kiçik hərflərlə,
    boşluq əvəzinə defis (`dental-smile`, `kafe-nergiz`).
