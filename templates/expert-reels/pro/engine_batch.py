@@ -25,10 +25,20 @@ def one(v):
     return res
 
 
+# 1) ASR/kəsim planı ARDICIL, tam güclə (paralel ASR 4 nüvədə 35 s → 110 s olurdu — ölçülüb)
+tp = time.time()
+for v in P["videos"]:
+    kd = W / v["name"] / "kesim"
+    if not (kd / "keep.json").exists():
+        kd.parent.mkdir(parents=True, exist_ok=True)
+        subprocess.run([sys.executable, str(A / "disfluency.py"), v["src"], "--out", str(kd)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    print(f"[{time.time() - T0:6.0f}s] plan: {v['name']}", flush=True)
+plan_s = round(time.time() - tp, 1)
+# 2) render + QC paralel xətlərdə
 with ThreadPoolExecutor(max_workers=int(P.get("lanes", 2))) as ex:
     out = list(ex.map(one, P["videos"]))
 tot = round(time.time() - T0, 1); vid = round(sum(r.get("out_dur", 0) for r in out), 1)
-summary = {"total_wall_s": tot, "videos": len(out), "qc_passed": sum(r.get("qc") == "KEÇDİ" for r in out), "output_s": vid,
+summary = {"total_wall_s": tot, "plan_sequential_s": plan_s, "videos": len(out), "qc_passed": sum(r.get("qc") == "KEÇDİ" for r in out), "output_s": vid,
            "wall_per_output_min": round(tot / max(1, vid), 2), "results": out}
 json.dump(summary, open(W / "paket.json", "w"), ensure_ascii=False, indent=1)
 print(json.dumps({k: v for k, v in summary.items() if k != "results"}, ensure_ascii=False))

@@ -106,7 +106,17 @@ def main():
         lt = next((d.split("«")[1].split("»")[0] for d in nm if d.startswith("Ad lövhəsi")), None)
         if lt and "·" in lt:
             n_, r_ = [x.strip() for x in lt.split("·", 1)]; ov.append((motion.render("LowerThird", {"name": n_, "role": r_, "y": 1300}, a.client), 2.0))
-        if a.title: ov.append((motion.render("TitleReveal", {"lines": a.title.split("|"), "italic": [len(a.title.split("|")) - 1]}, a.client, 75), 0.0))
+        if a.title:
+            # başlıq üzü örtməsin: ilk kadrlarda üzün yeri ölçülür; başın üstündə ≥ 0.27 kadr yoxdursa başlıq aşağı yarıya keçir
+            import facedet, qc_render as _q
+            fr = _q.grab(src, keep[0][0] + 0.5) if keep else None; ty = 130
+            if fr is not None:
+                fs = facedet.faces(fr)
+                if fs:
+                    x0, y0, x1, y1, _s = fs[0]; z0 = a.zoom; top = (y0 - 0.35 * (y1 - y0)) * z0 - (z0 - 1) * a.cy
+                    nl = len(a.title.split("|")); need = (130 + 80 + nl * 104) / 1920
+                    if top < need: ty = 1180
+            ov.append((motion.render("TitleReveal", {"lines": a.title.split("|"), "italic": [len(a.title.split("|")) - 1], "y": ty}, a.client, 75), 0.0))
     tick("6_motion")
     # 7 tək keçidli render: hər parça öz -ss girişi ilə → kadraj (kəsimdə cüzi plan dəyişməsi) → concat → rəng → altyazı → motion
     #   eyni qrafdan iki çıxış: final (1080x1920) + clean (540x960, qrafikasız — QC üz yoxlaması üçün)
@@ -115,7 +125,7 @@ def main():
     for i, s, e, at, nf in parts:
         z = a.zoom * (1.06 if i % 2 else 1.0)
         vin += ["-ss", f"{s:.3f}", "-t", f"{nf / 30 + 0.1:.3f}", "-i", str(src)]
-        vfc.append(f"[{i}:v]{vf_color + ',' if vf_color else ''}scale={int(1080 * z) // 2 * 2}:{int(1920 * z) // 2 * 2}:flags=lanczos,"
+        vfc.append(f"[{i}:v]{vf_color + ',' if vf_color else ''}scale={int(1080 * z) // 2 * 2}:{int(1920 * z) // 2 * 2}:flags=bicubic,"
                    f"crop=1080:1920:(iw-1080)/2:(ih-1920)*{a.cy},fps=30,setpts=N/30/TB,trim=end_frame={nf},setpts=PTS-STARTPTS,format=yuv420p,setsar=1[v{i}]")
     n = len(parts); k0 = n
     fc = ";".join(vfc) + ";" + "".join(f"[v{i}]" for i in range(n)) + f"concat=n={n}:v=1:a=0[cat];[cat]split=2[c0][c1];[c1]scale=540:960[clean];"
@@ -125,7 +135,7 @@ def main():
     ins += ["-i", str(W_ / "_voice.wav")]; ai = k0 + len(ov)
     final = W_ / f"{a.name}.mp4"
     run(["ffmpeg", "-v", "error", "-y", *ins, "-filter_complex", fc,
-         "-map", f"[{last}]", "-map", f"{ai}:a", "-c:v", "libx264", "-preset", "fast", "-crf", "19", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k",
+         "-map", f"[{last}]", "-map", f"{ai}:a", "-c:v", "libx264", "-preset", "veryfast", "-crf", "18", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k",
          "-shortest", "-movflags", "+faststart", str(final),
          "-map", "[clean]", "-map", f"{ai}:a", "-c:v", "libx264", "-preset", "ultrafast", "-crf", "28", "-c:a", "aac", "-b:a", "96k", "-shortest", str(W_ / "clean.mp4")])
     tick("7_render")
