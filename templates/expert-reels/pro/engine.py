@@ -69,25 +69,24 @@ def main():
     import color_auto
     trc, _ = color_auto.probe(src); st = color_auto.stats(color_auto.frames(src, color_auto.sdr_chain(trc)))
     look, mix, why = color_auto.decide(st); vf_color = color_auto.to_vf(look, mix, trc); json.dump({"vf": vf_color, "why": why}, open(W_ / "color.json", "w"), ensure_ascii=False); tick("2_color")
-    # 3 cut (kadraj: kəsim yerlərində cüzi plan dəyişməsi — real kəsimi kamera keçidi kimi göstərir)
+    # 3 cut — yalnız SƏS çıxarılır (sürətli); görüntü 7-ci mərhələdə tək keçiddə kodlanır
     parts = []; cur = 0.0; words = []
     kept_w = [w for s in segs for w in s["w"] if not any(f.startswith(("filler", "restart", "chatter")) for f in s["flags"])]
     for i, (s, e) in enumerate(keep):
-        z = a.zoom * (1.06 if i % 2 else 1.0); nf = round((e - s) * 30); p = W_ / f"_p{i:03d}.mov"
-        vf = ",".join(x for x in [vf_color, f"scale={int(1080 * z) // 2 * 2}:{int(1920 * z) // 2 * 2}:flags=lanczos", f"crop=1080:1920:(iw-1080)/2:(ih-1920)*{a.cy}", "fps=30", "format=yuv420p"] if x)
-        run(["ffmpeg", "-v", "error", "-y", "-ss", f"{s:.3f}", "-i", str(src), "-frames:v", str(nf), "-vf", vf, "-af",
-             f"apad,atrim=0:{nf / 30:.4f},afade=t=in:d=0.015,afade=t=out:st={max(0, nf / 30 - 0.015):.4f}:d=0.015",
-             "-c:v", "libx264", "-preset", "veryfast", "-crf", "16", "-c:a", "pcm_s16le", "-ar", "48000", "-ac", "1", str(p)])
+        nf = round((e - s) * 30)
         for w in kept_w:
             if s - 0.01 <= w[0] and w[1] <= e + 0.01: words.append((round(cur + w[0] - s, 3), round(cur + w[1] - s, 3), w[2].strip()))
-        parts.append((p, s, e, cur)); cur += nf / 30
-    (W_ / "_l.txt").write_text("".join(f"file '{p.name}'\n" for p, *_ in parts))
-    run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", str(W_ / "_l.txt"), "-c", "copy", str(W_ / "_cut.mov")])
-    for p, *_ in parts: p.unlink()
+        parts.append((i, s, e, cur, nf)); cur += nf / 30
+    ain = []; afc = []
+    for i, s, e, at, nf in parts:
+        ain += ["-ss", f"{s:.3f}", "-t", f"{nf / 30 + 0.1:.3f}", "-i", str(src)]
+        afc.append(f"[{i}:a]aresample=48000,apad,atrim=0:{nf / 30:.4f},asetpts=N/SR/TB,afade=t=in:d=0.015,afade=t=out:st={max(0, nf / 30 - 0.015):.4f}:d=0.015[a{i}]")
+    run(["ffmpeg", "-v", "error", "-y", *ain, "-filter_complex", ";".join(afc) + ";" + "".join(f"[a{i}]" for i, *_ in parts) + f"concat=n={len(parts)}:v=0:a=1[a]",
+         "-map", "[a]", "-ac", "1", "-ar", "48000", str(W_ / "_cut.wav")])
     tick("3_cut")
     # 4 audio
     import audio_pro
-    rep = audio_pro.process(W_ / "_cut.mov", W_ / "_voice.wav"); json.dump(rep, open(W_ / "audio.json", "w")); tick("4_audio")
+    rep = audio_pro.process(W_ / "_cut.wav", W_ / "_voice.wav"); json.dump(rep, open(W_ / "audio.json", "w")); tick("4_audio")
     # 5 subs
     gl = json.load(open(A / "glossary_az.json")); fix = lambda w: next((v for k, v in gl.items() if w.lower().strip(".,?!") == k), w)
     words = [[s, e, fix(w)] for s, e, w in words if w]
@@ -109,26 +108,36 @@ def main():
             n_, r_ = [x.strip() for x in lt.split("·", 1)]; ov.append((motion.render("LowerThird", {"name": n_, "role": r_, "y": 1300}, a.client), 2.0))
         if a.title: ov.append((motion.render("TitleReveal", {"lines": a.title.split("|"), "italic": [len(a.title.split("|")) - 1]}, a.client, 75), 0.0))
     tick("6_motion")
-    # 7 compose: clean (qrafikasız, QC üçün) + final (altyazı + motion)
-    run(["ffmpeg", "-v", "error", "-y", "-i", str(W_ / "_cut.mov"), "-i", str(W_ / "_voice.wav"), "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-shortest", str(W_ / "clean.mp4")])
-    fdir = Path("/root/montaj-data/fonts")
-    fc = f"[0:v]subtitles={W_ / 'subs.ass'}:fontsdir={fdir}[s0]"; last = "s0"
-    ins = ["-i", str(W_ / "clean.mp4")]
+    # 7 tək keçidli render: hər parça öz -ss girişi ilə → kadraj (kəsimdə cüzi plan dəyişməsi) → concat → rəng → altyazı → motion
+    #   eyni qrafdan iki çıxış: final (1080x1920) + clean (540x960, qrafikasız — QC üz yoxlaması üçün)
+    fdir = Path(os.environ.get("MONTAJ_DATA_DIR", "/root/montaj-data")) / "fonts"
+    vin = []; vfc = []
+    for i, s, e, at, nf in parts:
+        z = a.zoom * (1.06 if i % 2 else 1.0)
+        vin += ["-ss", f"{s:.3f}", "-t", f"{nf / 30 + 0.1:.3f}", "-i", str(src)]
+        vfc.append(f"[{i}:v]{vf_color + ',' if vf_color else ''}scale={int(1080 * z) // 2 * 2}:{int(1920 * z) // 2 * 2}:flags=lanczos,"
+                   f"crop=1080:1920:(iw-1080)/2:(ih-1920)*{a.cy},fps=30,setpts=N/30/TB,trim=end_frame={nf},setpts=PTS-STARTPTS,format=yuv420p,setsar=1[v{i}]")
+    n = len(parts); k0 = n
+    fc = ";".join(vfc) + ";" + "".join(f"[v{i}]" for i in range(n)) + f"concat=n={n}:v=1:a=0[cat];[cat]split=2[c0][c1];[c1]scale=540:960[clean];"
+    fc += f"[c0]subtitles={W_ / 'subs.ass'}:fontsdir={fdir}[s0]"; last = "s0"; ins = list(vin)
     for k, (m, at) in enumerate(ov):
-        ins += ["-i", str(m)]; fc += f";[{k + 1}:v]setpts=PTS+{at}/TB[m{k}];[{last}][m{k}]overlay=0:0:eof_action=pass[s{k + 1}]"; last = f"s{k + 1}"
+        ins += ["-i", str(m)]; fc += f";[{k0 + k}:v]setpts=PTS+{at}/TB[m{k}];[{last}][m{k}]overlay=0:0:eof_action=pass[s{k + 1}]"; last = f"s{k + 1}"
+    ins += ["-i", str(W_ / "_voice.wav")]; ai = k0 + len(ov)
     final = W_ / f"{a.name}.mp4"
-    run(["ffmpeg", "-v", "error", "-y", *ins, "-filter_complex", fc, "-map", f"[{last}]", "-map", "0:a", "-c:v", "libx264", "-preset", "medium", "-crf", "19",
-         "-pix_fmt", "yuv420p", "-c:a", "copy", "-movflags", "+faststart", str(final)])
-    tick("7_compose")
+    run(["ffmpeg", "-v", "error", "-y", *ins, "-filter_complex", fc,
+         "-map", f"[{last}]", "-map", f"{ai}:a", "-c:v", "libx264", "-preset", "fast", "-crf", "19", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k",
+         "-shortest", "-movflags", "+faststart", str(final),
+         "-map", "[clean]", "-map", f"{ai}:a", "-c:v", "libx264", "-preset", "ultrafast", "-crf", "28", "-c:a", "aac", "-b:a", "96k", "-shortest", str(W_ / "clean.mp4")])
+    tick("7_render")
     # 8 qc
     qc = subprocess.run([sys.executable, str(A / "qc_render.py"), str(final), "--clean", str(W_ / "clean.mp4"), "--subs", str(W_ / "subs.json"), "--out", str(W_ / "QC")], capture_output=True, text=True)
     qc_ok = qc.returncode == 0; tick("8_qc")
     # 9 timeline
     import timeline_export as TE
     tl = {"name": a.name, "fps": 30, "tracks": [
-        {"kind": "video", "name": "V1 Danışan", "clips": [{"src": str(src), "in": s, "out": e, "at": at} for _, s, e, at in parts]},
+        {"kind": "video", "name": "V1 Danışan", "clips": [{"src": str(src), "in": s, "out": s + nf / 30, "at": at} for _, s, e, at, nf in parts]},
         {"kind": "video", "name": "V2 Qrafika", "clips": [{"src": str(m), "in": 0, "out": TE.media_dur(str(m)), "at": at} for m, at in ov]},
-        {"kind": "audio", "name": "A1 Danışıq", "clips": [{"src": str(src), "in": s, "out": e, "at": at} for _, s, e, at in parts]}],
+        {"kind": "audio", "name": "A1 Danışıq", "clips": [{"src": str(src), "in": s, "out": s + nf / 30, "at": at} for _, s, e, at, nf in parts]}],
         "markers": [{"t": 0, "name": "rəng: " + ("; ".join(why) or "baza")}]}
     TE.export(tl, W_ / "timeline"); tick("9_timeline")
     res = {"video": a.name, "qc": "KEÇDİ" if qc_ok else "KEÇMƏDİ", "qc_line": (qc.stdout.strip().splitlines() or [""])[-1][:400], "times": T,

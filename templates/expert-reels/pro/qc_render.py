@@ -72,13 +72,15 @@ def main():
         elif len(ck): R["warn"].append({"click": (ck / 48000).round(2).tolist()})
     # kadraj + üz örtülməsi
     import facedet
-    ts = [t for t in np.arange(0.5, max(0.6, dur - 0.3), 1.0)]
+    ts = [t for t in np.arange(0.5, max(0.6, dur - 0.3), float(os.environ.get("QC_STEP", "2.0")))]  # hər 2 s (sürət); QC_STEP=1 dəqiq
     bad_frame, bad_overlay, n_face, n_chk = [], [], 0, 0
     for t in ts:
         if in_full(t): continue
         f = grab(mp4, t)
         if f is None: continue
         c = grab(a.clean, t) if a.clean else None
+        if c is not None and c.shape != f.shape:  # clean kiçik ölçüdə render olunur
+            from PIL import Image as _I; c = np.asarray(_I.fromarray(c).resize((f.shape[1], f.shape[0])))
         ref = c if c is not None else f
         fs = facedet.faces(ref)
         if not fs: continue
