@@ -23,6 +23,28 @@ Hədəf: 10 video ≈ 1–1.5 saat, **ilk göndərilən versiya QA-dan keçmiş*
    - Video sonu: danışıq bitəndən sonra ≤ 0.7 s saxlama (build.py avtomatik).
 5. **Faktlar**: kartlarda yalnız danışıqda deyilən və ya mənbəli fakt; qiymət/tarix uydurma.
 
+## v2 — Drive linkindən təhvilə qədər (istifadəçi yalnız link göndərir)
+
+Əvvəlcə oxu: `instagram-clients/_agency/qaydalar.json` (global + müştəri qaydaları, düzəlişlərdən öyrənilmiş) və müştərinin `brand_kit.json` → `profile` (rəng, şrift, altyazı, cover, ritm, musiqi, bəyənilən/bəyənilməyən). İstifadəçidən rəng/üslub/montaj təlimatı İSTƏMƏ; yalnız müştəri müəyyən edilə bilmirsə və ya `paletteApproved:false` olub rəng vacibdirsə soruş.
+
+1. **Qəbul**: Drive qovluğundakı videoları kiçikdən böyüyə endir (orijinala toxunma). Müştəri: qovluq/fayl adı + `instagram-clients/*/brand_kit.json`.
+2. **Dəqiq kəsim planı** (hər fayl): `python3 disfluency.py <video> --out <dir>` → `review.md`-ni OXU. Bayraqlar: `restart` (yarımçıq dubl), `tail-restart`, `filler` (ıı/ee), `chatter` (çəkiliş söhbəti), `şübhəli söz`. Mövzu bölgüsü, eyni mövzunun ən yaxşı dublu və mövzuya aid olmayan hissə qərarı Claude-undur. PRO konfiqə: `--to-config vN.json` (→ `autoCut`).
+3. **Storyboard daxili**: mövzuya görə üslub (sənədli / premium ekspert / emosional / dinamik maarifləndirici / reklam / sual-cavab) — profil daxilində özün seç, təsdiq gözləmə. Eyni paketdə videolar bir-birini təkrarlamasın (üslub, musiqi, keçid).
+4. **Montaj**: `batch.py` (paralel, müştərilər növbə ilə — hər müştərinin ilk videoları birinci). Rəng: `look` verilməyibsə `auto` → `color_auto.py` hər video üçün ayrıca ölçür (üz parlaqlığı, ağ balansı, doyma, kəskinlik; iPhone HLG/PQ → SDR).
+5. **Yoxlama** (avtomatik, keçməyən göndərilmir): `qa.py` (donma, kəsim, LUFS, SFX, rəng, kart) + `qc_render.py` (export, qara kadr, kadraj/baş üstü, rəng normaları, yazılış, `--clean` varsa qrafika-üz örtülməsi) → `QC/qc_sheet.jpg`-yə Claude GÖZLƏ baxır (12 kadr).
+6. **Cover + caption**: `postfx.py cover` (real kadr, gözlər açıq) + caption `ig-caption` skill ilə, danışığa sadiq, `caption.py` lint.
+7. **Təhvil**: `deliver.py add <müştəri> <tarix> <NN_ad> final.mp4 --cover --caption --qc` → `Final Videos / Covers / Captions / Quality Control`; `deliver.py report` → istifadəçiyə QISA hesabat (neçə hazır, neçəsi QC-dən keçdi, problem, müdaxilə lazımdırmı).
+8. **Düzəliş gələndə**: yalnız o videonu dəyiş; düzəlişin növünü təyin et və `qaydalar.json`-a yaz (global / müştəri / video). Təsdiqlənmiş videoya toxunma.
+
+| yeni alət | nə edir | sınaq |
+|---|---|---|
+| `disfluency.py` | VAD-sız ASR + yarımçıq dubl/ıı/söhbət aşkarı + səs dalğası ilə təhlükəsiz kəsim sərhədi | real çəkilişdə bütün yarımçıq dublları tutdu |
+| `color_auto.py` | hər video üçün ölçülü rəng korreksiyası + `--verify` | 3 fərqli işıq şəraiti |
+| `qc_render.py` | render səviyyəsində QC (kadraj hədləri istifadəçi rəyi ilə kalibrlənib) | rədd edilən versiyaları tutdu, təsdiqlənənləri buraxdı |
+| `facedet.py` | ortaq üz tapma (BlazeFace) | — |
+| `deliver.py` | təhvil qovluğu + status (analiz → montaj → render → QC → təhvil) | — |
+| `glossary_az.json` | ASR-in tez-tez səhv yazdığı sözlər → düzgün forma (QC yoxlayır) | — |
+
 ## İş axını
 
 ```bash
