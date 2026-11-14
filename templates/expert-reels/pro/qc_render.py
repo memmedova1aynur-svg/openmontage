@@ -65,7 +65,11 @@ def main():
     except IndexError: R["fail"].append({"loud": "ölçülmədi"})
     raw = subprocess.run(["ffmpeg", "-v", "error", "-i", str(mp4), "-ac", "1", "-ar", "48000", "-f", "s16le", "-"], capture_output=True).stdout
     x = np.frombuffer(raw, np.int16).astype(np.float32) / 32768
-    if len(x) and int((np.abs(np.diff(x)) > 0.5).sum()): R["fail"].append({"click": int((np.abs(np.diff(x)) > 0.5).sum())})
+    if len(x):  # klik = ətrafındakı siqnaldan 10 dəfə kəskin tək sıçrayış (yüksək səviyyəli «s» səsləri klik sayılmır)
+        d = np.abs(np.diff(x)); k = np.convolve(d, np.ones(480) / 480, "same") + 1e-6
+        ck = np.where((d > 0.25) & (d > 10 * k))[0]
+        if len(ck) > 3: R["fail"].append({"click": (ck[:10] / 48000).round(2).tolist()})
+        elif len(ck): R["warn"].append({"click": (ck / 48000).round(2).tolist()})
     # kadraj + üz örtülməsi
     import facedet
     ts = [t for t in np.arange(0.5, max(0.6, dur - 0.3), 1.0)]

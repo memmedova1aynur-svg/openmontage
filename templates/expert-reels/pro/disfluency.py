@@ -14,11 +14,12 @@ hissələri təklif edir və hər kəsim sərhədini səs dalğası ilə yoxlay�
   review.md       — Claude/insan üçün oxunaqlı siyahı: hər cümlə, bayraq, səbəb
 Son qərar Claude-undur: review.md-ni oxu, lazım olsa keep.json-u düzəlt (məzmun/mövzu seçimi).
 """
-import argparse, difflib, json, re, subprocess, sys, wave
+import argparse, difflib, json, os, re, subprocess, sys, wave
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from pathlib import Path
 import numpy as np
 
-FILLERS = {"ee", "eee", "əə", "əəə", "ıı", "ııı", "ıhı", "ıhıı", "hı", "hıhı", "hm", "hmm", "mm", "mhm", "aa", "aaa", "uu", "uuu", "eh", "ehh", "ah", "həhə", "hə-hə"}
+FILLERS = {"hə", "həhə", "hı-hı", "ee", "eee", "əə", "əəə", "ıı", "ııı", "ıhı", "ıhıı", "hı", "hıhı", "hm", "hmm", "mm", "mhm", "aa", "aaa", "uu", "uuu", "eh", "ehh", "ah", "həhə", "hə-hə"}
 # çəkiliş söhbəti işarələri (operatorla danışıq, texniki an) — yalnız TƏKLİF; qərar Claude-undur
 CHATTER_STRONG = ["hicab", "mikrofon", "kamera", "səs gəlir", "başdan başla", "nə deyim", "telefon"]
 # operatorun adı və s. şəxsi sözlər repoda saxlanmır: instagram-clients/_agency/qaydalar.json → "chatter_words"
@@ -82,7 +83,9 @@ def analyse(segs, gap_cut=0.6):
         raw = [norm(w[2]) for w in s["w"] if norm(w[2])]
         if raw and all(x in FILLERS for x in raw): s["flags"].append("filler")
         weak = [c for c in CHATTER_WEAK if c in txt]
-        hits = [c for c in CHATTER_STRONG if c in txt] + (weak if len(s["n"]) <= 5 or len(weak) >= 2 else [])
+        # bulanıq uyğunluq: ASR «hicab»ı «hizab», «geçik»i «geçir» yaza bilir
+        fz = lambda lst: [c for c in lst if " " not in c and any(len(x) >= 4 and difflib.SequenceMatcher(None, c, x[:len(c)]).ratio() >= 0.8 for x in s["n"])]
+        hits = list(dict.fromkeys([c for c in CHATTER_STRONG if c in txt] + fz(CHATTER_STRONG) + (weak if len(s["n"]) <= 5 or len(weak) >= 2 else [])))
         if not hits and len(s["n"]) <= 3 and s["t"].rstrip().endswith("?") and i > 0: hits = ["qısa-sual"]  # «Sonra nə?» — operatorun sualı
         if hits: s["flags"].append("chatter:" + ",".join(hits))
         lp = [w[3] for w in s["w"]]
@@ -98,10 +101,10 @@ def analyse(segs, gap_cut=0.6):
             if same_start or ratio >= 0.62:
                 a["flags"].append(f"restart→{b['i']}"); break
     # məzmundan əvvəl/sonra qısa söhbət (≤3 söz): çəkilişə hazırlıq, «əl, asın», «bəli»
-    content = [s for s in segs if len(s["n"]) >= 4 and not s["flags"]]
+    content = [s for s in segs if len(s["n"]) >= 4 and not any(f.startswith(("restart", "filler", "chatter")) for f in s["flags"])]
     if content:
         for s in segs:
-            if len(s["n"]) <= 3 and (s["e"] <= content[0]["s"] or s["s"] >= content[-1]["e"]) and not any(f.startswith(("restart", "filler", "chatter")) for f in s["flags"]):
+            if len(s["n"]) <= 4 and (s["e"] <= content[0]["s"] or s["s"] >= content[-1]["e"]) and not any(f.startswith(("restart", "filler", "chatter")) for f in s["flags"]):
                 s["flags"].append("chatter:kənar")
     # cümlə içi yenidən başlama: A-nın son hissəsi B ilə eyni başlayır («…və uşağı … buraxmayın.» → «Və uşağı …»)
     real = [s for s in segs if not any(f.startswith(("filler", "chatter")) for f in s["flags"])]
@@ -117,6 +120,9 @@ def analyse(segs, gap_cut=0.6):
     for s in segs:
         s["fillers_in"] = [[w[0], w[1], w[2]] for w in s["w"] if norm(w[2]) in FILLERS]
     return W
+
+
+REFINE = None; SRC = None
 
 
 def plan_keep(segs, wv, gap_cut=0.6):
@@ -141,7 +147,13 @@ def plan_keep(segs, wv, gap_cut=0.6):
         k0, k1 = idx[id(g[0])], idx[id(g[-1])]
         prev_end = allw[k0 - 1][1] if k0 > 0 else 0.0
         next_start = allw[k1 + 1][0] if k1 + 1 < len(allw) else g[-1][1] + 0.6
-        keep.append([safe_in(wv, g[0][0], prev_end), safe_out(wv, g[-1][1], next_start)])
+        ws, we = g[0][0], g[-1][1]
+        if REFINE is not None:  # MMS forced alignment: sözün real başı/sonu (Whisper ±0.1–0.3 s yanılır)
+            try:
+                r = REFINE(SRC, " ".join(w[2] for w in g), max(prev_end, ws - 0.35), min(next_start, we + 0.35))
+                if r and r[0][3] > 0.3 and r[-1][3] > 0.3: ws, we = r[0][0], max(r[-1][1], we - 0.05)
+            except Exception as e: print("MMS keçildi:", e)
+        keep.append([safe_in(wv, ws, prev_end), safe_out(wv, we, next_start)])
     return keep
 
 
@@ -158,6 +170,8 @@ def main():
     ap = argparse.ArgumentParser(); ap.add_argument("video"); ap.add_argument("--out"); ap.add_argument("--lang", default="az")
     ap.add_argument("--gap", type=float, default=0.6, help="bu uzunluqdan böyük dayanma qısaldılır (təbii ritm üçün ≥0.5)")
     ap.add_argument("--reuse", action="store_true", help="words.json varsa ASR-i təkrarlama")
+    ap.add_argument("--mms", action="store_true", default=os.environ.get("MONTAJ_MMS") == "1",
+                    help="MMS forced alignment (dəqiq söz sərhədi). Model CC-BY-NC — kommersiya istifadəsi təsdiqlənənə qədər standart söndürülüb (MONTAJ_MMS=1)")
     ap.add_argument("--to-config", help="PRO vN.json: atılan aralıqları 'autoCut' kimi yaz (build.py tətbiq edir)")
     a = ap.parse_args()
     v = Path(a.video); out = Path(a.out) if a.out else v.parent / f"{v.stem}_kesim"; out.mkdir(parents=True, exist_ok=True)
@@ -165,6 +179,11 @@ def main():
     else:
         segs = asr(v, a.lang); json.dump(segs, open(out / "segments_raw.json", "w"), ensure_ascii=False)
     W = analyse(segs, a.gap); wv = Wave(v)
+    global REFINE, SRC
+    if a.mms:
+        try:
+            import align_mms; REFINE = align_mms.align; SRC = v
+        except Exception as e: print("MMS yoxdur, Whisper vaxtları:", e)
     keep = plan_keep(segs, wv, a.gap); bad = check_bounds(keep, wv)
     json.dump(W, open(out / "words.json", "w"), ensure_ascii=False)
     json.dump(segs, open(out / "segments.json", "w"), ensure_ascii=False, indent=0)
