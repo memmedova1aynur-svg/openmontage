@@ -57,3 +57,16 @@ PRO kart sistemi (build.py) eyni modulları istifadə edir: `look: auto`, `autoC
 - GPU yoxdur (4 nüvəli CPU) → hardware encoding, RIFE, böyük modellər yoxdur.
 - Premiere/Resolve-da faktiki açılış sınanmayıb (fayllar OTIO ilə yazılıb və geri oxunub).
 - Mövzu bölgüsü, ən yaxşı dubl seçimi və mövzudan kənar hissələrin son qərarı Claude-un `review.md` yoxlamasıdır (avtomatik təkliflərlə).
+
+## Faktiki ölçmələr (4 nüvəli CPU, video kartsız, 14.11.2026, real iPhone talking-head videoları)
+
+| versiya | paket | ümumi vaxt | 1 dəq hazır video üçün |
+|---|---|---|---|
+| əvvəlki xüsusi skript | 6 video | ~50 dəq | ~7 dəq |
+| engine v3 ilk (ardıcıl, 2 dəfə kodlama) | 3 video, 2.8 dəq | 13.5 dəq | 4.5 dəq |
+| + tək keçidli render, QC 2 s, 2 paralel xətt | 5 video, 6.6 dəq | 19.3 dəq | 2.9 dəq |
+| + ASR ardıcıl ön keçid, veryfast/bicubic | 5 video, 6.4 dəq | 16.8 dəq | 2.6 dəq |
+
+Mərhələ payı (son ölçü, 1 video): ASR+plan 32–58 s · rəng 3–4 s · səs 6–33 s · motion 11 s (keşdə 0) · **render 130–320 s** · QC 41–112 s.
+20 videoluq paket üçün (orta 1.3 dəq video) ekstrapolyasiya: ~65–70 dəq — ölçülməyib, 5 videodan hesablanıb.
+Darboğaz render-dir (CPU-da HEVC dekod + x264 kodlama); növbəti real sıçrayış GPU (NVENC/NVDEC) tələb edir.
