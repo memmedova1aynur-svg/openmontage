@@ -97,7 +97,11 @@ def finish(y, target):
         y = Pedalboard([Compressor(threshold_db=-9, ratio=5, attack_ms=1.5, release_ms=90)])(y.reshape(1, -1), SR)[0]
         ceil = 0.84; y = (np.tanh(y / ceil) * ceil).astype(np.float32)   # −1.5 dBFS tavan, yumşaq
     lufs = M.integrated_loudness(y.astype(np.float64)); g = 10 ** ((target - lufs) / 20)   # son kiçik düzəliş
-    return (np.tanh(y * g / 0.84) * 0.84).astype(np.float32)
+    y = (np.tanh(y * g / 0.84) * 0.84).astype(np.float32)
+    # gücləndirmədən sonra «p/b» partlayışları çıqqıltıya çevrilə bilir — adeclick təmizləyir (QC ilə ölçülüb: 5 → 0)
+    d = Path(tempfile.mkdtemp()); a, b = d / "a.wav", d / "b.wav"; save(a, y)
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(a), "-af", "adeclick=w=55:o=75", str(b)], check=True)
+    z = load(b); return z[: len(y)] if len(z) >= len(y) else np.pad(z, (0, len(y) - len(z)))
 
 
 def process(src, dst, do_isolate=False, target=-14.0):

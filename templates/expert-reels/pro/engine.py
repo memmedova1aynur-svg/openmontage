@@ -90,7 +90,14 @@ def main():
     rep = audio_pro.process(W_ / "_cut.mov", W_ / "_voice.wav"); json.dump(rep, open(W_ / "audio.json", "w")); tick("4_audio")
     # 5 subs
     gl = json.load(open(A / "glossary_az.json")); fix = lambda w: next((v for k, v in gl.items() if w.lower().strip(".,?!") == k), w)
-    words = [(s, e, fix(w)) for s, e, w in words if w]
+    words = [[s, e, fix(w)] for s, e, w in words if w]
+    for k, v in gl.items():  # çoxsözlü düzəlişlər: «anı olsaydım» → «ana olsaydım»
+        ks, vs = k.split(), v.split()
+        if len(ks) < 2: continue
+        for i in range(len(words) - len(ks) + 1):
+            if [w[2].lower().strip(".,?!") for w in words[i:i + len(ks)]] == ks and len(vs) == len(ks):
+                for j in range(len(ks)): words[i + j][2] = vs[j] + (words[i + j][2][-1] if words[i + j][2][-1] in ".,?!" else "")
+    words = [tuple(w) for w in words]
     write_ass(words, W_ / "subs.ass", brand); json.dump(words, open(W_ / "subs.json", "w"), ensure_ascii=False); tick("5_subs")
     # 6 motion
     ov = []
