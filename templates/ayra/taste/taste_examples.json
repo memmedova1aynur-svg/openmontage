@@ -1,0 +1,1418 @@
+{
+ "library": "AYRA Design Taste Library",
+ "version": "1.0",
+ "created": "2026-11-15",
+ "note": "Every example was downloaded and viewed during research; image_urls are references only — no image data stored. Analyses are principle extraction, not templates to copy.",
+ "count": 51,
+ "examples": [
+  {
+   "id": "T003",
+   "title": "PORTER magazine cover",
+   "category": "editorial_cover",
+   "site": "fontsinuse.com",
+   "source_page": "https://fontsinuse.com/uses/80674/porter-magazine",
+   "image_urls": [
+    "https://assets.fontsinuse.com/static/use-media-items/307/306545/upto-700xauto/6ace0a30/w1900_q65.jpeg"
+   ],
+   "designer": "Net-a-Porter in-house (per Fonts In Use)",
+   "viewed": true,
+   "idea": "Monochrome star portrait; giant single-letter masthead 'P' acts as logo-glyph; headline stacked bottom-left.",
+   "composition": "Portrait fills ~85% of frame, figure slightly right of centre; masthead glyph top-left ~30% of width; headline block bottom-left ~45% width.",
+   "typography": "High-contrast didone-like display (GS Triomf) for masthead and headline, all caps, tight leading (~0.85), tight tracking; tiny Century Schoolbook tagline rotated vertically.",
+   "hierarchy": "1 portrait face, 2 'P' glyph, 3 headline; nothing else competes.",
+   "photo_scale_cropping": "Three-quarter body, crop at thigh; face in top third; arms crossed = confident pose; black&white lowers noise.",
+   "colour": "~70% mid-greys, ~25% black, ~5% white type; zero accent colour.",
+   "grid": "Narrow ~5% margins; type overlaps the photo, not boxed.",
+   "negative_space": "Dark background behind subject is the breathing room; text sits on darker zones for contrast.",
+   "metaphor": "None literal: 'the other' = mood via B/W.",
+   "brand_character": "Luxury, assured, quiet.",
+   "art_direction": "One strong photograph + one display typeface + no decoration.",
+   "premium": [
+    "Only one typeface family carries the whole cover.",
+    "Black & white portrait with large type removes every 'template' cue."
+   ]
+  },
+  {
+   "id": "T011",
+   "title": "Swiss Wine. Das Magazin",
+   "category": "editorial_cover",
+   "site": "fontsinuse.com",
+   "source_page": "https://fontsinuse.com/uses/80132/swiss-wine-das-magazin",
+   "image_urls": [
+    "https://assets.fontsinuse.com/static/use-media-items/307/306240/upto-700xauto/6ac8a8b4/Scherm%C2%ADafbeelding%202026-10-09%20om%2010-36-48.jpeg"
+   ],
+   "designer": "Studio credited on source page",
+   "viewed": true,
+   "idea": "Huge condensed serif masthead overlapped by a single landscape photo window.",
+   "composition": "Masthead top 30%, photo window centred 60%×55%, small italic subline + logo below; strong central axis.",
+   "typography": "Condensed contrast serif (Italian Plate family) in deep red, ~22% of page height; italic serif subline ~2% height.",
+   "hierarchy": "Masthead > photo > subline > logo.",
+   "photo_scale_cropping": "Landscape photo cropped as rectangle; masthead bottom letters slightly overlap into photo (depth).",
+   "colour": "~55% cream paper, ~35% photo greens/blues, ~10% wine red.",
+   "grid": "Symmetric; side margins ~12% around photo.",
+   "negative_space": "Generous cream margins frame the photo like a mat.",
+   "metaphor": "Window onto a vineyard.",
+   "brand_character": "Calm, regional, credible.",
+   "art_direction": "Photo-as-window with typographic header.",
+   "premium": [
+    "Single brand colour (wine red) used only for type.",
+    "Cream instead of white gives paper warmth."
+   ]
+  },
+  {
+   "id": "T007",
+   "title": "Vert magazine (Croatian gardening/lifestyle)",
+   "category": "editorial_cover",
+   "site": "fontsinuse.com",
+   "source_page": "https://fontsinuse.com/uses/80455/vert-magazine",
+   "image_urls": [
+    "https://assets.fontsinuse.com/static/use-media-items/306/305509/upto-700xauto/6abf9a20/NJI3_DinaMilovcic_FrankkaTretinjak_Vert_0.jpeg"
+   ],
+   "designer": "Credited on source page",
+   "viewed": true,
+   "idea": "Illustrated branch with berries; one blurred-berry layer adds photographic depth to an illustration.",
+   "composition": "Illustration diagonal from bottom-left to top-right covering ~60%; logo small at right edge; lots of pale space.",
+   "typography": "Soft serif italic logotype (Rector) placed small, rotated with the composition; tiny metadata in corners.",
+   "hierarchy": "Image first, logo second — logo deliberately modest.",
+   "photo_scale_cropping": "Illustration with depth-of-field blur effect.",
+   "colour": "~70% pale blush, ~20% red berries, ~10% dark brown branch.",
+   "grid": "Corner metadata anchors the four corners.",
+   "negative_space": "~50% empty field.",
+   "metaphor": "Seasonal cycle: a single winter branch = the issue's season.",
+   "brand_character": "Gentle, natural, slow.",
+   "art_direction": "Concept-object on empty field; small type.",
+   "premium": [
+    "Logo is small — confidence instead of shouting.",
+    "Single symbolic object rather than a collage."
+   ]
+  },
+  {
+   "id": "T014",
+   "title": "Bibliothèque(s) no.105 'Droits culturels'",
+   "category": "editorial_cover",
+   "site": "fontsinuse.com",
+   "source_page": "https://fontsinuse.com/uses/79891/bibliotheque-s-no-105-droits-culturels",
+   "image_urls": [
+    "https://assets.fontsinuse.com/static/use-media-items/304/303498/upto-700xauto/6aa8000b/640250381_18528729490068503_2685994356136235361_n.jpeg"
+   ],
+   "designer": "Credited on source page",
+   "viewed": true,
+   "idea": "Title letters placed in circles connected by arrows — a network diagram that is also the headline.",
+   "composition": "Masthead condensed black across top; diagram occupies centre 60%.",
+   "typography": "Ultra-condensed grotesk masthead (Nein); typewriter-like letters in circles (HD Microbic); tiny sans for metadata.",
+   "hierarchy": "Diagram-headline > masthead > metadata.",
+   "photo_scale_cropping": "None.",
+   "colour": "~75% coral red, ~20% light grey circles, ~5% black.",
+   "grid": "Free diagram over strict masthead band.",
+   "negative_space": "Coral field around diagram ~40%.",
+   "metaphor": "Rights as a connected network — the information structure is the visual.",
+   "brand_character": "Intellectual, civic, playful.",
+   "art_direction": "Diagram-as-typography.",
+   "premium": [
+    "The concept is expressed with type alone — no stock imagery.",
+    "Two-colour discipline."
+   ]
+  },
+  {
+   "id": "T015",
+   "title": "Zürich Barock — Opernhaus magazine",
+   "category": "editorial_cover",
+   "site": "fontsinuse.com",
+   "source_page": "https://fontsinuse.com/uses/79886/opernhaus-zuerich-spielplan-2026",
+   "image_urls": [
+    "https://assets.fontsinuse.com/static/use-media-items/303/302614/upto-700xauto/6a9e7d38/793720283_18585370855066943_3624147599063909602_n.jpeg"
+   ],
+   "designer": "Herburg Weiland",
+   "viewed": true,
+   "idea": "Baroque blackletter-like 'Kurrent' meets grotesk; engraved figure illustration; monochrome on turquoise.",
+   "composition": "Stacked centred title ~45% height, illustration middle, dates bottom.",
+   "typography": "ES Klarheit Grotesk + ES Klarheit Kurrent (historic script cut) — period-appropriate pairing within one superfamily.",
+   "hierarchy": "'Barock' word > illustration > dates.",
+   "photo_scale_cropping": "None (engraving-style illustration).",
+   "colour": "~85% turquoise, ~15% black.",
+   "grid": "Central axis.",
+   "negative_space": "Moderate.",
+   "metaphor": "Historical style rendered in contemporary type.",
+   "brand_character": "Cultured, witty.",
+   "art_direction": "One-colour print look.",
+   "premium": [
+    "Superfamily pairing (grotesk + historic cut) keeps harmony.",
+    "Single ink colour on coloured stock."
+   ]
+  },
+  {
+   "id": "T016",
+   "title": "Notes on Plural Intelligence #1 'Together Apart'",
+   "category": "editorial_cover",
+   "site": "fontsinuse.com",
+   "source_page": "https://fontsinuse.com/uses/79821/notes-on-plural-intelligence",
+   "image_urls": [
+    "https://assets.fontsinuse.com/static/use-media-items/304/303261/upto-700xauto/6aa3d70e/IED_Journal_01_Together-Apart.jpeg"
+   ],
+   "designer": "òbelo for IED",
+   "viewed": true,
+   "idea": "Repeated stacked title words bleed off top and bottom; small duotone photos tucked behind words.",
+   "composition": "Words repeated 6× forming a column; photos as small cards at left/right.",
+   "typography": "Condensed grotesk caps (Farmacia) ~9% height per line, leading ~0.9; small sans metadata row at top.",
+   "hierarchy": "Rhythm of repeated title > photo cards > metadata.",
+   "photo_scale_cropping": "Small duotone green photos, cropped as polaroid-like cards.",
+   "colour": "~70% sage green, ~25% pale pink type, ~5% white.",
+   "grid": "3-column top metadata row; central title column.",
+   "negative_space": "Low — rhythm replaces space.",
+   "metaphor": "Repetition = being together/apart.",
+   "brand_character": "Academic, contemporary.",
+   "art_direction": "Typographic repetition + duotone.",
+   "premium": [
+    "Duotone photos unify mixed imagery.",
+    "Bleeding type implies continuation beyond the frame."
+   ]
+  },
+  {
+   "id": "T119",
+   "title": "FARM magazine cover (goldfinch)",
+   "category": "editorial_cover",
+   "site": "designspiration.com",
+   "source_page": "https://www.designspiration.com/save/1223543462328/",
+   "image_urls": [
+    "https://dspncdn.com/a1/media/originals/ae/b0/3a/aeb03a79218c95adaf087ea891737068.jpg"
+   ],
+   "designer": "Not shown on page",
+   "viewed": true,
+   "idea": "Animal portrait treated like a human cover star; masthead vertical on spine side.",
+   "composition": "Bird head fills ~70%, eye on upper third line; vertical masthead left edge; contents list bottom-right.",
+   "typography": "Bold grotesk masthead rotated 90°; right-aligned bold sans list.",
+   "hierarchy": "Eye of bird > masthead > list.",
+   "photo_scale_cropping": "Extreme close-up, cropped at chest; neutral grey backdrop.",
+   "colour": "~55% grey, ~30% bird browns/black, ~15% red/white.",
+   "grid": "Right-aligned list on right margin ~6%.",
+   "negative_space": "Grey backdrop ~40%.",
+   "metaphor": "Unexpected subject as cover star.",
+   "brand_character": "Curious, editorial.",
+   "art_direction": "Studio portrait of a non-human subject.",
+   "premium": [
+    "Gaze contact (the eye) gives cover power.",
+    "Vertical masthead frees the full portrait."
+   ]
+  },
+  {
+   "id": "T121",
+   "title": "the Room magazine no.15",
+   "category": "editorial_cover",
+   "site": "designspiration.com",
+   "source_page": "https://www.designspiration.com/save/224206434229/",
+   "image_urls": [
+    "https://dspncdn.com/a1/media/originals/c9/c3/cf/c9c3cf1507a452ee2776e26022df10c2.jpg"
+   ],
+   "designer": "Not shown on page",
+   "viewed": true,
+   "idea": "Head-only portrait floating on flat pink; patterned cap and collar match.",
+   "composition": "Head centred, ~55% width; small masthead top; issue number below.",
+   "typography": "Light sans masthead with italic serif 'm'; tiny small-caps names line.",
+   "hierarchy": "Face > masthead > number.",
+   "photo_scale_cropping": "Cut-out head + collar (body removed) — surreal crop.",
+   "colour": "~65% pink, ~20% skin, ~15% pale blue pattern.",
+   "grid": "Centred.",
+   "negative_space": "High, ~60%.",
+   "metaphor": "'Room' = the space around the head.",
+   "brand_character": "Fashion, playful-surreal.",
+   "art_direction": "Flat colour backdrop + cut-out.",
+   "premium": [
+    "Surreal crop done cleanly (no shadow fakery).",
+    "Masthead tiny relative to face."
+   ]
+  },
+  {
+   "id": "T122",
+   "title": "Interview (Russian edition) cover",
+   "category": "editorial_cover",
+   "site": "designspiration.com",
+   "source_page": "https://www.designspiration.com/save/38997793206/",
+   "image_urls": [
+    "https://dspncdn.com/a1/media/originals/dd/f7/d9/ddf7d937639dc9c63b8f6ea0d67013f5.jpg"
+   ],
+   "designer": "Not shown on page",
+   "viewed": true,
+   "idea": "Brush-script masthead overlapping hair; a bee on the lips as visual twist.",
+   "composition": "Face tight crop, eyes on upper-third line; masthead top across hair; names bottom.",
+   "typography": "Hand-brushed masthead; small serif names, mixed italic/roman.",
+   "hierarchy": "Eyes > bee/lips > masthead.",
+   "photo_scale_cropping": "Tight beauty crop, forehead cut.",
+   "colour": "~45% hair copper, ~40% skin, ~15% black.",
+   "grid": "Loose.",
+   "negative_space": "Almost none — intimacy via crop.",
+   "metaphor": "Bee on lips — 'sweet/dangerous'.",
+   "brand_character": "Bold, provocative.",
+   "art_direction": "Single surreal prop on a beauty portrait.",
+   "premium": [
+    "Tight crop with forehead cut = editorial confidence.",
+    "One unexpected detail creates the story."
+   ]
+  },
+  {
+   "id": "T117",
+   "title": "AFAR travel magazine cover",
+   "category": "editorial_cover",
+   "site": "designspiration.com",
+   "source_page": "https://www.designspiration.com/save/1288283002667/",
+   "image_urls": [
+    "https://dspncdn.com/a1/media/originals/10/83/19/108319fb31ef9da1a1f47028f2ff26e8.jpg"
+   ],
+   "designer": "Not shown on page",
+   "viewed": true,
+   "idea": "POV photo from a canoe; hand at bottom invites the reader in.",
+   "composition": "Masthead thin wide caps across top; cover line left; contents column top-right.",
+   "typography": "Ultra-light geometric caps masthead; bold condensed cover lines in yellow.",
+   "hierarchy": "Photo > masthead > yellow headline.",
+   "photo_scale_cropping": "First-person perspective; leading lines of boat converge to top.",
+   "colour": "~50% dark water, ~35% yellow/blue boat, ~15% white type.",
+   "grid": "Left-aligned cover line ~8% margin.",
+   "negative_space": "Water texture acts as calm field for text.",
+   "metaphor": "Journey = you are in the boat.",
+   "brand_character": "Adventurous, human.",
+   "art_direction": "POV photography.",
+   "premium": [
+    "Headline colour sampled from the photo (yellow).",
+    "Leading lines guide to masthead."
+   ]
+  },
+  {
+   "id": "T241",
+   "title": "Family Portrait magazine issue 01 (9 covers)",
+   "category": "editorial_cover",
+   "site": "fontsinuse.com",
+   "source_page": "https://fontsinuse.com/uses/44370/family-portrait-magazine-issue-01",
+   "image_urls": [
+    "https://assets.fontsinuse.com/static/use-media-items/155/154438/upto-700xauto/69b57e48/FP01_Cover_Elaine.jpeg",
+    "https://assets.fontsinuse.com/static/use-media-items/155/154439/upto-700xauto/69b57e48/FP01_Cover_Glen.jpeg"
+   ],
+   "designer": "DJA",
+   "viewed": true,
+   "idea": "Documentary family photos; logo set on a circle like a stamp; 9 alternative covers.",
+   "composition": "Photo full-bleed; circular logo top-right ~25% width.",
+   "typography": "Rounded bold script-like display (Asphalt) bent on a circle.",
+   "hierarchy": "People > circular logo.",
+   "photo_scale_cropping": "Documentary flash, candid; people with animals/children.",
+   "colour": "Photo-driven; logo in coral/green chosen per cover.",
+   "grid": "Logo position fixed across all covers.",
+   "negative_space": "Low.",
+   "metaphor": "Stamp/seal of family.",
+   "brand_character": "Warm, honest.",
+   "art_direction": "Documentary + one fixed graphic device = series.",
+   "premium": [
+    "Fixed logo position + changing photo = instant series.",
+    "Candid, un-retouched photos."
+   ]
+  },
+  {
+   "id": "T040",
+   "title": "Good Times podcast — host card",
+   "category": "personal_brand",
+   "site": "fontsinuse.com",
+   "source_page": "https://fontsinuse.com/uses/80950/good-times-podcast",
+   "image_urls": [
+    "https://assets.fontsinuse.com/static/use-media-items/311/310675/upto-700xauto/6af6c024/Scherm%C2%ADafbeelding%202026-11-13%20om%2008-34-56.png",
+    "https://assets.fontsinuse.com/static/use-media-items/311/310674/upto-700xauto/6af6be94/Scherm%C2%ADafbeelding%202026-11-13%20om%2008-35-12.png"
+   ],
+   "designer": "Lorenzo Bigatti Studio",
+   "viewed": true,
+   "idea": "Host cut-out standing in front of a giant first name; surname written in script across.",
+   "composition": "First name in grey ultra-bold fills ~85% width; person at right overlapping letters; script surname diagonal.",
+   "typography": "Ultra-bold condensed sans (Affigere) + casual script (Blitz Script) + mono for small info.",
+   "hierarchy": "Name > face > script surname.",
+   "photo_scale_cropping": "Waist-up cut-out, arms crossed, smiling, eye contact.",
+   "colour": "~60% saturated blue, ~25% light grey type, ~10% person, ~5% orange script.",
+   "grid": "Type nearly edge to edge.",
+   "negative_space": "Low; bold.",
+   "metaphor": "Name as stage/backdrop.",
+   "brand_character": "Friendly, confident.",
+   "art_direction": "Expert portrait + big name type.",
+   "premium": [
+    "Person overlaps type (depth) instead of sitting beside it.",
+    "Script used once, as accent only."
+   ]
+  },
+  {
+   "id": "T052",
+   "title": "Herrat 2025 — 'The Glasses' poster",
+   "category": "personal_brand",
+   "site": "fontsinuse.com",
+   "source_page": "https://fontsinuse.com/uses/80522/herrat-2025-redesign",
+   "image_urls": [
+    "https://assets.fontsinuse.com/static/use-media-items/311/310383/upto-700xauto/6af45931/Frame%208272487.png",
+    "https://assets.fontsinuse.com/static/use-media-items/311/310379/upto-700xauto/6af45387/Frame%208272281.png"
+   ],
+   "designer": "Credited on source page (image caption: Simbayu Studios)",
+   "viewed": true,
+   "idea": "Face cropped from nose up; dollar-smiley sunglasses become the message.",
+   "composition": "Title top-left ~70% width; face bottom 65%; crop cuts above mouth.",
+   "typography": "Heavy humanist sans (Gill Kayo) in yellow; small light sans body text 3 lines.",
+   "hierarchy": "Glasses > title > body.",
+   "photo_scale_cropping": "Extreme frontal crop cutting the head top and mouth — focus on the prop.",
+   "colour": "~55% cobalt blue, ~30% skin, ~10% black, ~5% yellow.",
+   "grid": "Left-aligned text block ~8% margin.",
+   "negative_space": "Blue top 30%.",
+   "metaphor": "Irony of success shown in an object.",
+   "brand_character": "Humorous, bold.",
+   "art_direction": "Prop-driven portrait.",
+   "premium": [
+    "Tight, brave crop.",
+    "Complementary blue/yellow with no extra colours."
+   ]
+  },
+  {
+   "id": "T245",
+   "title": "TEC Technical Education Copenhagen — campaign + identity",
+   "category": "personal_brand",
+   "site": "fontsinuse.com",
+   "source_page": "https://fontsinuse.com/uses/78365/tec-technical-education-copenhagen",
+   "image_urls": [
+    "https://assets.fontsinuse.com/static/use-media-items/296/295810/upto-700xauto/6a572a8e/TEC%20NEW.png",
+    "https://assets.fontsinuse.com/static/use-media-items/296/295135/upto-700xauto/6a3b94b3/TEC-5.png"
+   ],
+   "designer": "Credited on source page",
+   "viewed": true,
+   "idea": "Real students as cover stars; bold 'FROM X TO Y' headlines; striped T-pattern derived from logo.",
+   "composition": "Portrait poster: people fill top 75%, headline bottom-left ~45% width, pattern band at bottom.",
+   "typography": "Custom grotesk (TEC Sans) caps, tight leading ~0.95, wide letter-forms; short 2-line headlines.",
+   "hierarchy": "People > headline > pattern.",
+   "photo_scale_cropping": "Full-body/three-quarter, natural poses, arms crossed, direct gaze; real workshop backgrounds.",
+   "colour": "~60% photo neutrals, ~30% black/white pattern, ~10% white type.",
+   "grid": "Strong left margin ~6%; pattern modules on a square grid.",
+   "negative_space": "Medium.",
+   "metaphor": "'From apprentice to master' — progression in words + pattern.",
+   "brand_character": "Proud, craft, youthful.",
+   "art_direction": "Real people + system pattern.",
+   "premium": [
+    "Pattern is built from the logo, so every piece is recognisable.",
+    "Headlines are journeys (from→to), not slogans."
+   ]
+  },
+  {
+   "id": "T192",
+   "title": "Primer school — age-group portraits + building-block grid",
+   "category": "personal_brand",
+   "site": "thebrandidentity.com",
+   "source_page": "https://thebrandidentity.com/project/how-newkid-built-primers-identity-around-a-building-blocks-concept",
+   "image_urls": [
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/2026/06/how-newkid-built-primers-identity-around-a-building-blocks-concept/Primer-newkid-03.jpg",
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/2026/06/how-newkid-built-primers-identity-around-a-building-blocks-concept/Primer-newkid-01.jpg",
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/2026/06/how-newkid-built-primers-identity-around-a-building-blocks-concept/Primer-newkid-02.png"
+   ],
+   "designer": "newkid",
+   "viewed": true,
+   "idea": "Child portraits with huge age numbers (K-2, 3-5, 6-8) overlapping the photo; square-grid building blocks.",
+   "composition": "Portrait centred, number set across chest height ~70% width; billboard: modular grid with photo cells and colour cells.",
+   "typography": "Bold grotesk numerals in single brand colours; serif-like wordmark 'Primer.' bottom-left.",
+   "hierarchy": "Child > number > URL.",
+   "photo_scale_cropping": "Seated full-body children on light seamless, natural expression.",
+   "colour": "~70% white/light, ~20% photo, ~10% one bright colour per age group.",
+   "grid": "Visible square module grid (12×4 on billboard).",
+   "negative_space": "High in portrait set.",
+   "metaphor": "Building blocks = learning stages.",
+   "brand_character": "Modern, optimistic, educational.",
+   "art_direction": "Colour-coded series.",
+   "premium": [
+    "One colour per series item makes a set read as a system.",
+    "Grid cells hold photo, colour or word interchangeably."
+   ]
+  },
+  {
+   "id": "T224",
+   "title": "Onomastics research carousel — slide 1",
+   "category": "social_carousel",
+   "site": "fontsinuse.com",
+   "source_page": "https://fontsinuse.com/uses/74226/onomastics-research-carousel",
+   "image_urls": [
+    "https://assets.fontsinuse.com/static/use-media-items/277/276032/upto-700xauto/69b6164b/Deonomastica1.png"
+   ],
+   "designer": "BlaBlaLab",
+   "viewed": true,
+   "idea": "Black cover slide with elegant thin caps title; names as coloured sticker-tags.",
+   "composition": "Title centred ~70% width over 4 lines; tags overlapping line ends; subline grey; logo bottom.",
+   "typography": "Thin high-contrast display caps (Spalla) mixed with one bold line (NOMES); secondary sans (Area) for subline; scale ratio title:sub ≈ 4:1.",
+   "hierarchy": "Bold word 'NOMES' > rest of title > tags > subline > logo.",
+   "photo_scale_cropping": "None.",
+   "colour": "~85% black, ~10% white type, ~5% neon tags (magenta/yellow/green).",
+   "grid": "Centre axis, 4:5 format.",
+   "negative_space": "~45%.",
+   "metaphor": "Names as labels/stickers.",
+   "brand_character": "Research, smart, playful.",
+   "art_direction": "Typographic cover slide.",
+   "premium": [
+    "One weight change creates the hierarchy — no extra colour needed.",
+    "Neon used only for tiny tags."
+   ]
+  },
+  {
+   "id": "T225",
+   "title": "Ralf Lobeck Instagram posts",
+   "category": "social_carousel",
+   "site": "fontsinuse.com",
+   "source_page": "https://fontsinuse.com/uses/47969/ralf-lobeck-instagram-posts",
+   "image_urls": [
+    "https://assets.fontsinuse.com/static/use-media-items/168/167228/upto-700xauto/69b58a09/new%20website5.jpeg",
+    "https://assets.fontsinuse.com/static/use-media-items/168/167231/upto-700xauto/69b58a09/back%20in%20black.jpeg"
+   ],
+   "designer": "Ralf Lobeck",
+   "viewed": true,
+   "idea": "Huge serif caps over painterly texture, an italic script-like line crossing through.",
+   "composition": "Stacked 3-line caps ~80% width; italic line crosses at middle in contrasting colour.",
+   "typography": "Didone-ish serif (BF Rotwang) roman caps + italic lowercase with ligatures; ratio ~3:1.",
+   "hierarchy": "Caps > italic line.",
+   "photo_scale_cropping": "Painting texture background.",
+   "colour": "~60% red/orange texture, ~30% white type, ~10% black italic.",
+   "grid": "Centred.",
+   "negative_space": "Low.",
+   "metaphor": "None.",
+   "brand_character": "Artistic, personal.",
+   "art_direction": "Typography over own artwork.",
+   "premium": [
+    "Roman + italic of the same family = refined contrast.",
+    "Background is the artist's own material, not stock."
+   ]
+  },
+  {
+   "id": "T227",
+   "title": "NatWest social media posts",
+   "category": "social_carousel",
+   "site": "fontsinuse.com",
+   "source_page": "https://fontsinuse.com/uses/41305/natwest-social-media",
+   "image_urls": [
+    "https://assets.fontsinuse.com/static/use-media-items/158/157679/upto-700xauto/69b5808d/E6WK7puXEAALZCZ.jpeg",
+    "https://assets.fontsinuse.com/static/use-media-items/158/157682/upto-700xauto/69b5808d/EvaJY7ZXEAQLOpN.jpeg"
+   ],
+   "designer": "NatWest (in-house/agency per page)",
+   "viewed": true,
+   "idea": "Warm family photo + purple rounded panel with slab-serif headline and one highlighted word.",
+   "composition": "Photo full-bleed; panel bottom-left ~55% width; or headline top-right over photo.",
+   "typography": "Slab serif (Jubilat) bold 3-line headline; one word on highlighter strip; sans CTA.",
+   "hierarchy": "Headline > highlighted word > CTA.",
+   "photo_scale_cropping": "Lifestyle: mother and child high-five; genuine laughter; eye-level.",
+   "colour": "~65% photo, ~25% purple, ~10% white/magenta/yellow highlight.",
+   "grid": "Panel inset ~4% margin.",
+   "negative_space": "Photo carries it.",
+   "metaphor": "'Talk, Learn, Do' — action words.",
+   "brand_character": "Warm, helpful.",
+   "art_direction": "Commercial lifestyle + brand panel.",
+   "premium": [
+    "Highlighter only on the key word (money/Today).",
+    "Real emotion in photo."
+   ]
+  },
+  {
+   "id": "T197",
+   "title": "Education Elements — social posts, banners, web",
+   "category": "social_carousel",
+   "site": "thebrandidentity.com",
+   "source_page": "https://thebrandidentity.com/project/every-element-of-gold-fronts-revamp-for-education-elements-balances-structure-with-humanity",
+   "image_urls": [
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/_video-thumbnails/4952934.jpg",
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/2025/05/every-element-of-gold-fronts-revamp-for-education-elements-balances-structure-with-humanity/Education-Elements-Gold-Front-02.jpg",
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/2025/05/every-element-of-gold-fronts-revamp-for-education-elements-balances-structure-with-humanity/Education-Elements-Gold-Front-08.jpg"
+   ],
+   "designer": "Gold Front",
+   "viewed": true,
+   "idea": "System of coloured tiles: some type-only, some photo, some data bars; short imperative lines ('Make every class count').",
+   "composition": "Each tile 1 idea: either a big statement or a stat (35%) or a photo with caption.",
+   "typography": "Condensed bold sans headlines (~3 words/line), sentence case; italic for emphasis; big numerals for stats.",
+   "hierarchy": "Statement/number first, photo second.",
+   "photo_scale_cropping": "Children/teachers, natural, cropped at chest, often cut out of frames.",
+   "colour": "Rotating palette: yellow, blue, pink, red, black; each tile ~80% one colour.",
+   "grid": "Vertical banners use rotated text along long edge.",
+   "negative_space": "Medium per tile.",
+   "metaphor": "Elements = modular tiles.",
+   "brand_character": "Energetic, credible education.",
+   "art_direction": "Modular content system for social.",
+   "premium": [
+    "Data shown as simple bars in brand colours.",
+    "Each tile has exactly one message."
+   ]
+  },
+  {
+   "id": "T174",
+   "title": "Kinetik — LinkedIn post and billboard",
+   "category": "social_carousel",
+   "site": "thebrandidentity.com",
+   "source_page": "https://thebrandidentity.com/project/how-afternow-put-kinetiks-identity-and-four-products-into-one-system",
+   "image_urls": [
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/2026/11/how-afternow-put-kinetiks-identity-and-four-products-into-one-system/Kinetik-Afternow-13_2026-11-02-142316_nhci.jpg",
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/2026/11/how-afternow-put-kinetiks-identity-and-four-products-into-one-system/Kinetik-Afternow-02_2026-11-02-142409_qqvi.jpg"
+   ],
+   "designer": "Afternow",
+   "viewed": true,
+   "idea": "Painterly meadow background; white card with serif headline, final phrase in italic accent colour.",
+   "composition": "Card centred ~85% width; text top-left in card; generous empty card space.",
+   "typography": "Transitional serif, roman + italic in violet for key phrase; sentence case; leading ~1.15.",
+   "hierarchy": "Headline > italic phrase.",
+   "photo_scale_cropping": "Soft painterly illustration as texture.",
+   "colour": "~60% muted meadow, ~30% white card, ~10% navy/violet type.",
+   "grid": "Card margins ~6%.",
+   "negative_space": "Card lower half empty.",
+   "metaphor": "Movement through landscape.",
+   "brand_character": "Calm healthcare.",
+   "art_direction": "Soft editorial.",
+   "premium": [
+    "Italic of the same serif as the only accent.",
+    "Empty card space = calm."
+   ]
+  },
+  {
+   "id": "T110",
+   "title": "SMK National Gallery of Denmark — story, column, poster",
+   "category": "social_carousel",
+   "site": "bpando.org",
+   "source_page": "https://bpando.org/2026/11/12/smk-statens-museum-for-kunst-etypes-brand-identity-design/",
+   "image_urls": [
+    "https://bpando.org/wp-content/uploads/statens-museum-kunst-SMK-eType-brand-identity-design-bpo-review-typography-digital-poster.png",
+    "https://bpando.org/wp-content/uploads/Statens-Museum-for-Kunst-SMK-eType-brand-identity-design-bpo-review-wordmark-typography.jpeg"
+   ],
+   "designer": "e-Types",
+   "viewed": true,
+   "idea": "Artwork full-bleed with bold red wordmark and short caps title; type-only poster with giant condensed name + date.",
+   "composition": "Story: artwork full-bleed, wordmark top-left, title mid-left in 3 lines; poster: 3 lines fill 90% width.",
+   "typography": "Heavy condensed grotesk caps, leading ~0.9, tracking ~-1%; dates in same weight.",
+   "hierarchy": "Artwork > title > wordmark.",
+   "photo_scale_cropping": "Painting reproductions as hero.",
+   "colour": "Story: artwork colours + ~5% red; poster: ~70% green, ~30% black.",
+   "grid": "Left margin ~7%; text block left-aligned.",
+   "negative_space": "Low; content as hero.",
+   "metaphor": "Art speaks itself.",
+   "brand_character": "Confident institution.",
+   "art_direction": "Content-first + loud wordmark.",
+   "premium": [
+    "Type-only poster with just name + date.",
+    "Same typographic voice across story, column, poster."
+   ]
+  },
+  {
+   "id": "T236",
+   "title": "Quintus Miller open lecture poster",
+   "category": "event_poster",
+   "site": "fontsinuse.com",
+   "source_page": "https://fontsinuse.com/uses/33748/quintus-miller-lecture-poster",
+   "image_urls": [
+    "https://assets.fontsinuse.com/static/use-media-items/116/115554/upto-700xauto/69b559d7/miller_blog.png",
+    "https://assets.fontsinuse.com/static/use-media-items/115/114959/upto-700xauto/69b558c8/miller_poster.png"
+   ],
+   "designer": "Credited on source page",
+   "viewed": true,
+   "idea": "Facade grid of the architect's buildings rendered as red→navy gradient blocks; elegant italic name.",
+   "composition": "Upper 45%: name + info; lower 55%: bent facade grid; small text column.",
+   "typography": "Italic serif (Adobe Caslon) for name ~9% height; small caps sans (Metropolis) for info; ratio ~6:1.",
+   "hierarchy": "Grid graphic > name > date/room.",
+   "photo_scale_cropping": "None.",
+   "colour": "~55% white, ~35% red/navy gradient, ~10% navy text.",
+   "grid": "2-column info; strong left margin.",
+   "negative_space": "~40% white.",
+   "metaphor": "Architecture as a grid of windows.",
+   "brand_character": "Academic, refined.",
+   "art_direction": "Concept graphic + classic serif.",
+   "premium": [
+    "Serif italic person name gives humanity to a technical graphic.",
+    "Info set small and orderly."
+   ]
+  },
+  {
+   "id": "T237",
+   "title": "Johannes Schwartz lecture poster (HfG Offenbach)",
+   "category": "event_poster",
+   "site": "fontsinuse.com",
+   "source_page": "https://fontsinuse.com/uses/69421/johannes-schwartz-lecture-poster",
+   "image_urls": [
+    "https://assets.fontsinuse.com/static/use-media-items/261/260770/upto-700xauto/69b60850/Plakat_Johannes%20Schwartz_Square.jpeg",
+    "https://assets.fontsinuse.com/static/use-media-items/261/260771/upto-700xauto/69b60850/IMG_0260.jpeg"
+   ],
+   "designer": "Studio Laucke Siebein",
+   "viewed": true,
+   "idea": "The speaker's own photograph framed by his name running around the edge like a border.",
+   "composition": "Photo centred ~75%; name letters run clockwise around frame; info set in Helvetica at right.",
+   "typography": "Heavy display (Rutor Stone) rotating around frame + Helvetica regular for info.",
+   "hierarchy": "Photo > name frame > date.",
+   "photo_scale_cropping": "Still-life by the photographer himself, close crop.",
+   "colour": "~60% photo, ~35% white frame, ~5% black type.",
+   "grid": "Frame = type path.",
+   "negative_space": "Small white border.",
+   "metaphor": "Name literally framing his work.",
+   "brand_character": "Experimental, art school.",
+   "art_direction": "Type-as-frame.",
+   "premium": [
+    "Uses the speaker's own work — authenticity.",
+    "Only two typefaces, roles clear."
+   ]
+  },
+  {
+   "id": "T124",
+   "title": "'YOUTH — Word of Life' annual conference poster (Moscow)",
+   "category": "event_poster",
+   "site": "designspiration.com",
+   "source_page": "https://www.designspiration.com/save/285727417075/",
+   "image_urls": [
+    "https://dspncdn.com/a1/media/originals/16/9c/55/169c55da141cb7eda0b4a6e1b40d7532.jpg",
+    "https://dspncdn.com/a1/media/originals/bf/39/ef/bf39ef5e033fb5922997fdde8810e941.jpg"
+   ],
+   "designer": "Not shown on page",
+   "viewed": true,
+   "idea": "Blue monochrome stage photo inside a red frame; title glyphs customised (Ø, Ŧ).",
+   "composition": "Red outline frame inset ~5%; title across centre ~75% width; photo block behind title; info centred top and bottom.",
+   "typography": "Geometric caps title with custom glyphs; small tracked caps (~+100) for info lines.",
+   "hierarchy": "Title > photo > info.",
+   "photo_scale_cropping": "Concert crowd shot turned to blue duotone.",
+   "colour": "~60% light grey, ~25% blue, ~15% red.",
+   "grid": "Symmetric.",
+   "negative_space": "~45%.",
+   "metaphor": "Energy of youth (stage light).",
+   "brand_character": "Youthful but orderly.",
+   "art_direction": "Duotone + frame.",
+   "premium": [
+    "Duotone unifies a weak stock-like photo.",
+    "Tracked small caps info = order."
+   ]
+  },
+  {
+   "id": "T148",
+   "title": "Trey Trahan lecture poster (MIT)",
+   "category": "event_poster",
+   "site": "designspiration.com",
+   "source_page": "https://www.designspiration.com/save/1333086783251/",
+   "image_urls": [
+    "https://dspncdn.com/a1/media/originals/47/7e/9d/477e9d2cd83c4d912e9444b56e218324.jpg"
+   ],
+   "designer": "Not shown on page (MIT Architecture lecture series)",
+   "viewed": true,
+   "idea": "Speaker name built from a stencil/constructed display alphabet; everything else tiny.",
+   "composition": "Name + date fill middle 35%; information blocks at top and bottom in a 3-column grid.",
+   "typography": "Constructed geometric display ~10% height per line; small serif body ~1.5%.",
+   "hierarchy": "Name > date > info.",
+   "photo_scale_cropping": "None.",
+   "colour": "~85% off-white, ~15% black.",
+   "grid": "Visible fold lines create 4×3 grid.",
+   "negative_space": "~60%.",
+   "metaphor": "Constructed letters = architecture.",
+   "brand_character": "Academic, precise.",
+   "art_direction": "Swiss-academic.",
+   "premium": [
+    "Extreme scale contrast (display:body ≈ 7:1).",
+    "One colour."
+   ]
+  },
+  {
+   "id": "T149",
+   "title": "'Studio8 Design: Collaborations in Type & Print' talk poster",
+   "category": "event_poster",
+   "site": "designspiration.com",
+   "source_page": "https://www.designspiration.com/save/47570952419/",
+   "image_urls": [
+    "https://dspncdn.com/a1/media/originals/26/de/44/26de445a7a65dd8edd11a0f17c68e43a.jpg"
+   ],
+   "designer": "Not shown on page (The Typographic Circle event)",
+   "viewed": true,
+   "idea": "Two black circles forming an '8' on yellow.",
+   "composition": "Graphic occupies top 75%; info row bottom 20% in columns.",
+   "typography": "Bold sans title 3 lines; tiny info columns.",
+   "hierarchy": "8 > title > info.",
+   "photo_scale_cropping": "None.",
+   "colour": "~75% yellow, ~22% black, ~3% white.",
+   "grid": "4-column info row.",
+   "negative_space": "Yellow field ~45%.",
+   "metaphor": "Studio name (8) as pure geometry.",
+   "brand_character": "Witty, minimal.",
+   "art_direction": "Single geometric idea.",
+   "premium": [
+    "One idea, two shapes.",
+    "Info hierarchy at bottom like a colophon."
+   ]
+  },
+  {
+   "id": "T143",
+   "title": "SALA Fall 2013 Lecture Series poster",
+   "category": "event_poster",
+   "site": "designspiration.com",
+   "source_page": "https://www.designspiration.com/save/1565020351485/",
+   "image_urls": [
+    "https://dspncdn.com/a1/media/originals/18/17/47/1817479311a9e6aa0dc7cd710a11d2d1.jpg"
+   ],
+   "designer": "Not shown on page",
+   "viewed": true,
+   "idea": "Geometric pattern of half-circles; lecture dates in large numerals within the pattern.",
+   "composition": "Pattern full-bleed, 4×4 module; title in one module; dates in modules.",
+   "typography": "Bold sans title, large numerals for dates.",
+   "hierarchy": "Pattern > title > dates.",
+   "photo_scale_cropping": "None.",
+   "colour": "~45% coral, ~35% teal, ~20% brown/white.",
+   "grid": "Strict 4×4.",
+   "negative_space": "Low.",
+   "metaphor": "Modular series = series of talks.",
+   "brand_character": "Academic, warm.",
+   "art_direction": "Pattern system.",
+   "premium": [
+    "Dates integrated into the pattern modules.",
+    "Three-colour limit."
+   ]
+  },
+  {
+   "id": "T129",
+   "title": "JTBC 'Tomorrow Conference' 2013 poster",
+   "category": "event_poster",
+   "site": "designspiration.com",
+   "source_page": "https://www.designspiration.com/save/1177458309744/",
+   "image_urls": [
+    "https://dspncdn.com/a1/media/originals/9f/a0/75/9fa0754384b84d9b5563e1767a8ce6e4.jpg"
+   ],
+   "designer": "Not shown on page",
+   "viewed": true,
+   "idea": "Gradient 3D-like ribbon forming abstract letter; Korean text left-aligned column.",
+   "composition": "Ribbon centre-right ~65%; text column top-left.",
+   "typography": "Simple sans, left aligned, generous line spacing.",
+   "hierarchy": "Ribbon > title > date.",
+   "photo_scale_cropping": "None.",
+   "colour": "~60% white, ~40% multi-gradient.",
+   "grid": "Left text column ~30% width.",
+   "negative_space": "~50%.",
+   "metaphor": "Tomorrow as fluid motion.",
+   "brand_character": "Optimistic.",
+   "art_direction": "Abstract hero form.",
+   "premium": [
+    "Text kept simple so the form can be loud.",
+    "White ground."
+   ]
+  },
+  {
+   "id": "T019",
+   "title": "QWF Literary Awards Gala 2026 (Instagram version)",
+   "category": "event_poster",
+   "site": "fontsinuse.com",
+   "source_page": "https://fontsinuse.com/uses/81420/quebec-writers-federation-2026-awards-gala",
+   "image_urls": [
+    "https://assets.fontsinuse.com/static/use-media-items/311/310196/upto-700xauto/6af9e278/QWF_LiteraryAwardsGala_2026_Insta-01.jpeg"
+   ],
+   "designer": "Credited on source page",
+   "viewed": true,
+   "idea": "Flat illustrated objects (open book, notebook, cocktail glasses) on navy with stars; retro serif title.",
+   "composition": "Title top 25% centred; objects as a still life bottom 70%.",
+   "typography": "ITC Benguiat caps in gold, 3 lines centred; TT Commons for info.",
+   "hierarchy": "Title > objects.",
+   "photo_scale_cropping": "None.",
+   "colour": "~50% navy, ~25% white, ~15% gold/yellow, ~10% orange.",
+   "grid": "Centred.",
+   "negative_space": "Navy with stars.",
+   "metaphor": "Book + champagne = literary gala.",
+   "brand_character": "Festive, literary.",
+   "art_direction": "Flat illustration still life.",
+   "premium": [
+    "Objects tell the theme without words.",
+    "Limited 4-colour palette."
+   ]
+  },
+  {
+   "id": "T021",
+   "title": "Projektor — Day of Architecture for young people (Hamburg)",
+   "category": "event_poster",
+   "site": "fontsinuse.com",
+   "source_page": "https://fontsinuse.com/uses/80972/projektor-tag-der-architektur-und-ingenieur-1",
+   "image_urls": [
+    "https://assets.fontsinuse.com/static/use-media-items/308/307913/upto-700xauto/6ad8a132/farinamichelle-projektor-2026-1.jpeg"
+   ],
+   "designer": "Credited on source page",
+   "viewed": true,
+   "idea": "A house-shaped coloured block containing the headline; arch shapes hold info.",
+   "composition": "House shape ~80% of poster; title inside; arches bottom.",
+   "typography": "Playful grotesk (Rauschen Max) with mixed-case; Bahnschrift for info.",
+   "hierarchy": "House > title > arches.",
+   "photo_scale_cropping": "Tiny cartoon cow sticker only.",
+   "colour": "~45% coral, ~40% sky blue, ~15% white.",
+   "grid": "Shape-led.",
+   "negative_space": "Low.",
+   "metaphor": "Text lives inside a house = architecture for kids.",
+   "brand_character": "Friendly, youth-oriented.",
+   "art_direction": "Shape-container typography.",
+   "premium": [
+    "Container shape is the concept.",
+    "Two dominant colours only."
+   ]
+  },
+  {
+   "id": "T126",
+   "title": "Kerning — International Conference on Typography",
+   "category": "event_poster",
+   "site": "designspiration.com",
+   "source_page": "https://www.designspiration.com/save/4483300597342/",
+   "image_urls": [
+    "https://dspncdn.com/a1/media/originals/90/a4/c4/90a4c4155c4a80dae9f3967b25c6fbe1.jpg"
+   ],
+   "designer": "Not shown on page",
+   "viewed": true,
+   "idea": "The 'K' and an arrow form a logo about spacing; type used as the subject.",
+   "composition": "Mark centred ~55% width; wordmark below.",
+   "typography": "Heavy geometric sans.",
+   "hierarchy": "Mark > wordmark > sub.",
+   "photo_scale_cropping": "None.",
+   "colour": "~75% orange-red, ~20% black, ~5% white.",
+   "grid": "Centred.",
+   "negative_space": "~45%.",
+   "metaphor": "Arrow = moving letters closer (kerning).",
+   "brand_character": "Expert, witty.",
+   "art_direction": "Concept logo poster.",
+   "premium": [
+    "Metaphor drawn from the topic itself.",
+    "Flat 3-colour."
+   ]
+  },
+  {
+   "id": "T130",
+   "title": "'protégez l'enfant!' — Automobile-Club de Suisse",
+   "category": "campaign_poster",
+   "site": "designspiration.com",
+   "source_page": "https://www.designspiration.com/save/839730689/",
+   "image_urls": [
+    "https://dspncdn.com/a1/media/originals/7d/6e/25/7d6e2531a72faa2c3add8d2d4e2f9006.jpg"
+   ],
+   "designer": "Page does not credit; commonly attributed to Josef Müller-Brockmann (1953)",
+   "viewed": true,
+   "idea": "Huge motorbike wheel vs small running child — scale contrast tells the danger.",
+   "composition": "Wheel fills ~65% diagonally from top-left; child small bottom-right; yellow road strip bottom.",
+   "typography": "Simple grotesk, small, top-left; headline only 3 words.",
+   "hierarchy": "Wheel > child > headline.",
+   "photo_scale_cropping": "B/W photomontage, dramatic low angle.",
+   "colour": "~60% greys, ~30% white, ~10% yellow + red.",
+   "grid": "Left-aligned headline.",
+   "negative_space": "White area between wheel and child is the 'danger gap'.",
+   "metaphor": "Scale = vulnerability of a child.",
+   "brand_character": "Serious, protective.",
+   "art_direction": "Photomontage scale contrast.",
+   "premium": [
+    "The message is in the scale relationship, not in the text.",
+    "Text minimal and functional."
+   ]
+  },
+  {
+   "id": "T157",
+   "title": "Fitbit 'Fit for every you'",
+   "category": "campaign_poster",
+   "site": "designspiration.com",
+   "source_page": "https://www.designspiration.com/save/2147656487409/",
+   "image_urls": [
+    "https://dspncdn.com/a1/media/originals/94/b2/0c/94b20cc84d4cd1e06961b3b6cdb24bbc.jpg"
+   ],
+   "designer": "Not shown on page",
+   "viewed": true,
+   "idea": "A running silhouette filled with multiple life moments (photos); stacked yellow headline over it.",
+   "composition": "Silhouette cut-out fills ~75%; headline 4 lines centred ~60% width.",
+   "typography": "Condensed bold sans, all caps, yellow, leading ~1.0; small tracked caps subline.",
+   "hierarchy": "Headline > figure > logo.",
+   "photo_scale_cropping": "Multiple photos clipped inside a body silhouette.",
+   "colour": "~55% teal, ~25% photos, ~20% yellow.",
+   "grid": "Centred.",
+   "negative_space": "Teal ground ~40%.",
+   "metaphor": "One body, many selves.",
+   "brand_character": "Energetic, inclusive.",
+   "art_direction": "Clipping-mask collage.",
+   "premium": [
+    "Collage contained inside one silhouette stays readable.",
+    "Complementary teal/yellow."
+   ]
+  },
+  {
+   "id": "T161",
+   "title": "Air France 'France is in the air' — Paris",
+   "category": "campaign_poster",
+   "site": "designspiration.com",
+   "source_page": "https://www.designspiration.com/save/237710966667/",
+   "image_urls": [
+    "https://dspncdn.com/a1/media/originals/11/a7/f7/11a7f7e2a8e950363e5bf5042c729f23.jpg"
+   ],
+   "designer": "Not shown on page",
+   "viewed": true,
+   "idea": "Glamorous model framed like a postcard with red brand frame; price and city as information.",
+   "composition": "Photo window ~75% inside red frame; logo top; city + price bottom.",
+   "typography": "Bold wide sans caps; price large.",
+   "hierarchy": "Face > logo > price.",
+   "photo_scale_cropping": "Portrait waist-up, retro styling, Eiffel tower in background.",
+   "colour": "~45% photo blues, ~35% red frame, ~20% navy/black.",
+   "grid": "Frame margin ~6%.",
+   "negative_space": "Sky behind head.",
+   "metaphor": "Parisian chic = the brand.",
+   "brand_character": "Premium commercial.",
+   "art_direction": "Framed glamour photo.",
+   "premium": [
+    "Frame colour = brand colour, repeated across series.",
+    "Hair/hat colour matched to frame red."
+   ]
+  },
+  {
+   "id": "T201",
+   "title": "Half Full — mental-health-minded beer brand",
+   "category": "campaign_poster",
+   "site": "thebrandidentity.com",
+   "source_page": "https://thebrandidentity.com/project/freddie-halls-identity-half-full-seeks-dismantle-stigmas-around-mens-mental-health",
+   "image_urls": [
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/2021/05/freddie-halls-identity-half-full-seeks-dismantle-stigmas-around-mens-mental-health/HalfFull-FreddieHall-6.jpg",
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/2021/05/freddie-halls-identity-half-full-seeks-dismantle-stigmas-around-mens-mental-health/HalfFull-FreddieHall-4.jpg",
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/2021/05/freddie-halls-identity-half-full-seeks-dismantle-stigmas-around-mens-mental-health/HalfFull-FreddieHall-1.jpg"
+   ],
+   "designer": "Freddie Hall",
+   "viewed": true,
+   "idea": "Optimistic/pessimistic wordplay; can split half colour / half white = 'half full'.",
+   "composition": "Billboard: 2-line condensed caps headline fills ~85%; small serif aside boxed at right.",
+   "typography": "Condensed heavy sans caps + light high-contrast serif in mixed case; ratio ~5:1.",
+   "hierarchy": "Headline > serif aside.",
+   "photo_scale_cropping": "Product photography minimal.",
+   "colour": "~60% green, ~35% off-white, ~5% black.",
+   "grid": "Corner metadata (H)(A)(L)(F) on posters.",
+   "negative_space": "Medium.",
+   "metaphor": "Glass half full/empty.",
+   "brand_character": "Warm humour, mental-health aware.",
+   "art_direction": "Copy-led typography.",
+   "premium": [
+    "Brand name is the visual metaphor (half-filled can).",
+    "Serif/sans pairing as two voices."
+   ]
+  },
+  {
+   "id": "T028",
+   "title": "La Bâtie Festival de Genève 2026",
+   "category": "campaign_poster",
+   "site": "fontsinuse.com",
+   "source_page": "https://fontsinuse.com/uses/80033/la-batie-festival-de-geneve-2026",
+   "image_urls": [
+    "https://assets.fontsinuse.com/static/use-media-items/304/303406/upto-700xauto/6aa7f9cd/batiiie.jpeg"
+   ],
+   "designer": "Studio pique-nique",
+   "viewed": true,
+   "idea": "Underwater/top-down photo of a person splashing; chrome-like logo on a diagonal.",
+   "composition": "Photo full-bleed; logo bottom-left diagonal ~60% width; dates top-right small.",
+   "typography": "Rounded display (Sature Rounded) with metallic treatment + italic sans subline.",
+   "hierarchy": "Splash > logo > dates.",
+   "photo_scale_cropping": "Action photo, unusual angle, water distortion.",
+   "colour": "~60% aqua, ~25% purple/red clothing, ~15% white.",
+   "grid": "Diagonal axis.",
+   "negative_space": "Low.",
+   "metaphor": "Diving into the festival.",
+   "brand_character": "Festive, bold.",
+   "art_direction": "Art-directed photography.",
+   "premium": [
+    "Photo is commissioned, not stock.",
+    "Logo angle follows body movement."
+   ]
+  },
+  {
+   "id": "T080",
+   "title": "Amsterdam Museum Night",
+   "category": "campaign_poster",
+   "site": "itsnicethat.com",
+   "source_page": "https://www.itsnicethat.com/articles/from-form-amsterdam-museum-night-graphic-design-project-051126",
+   "image_urls": [
+    "https://m.itsnicethat.com/original_images/FromForm-Graphic-Design-AmsterdamMuseumNight-ItsNiceThat-4.jpg?class=w1080"
+   ],
+   "designer": "From Form",
+   "viewed": true,
+   "idea": "Four hands in historical lace cuffs shining flashlights into darkness; title revealed by the light.",
+   "composition": "Hands enter from corners; beams converge at centre where the title glows.",
+   "typography": "Bold sans title, partly lit/partly dark.",
+   "hierarchy": "Light beams > title > hands.",
+   "photo_scale_cropping": "Staged studio photography with costume props.",
+   "colour": "~70% dark navy/black, ~20% light beams, ~10% pink/white cuffs.",
+   "grid": "Radial/central.",
+   "negative_space": "Darkness as space.",
+   "metaphor": "Exploring museums at night with a flashlight.",
+   "brand_character": "Mysterious, playful, cultural.",
+   "art_direction": "Conceptual staged photo.",
+   "premium": [
+    "Title integrated in the light — image and text are one.",
+    "Costume detail ties history to night."
+   ]
+  },
+  {
+   "id": "T106",
+   "title": "Purple Garden — spirituality app campaign",
+   "category": "campaign_poster",
+   "site": "bpando.org",
+   "source_page": "https://bpando.org/2026/11/05/mother-design-brand-identity-spirituality-app-purple-garden/",
+   "image_urls": [
+    "https://bpando.org/wp-content/uploads/mother-design-purple-garden-brand-identity-design-bpo-review-poster-tote.png",
+    "https://bpando.org/wp-content/uploads/julia-hey-ribbon-wordmark.jpg"
+   ],
+   "designer": "Mother Design",
+   "viewed": true,
+   "idea": "Repeated soft-blurred word ('repeat', 'feel it') as background texture; elegant serif message on top.",
+   "composition": "Poster: small serif headline top-left; photo inset bottom-right ~45%; blurred repeated word as texture.",
+   "typography": "Light transitional serif sentence-case ~5% height; bold rounded display blurred in background.",
+   "hierarchy": "Photo > serif headline > texture.",
+   "photo_scale_cropping": "Intimate cropped body/skin, warm light.",
+   "colour": "~60% plum, ~25% pink, ~15% skin/cream.",
+   "grid": "Left-aligned headline; inset photo.",
+   "negative_space": "Medium.",
+   "metaphor": "Repetition = practice/habit.",
+   "brand_character": "Spiritual, sensual, calm.",
+   "art_direction": "Soft editorial.",
+   "premium": [
+    "Blurred type as texture instead of stock 'calm' imagery.",
+    "Monochrome plum palette."
+   ]
+  },
+  {
+   "id": "T212",
+   "title": "Annesley Junior School — 'Dare to Become'",
+   "category": "campaign_poster",
+   "site": "thebrandidentity.com",
+   "source_page": "https://thebrandidentity.com/project/studioband-fuse-both-the-heritage-and-future-focus-of-annesley-junior-school-in-their-bright-rebrand",
+   "image_urls": [
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/2024/02/studioband-fuse-both-the-heritage-and-future-focus-of-annesley-junior-school-in-their-bright-rebrand/AJS-StudioBand-1.jpg",
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/2024/02/studioband-fuse-both-the-heritage-and-future-focus-of-annesley-junior-school-in-their-bright-rebrand/AJS-StudioBand-2.jpg",
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/2024/02/studioband-fuse-both-the-heritage-and-future-focus-of-annesley-junior-school-in-their-bright-rebrand/AJS-StudioBand-5.jpg"
+   ],
+   "designer": "StudioBand",
+   "viewed": true,
+   "idea": "Letters built from dotted/patterned multicolour lines on plum; same alphabet used for educational ABC poster.",
+   "composition": "2-line headline fills ~80% of billboard; crest small bottom-left.",
+   "typography": "Custom geometric display with dotted inline treatment; multi-colour per letter.",
+   "hierarchy": "Headline > crest.",
+   "photo_scale_cropping": "None in this execution.",
+   "colour": "~65% plum/purple, ~35% multicolour letters.",
+   "grid": "Centred lockup.",
+   "negative_space": "Medium.",
+   "metaphor": "Many colours = many possibilities for a child.",
+   "brand_character": "Aspirational, joyful, heritage.",
+   "art_direction": "Bold typography as identity.",
+   "premium": [
+    "Dark plum ground keeps multicolour from looking childish.",
+    "Same alphabet doubles as teaching material (ABC poster)."
+   ]
+  },
+  {
+   "id": "T247",
+   "title": "'Alte und neue Formen in Japan', Gewerbemuseum Basel 1959",
+   "category": "swiss_poster",
+   "site": "commons.wikimedia.org",
+   "source_page": "https://commons.wikimedia.org/wiki/File:1959_-_Gewerbemuseum_Basel_-_Alte_und_neue_Formen_in_Japan.jpg",
+   "image_urls": [
+    "https://upload.wikimedia.org/wikipedia/commons/8/87/1959_-_Gewerbemuseum_Basel_-_Alte_und_neue_Formen_in_Japan.jpg"
+   ],
+   "designer": "See source file page",
+   "viewed": true,
+   "idea": "Tatami-like black rectangles with yellow seams tilted; small flush-left type bottom.",
+   "composition": "Graphic occupies top 70% at slight angle; type block bottom-left ~35% width.",
+   "typography": "Neo-grotesk, two sizes only (title ~4% height, info ~2%), flush left, ragged right.",
+   "hierarchy": "Geometry > title > info.",
+   "photo_scale_cropping": "None.",
+   "colour": "~55% black, ~45% warm yellow.",
+   "grid": "Asymmetric; text aligned to a column edge.",
+   "negative_space": "Yellow bottom 30%.",
+   "metaphor": "Tatami/Japanese proportion.",
+   "brand_character": "Rigorous, calm.",
+   "art_direction": "Swiss minimal.",
+   "premium": [
+    "Only two type sizes.",
+    "Two colours, perfect balance."
+   ]
+  },
+  {
+   "id": "T248",
+   "title": "'der Film', Kunstgewerbemuseum Zürich 1960",
+   "category": "swiss_poster",
+   "site": "commons.wikimedia.org",
+   "source_page": "https://commons.wikimedia.org/wiki/File:Josef_M%C3%BCller-Brockmann_der_Film.jpg",
+   "image_urls": [
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Josef_M%C3%BCller-Brockmann_der_Film.jpg?width=1000"
+   ],
+   "designer": "Josef Müller-Brockmann (per file name)",
+   "viewed": true,
+   "idea": "Two words overlap at different greys — 'der' recedes, 'Film' advances; like film frames.",
+   "composition": "Words cross the full width at lower-middle; info flush left in red under.",
+   "typography": "Heavy grotesk lowercase/title-case ~18% height; info small red regular.",
+   "hierarchy": "Film > der > info.",
+   "photo_scale_cropping": "None.",
+   "colour": "~80% near-black, ~15% grey/white, ~5% red.",
+   "grid": "Text aligned to a strong left axis ~20% in.",
+   "negative_space": "Top 55% empty.",
+   "metaphor": "Overlap = projection/motion.",
+   "brand_character": "Modernist.",
+   "art_direction": "Swiss typography.",
+   "premium": [
+    "Huge empty top half.",
+    "Overlap creates depth with flat colour."
+   ]
+  },
+  {
+   "id": "T131",
+   "title": "'architecture en france', Helmhaus Zürich 1963",
+   "category": "swiss_poster",
+   "site": "designspiration.com",
+   "source_page": "https://www.designspiration.com/save/166540220842/",
+   "image_urls": [
+    "https://dspncdn.com/a1/media/originals/41/8c/d4/418cd49e417dfaf909e20fe8381cc023.jpg"
+   ],
+   "designer": "Not shown on page",
+   "viewed": true,
+   "idea": "Blue and red rectangles (French flag) split by a black arrow-like form.",
+   "composition": "Blue block left, red block right, black form between; text block left under blue.",
+   "typography": "Grotesk lowercase title, small info, flush left.",
+   "hierarchy": "Shapes > title > info.",
+   "photo_scale_cropping": "None.",
+   "colour": "~55% white, ~15% blue, ~15% red, ~15% black.",
+   "grid": "Two columns.",
+   "negative_space": "~50%.",
+   "metaphor": "Flag abstracted into architecture.",
+   "brand_character": "Modernist, intelligent.",
+   "art_direction": "Swiss geometric.",
+   "premium": [
+    "Abstraction of a national symbol.",
+    "Lowercase title = understated."
+   ]
+  },
+  {
+   "id": "T134",
+   "title": "'strawinsky fortner berg' concert poster",
+   "category": "swiss_poster",
+   "site": "designspiration.com",
+   "source_page": "https://www.designspiration.com/save/839730686/",
+   "image_urls": [
+    "https://dspncdn.com/a1/media/originals/94/26/86/9426866da1265656648dfe6664186a0c.jpg"
+   ],
+   "designer": "Page does not credit; commonly attributed to Josef Müller-Brockmann (Tonhalle 1955)",
+   "viewed": true,
+   "idea": "Diagonal white bars like musical rhythm on deep blue; names placed along the diagonals.",
+   "composition": "Bars cross the whole format; text rotated to follow; info block bottom-right.",
+   "typography": "Grotesk lowercase, rotated; small info flush left.",
+   "hierarchy": "Rhythm > names > info.",
+   "photo_scale_cropping": "None.",
+   "colour": "~75% ultramarine, ~25% white.",
+   "grid": "Diagonal axis.",
+   "negative_space": "Blue field.",
+   "metaphor": "Rhythm made visible.",
+   "brand_character": "Cultural, dynamic.",
+   "art_direction": "Swiss constructivist.",
+   "premium": [
+    "One colour + white.",
+    "Text follows the composition's angle."
+   ]
+  },
+  {
+   "id": "T133",
+   "title": "'fear' concert poster (Swiss-style)",
+   "category": "swiss_poster",
+   "site": "designspiration.com",
+   "source_page": "https://www.designspiration.com/save/17281815849540/",
+   "image_urls": [
+    "https://dspncdn.com/a1/media/originals/53/4c/85/534c85a08d12bc47c86a61340a2c25b6.jpg"
+   ],
+   "designer": "Not shown on page (Swissted-style reinterpretation)",
+   "viewed": true,
+   "idea": "Band name in giant lowercase grotesk cropped at edges; info in three small coloured columns.",
+   "composition": "Letters fill ~90% bleeding off right edge; info top-right.",
+   "typography": "Helvetica-like lowercase, gigantic; tiny info.",
+   "hierarchy": "Word > info.",
+   "photo_scale_cropping": "None.",
+   "colour": "~55% navy-black, ~42% off-white, ~3% yellow/red/green info.",
+   "grid": "3-column info grid.",
+   "negative_space": "Counters of letters act as space.",
+   "metaphor": "None.",
+   "brand_character": "Bold, graphic.",
+   "art_direction": "Bold typography.",
+   "premium": [
+    "Cropping the word makes it more powerful.",
+    "Tiny colour coding for info."
+   ]
+  },
+  {
+   "id": "T189",
+   "title": "Katholino kindergartens — flexible identity",
+   "category": "brand_identity",
+   "site": "thebrandidentity.com",
+   "source_page": "https://thebrandidentity.com/project/eigas-brand-system-lets-katholino-kindergartens-shape-their-own-identity",
+   "image_urls": [
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/2025/09/eigas-brand-system-lets-katholino-kindergartens-shape-their-own-identity/Katholino-EIGA-04.jpg",
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/2025/09/eigas-brand-system-lets-katholino-kindergartens-shape-their-own-identity/Katholino-EIGA-01.jpg",
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/2025/09/eigas-brand-system-lets-katholino-kindergartens-shape-their-own-identity/Katholino-EIGA-07.jpg"
+   ],
+   "designer": "EIGA",
+   "viewed": true,
+   "idea": "Chunky friendly display type, big simple silhouettes (rabbit, butterfly, apple), bright flat colours; each kindergarten can adapt.",
+   "composition": "Cards/flyers: one silhouette or one headline dominates (~60%), small info block.",
+   "typography": "Rounded heavy display with quirky alternates; mixed-case German headlines; simple sans for info.",
+   "hierarchy": "Headline/silhouette > info > logo.",
+   "photo_scale_cropping": "Warm real kids/teacher photos used sparingly.",
+   "colour": "Green, purple, pink, yellow, cyan — each piece ~2–3 colours.",
+   "grid": "Simple; generous margins.",
+   "negative_space": "Medium.",
+   "metaphor": "Animals/nature as childhood symbols.",
+   "brand_character": "Joyful, safe, warm.",
+   "art_direction": "Kid-friendly but not childish.",
+   "premium": [
+    "Flat silhouettes instead of clip-art.",
+    "Consistent display face makes varied colours feel like one family."
+   ]
+  },
+  {
+   "id": "T215",
+   "title": "St Paul's C of E Primary School — 'Life full'",
+   "category": "brand_identity",
+   "site": "thebrandidentity.com",
+   "source_page": "https://thebrandidentity.com/project/the-district-embrace-vibrant-form-and-colour-in-their-identity-for-local-primary-school-st-pauls",
+   "image_urls": [
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/2022/10/the-district-embrace-vibrant-form-and-colour-in-their-identity-for-local-primary-school-st-pauls/StPauls-21.jpg",
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/2022/10/the-district-embrace-vibrant-form-and-colour-in-their-identity-for-local-primary-school-st-pauls/StPauls-23.jpg",
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/2022/10/the-district-embrace-vibrant-form-and-colour-in-their-identity-for-local-primary-school-st-pauls/StPauls-22.jpg"
+   ],
+   "designer": "The District",
+   "viewed": true,
+   "idea": "Organic flower/leaf shapes in bold colours; simple sans wordmark; shapes cut by the frame.",
+   "composition": "Shape fills ~70% of card; two-line text top and bottom.",
+   "typography": "Rounded geometric sans, mixed-case, medium weight.",
+   "hierarchy": "Shape > text.",
+   "photo_scale_cropping": "None.",
+   "colour": "Orange-red, yellow, cyan, blue, magenta on sand — each card ~3 colours.",
+   "grid": "Top/bottom text bands.",
+   "negative_space": "Sand ground ~40%.",
+   "metaphor": "Growth/life in full bloom.",
+   "brand_character": "Joyful, inclusive.",
+   "art_direction": "Shape language.",
+   "premium": [
+    "Sand neutral grounds the bright palette.",
+    "Shapes cropped by edges feel alive."
+   ]
+  },
+  {
+   "id": "T207",
+   "title": "LearningWell — brand book and applications",
+   "category": "brand_identity",
+   "site": "thebrandidentity.com",
+   "source_page": "https://thebrandidentity.com/project/decimal-deliver-a-vibrant-evolving-identity-to-echo-learningwells-mission-for-positive-change",
+   "image_urls": [
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/2023/08/decimal-deliver-a-vibrant-evolving-identity-to-echo-learningwells-mission-for-positive-change/02_Brand_Guidelines_Vertical.jpg",
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/2023/08/decimal-deliver-a-vibrant-evolving-identity-to-echo-learningwells-mission-for-positive-change/03_LearningWell_Tote_Vertical_LW.jpg",
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/_video-thumbnails/174270.jpg"
+   ],
+   "designer": "Decimal",
+   "viewed": true,
+   "idea": "Soft multi-colour gradients as 'change' metaphor; humanist serif wordmark; editorial web layout.",
+   "composition": "Brand book pages: gradient panel + white text panel; generous whitespace.",
+   "typography": "Serif wordmark + grotesk (Monument Grotesk) for UI/text.",
+   "hierarchy": "Gradient > wordmark > text.",
+   "photo_scale_cropping": "Editorial illustrations on the website.",
+   "colour": "Gradients orange/purple/green; white ~50% of pages.",
+   "grid": "Brand-book grid of panels.",
+   "negative_space": "~50%.",
+   "metaphor": "Gradient = continuous growth.",
+   "brand_character": "Thoughtful, wellbeing in education.",
+   "art_direction": "Soft gradient system.",
+   "premium": [
+    "Gradients are grainy/soft, not default linear.",
+    "Serif adds warmth to an institutional brand."
+   ]
+  },
+  {
+   "id": "T203",
+   "title": "All Right? — mental health service identity",
+   "category": "brand_identity",
+   "site": "thebrandidentity.com",
+   "source_page": "https://thebrandidentity.com/project/mccarthys-identity-right-show-consideration-friendly-approach-mental-health",
+   "image_urls": [
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/2020/09/mccarthys-identity-right-show-consideration-friendly-approach-mental-health/AllRight_1.jpg",
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/2020/09/mccarthys-identity-right-show-consideration-friendly-approach-mental-health/AllRight_2.jpg",
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/2020/09/mccarthys-identity-right-show-consideration-friendly-approach-mental-health/AllRight_4.jpg"
+   ],
+   "designer": "McCarthy",
+   "viewed": true,
+   "idea": "Question mark as tone: 'All right?' — friendly check-in; deep blue + cyan.",
+   "composition": "Product shots: binder/boxes with small angled type on corners.",
+   "typography": "Condensed bold sans (Mindset) with angled baseline; large point sizes shown 140/119pt.",
+   "hierarchy": "Wordmark > colour.",
+   "photo_scale_cropping": "None.",
+   "colour": "~80% indigo, ~15% white, ~5% cyan.",
+   "grid": "Minimal.",
+   "negative_space": "High.",
+   "metaphor": "A question, not a diagnosis.",
+   "brand_character": "Approachable, non-clinical.",
+   "art_direction": "Minimal objects.",
+   "premium": [
+    "Tone of voice in the name drives the identity.",
+    "Two-colour restraint for a sensitive topic."
+   ]
+  },
+  {
+   "id": "T194",
+   "title": "Super Genius Society — education system identity",
+   "category": "brand_identity",
+   "site": "thebrandidentity.com",
+   "source_page": "https://thebrandidentity.com/project/how-otherwhere-collective-brought-super-genius-societys-joyfully-radical-education-system-to-life",
+   "image_urls": [
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/_video-thumbnails/4950023.jpg",
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/2025/05/how-otherwhere-collective-brought-super-genius-societys-joyfully-radical-education-system-to-life/SGS-Otherwhere-17.jpg",
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/2025/05/how-otherwhere-collective-brought-super-genius-societys-joyfully-radical-education-system-to-life/SGS-Otherwhere-2.jpg"
+   ],
+   "designer": "Otherwhere Collective",
+   "viewed": true,
+   "idea": "Wordmark letters overlapping playfully; acid green ground; music/learning materials as collectable cards.",
+   "composition": "Wordmark centred; hand prop enters from top.",
+   "typography": "Wide sans caps with overlapping letters.",
+   "hierarchy": "Wordmark > prop.",
+   "photo_scale_cropping": "Playful hand props; product shots.",
+   "colour": "~85% acid green, ~15% white.",
+   "grid": "Centred.",
+   "negative_space": "High.",
+   "metaphor": "Learning as play.",
+   "brand_character": "Joyful, radical.",
+   "art_direction": "Playful object.",
+   "premium": [
+    "One acid colour owns the brand.",
+    "Tactile props make it human."
+   ]
+  },
+  {
+   "id": "T179",
+   "title": "Levrant — heritage architecture",
+   "category": "brand_identity",
+   "site": "thebrandidentity.com",
+   "source_page": "https://thebrandidentity.com/project/how-studio-bright-green-rebranded-heritage-architecture-to-levrant",
+   "image_urls": [
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/2026/11/how-studio-bright-green-rebranded-heritage-architecture-to-levrant/Levrant-Studio-Bright-Green-01.jpg",
+    "https://fls-a308a4a0-40a0-4df8-8dbb-117b4b947e86.laravel.cloud/articles/2026/11/how-studio-bright-green-rebranded-heritage-architecture-to-levrant/Levrant-Studio-Bright-Green-02.jpg"
+   ],
+   "designer": "Studio Bright Green",
+   "viewed": true,
+   "idea": "Oxblood book covers with a small photo window and vertical spaced caps wordmark.",
+   "composition": "Covers: small photo ~25% centred; wordmark vertical along spine.",
+   "typography": "Light wide serif/sans caps with generous tracking (~+150).",
+   "hierarchy": "Colour > wordmark > photo.",
+   "photo_scale_cropping": "Architecture photos small, framed.",
+   "colour": "~80% oxblood, ~15% cream, ~5% photo.",
+   "grid": "Symmetric.",
+   "negative_space": "High.",
+   "metaphor": "Small window = curated view.",
+   "brand_character": "Quietly confident, premium.",
+   "art_direction": "Luxury minimal.",
+   "premium": [
+    "Small photo on big colour field = luxury.",
+    "Wide tracking on caps."
+   ]
+  },
+  {
+   "id": "T043",
+   "title": "Little Sutton Bakehouse",
+   "category": "brand_identity",
+   "site": "fontsinuse.com",
+   "source_page": "https://fontsinuse.com/uses/80781/little-sutton-bakehouse",
+   "image_urls": [
+    "https://assets.fontsinuse.com/static/use-media-items/308/307116/upto-700xauto/6ad1f0a5/625613307_18091057048998588_5024243594026204302_n.jpeg",
+    "https://assets.fontsinuse.com/static/use-media-items/308/307108/upto-700xauto/6ad1f0a4/Brule%20Typeface%20by%20Typeverything%20in%20use%20by%20Thirstcraft%20for%20LittleSutton2.jpeg"
+   ],
+   "designer": "Inklab",
+   "viewed": true,
+   "idea": "Heavy 'ink-trap' display wordmark centred over moody close-up food photography with flour dust.",
+   "composition": "Wordmark centred ~60% width; photo full-bleed, croissants bottom third.",
+   "typography": "Brûle (heavy display serif with ink traps) + Bossa wide tracked caps for 'BAKEHOUSE' (~+200).",
+   "hierarchy": "Wordmark > photo.",
+   "photo_scale_cropping": "Low-light, shallow depth of field, motion of flour.",
+   "colour": "~70% dark warm browns, ~20% golden bread, ~10% cream type.",
+   "grid": "Centred.",
+   "negative_space": "Dark upper area for logo.",
+   "metaphor": "Craft in action (flour falling).",
+   "brand_character": "Warm, artisanal.",
+   "art_direction": "Moody food photography + bold logo.",
+   "premium": [
+    "Logo placed in the dark zone of the photo for contrast.",
+    "Tracked caps descriptor as quiet second voice."
+   ]
+  }
+ ]
+}

@@ -45,7 +45,7 @@ def render(a):
     with sync_playwright() as p:
         b = p.chromium.launch(executable_path=CHROME, args=["--allow-file-access-from-files"])
         pg = b.new_page(viewport={"width": W, "height": H}, device_scale_factor=1)
-        pg.goto(f.as_uri()); pg.evaluate("document.fonts.ready"); pg.wait_for_timeout(250)
+        pg.goto(f.as_uri()); pg.evaluate("document.fonts.ready.then(()=>true)"); pg.wait_for_timeout(250)
         for o in pg.evaluate(CHECK_JS): print("YOXLAMA:", o)
         if "png" in fmts: pg.screenshot(path=a.out + ".png"); out.append(a.out + ".png")
         if "jpg" in fmts: pg.screenshot(path=a.out + ".jpg", type="jpeg", quality=93); out.append(a.out + ".jpg")
@@ -89,8 +89,8 @@ def animate(a):
     with sync_playwright() as p:
         b = p.chromium.launch(executable_path=CHROME, args=["--allow-file-access-from-files"])
         pg = b.new_page(viewport={"width": W, "height": H}); pg.goto(f.as_uri())
-        pg.wait_for_function("window.ready===true", timeout=20000); pg.evaluate("document.fonts.ready")
-        for i in range(n): pg.evaluate(f"seek({i / a.fps})"); pg.screenshot(path=str(d / f"{i:05d}.png"))
+        pg.wait_for_function("window.ready===true", timeout=20000); pg.evaluate("document.fonts.ready.then(()=>true)")
+        for i in range(n): pg.evaluate(f"void seek({i / a.fps})"); pg.screenshot(path=str(d / f"{i:05d}.png"))
         b.close()
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-framerate", str(a.fps), "-i", str(d / "%05d.png"), "-c:v", "libx264", "-pix_fmt", "yuv420p",
                     "-crf", "18", "-preset", "medium", "-movflags", "+faststart", a.out], check=True)
