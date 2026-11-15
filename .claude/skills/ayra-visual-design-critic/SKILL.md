@@ -9,7 +9,7 @@ description: "AYRA Visual Design Critic — hazır cover, karusel, highlight, st
 Tənqidi **Agent alətilə ayrı agentdə** apar: ona yalnız faylları, brend qaydalarını, konsept adını və portret contact sheet-ini ver; dizaynerin öz izahını və spec-ləri vermə. Eyni model ailəsi olduğunu hesabatda qeyd et — "tam müstəqil" iddia etmə. Agent yoxdursa: "öz-yoxlama" kimi işarələ.
 
 ## Peşəkar standartla müqayisə (texniki yoxlamadan ƏVVƏL)
-`templates/ayra/taste/PRO_STANDARD.md` + TASTE_LIBRARY.md-dəki 2–3 ən yaxın nümunə ilə müqayisə: "Bu iş real studiyanın portfoliosunda dura bilərmi? Hansı nümunədən geri qalır və konkret nədə?" Hər tapıntı: vizual problem → niyə → konkret həll (px/şrift/crop). Bal tək başına cavab deyil.
+`templates/ayra/taste/PRO_STANDARD.md` (12 bənd) + TASTE_LIBRARY.md-dəki 2–3 ən yaxın nümunə (link + `scratchpad/taste/sheets` varsa) ilə müqayisə: "Bu iş real studiyanın portfoliosunda dura bilərmi? Hansı nümunədən geri qalır və konkret nədə?" Hər tapıntı: vizual problem → niyə → konkret həll (px/şrift/crop). Bal tək başına cavab deyil.
 Rəqəmli bal istifadəçi təsdiqi deyil. Ən çox 2 düzəliş dövrü — sonra istiqaməti dəyişməyi tövsiyə et.
 
 ## Müşahidə (faylı həqiqətən aç)

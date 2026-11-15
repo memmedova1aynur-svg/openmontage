@@ -33,3 +33,16 @@ ayra-design-director → bu → ayra-visual-design-critic. Köməkçi: ikon-kita
 - **Render**: `python3 templates/ayra/engine/ayra_design.py render|preview|grid|animate|fontcheck` (PNG/JPG/PDF/SVG/MP4/GIF; redaktə mənbəyi = HTML).
 - **Dövr limiti**: ən çox 2 əsas düzəliş dövrü; sonra təqdim et və ya istiqaməti yenilə. Tənqidçinin yüksək balı istifadəçi təsdiqi deyil.
 - **Kiçik detallar** (mikrofon və s.): təbii alınmırsa toxunma, crop dəyiş.
+
+## Taste Library-dən 10 əsas qayda (tam: templates/ayra/taste/TASTE_LIBRARY.md, 36 qayda + 15 istiqamət)
+1. Bir qəhrəman element kadrın 60–85%-ni tutur; növbəti ən az 2× kiçik.
+2. Cəsarətli crop: gözlər yuxarı üçdəbir xəttində; alın/başın üstünü kəsmək olar — başdan-ayağa "təhlükəsiz" kadr stok kimi görünür.
+3. Ölçü nisbəti: başlıq/mətn poster-coverdə ≥ 6:1, karusel cover ~4:1, daxili slaydlar 2.5–3:1.
+4. Tip rəqəmləri: başlıq leading 0.85–0.95, tracking −1…−3%; kiçik böyük hərfli etiketlər +8…+15%; mətn leading 1.3–1.45.
+5. Ən çox 2 şrift ailəsi; vurğu eyni ailədə çəki və ya kursivlə, yalnız bir sözdə.
+6. Rəng 70/25/5: vurğu bir söz və ya detalda.
+7. Mətn fotonun sakit zonasında, üzə dəymir; insan böyük adın qarşısında qat ola bilər.
+8. Metafora mövzunun özündən + ən çox bir gözlənilməz detal.
+9. Seriya = sabit (qrid, loqo yeri, şriftlər) + dəyişən (foto, bir vurğu rəngi).
+10. 270 px testi: başlıq cap-height ≥ 72 px (1080 enində), ≤ 7 söz, kontrast ≥ 4.5:1, 3:4 kəsimdə heç nə itmir. Anti-şablon: neon gradient, glow, yarımşəffaf qara qutu, stok/AI üz, emoji/ikon doldurucusu, nəhəng loqo.
+Hər dizayndan əvvəl istiqamət kataloqundan bir istiqamət seç və onun reseptini (ölçülər, tip, rəng) tətbiq et.
