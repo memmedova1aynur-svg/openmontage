@@ -25,4 +25,4 @@ description: "Müştərinin mövqeləndirməsini, kontent sütunlarını, brend 
 `strategiya.md` (mövqe, sütunlar, vizual qərarlar), `brand_kit.json`, grid önizləməsi (ayra-professional-cover-designer ilə).
 
 ## Əməkdaşlıq
-Köməkçi: `brand-context`, `brand-positioning`, `brand-voice`, `content-strategy`, `customer-research`, `ig-audit`, `ig-profile`, `musteri-brend`. Ötürür: `ayra-art-director`, `ayra-copywriter`, `ayra-studio-manager`.
+Köməkçi: `brand-context`, `brand-positioning`, `brand-voice`, `content-strategy`, `customer-research`, `ig-audit`, `ig-profile`, `musteri-brend`. Ötürür: `ayra-design-director`, `ayra-copywriter`, `ayra-studio-manager`.

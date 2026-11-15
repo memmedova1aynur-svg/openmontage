@@ -28,4 +28,4 @@ Status cədvəli: `python3 .claude/skills/ayra-studio-manager/status.py [müşt�
 Ekspert 1–2 saatda 5–10 video çəkir: hər video üçün tam danışıq mətni (`ig-reel`), kadr/işıq qeydi, geyim dəyişikliyi nöqtələri. Çəkilişdən sonra materialı `istehsal.json`-a əlavə et.
 
 ## Əməkdaşlıq
-Montaj: `reels-pro`, `engine.py`; motion: `ayra-motion-designer`; cover: `ayra-professional-cover-designer`; yoxlama: `ayra-design-critic`; caption: `ig-caption`.
+Montaj: `reels-pro`, `engine.py`; motion: `ayra-motion-designer`; cover: `ayra-professional-cover-designer`; yoxlama: `ayra-visual-design-critic`; caption: `ig-caption`.

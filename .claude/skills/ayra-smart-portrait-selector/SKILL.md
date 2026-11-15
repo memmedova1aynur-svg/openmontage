@@ -31,4 +31,4 @@ Stiker effektinə qarşı: alfa kənarını 0.8 px yumşalt, fon "studiya kağı
 Böyütmə: 1080 mənbədən 2× üzərində böyütmə yumşaq görünə bilər — tam ölçüdə üzə yaxından bax.
 
 ## Çıxış
-Seçilmiş kadr(lar) + qısa əsaslandırma ("#1 25.2 s — bağlı ağız, birbaşa baxış, ekspert portreti üçün") → ayra-art-director və ayra-professional-cover-designer.
+Seçilmiş kadr(lar) + qısa əsaslandırma ("#1 25.2 s — bağlı ağız, birbaşa baxış, ekspert portreti üçün") → ayra-design-director və ayra-professional-cover-designer.

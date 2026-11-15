@@ -12,7 +12,7 @@ Workspace: `strategiya.md` (mövqe, sütunlar), `Analytics & Growth` bölməsi, 
 1. **Vəziyyət** — real rəqəmlər (izləmə, saxlama, DM, izləyici artımı) və ya "məlumat yoxdur". Proqnoz yazmırıq.
 2. **Hədəf** — bir əsas metrika (məs. təlim qeydiyyatı DM-ləri), müddət.
 3. **Plan** — rubrikalar × format × tezlik (ig-month / ig-week), hər postun rolu: diqqət / güvən / satış. Auditoriya bölgüsü (məs. valideyn / pedaqoq) sütunlarla.
-4. **Kampaniya** — təklif (offers), bucaqlar və hooklar (ayra-copywriter), vizual (ayra-art-director), büdcə (təsdiq qapısı), test planı.
+4. **Kampaniya** — təklif (offers), bucaqlar və hooklar (ayra-copywriter), vizual (ayra-design-director), büdcə (təsdiq qapısı), test planı.
 5. **Analiz dövrü** — 2–4 həftədən sonra real nəticə → nə saxlanır, nə dəyişir; `Analytics & Growth`-a yaz.
 
 ## Qaydalar

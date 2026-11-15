@@ -16,7 +16,7 @@ Hərəkət mənaya xidmət edir: hər animasiya bir şeyi göstərir, vurğulay�
    - Remotion (`remotion-best-practices`, repoda `remotion-composer/src/montaj/Motion.tsx`) — şəffaf ProRes 4444 overlay, `engine.py` ilə birləşir.
    - HyperFrames (`hyperframes`, `motion-doctrine`) — HTML əsaslı tam kompozisiya.
    - Ad lövhəsi: `lower-thirds`; səs: `sound-effects`, Mixkit.
-5. **Yoxlama** — kadr vərəqi (hər 1 s), üz-qrafika örtülməsi `qc_render.py --clean`, sonra `ayra-design-critic`.
+5. **Yoxlama** — kadr vərəqi (hər 1 s), üz-qrafika örtülməsi `qc_render.py --clean`, sonra `ayra-visual-design-critic`.
 
 ## Cihaz kataloqu
 | cihaz | nə vaxt |
@@ -37,4 +37,4 @@ Giriş 0.35–0.6 s `cubic-bezier(0.22,1,0.36,1)`; çıxış girişdən 30% qıs
 Üzü örtən qrafika (yarımşəffaf da), sürətləndirilmiş danışıq, kəsilmiş cümlə, uydurma statistika, AI ilə real insan təsviri.
 
 ## Əməkdaşlıq
-Girdi: `ayra-art-director`, `ayra-studio-manager`. Çıxış: montaj sistemi (`engine.py`, `reels-pro`). Yoxlama: `ayra-design-critic`. Köməkçi: `motion-design`, `motion-doctrine`, `kinetic-typography`, `beat-sync-editing`, `lower-thirds`.
+Girdi: `ayra-design-director`, `ayra-studio-manager`. Çıxış: montaj sistemi (`engine.py`, `reels-pro`). Yoxlama: `ayra-visual-design-critic`. Köməkçi: `motion-design`, `motion-doctrine`, `kinetic-typography`, `beat-sync-editing`, `lower-thirds`.

@@ -17,8 +17,8 @@ Rol: Founder & Creative Director (istifadəçi) vizyonu və son təsdiqi verir. 
 | tapşırıq | ardıcıllıq |
 |---|---|
 | Drive linki / montaj | ayra-studio-manager (növbə) → reels-pro / ayra-senior-video-editor → ayra-creative-video-director → ayra-motion-designer, ayra-colorist, ayra-sound-designer, ayra-subtitle-designer, ayra-broll-researcher → ayra-video-quality-control → cover (aşağı) → ayra-copywriter (caption) |
-| Cover (reels/post) | ayra-smart-portrait-selector → ayra-art-director → ayra-typography-specialist → ayra-professional-cover-designer → ayra-design-critic |
-| Karusel, story, highlight, poster, grid, brand book, təqdimat | ayra-art-director → ayra-design-studio → ayra-design-critic |
+| Cover (reels/post) | ayra-smart-portrait-selector → ayra-design-director → ayra-typography-specialist → ayra-professional-cover-designer → ayra-visual-design-critic |
+| Karusel, story, highlight, poster, grid, brand book, təqdimat | ayra-design-director → ayra-social-media-designer → ayra-visual-design-critic |
 | Brend auditi, mövqe, tone of voice, yol xəritəsi | ayra-brand-strategist |
 | Kontent planı, kampaniya, təklif, analitika | ayra-growth-strategist (+ ayra-copywriter) |
 | Ssenari, hook, caption, reklam mətni | ayra-copywriter (+ ig-human) |
@@ -33,7 +33,7 @@ Bunlardan kənar gündəlik kreativ işi brend qaydalarına uyğun özün hazır
 - Uydurma fakt, qiymət, statistika, rəy yoxdur; çatışmayan məlumat `[boşluq]` və "çatışmır" siyahısı.
 - Real üz cizgiləri dəyişdirilmir; AI ilə real insan təsviri yoxdur; heç nə üzü örtmür.
 - Təsdiqlənmiş iş dəyişdirilmir; bir videoya düzəliş yalnız ona aiddir.
-- Hazır olduqca bir-bir göndər; göndərmədən əvvəl ayra-design-critic / ayra-video-quality-control.
+- Hazır olduqca bir-bir göndər; göndərmədən əvvəl ayra-visual-design-critic / ayra-video-quality-control.
 - İşlək olmayanı işlək kimi təqdim etmə; məhdudiyyəti və alternativi de.
 - Müştəri məlumatını icazəsiz üçüncü tərəf xidmətinə göndərmə.
 

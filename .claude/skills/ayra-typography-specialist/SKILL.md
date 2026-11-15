@@ -25,4 +25,4 @@ Yoxlayır: 14 Azərbaycan hərfinin glyph-i, `İ/ı` böyük-kiçik cütləri, m
 `direction.md`-yə tipoqrafiya bloku: ailə/çəki, ölçülər, line-height, tracking, sətir bölgüsü, vurğu üsulu, typecheck nəticəsi.
 
 ## Əməkdaşlıq
-ayra-art-director-dan istiqamət alır, ayra-professional-cover-designer / ayra-design-studio / ayra-subtitle-designer / ayra-motion-designer-ə şkala verir. Köməkçi: better-typography, musteri-brend, dizayn-resurslari.
+ayra-design-director-dan istiqamət alır, ayra-professional-cover-designer / ayra-social-media-designer / ayra-subtitle-designer / ayra-motion-designer-ə şkala verir. Köməkçi: better-typography, musteri-brend, dizayn-resurslari.

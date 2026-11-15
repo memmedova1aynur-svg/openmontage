@@ -43,6 +43,39 @@ Brend: {palette}. Korreksiya: color_auto (təbii dəri tonu).
 ## Son istifadə (təkrar olmasın)
 —
 """
+VDNA = """# Visual DNA — {name}
+_Dizaynın əsası. Bilinməyən = [çatışmır]. Strategiya dəyişəndə yenilə. Başqa müştəriyə tətbiq OLUNMUR. Creative Lab nəticələri təsdiqə qədər buraya yazılmır._
+
+## Brend mövqeləndirməsi
+{field}
+## Hədəf auditoriyası
+{aud}
+## Brend şəxsiyyəti (3 sifət)
+[çatışmır]
+## Rəng palitrası (rol + nisbət)
+{palette}
+## Əsas və əlavə şriftlər
+{fonts}
+## Fotoqrafiya üslubu
+[çatışmır]
+## Kompozisiya qaydaları
+[çatışmır]
+## Qrafik elementlər
+[çatışmır]
+## Cover sistemi
+[çatışmır]
+## Karusel sistemi
+[çatışmır]
+## Story sistemi
+[çatışmır]
+## Reklam vizualları
+[çatışmır]
+## Təsdiqlənmiş dizaynlar
+[çatışmır]
+## Qadağan olunan dizayn yanaşmaları
+{dont}
+"""
+
 def build(c):
     d = CL / c; bk = j(d / "brand_kit.json", {}) or {}; pr = bk.get("profile", {}) or {}
     for sub in DIRS: (d / sub).mkdir(parents=True, exist_ok=True)
@@ -54,6 +87,11 @@ def build(c):
             palette=", ".join(f"{k} {v}" for k, v in pal.items()) or "[çatışmır]",
             fonts=", ".join(f"{k}: {v}" for k, v in (pr.get("fonts") or {}).items() if v) or "[çatışmır]",
             dont="\n".join("- " + r for r in rules) or "[çatışmır]"))
+    if not (d / "visual-dna.md").exists():
+        (d / "visual-dna.md").write_text(VDNA.format(name=bk.get("name", c), field=pr.get("field") or "[çatışmır]", aud=pr.get("audience") or "[çatışmır]",
+            palette=", ".join(f"{k} {v}" for k, v in pal.items()) or "[çatışmır]",
+            fonts=", ".join(f"{k}: {v}" for k, v in (pr.get("fonts") or {}).items() if v) or "[çatışmır]",
+            dont="\n".join("- " + r for r in rules) or "[çatışmır]"))
     has = lambda *n: [x for x in n if (d / x).exists()]
     miss = []
     if not pal: miss.append("brend palitrası (brand_kit.json → palette boşdur)")
@@ -62,6 +100,7 @@ def build(c):
     if not has("voice.md"): miss.append("tone of voice (voice.md)")
     if not pr.get("audience"): miss.append("auditoriya təsviri")
     if "[çatışmır]" in (d / "editing-dna.md").read_text(): miss.append("Editing DNA-nın boş bölmələri")
+    if "[çatışmır]" in (d / "visual-dna.md").read_text(): miss.append("Visual DNA-nın boş bölmələri")
     if not any((d / "references/approved").iterdir()): miss.append("təsdiqlənmiş referans/dizayn nümunələri")
     if not any((d / "analytics").iterdir()): miss.append("analitika (real rəqəmlər)")
     sec = f"""<!-- AVTO: workspace.py {datetime.date.today()} — bu blok yenilənir, aşağıya əl ilə yaz -->
@@ -76,7 +115,7 @@ def build(c):
 | 5 | Client Preferences | _agency/qaydalar.json → client | {len(rules)} qayda |
 | 6 | Scripts & Storyboards | scripts/{', transkript/' if has('transkript') else ''} | {len(list((d/'scripts').iterdir()))} fayl |
 | 7 | Raw Assets | raw/ (+ Drive) | {len(list((d/'raw').iterdir()))} fayl |
-| 8 | Design & Motion Assets | assets/, editing-dna.md | {'DNA var' if has('editing-dna.md') else '—'} |
+| 8 | Design & Motion Assets | assets/, editing-dna.md, visual-dna.md | {'DNA var' if has('editing-dna.md','visual-dna.md') else '—'} |
 | 9 | Final Deliverables | final/ | {len(list((d/'final').iterdir()))} fayl |
 | 10 | Analytics & Growth | analytics/ | {len(list((d/'analytics').iterdir()))} fayl |
 | 11 | Task Tracker | _agency/istehsal.json | {len(q)} iş: {', '.join(f"{r['video']}={r['merhele']}" for r in q) or '—'} |

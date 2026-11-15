@@ -1,0 +1,11 @@
+/* AYRA Design Engine — yerli şriftlər (hamısı Ə dəstəyi ilə yoxlanılıb: ayra_design.py fontcheck) */
+@import url("../_base.css");
+@font-face{font-family:News;font-weight:400;src:url(/root/.fonts/ayra/Newsreader-400.ttf)}
+@font-face{font-family:News;font-weight:600;src:url(/root/.fonts/ayra/Newsreader-600.ttf)}
+@font-face{font-family:News;font-weight:300;font-style:italic;src:url(/root/.fonts/ayra/Newsreader-italic-300.ttf)}
+@font-face{font-family:News;font-weight:400;font-style:italic;src:url(/root/.fonts/ayra/Newsreader-italic-400.ttf)}
+@font-face{font-family:Fraun;font-weight:300;src:url(/root/.fonts/ayra/Fraunces-300.ttf)}
+@font-face{font-family:Fraun;font-weight:600;src:url(/root/.fonts/ayra/Fraunces-600.ttf)}
+@font-face{font-family:Fraun;font-weight:300;font-style:italic;src:url(/root/.fonts/ayra/Fraunces-italic-300.ttf)}
+@font-face{font-family:Schib;font-weight:400;src:url(/root/.fonts/ayra/SchibstedGrotesk-400.ttf)}
+@font-face{font-family:Schib;font-weight:700;src:url(/root/.fonts/ayra/SchibstedGrotesk-700.ttf)}
