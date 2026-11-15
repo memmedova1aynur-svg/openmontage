@@ -1,0 +1,18 @@
+<!doctype html><html lang="az"><head><meta charset="utf-8"><link rel="stylesheet" href="{{base_css}}"><style>
+body{background:{{paper}}}
+.disc{left:{{disc_x}}px;top:{{disc_y}}px;width:{{disc_d}}px;height:{{disc_d}}px;border-radius:50%;background:{{paper2}}}
+.cut{left:{{cut_x}}px;top:{{cut_y}}px;width:{{cut_w}}px}
+.kicker{left:96px;top:252px;font-weight:600;font-size:27px;letter-spacing:.24em;color:{{ink}};text-transform:uppercase;display:flex;gap:18px;align-items:center}
+.kicker i{display:block;width:56px;height:3px;background:{{ink}}}
+.h{left:92px;top:318px;width:900px;font-weight:600;font-size:{{h_size}}px;line-height:1.0;letter-spacing:-.025em;color:{{ink}}}
+.h em{font-style:italic;font-weight:300;color:{{acc}}}
+.name{left:96px;top:{{name_y}}px;width:{{name_w}}px;line-height:1.25;font-size:30px;font-weight:600;color:{{ink}}}
+.name span{display:block;font-weight:400;font-size:24px;color:{{ink}};opacity:.78;margin-top:4px}
+.fade{left:0;top:{{fade_y}}px;width:1080px;bottom:0;background:linear-gradient(to bottom,transparent,{{paper}} 62%)}
+</style></head><body>
+<div class="abs disc"></div><img class="abs cut" src="{{cut}}">
+<div class="abs fade"></div>
+<div class="abs kicker" data-check="kicker"><i></i>{{kicker}}</div>
+<div class="abs h" data-check="başlıq">{{headline}}</div>
+<div class="abs name" data-check="ad">{{name}}<span>{{role}}</span></div>
+</body></html>

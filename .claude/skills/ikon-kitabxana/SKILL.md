@@ -1,6 +1,6 @@
 ---
 name: ikon-kitabxana
-description: Açarsız açıq ikon kitabxanaları (Iconify API vasitəsilə Phosphor, Lucide, Tabler, Heroicons, Iconoir, Remix, Material Symbols, Fluent Emoji, Simple Icons) — ikon axtarmaq, brend rəngində SVG/PNG yükləmək, seçim üçün önizləmə vərəqi çıxarmaq. İstifadə et: cover, highlight, karusel, video qrafikası üçün ikon lazım olanda; "ikon", "icon", "Iconify", "Phosphor", "Lucide" deyiləndə. İkonu əl ilə çəkmək əvəzinə əvvəl buradan götür.
+description: "Açarsız açıq ikon kitabxanaları (Iconify API vasitəsilə Phosphor, Lucide, Tabler, Heroicons, Iconoir, Remix, Material Symbols, Fluent Emoji, Simple Icons) — ikon axtarmaq, brend rəngində SVG/PNG yükləmək, seçim üçün önizləmə vərəqi çıxarmaq. İstifadə et: cover, highlight, karusel, video qrafikası üçün ikon lazım olanda; \"ikon\", \"icon\", \"Iconify\", \"Phosphor\", \"Lucide\" deyiləndə. İkonu əl ilə çəkmək əvəzinə əvvəl buradan götür."
 ---
 
 # İkon kitabxanası (Iconify, API açarı lazım deyil)

@@ -1,6 +1,6 @@
 ---
 name: musteri-brend
-description: Hər müştərinin brend rənglərini, şriftlərini və vizual qaydalarını istənilən dizayna (cover, highlight, karusel, post, video qrafikası, PDF) sistemli tətbiq edir. Anthropic-in "brand-guidelines" bacarığının agentlik üçün fərdiləşdirilmiş versiyası. İstifadə et: müştəri üçün hər hansı vizual hazırlananda, "brend rəngləri", "brend kit", "şrift", "onun üslubunda", "filan müştəri üçün dizayn" deyiləndə.
+description: "Hər müştərinin brend rənglərini, şriftlərini və vizual qaydalarını istənilən dizayna (cover, highlight, karusel, post, video qrafikası, PDF) sistemli tətbiq edir. Anthropic-in \"brand-guidelines\" bacarığının agentlik üçün fərdiləşdirilmiş versiyası. İstifadə et: müştəri üçün hər hansı vizual hazırlananda, \"brend rəngləri\", \"brend kit\", \"şrift\", \"onun üslubunda\", \"filan müştəri üçün dizayn\" deyiləndə."
 ---
 
 # Müştəri brend qaydaları

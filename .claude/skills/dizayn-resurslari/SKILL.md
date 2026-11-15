@@ -1,6 +1,6 @@
 ---
 name: dizayn-resurslari
-description: Agentliyin pulsuz dizayn resursları və yerli alətləri — şrift (Google Fonts, Fontshare, Fontsource + Azərbaycan hərfi yoxlaması), illüstrasiya/fon/naxış (unDraw, Open Doodles, Haikei, Hero Patterns, Poly Haven), açıq lisenziyalı foto (Openverse), hərəkət (GSAP, Anime.js, Lottie, Motion, Three.js, Remotion), yerli alətlər (Inkscape, Sharp, Fabric, Konva, ImageMagick, Blender, Playwright). İstifadə et: cover, post, karusel, highlight, video qrafikası üçün material, şrift, fon, tekstura və ya animasiya lazım olanda.
+description: "Agentliyin pulsuz dizayn resursları və yerli alətləri — şrift (Google Fonts, Fontshare, Fontsource + Azərbaycan hərfi yoxlaması), illüstrasiya/fon/naxış (unDraw, Open Doodles, Haikei, Hero Patterns, Poly Haven), açıq lisenziyalı foto (Openverse), hərəkət (GSAP, Anime.js, Lottie, Motion, Three.js, Remotion), yerli alətlər (Inkscape, Sharp, Fabric, Konva, ImageMagick, Blender, Playwright). İstifadə et: cover, post, karusel, highlight, video qrafikası üçün material, şrift, fon, tekstura və ya animasiya lazım olanda."
 ---
 
 # Dizayn resursları (API açarsız)
