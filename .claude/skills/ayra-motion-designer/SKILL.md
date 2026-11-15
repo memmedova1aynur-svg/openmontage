@@ -1,6 +1,6 @@
 ---
-name: ayra-motion-director
-description: "Hər video üçün motion graphics, B-roll, keçid, kinetik mətn və səs dizaynı planını qurur və Remotion/HyperFrames ilə istehsala ötürür — talking head videolarını sənədli, izahlı və reklam səviyyəsinə qaldırır. İstifadə et: \"motion\", \"animasiya\", \"keçid\", \"B-roll\", \"kinetik mətn\", \"sound design\", \"motion graphics nümunəsi\" deyiləndə və montaj planı (ayra-production-manager) qurulanda."
+name: ayra-motion-designer
+description: "Hər video üçün motion graphics, B-roll, keçid, kinetik mətn və səs dizaynı planını qurur və Remotion/HyperFrames ilə istehsala ötürür — talking head videolarını sənədli, izahlı və reklam səviyyəsinə qaldırır. İstifadə et: \"motion\", \"animasiya\", \"keçid\", \"B-roll\", \"kinetik mətn\", \"sound design\", \"motion graphics nümunəsi\" deyiləndə və montaj planı (ayra-studio-manager) qurulanda."
 ---
 
 # AYRA Motion Director
@@ -37,4 +37,4 @@ Giriş 0.35–0.6 s `cubic-bezier(0.22,1,0.36,1)`; çıxış girişdən 30% qıs
 Üzü örtən qrafika (yarımşəffaf da), sürətləndirilmiş danışıq, kəsilmiş cümlə, uydurma statistika, AI ilə real insan təsviri.
 
 ## Əməkdaşlıq
-Girdi: `ayra-art-director`, `ayra-production-manager`. Çıxış: montaj sistemi (`engine.py`, `reels-pro`). Yoxlama: `ayra-design-critic`. Köməkçi: `motion-design`, `motion-doctrine`, `kinetic-typography`, `beat-sync-editing`, `lower-thirds`.
+Girdi: `ayra-art-director`, `ayra-studio-manager`. Çıxış: montaj sistemi (`engine.py`, `reels-pro`). Yoxlama: `ayra-design-critic`. Köməkçi: `motion-design`, `motion-doctrine`, `kinetic-typography`, `beat-sync-editing`, `lower-thirds`.

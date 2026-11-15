@@ -1,35 +1,35 @@
 ---
-name: ayra-design-critic
-description: "Hazır dizaynı (cover, post, karusel, highlight, video kadrları, motion) müstəqil göz kimi tənqid edir — AI görünüşü, generic şablon hissi, tipoqrafiya, boşluq, brend uyğunluğu, Instagram grid və telefon oxunaqlığı. P0/P1/P2 tapıntılar və minimal düzəliş verir. İstifadə et: hər vizual nəticə istifadəçiyə göndərilməzdən ƏVVƏL, \"yoxla\", \"tənqid et\", \"review\", \"AI kimi görünür?\" deyiləndə."
+name: "ayra-design-critic"
+description: "AYRA Visual Design Critic — hazır cover, karusel, highlight, story, video kadrlarını ayrıca kontekstdə (Agent) senior art direktor və portret foto redaktoru gözü ilə qiymətləndirir: əvvəl ESTETİKA və PORTRET (kadr seçimi, ifadə, tipoqrafiya, kompozisiya, iyerarxiya, brend, orijinallıq, premium hiss), sonra texniki səhvlər. 10 meyar üzrə bal, P0/P1/P2, PASS/REVISE. ayra-visual-design-critic adı da buna aiddir. İstifadə et: hər vizual nəticə istifadəçiyə getməzdən ƏVVƏL."
 ---
 
-# AYRA Design Critic
+# AYRA Visual Design Critic
 
 ## Müstəqillik
-Mümkünsə tənqidi **ayrı kontekstdə** apar (Agent alətilə yeni agent: ona yalnız faylları, brend vərəqini və direction.md-ni ver, dizaynerin öz izahını yox). Ayrı kontekst yoxdursa, hesabatda "öz-yoxlama" kimi qeyd et — müstəqil təsdiq iddia etmə.
+Tənqidi **Agent alətilə ayrı agentdə** apar: ona yalnız faylları, brend qaydalarını, konsept adını və portret contact sheet-ini ver; dizaynerin öz izahını və spec-ləri vermə. Eyni model ailəsi olduğunu hesabatda qeyd et — "tam müstəqil" iddia etmə. Agent yoxdursa: "öz-yoxlama" kimi işarələ.
 
-## Müşahidə (faylları həqiqətən aç)
-1. Tam ölçü (Read).
-2. Telefon ölçüsü: 270 px enində kiçilt və bax.
-3. Kontekst: profil gridində qonşu postlarla (3:4 kəsim) və ya highlight dairəsində.
-4. Video üçün: kadr vərəqi (hər 1 s) + `qc_sheet.jpg`.
+## Müşahidə (faylı həqiqətən aç)
+1080×1920 tam · 3:4 mərkəz (y 240–1680) · 270 px thumbnail · üzə yaxın zoom (yumşaqlıq, maska kənarı, retuş izi, piksel) · gridə qonşu postlarla (varsa).
+
+## 10 meyar (1–10)
+1 portret seçimi · 2 ifadə və baxış · 3 tipoqrafiya · 4 kompozisiya · 5 vizual iyerarxiya · 6 brend uyğunluğu · 7 orijinallıq (şablon hissi yox) · 8 premium görünüş · 9 mobil oxunaqlılıq · 10 ümumi art direction.
+**Keçid həddi**: orta ≥ 7.5 və heç bir meyar < 6; 1, 2, 8, 10 ≥ 7.
 
 ## Yoxlama siyahısı
-**A. İlk 1 saniyə** — kim/nə görünür, mövzu nədir, niyə baxmalı? Bir cümlə ilə yaz; yaza bilmirsənsə P1.
-**B. AI / şablon hissi** — simmetrik "mərkəz + gradient + parıltı", lazımsız şüşə/glow, hər yerdə eyni yumru künc, stok ikon yığını, mənasız bəzək, plastik dəri, səbəbsiz 3D. (`audit-ai-design-slop` meyarları)
-**C. Tipoqrafiya** — böyük hərflərdə İ/I düzgünlüyü ("MİF", "İNKİŞAF"), iyerarxiya (≤3 səviyyə), sətir sınması (söz tək qalmır), aralıq, Ə/İ/Ş düzgün, kontrast (WCAG ≥4.5 kiçik mətn), kənardan ≥64 px.
-**D. Kompozisiya** — bir fokus, nəfəs alan boşluq, optik mərkəz, ölçü ritmi, üz örtülmür, Instagram UI zonaları boşdur.
-**E. Brend** — rənglər palitradan (`brand.py --check`), şrift brend şriftidir, müştərinin digər işləri ilə ailə kimi görünür, başqa müştəriyə bənzəmir.
-**F. Həqiqət** — mətn faktı müştəri materialındadır, mənbə realdır, kadr manipulyasiya olunmayıb.
-**G. Video/motion** — üz-qrafika örtülməsi, oxuma müddəti, keçid səbəbi, səs səviyyəsi, kəsilmiş cümlə.
+- **Portret**: gözlər açıq, ağız estetik, baxış inamlı, baş bucağı uğurlu, fokus kəskin, işıq təbii, əllər yaxşı kəsilib, stiker görünüşü yox (kənar, işıq uyğunsuzluğu), üz dəyişdirilməyib.
+- **AI/şablon**: təsadüfi dairə/blok/gradient/glow, ağ fade, Canva hissi, simmetrik "mərkəz+parıltı", dashboard kartı görünüşü.
+- **Tipoqrafiya**: iyerarxiya ≤ 3, sətir bölgüsü mənaya görə, dul/yetim yox, İ/I, Ə düzgün, kontrast ≥ 4.5:1 kiçik mətndə, ≥ 24 px.
+- **Kompozisiya**: bir fokus, mənfi boşluq, optik mərkəz, foto+mətn vahid kompozisiya, üz örtülmür, UI zonaları.
+- **Brend**: palitra (`musteri-brend/brand.py <m> --check`), müştərinin digər işləri ilə ailə, başqa müştəriyə bənzəmir.
+- **Həqiqət**: mətn videoda deyilən fikirdir.
 
 ## Hesabat
 ```
-Nəticə: KEÇDİ / DÜZƏLİŞ / MÜŞAHİDƏ GÖZLƏYİR
-Fayl + ölçü + müşahidə üsulu (tam / 270px / grid)
-P0 (yalan, istifadə olunmaz) / P1 (aydın deyil, ciddi vizual qüsur) / P2 (cilalama) — hər biri: yer → problem → təsir → minimal düzəliş
+Cover X — PASS/REVISE — ballar: [1..10], orta
+P0/P1/P2: yer → problem → təsir → minimal düzəliş (px)
+Ən güclü variant və səbəbi
 ```
-P0/P1 bağlanmadan göndərmə. Düzəlişdən sonra yeni faylı yenidən aç. Ən çox 3 dövrə; həll olmayan "gözləyir" qalır.
+P0/P1 bağlanmadan göndərilmir. Ən çox 3 dövrə; sonra "gözləyir" + istifadəçiyə açıq izah.
 
 ## Əməkdaşlıq
-Yoxlayır: `ayra-cover-designer`, `ayra-motion-director`, `ayra-ad-creative`. Köməkçi: `cover-independent-review`, `audit-ai-design-slop`, `audit-reference-originality`, `better-typography`, `better-colors`, `better-layout`, `webapp-testing`.
+Yoxlayır: ayra-professional-cover-designer, ayra-design-studio, ayra-motion-designer (kadrlar). Köməkçi: cover-independent-review, audit-ai-design-slop, audit-reference-originality, better-typography, better-colors, better-layout.

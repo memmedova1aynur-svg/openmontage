@@ -1,0 +1,20 @@
+<!doctype html><html lang="az"><head><meta charset="utf-8"><link rel="stylesheet" href="{{base_css}}"><style>
+/* A — Luxury editorial magazine: studiya fonu, masthead başın arxasında, cover-line-lar */
+body{background:{{backdrop}}}
+.light{left:0;top:0;width:1080px;height:1920px;background:radial-gradient(ellipse 70% 45% at {{light_x}}% 34%,{{light}} 0%,transparent 70%)}
+.mast{left:0;width:1080px;top:{{mast_y}}px;text-align:center;text-transform:uppercase;font-weight:700;font-size:{{mast_size}}px;letter-spacing:-.045em;line-height:.8;color:{{ink}}}
+.p{left:{{img_x}}px;top:{{img_y}}px;width:{{img_w}}px}
+.issue{left:96px;top:{{issue_y}}px;right:150px;display:flex;justify-content:space-between;font-weight:500;font-size:30px;letter-spacing:.16em;text-transform:uppercase;color:{{ink}}}
+.cl{left:96px;top:{{cl_y}}px;width:{{cl_w}}px;text-align:{{cl_align}}}
+.cl .k{font-weight:600;font-size:30px;letter-spacing:.16em;text-transform:uppercase;color:{{k_color}};margin-bottom:14px}
+.cl .h{font-weight:600;font-size:{{h_size}}px;line-height:1.0;letter-spacing:-.025em;color:{{h_color}}}
+.cl .h em{font-style:italic;font-weight:300}
+.cl .s{margin-top:18px;font-size:25px;line-height:1.35;color:{{h_color}};opacity:.92;width:{{s_w}}px}
+.grain{left:0;top:0;width:1080px;height:1920px;opacity:.06;mix-blend-mode:overlay}
+</style></head><body>
+<div class="abs mast" data-check="masthead">{{mast}}</div>
+<img class="abs p" src="{{portrait}}">
+<div class="abs issue" data-check="issue"><span>{{issue_l}}</span><span>{{issue_r}}</span></div>
+<div class="abs cl" data-check="coverline"><div class="k">{{kicker}}</div><div class="h">{{headline}}</div><div class="s">{{sub}}</div></div>
+<img class="abs grain" src="{{grain}}">
+</body></html>

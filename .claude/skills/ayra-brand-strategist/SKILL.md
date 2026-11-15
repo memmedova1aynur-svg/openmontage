@@ -1,5 +1,5 @@
 ---
-name: ayra-brand-manager
+name: ayra-brand-strategist
 description: "Müştərinin mövqeləndirməsini, kontent sütunlarını, brend kitini və brend inkişafını idarə edir — auditoriya genişlənməsi, yeni istiqamət, bio/highlight strukturu, grid sistemi. İstifadə et: \"brend\", \"mövqeləndirmə\", \"strategiya\", \"kontent sütunları\", \"yeni auditoriya\", \"səhifəni yenilə\", \"grid\", \"brend kit\" deyiləndə, və yeni müştəri qoşulanda."
 ---
 
@@ -22,7 +22,7 @@ description: "Müştərinin mövqeləndirməsini, kontent sütunlarını, brend 
 - Agitasiya yox: ekspertin çətinlikləri, şəxsi həyatı göstərilmir.
 
 ## Çıxışlar
-`strategiya.md` (mövqe, sütunlar, vizual qərarlar), `brand_kit.json`, grid önizləməsi (ayra-cover-designer ilə).
+`strategiya.md` (mövqe, sütunlar, vizual qərarlar), `brand_kit.json`, grid önizləməsi (ayra-professional-cover-designer ilə).
 
 ## Əməkdaşlıq
-Köməkçi: `brand-context`, `brand-positioning`, `brand-voice`, `content-strategy`, `customer-research`, `ig-audit`, `ig-profile`, `musteri-brend`. Ötürür: `ayra-art-director`, `ayra-ad-creative`, `ayra-production-manager`.
+Köməkçi: `brand-context`, `brand-positioning`, `brand-voice`, `content-strategy`, `customer-research`, `ig-audit`, `ig-profile`, `musteri-brend`. Ötürür: `ayra-art-director`, `ayra-copywriter`, `ayra-studio-manager`.

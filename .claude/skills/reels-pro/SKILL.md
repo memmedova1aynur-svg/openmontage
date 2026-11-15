@@ -32,7 +32,7 @@ Hədəf: 10 video ≈ 1–1.5 saat, **ilk göndərilən versiya QA-dan keçmiş*
 3. **Storyboard daxili**: mövzuya görə üslub (sənədli / premium ekspert / emosional / dinamik maarifləndirici / reklam / sual-cavab) — profil daxilində özün seç, təsdiq gözləmə. Eyni paketdə videolar bir-birini təkrarlamasın (üslub, musiqi, keçid).
 4. **Montaj**: `batch.py` (paralel, müştərilər növbə ilə — hər müştərinin ilk videoları birinci). Rəng: `look` verilməyibsə `auto` → `color_auto.py` hər video üçün ayrıca ölçür (üz parlaqlığı, ağ balansı, doyma, kəskinlik; iPhone HLG/PQ → SDR).
 5. **Yoxlama** (avtomatik, keçməyən göndərilmir): `qa.py` (donma, kəsim, LUFS, SFX, rəng, kart) + `qc_render.py` (export, qara kadr, kadraj/baş üstü, rəng normaları, yazılış, `--clean` varsa qrafika-üz örtülməsi) → `QC/qc_sheet.jpg`-yə Claude GÖZLƏ baxır (12 kadr).
-6. **Cover + caption**: `postfx.py cover` (real kadr, gözlər açıq) + caption `ig-caption` skill ilə, danışığa sadiq, `caption.py` lint.
+6. **Cover + caption**: AYRA Cover Engine V2 — `ayra-professional-cover-designer` (ayra-smart-portrait-selector → art direction A/B/C → render → ayra-design-critic); köhnə `postfx.py cover` yalnız tez önizləmə üçün + caption `ig-caption` skill ilə, danışığa sadiq, `caption.py` lint.
 7. **Təhvil**: `deliver.py add <müştəri> <tarix> <NN_ad> final.mp4 --cover --caption --qc` → `Final Videos / Covers / Captions / Quality Control`; `deliver.py report` → istifadəçiyə QISA hesabat (neçə hazır, neçəsi QC-dən keçdi, problem, müdaxilə lazımdırmı).
 8. **Düzəliş gələndə**: yalnız o videonu dəyiş; düzəlişin növünü təyin et və `qaydalar.json`-a yaz (global / müştəri / video). Təsdiqlənmiş videoya toxunma.
 

@@ -1,5 +1,5 @@
 ---
-name: ayra-production-manager
+name: ayra-studio-manager
 description: "Müştərilərin çəkilişlərini, montaj növbəsini, düzəliş dövrələrini və təhvil tarixlərini sistemləşdirir — hansı video hansı mərhələdədir, kim nəyi təsdiqləyib, növbəti addım nədir. İstifadə et: \"növbə\", \"status\", \"neçə video qalıb\", \"təhvil\", \"çəkiliş planı\", \"nə bitdi\", \"plan qur\" deyiləndə və yeni Drive qovluğu gələndə."
 ---
 
@@ -11,7 +11,7 @@ description: "Müştərilərin çəkilişlərini, montaj növbəsini, düzəliş
 {"musteri":"<qovluq>","video":"03_Nene_baba","menbe":"drive:<id> və ya fayl","merhele":"montaj|qc|gonderildi|duzelis|tesdiq|saxla",
  "duzelisler":[{"tarix":"...","istek":"...","status":"edildi"}],"tehvil":"YYYY-MM-DD","qeyd":"..."}
 ```
-Status cədvəli: `python3 .claude/skills/ayra-production-manager/status.py [müştəri]`.
+Status cədvəli: `python3 .claude/skills/ayra-studio-manager/status.py [müştəri]`.
 
 ## Mərhələlər
 `növbədə → yüklənib → montaj → redaktor oxunuşu + kəsim hesabatı → QC (qc_sheet bax) → göndərildi → düzəliş ↺ → TƏSDİQ` · `saxla` = istifadəçi dayandırıb.
@@ -28,4 +28,4 @@ Status cədvəli: `python3 .claude/skills/ayra-production-manager/status.py [mü
 Ekspert 1–2 saatda 5–10 video çəkir: hər video üçün tam danışıq mətni (`ig-reel`), kadr/işıq qeydi, geyim dəyişikliyi nöqtələri. Çəkilişdən sonra materialı `istehsal.json`-a əlavə et.
 
 ## Əməkdaşlıq
-Montaj: `reels-pro`, `engine.py`; motion: `ayra-motion-director`; cover: `ayra-cover-designer`; yoxlama: `ayra-design-critic`; caption: `ig-caption`.
+Montaj: `reels-pro`, `engine.py`; motion: `ayra-motion-designer`; cover: `ayra-professional-cover-designer`; yoxlama: `ayra-design-critic`; caption: `ig-caption`.
