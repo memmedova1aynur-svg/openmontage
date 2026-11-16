@@ -44,3 +44,6 @@ Bu rejimdə 10 meyar (hər biri 1–10, **keçid: hər meyar ≥ 8**): 1 kreativ
 - Ən az 1 tam düzəliş dövrəsi; ikinci baxış eyni Agent-ə göndərilir (SendMessage) — «əvvəl → sonra» ballar hesabatda.
 - Yoxla: Playfair rəqəmləri «10»u «IO» kimi göstərə bilər (lining-nums və ya DM Sans rəqəm); kontur yazıda (`-webkit-text-stroke`) daxili kontur toqquşması — stroke+fill üst-üstə qat; böyük hərf diakritikası (Ğ Ç Ş İ) üst/alt sətirlə toqquşması.
 - Son sual: «Peşəkar qrafik dizayner bunu portfoliosuna qoyardımı?»
+
+## Sərt portfolio rejimi (16.11.2026 yeniləməsi)
+Texniki səliqə yüksək bal demək deyil; 8 = «peşəkar dizayner portfoliosunda göstərərdi». Ayrıca qiymətləndir: 1 kreativ ideya · 2 art direction · 3 foto seçiminin estetikası · 4 tipoqrafik keyfiyyət · 5 vizual iyerarxiya · 6 kompozisiya · 7 brend xarakteri · 8 mətnin marketinq gücü · 9 grid uyğunluğu (3:4 + 150px) · 10 ümumi portfolio səviyyəsi. Hər <8 üçün **problem → səbəb → düzəliş (px)**. Bir mövzunun iki istiqaməti varsa, hansının güclü olduğunu səbəbi ilə de. Tənqid Agent-i 529 xətası verərsə başqa modellə (`model: sonnet`) təkrarla — tənqidsiz təhvil yoxdur.

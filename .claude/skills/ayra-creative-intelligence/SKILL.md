@@ -67,3 +67,7 @@ python3 .claude/skills/ayra-creative-intelligence/scripts/grid_check.py out/A.pn
 
 ## Təqdimat
 İstifadəçiyə: yekun PNG-lər + grid preview + qısa hesabat (ideya, istifadə olunan referans prinsipi, real şəkil mənbəyi/lisenziyası, tənqid balları əvvəl→sonra, mütəxəssis təsdiqi tələb edən faktlar).
+
+## Kompozisiya istiqamətləri (şablon deyil, kreativ yön — mövzuya görə seç)
+Editorial magazine · art-directed photography · typographic poster · conceptual collage · minimal visual storytelling · object-led · portrait-led · educational infographic · modern campaign. «8 obyekt = 8 xanalı kataloq» avtomatizmi qadağandır: əvvəl daha güclü metafora axtar (məs. «10 oyun» → 0,00-lıq oyuncaq qəbzi; «hər şeyə yox» → böyüyən «Yox.» dialoqu).
+Mənbə faylı: hər PNG ilə yanaşı redaktə edilə bilən `.html` (layer = element) `instagram-clients/<m>/<iş>/menbe/`-də saxlanır. Şrift yoxlaması: `ayra_design.py fontcheck <font> --text "ƏəİıŞşĞğÇçÖöÜü0123456789"`.

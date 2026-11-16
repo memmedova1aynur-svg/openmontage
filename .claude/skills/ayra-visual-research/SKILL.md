@@ -75,3 +75,9 @@ Sahəyə görə:
 - **Karyera / biznes**: iş masası, sənəd, real mühit; «əl sıxan kostyumlular» yox.
 Ən az 3 alternativ müqayisə et. Keyfiyyətsiz şəkli fonundan ayırmaq onu keyfiyyətli etmir — uyğun tapılmırsa obyekti çıxar və ya kompozisiyanı dəyiş, istifadəçiyə yaz.
 Ton uyğunlaşdırma icazəlidir (parlaqlıq, doyma ±30%, ağ balans) — obyektin formasını dəyişmək yox.
+
+## Asset keyfiyyət alətləri (`scripts/asset_fx.py`)
+- `qc cut.png` — maska yoxlaması (örtük, yarımşəffaf kənar, halo, kəskinlik, ölçü). **FAIL olan kəsim dizayna qoyulmur**: başqa namizəd seç, ya fotonu kəsmədən tam kadr/pəncərə kimi işlət, ya da ağ fonlu fotonu `mix-blend-mode:multiply` ilə açıq fona otur (maska lazım deyil).
+- `tone` — brend rənginə yumşaq ton/doyma/kontrast uyğunlaşdırma (forma dəyişmir). `shadow` — kontakt + mühit kölgəsi (obyekt «yapışdırılmış» görünməsin). `grain` — yalnız konsept tələb edəndə. `subject` — «mətn subyektin arxasında» üçün ön qat (orijinalla eyni ölçü).
+- Foto mətnlə ziddiyyət təşkil etməməlidir (dolu boşqab + «boşqabı silir» olmaz) — ya mətni, ya fotonu dəyiş.
+- Tanınan uşaq/insan üzü olan stok foto: CC0 olsa da model razılığı məlum deyil — istifadəçiyə qeyd et.
