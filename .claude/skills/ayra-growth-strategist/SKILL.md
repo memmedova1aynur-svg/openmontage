@@ -39,3 +39,6 @@ Instagram girişsiz açılmır (yoxlanılıb). Şifrə/giriş istənmir, təhlü
 6. **Etibarlı məzmun:** rəsmi qurumlar (WHO, CDC, AAP, NAEYC və s.) + yerli rəsmi sənədlər; açılmayan səhifə «açılmadı» kimi qeyd olunur.
 7. **Nəticə:** `content-strategy/<dövr>/arasdirma/` (instagram_*.json, youtube_*.json, teklifler.json, menbeler.md) → Content Gap Map, hər sətirdə işarə 🟢/🟡/🔵 və mənbə linki.
 Məhdudiyyətlər hər hesabatda açıq yazılır: Instagram baxış/şərh sayı və tam caption görünmür; indeks natamamdır; bağlı qruplar əlçatmazdır.
+
+## Content Planner + viral modul
+Hər dövrün araşdırmasında `ayra-creative-intelligence` § Viral Content & Humor Intelligence tətbiq olunur: ideya laboratoriyasında viral namizədlər ayrıca qiymətləndirilir; plana yalnız müştərinin master faylındakı tezlik daxilində və təsdiqlə düşür; viral postdan sonra ekspert körpüsü planlanır.

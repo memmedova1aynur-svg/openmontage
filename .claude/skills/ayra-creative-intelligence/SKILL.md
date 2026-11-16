@@ -110,3 +110,31 @@ Say istehsal hədəfidir, strategiya deyil. Zəif mövzu daha güclüsü ilə ə
 
 ### H. Performance learning loop
 İstifadəçi Insights ekran görüntüsü/rəqəm verəndə: baxış · izləmə müddəti · saxlama · paylaşma · şərh · profil ziyarəti · yeni izləyici · müraciət → `instagram-clients/<m>/analytics/insights.csv` (ID ilə). Hər kontent öz məqsədinə görə qiymətləndirilir (diqqət ≠ etibar ≠ satış; yüksək baxış satış demək deyil). Növbəti dövrün bölgüsü, format və hook seçimi buna görə dəyişir. Məlumat yoxdursa — «yoxdur» yazılır, statistika uydurulmur.
+
+## Viral Content & Humor Intelligence (universal modul; müştəri faktları ayrı faylda)
+Mizah brendin əsas xətti deyil — müştərinin master faylında icazə verilən tezlikdə (məs. 15 paylaşımda ≤1) və yalnız güclü ideya strateji məqsədə xidmət edəndə. Kvota üçün mizah posti yaradılmır.
+**Hədəf qaydası:** zarafat situasiyaya, stereotipə, absurd gözləntiyə, yanlış inanca yönəlir — uşağa, valideynin çətinliyinə, müəllimin şəxsiyyətinə yox. Təhlükəli davranış tövsiyə kimi oxuna bilməz (absurd həddə qədər şişirdilir); həssas mövzular (uşaq təhlükəsizliyi, inkişaf fərqlilikləri, əmizdirmə çətinliyi, doğuş sonrası psixi vəziyyət) xüsusi ehtiyatla və mütəxəssis təsdiqi ilə.
+
+| Növ | Mexanizm | IG formatı | Risk |
+|---|---|---|---|
+| Absurd | məntiqi sonuna qədər aparılmış gözlənilməzlik | illüstrasiyalı karusel | aşağı (absurd = tövsiyə deyil) |
+| Deadpan | gülməli məzmun tam ciddi formada | təlimat, sənəd, rəsmi cədvəl | aşağı |
+| Vizual ironiya | şəkil ↔ mətn ziddiyyəti | tək kadr, cover | aşağı |
+| Relatable | izləyici öz həyatını görür | POV, tarixçə, siyahı | aşağı |
+| Satira | köhnəlmiş fikrin tənqidi | saxta proqram, «akademiya» | orta — hədəf inanc, şəxs yox |
+| Şişirtmə | gündəlik hadisə böyüdülür | komiks, karusel | aşağı |
+| Gözlənti vs reallıq | iki kadr kontrastı | split karusel | aşağı |
+| Parodiya | tanış format (reklam, təlimat, xəbər) | saxta reklam, manual | aşağı–orta (brend adı yox) |
+| Müşahidə | görünməyən gündəlik detal | vaxt damğası, siyahı | aşağı |
+| Lokal | dil, ailə mədəniyyəti, məişət | hər format | orta — region/qrup ələ salınmır |
+| Situasiya komediyası | konkret səhnənin özü | mini səhnə Reels | aşağı |
+| Özünə ironiya | öz təcrübəsinə gülmək | ekspertin öz «səhvləri» | aşağı, amma ekspert etibarını azaltmamalı |
+| Cəsarətli (edgy) | sərhəddə təəccüb | — | **yüksək** — ekspert brendlərində yalnız ayrıca təsdiqlə |
+| Rol dəyişmə | rollar yer dəyişir | «uşağın müqaviləsi» | aşağı–orta |
+| Mockumentary | sənədli film dili + komik məzmun | CCTV, səsli izah | aşağı |
+
+**Viral Creative Lab — hər ideya üçün 10 bənd:** mövzu və problem · konsept · hook (1-ci slayd/ilk saniyə) · mizah mexanizmi · niyə göndəriləcək · ehtimal olunan şərhlər (PROQNOZ kimi işarələnir) · ekspert mövqeyinə xidməti · art direction · reputasiya riski · məqsəd + ölçü göstəricisi. Formatlar: karikatura, komiks, mini sənədli, saxta reklam, situasiya, interaktiv karusel, metafora, müqayisə, POV, real şərhə cavab, illüstrasiyalı hekayə, sosial eksperiment, ekspertin yumorla izahı. Viral potensial zəif/brendə uyğun olmayan ideyanı keçirmir.
+**Ekspert körpüsü:** viral postun ardınca eyni mövzuda ekspert Reels/karusel + caption-da yönləndirmə — diqqət profil ziyarəti və izləyiciyə çevrilsin.
+**Comment Intelligence:** real şərhlər (ekran görüntüsü/mətn) ayrıca mənbədir: davam etdirilən zarafat, lokal ifadələr, auditoriyanın əlavə etdiyi obrazlar, yeni ideya, həqiqi maraq vs əyləncə. Real şərh ↔ proqnoz şərh heç vaxt qarışdırılmır.
+**Ölçmə (məqsədə görə):** tanınma — görüntüləmə, əhatə, göndərilmə/əhatə, repost · ekspertlik — saxlama, məzmunlu şərh, profil ziyarəti, izləyici/ziyarət · xidmət — real müraciət (varsa). Yüksək baxış satış uğuru deyil. Hər yeni nəticə müştərinin case study-ləri ilə müqayisə olunur.
+**Araşdırma mənbələri (yoxlanılıb 16.11.2026):** TikTok Creative Center açılır (ölkə seçimi məhduddur) · Reddit: birbaşa 403, axtarış alətində bloklanır — əlçatmaz · Google Trends 429 — əlçatmaz · digərləri §A cədvəlində. AZ/TR/EN araşdırılır; xarici zarafat tərcümə edilmir və rəqib postu kopyalanmır — mexanizm götürülüb yerli situasiyaya çevrilir.
