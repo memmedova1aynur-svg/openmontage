@@ -52,3 +52,6 @@ Hər coverdə eyni şablon · portretin arxasına təsadüfi dairə · səbəbsi
 9. Seriya = sabit (qrid, loqo yeri, şriftlər) + dəyişən (foto, bir vurğu rəngi).
 10. 270 px testi: başlıq cap-height ≥ 72 px (1080 enində), ≤ 7 söz, kontrast ≥ 4.5:1, 3:4 kəsimdə heç nə itmir. Anti-şablon: neon gradient, glow, yarımşəffaf qara qutu, stok/AI üz, emoji/ikon doldurucusu, nəhəng loqo.
 Hər dizayndan əvvəl istiqamət kataloqundan bir istiqamət seç və onun reseptini (ölçülər, tip, rəng) tətbiq et.
+
+## Real vizual material
+Dizayna başlamazdan əvvəl `ayra-visual-research` protokolunu tətbiq et: mövzu real obyekt/foto tələb edirsə, lisenziyalı real şəkil tap (`.claude/skills/ayra-visual-research/scripts/`), fonunu sil və kompozisiyaya yerləşdir.
