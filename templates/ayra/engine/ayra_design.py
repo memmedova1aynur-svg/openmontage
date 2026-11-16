@@ -75,7 +75,7 @@ def preview(a):
 
 def grid(a):
     from PIL import Image
-    tw, th, gap = 360, 480, 4; ims = a.imgs[:9]; rows = (len(ims) + 2) // 3
+    tw, th, gap = 360, 480, 4; ims = a.imgs; rows = (len(ims) + 2) // 3
     S = Image.new("RGB", (3 * tw + 2 * gap, rows * th + (rows - 1) * gap), "white")
     for i, pth in enumerate(ims):
         im = Image.open(pth).convert("RGB"); W, H = im.size; ch = W * 4 // 3
