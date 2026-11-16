@@ -222,7 +222,10 @@ def check(c: str, vid: str) -> list[str]:
             errs.append(f"qc_render FAIL: {json.dumps(f, ensure_ascii=False)[:300]}")
         if not q.get("info", {}).get("frames_checked"):
             errs.append("qc_render heç bir üz kadrını yoxlamayıb (kadraj/zoom ölçülməyib)")
-        if not job.get("no_graphics") and any("overlay_face" in w and isinstance(w["overlay_face"], str) for w in q.get("warn", [])):
+        ecj = json.loads((d / "QC" / "edit_checks.json").read_text()) if (d / "QC" / "edit_checks.json").exists() else {}
+        if ecj.get("overlay_face_bad"):
+            errs.append(f"qrafika üzü örtür (render zamanı ölçülüb): {ecj['overlay_face_bad'][:5]}")
+        if not job.get("no_graphics") and not ecj.get("overlay_face_checked") and any("overlay_face" in w and isinstance(w["overlay_face"], str) for w in q.get("warn", [])):
             errs.append("üz örtülməsi yoxlanmayıb: clean.mp4 (qrafikasız) render et və qc_render-ə --clean ver")
     # 5b. montaj yoxlamaları (müştəri qaydası tələb edirsə məcburi): söz içində kəsim yox, qatlar kadr daxilində
     ec = d / "QC" / "edit_checks.json"

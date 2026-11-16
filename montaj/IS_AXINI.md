@@ -25,6 +25,22 @@ Hər video bu ardıcıllıqla gedir; addım atlanırsa `python -m montaj.gate` t
 
 Bir videoya deyilən düzəliş yalnız həmin videonun `concept.md`-sinə yazılır; başqa videoya keçmir.
 
+## Montaj rejimləri və sürət qaydaları (17.11.2026 — ölçülüb)
+
+Rejim videonun mürəkkəbliyinə görə seçilir (keyfiyyət səviyyəsi hamısında eynidir), `concept.md`-də yazılır:
+| Rejim | Nə üçün | Hədəf |
+|---|---|---|
+| **FAST EDIT** (standart) | talking head, ekspert, sual-cavab, gündəlik maarif Reels: düzgün kəsim, təbii rəng, təmiz səs, altyazı, hook, lazım olanda yüngül zoom/qrafika | 4–6 dəq |
+| **CREATIVE EDIT** | B-roll, motion, animasiya, xüsusi kompozisiya | 7–12 dəq |
+| **PREMIUM EDIT** | reklam, mürəkkəb motion graphics, kampaniya | 15–25 dəq |
+Hər videoya PREMIUM tətbiq edilmir. Remotion yalnız həqiqətən lazım olan animasiyada; sadə kəsim/rəng/səs/altyazı/overlay — ffmpeg + numpy.
+
+Ardıcıllıq: **MONTAJ → PREVIEW QA → FINAL RENDER (bir dəfə) → FINAL QC**.
+- PREVIEW QA video render olunmadan, yalnız kəsilmiş səs üzərində (saniyələr): artıq/yarımçıq söz, itmiş söz, danışıq içində kəsim, subtitr = danışıq, qrafika kadr daxilində. Keçmirsə video render olunmur.
+- FINAL RENDER: mənbə 60 fps olsa belə `fps=30` filtr zəncirinin ƏVVƏLİNDƏ; bir kodlama (aralıq baza faylı yoxdur); hissələr paralel; x264 `faster crf17` (= `medium crf18` SSIM, 24% az CPU); qrafikasız nüsxə render edilmir — üz örtülməsi render zamanı ölçülür.
+- FINAL QC: `qc_render` bir dəfə. Problem yoxdursa yenidən montaj/render yoxdur; varsa yalnız həmin problem düzəldilir. Hazır videonun ayrıca tam transkripti təkrarlanmır (PREVIEW QA artıq edib) — yalnız şübhəli yer ayrıca yoxlanır.
+- Brend faylları iş başında bir dəfə (`gate start`) oxunur; eyni müştərinin paketində rəng/kadraj ölçüləri, şriftlər, model keşdən istifadə olunur.
+
 ## Addımlar
 
 1. **Əvvəl qısa sorğu — Drive linkindən ÖNCƏ.** İstifadəçi yeni video istəyəndə (və ya link sorğusuz gəlsə)

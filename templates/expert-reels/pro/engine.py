@@ -125,8 +125,9 @@ def main():
     for i, s, e, at, nf in parts:
         z = a.zoom * (1.06 if i % 2 else 1.0)
         vin += ["-ss", f"{s:.3f}", "-t", f"{nf / 30 + 0.1:.3f}", "-i", str(src)]
-        vfc.append(f"[{i}:v]{vf_color + ',' if vf_color else ''}scale={int(1080 * z) // 2 * 2}:{int(1920 * z) // 2 * 2}:flags=bicubic,"
-                   f"crop=1080:1920:(iw-1080)/2:(ih-1920)*{a.cy},fps=30,setpts=N/30/TB,trim=end_frame={nf},setpts=PTS-STARTPTS,format=yuv420p,setsar=1[v{i}]")
+        # fps=30 ƏVVƏLDƏ: iPhone mənbələri çox vaxt 60 fps-dir — rəng/scale hər kadr üçün iki dəfə işləyirdi (ölçü: eyni piksellər, ~1.8× sürətli)
+        vfc.append(f"[{i}:v]fps=30,{vf_color + ',' if vf_color else ''}scale={int(1080 * z) // 2 * 2}:{int(1920 * z) // 2 * 2}:flags=bicubic,"
+                   f"crop=1080:1920:(iw-1080)/2:(ih-1920)*{a.cy},setpts=N/30/TB,trim=end_frame={nf},setpts=PTS-STARTPTS,format=yuv420p,setsar=1[v{i}]")
     n = len(parts); k0 = n
     fc = ";".join(vfc) + ";" + "".join(f"[v{i}]" for i in range(n)) + f"concat=n={n}:v=1:a=0[cat];[cat]split=2[c0][c1];[c1]scale=540:960[clean];"
     fc += f"[c0]subtitles={W_ / 'subs.ass'}:fontsdir={fdir}[s0]"; last = "s0"; ins = list(vin)
