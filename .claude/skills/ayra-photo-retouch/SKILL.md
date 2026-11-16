@@ -20,3 +20,9 @@ Mikrofon kimi kiçik əşyanın silinməsi bir cəhddə təbii alınmırsa — O
 
 ## Qadağan
 AI ilə üz yaratmaq/dəyişmək, dəri hamarlaşdırma, göz/dodaq/burun/bədən formasının dəyişməsi, görünən ləkə və bulanıq kontur.
+
+## Ekran görüntüsü / video kadrı → 4K (məcburi, cover-dən əvvəl)
+`python3 .claude/skills/ayra-photo-retouch/scripts/upscale4k.py giriş.png çıxış.png --crop x0,y0,x1,y1 [--size 2160x3840]`
+- Real-ESRGAN x4plus (BSD-3), CPU-da plitə ilə (~2–3 dəq/kadr); model ilk dəfə `~/.cache/ayra-sr/`-ə yüklənir.
+- Üz bərpası (GFPGAN/CodeFormer) istifadə olunmur — üz cizgiləri dəyişmir.
+- Nəticəyə 15–20% orijinal tekstura qarışdır (plastik dəri olmasın); Instagram UI, subtitr və ikonlar `--crop` ilə kənarda qalır.
