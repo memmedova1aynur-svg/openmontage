@@ -71,3 +71,6 @@ python3 .claude/skills/ayra-creative-intelligence/scripts/grid_check.py out/A.pn
 ## Kompozisiya istiqamətləri (şablon deyil, kreativ yön — mövzuya görə seç)
 Editorial magazine · art-directed photography · typographic poster · conceptual collage · minimal visual storytelling · object-led · portrait-led · educational infographic · modern campaign. «8 obyekt = 8 xanalı kataloq» avtomatizmi qadağandır: əvvəl daha güclü metafora axtar (məs. «10 oyun» → 0,00-lıq oyuncaq qəbzi; «hər şeyə yox» → böyüyən «Yox.» dialoqu).
 Mənbə faylı: hər PNG ilə yanaşı redaktə edilə bilən `.html` (layer = element) `instagram-clients/<m>/<iş>/menbe/`-də saxlanır. Şrift yoxlaması: `ayra_design.py fontcheck <font> --text "ƏəİıŞşĞğÇçÖöÜü0123456789"`.
+
+## Master brend faylı
+Müştəri qovluğunda `MASTER_BRAND_FILE.md` varsa, hər işdən əvvəl ƏVVƏL o oxunur (mövqe, istiqamətlər, qadağalar, açıq suallar); `brand_profile.md` qərarlar jurnalıdır. Açıq sual olan mövzuda köhnə dəyər işlədilmir.
