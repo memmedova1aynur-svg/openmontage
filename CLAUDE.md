@@ -19,3 +19,7 @@ Bütün müştərilər üçün hər cover, post, karusel, story, reklam və Inst
 ## AYRA Studio — daimi qayda (Creative Intelligence System)
 
 Bütün müştərilər üçün hər dizayn tapşırığı `ayra-creative-intelligence` skill-i ilə idarə olunur: BRAND PROFILE → MARKETING STRATEGY → CREATIVE DIRECTION → PINTEREST RESEARCH → DESIGN ARCHITECTURE → ASSET CURATION → DESIGN → VISUAL CRITIQUE → REFINEMENT → FINAL EXPORT. Mərhələlər arasında təsdiq gözlənilmir; sual yalnız çatışmayan müştəri faktı və ya brend istiqamətini dəyişən qərar üçün verilir. İstifadəçiyə yalnız müstəqil tənqiddə hər meyarı ≥ 8 olan nəticə təqdim olunur. Hər müştərinin öz `instagram-clients/<m>/brand_profile.md` faylı var; istifadəçinin düzəlişləri oranın «Qərarlar jurnalı»na yazılır və bir müştərinin üslubu başqasına keçmir.
+
+## AYRA Studio — daimi qayda (müştəri master faylı və istehsal modeli)
+
+Müştəri qovluğunda `instagram-clients/<m>/MASTER_BRAND_FILE.md` varsa, o müştərinin HƏR işindən əvvəl ilk o oxunur: mövqe, qadağalar, aktiv xidmətlər, aylıq istehsal modeli, ID sistemi və təsdiq qaydaları oradadır. Çəkiliş linki/qovluğu gələndə həmin fayldakı avtomatik zəncir (analiz → montaj → cover → caption → QC → ID ilə qovluğa) ayrıca tapşırıq gözləmədən icra olunur. Bir müştərinin istehsal modeli başqasına tətbiq edilmir. İcazəsiz heç nə paylaşılmır, planlanmır və hesabda dəyişiklik edilmir. Müştəri adı və şəxsi məlumat bu repoya yazılmır (müştəri qovluqları gitignore-dadır).
