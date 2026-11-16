@@ -219,6 +219,23 @@ def check(c: str, vid: str) -> list[str]:
             errs.append("qc_render heç bir üz kadrını yoxlamayıb (kadraj/zoom ölçülməyib)")
         if not job.get("no_graphics") and any("overlay_face" in w and isinstance(w["overlay_face"], str) for w in q.get("warn", [])):
             errs.append("üz örtülməsi yoxlanmayıb: clean.mp4 (qrafikasız) render et və qc_render-ə --clean ver")
+    # 5b. montaj yoxlamaları (müştəri qaydası tələb edirsə məcburi): söz içində kəsim yox, qatlar kadr daxilində
+    ec = d / "QC" / "edit_checks.json"
+    need = (cd / RULES).exists() and json.loads((cd / RULES).read_text()).get("require_edit_checks")
+    if ec.exists():
+        e = json.loads(ec.read_text())
+        if ec.stat().st_mtime < fm.stat().st_mtime - 600:
+            errs.append("edit_checks.json final.mp4-dən köhnədir")
+        if e.get("missing_anchors"):
+            errs.append(f"qrafika hadisəsi sözə bağlanmayıb (yanlış vaxtda çıxır): {e['missing_anchors'][:5]}")
+        if e.get("extra_spoken_words"):
+            errs.append(f"səsdə mətndə olmayan söz qalıb (təkrar/yarımçıq dubl): {e['extra_spoken_words'][:5]}")
+        if e.get("cuts_inside_words"):
+            errs.append(f"söz ortasından kəsim: {e['cuts_inside_words'][:8]} (yarımçıq söz)")
+        if e.get("layers_out_of_frame"):
+            errs.append(f"qrafika/ikon kadrdan çıxır: {e['layers_out_of_frame'][:5]}")
+    elif need:
+        errs.append("QC/edit_checks.json yoxdur (müştəri qaydası: söz-sərhəd və qat-kadr yoxlaması məcburidir)")
     # 6. gözlə baxış
     vr = d / "QC" / "visual_review.md"
     sheet = d / "QC" / "qc_sheet.jpg"

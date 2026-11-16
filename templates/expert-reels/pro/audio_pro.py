@@ -104,12 +104,29 @@ def finish(y, target):
     z = load(b); return z[: len(y)] if len(z) >= len(y) else np.pad(z, (0, len(y) - len(z)))
 
 
-def process(src, dst, do_isolate=False, target=-14.0):
+def gentle(x, m, target):
+    """Yumşaq rejim (təmiz yazı üçün): tembr dəyişmir — yalnız HPF, palçıq üçün kiçik kəsim, tək yüngül kompressor,
+    LUFS qazancı və yumşaq tavan. Qapı/ekspander, «presence» qaldırma, ikiqat kompressor yoxdur
+    (16.11.2026: güclü zəncir təmiz kafe yazısında səsi metallik/«təkrarlı» etdi — otaq əks-sədası önə çıxdı)."""
+    import pyloudnorm as pyln
+    from pedalboard import Pedalboard, HighpassFilter, PeakFilter, Compressor
+    y = Pedalboard([HighpassFilter(80), PeakFilter(250, -1.5, 1.0), Compressor(threshold_db=m["speech_db"] - 6, ratio=1.8, attack_ms=15, release_ms=200)])(
+        x.reshape(1, -1).astype(np.float32), SR)[0]
+    M = pyln.Meter(SR); lufs = M.integrated_loudness(y.astype(np.float64))
+    y = y * (10 ** ((target - lufs) / 20)); return (np.tanh(y / 0.89) * 0.89).astype(np.float32)
+
+
+def process(src, dst, do_isolate=False, target=-14.0, mode="auto"):
+    """mode: auto (ölçülmüş tam zəncir) | gentle (təmiz yazı: ≤6 dB küy təmizləmə + gentle())."""
     x = isolate(src) if do_isolate else load(src)
     m0 = measure(x); att = denoise_strength(m0)
-    y = finish(chain(dfn(x, att), m0), target); save(dst, y)
+    if mode == "gentle":
+        att = min(att, 6); y = gentle(dfn(x, att), m0, target)
+    else:
+        y = finish(chain(dfn(x, att), m0), target)
+    save(dst, y)
     m1 = measure(y)
-    return {"before": m0, "after": m1, "denoise_db": att, "isolate": do_isolate}
+    return {"before": m0, "after": m1, "denoise_db": att, "isolate": do_isolate, "mode": mode}
 
 
 def main():
