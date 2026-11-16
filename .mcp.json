@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "pinterest": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@sunkimkk/pinterest-mcp@1.2.0"
+      ],
+      "env": {
+        "MCP_PINTEREST_DOWNLOAD_DIR": "/tmp/pinterest-refs"
+      }
+    }
+  }
+}

@@ -49,3 +49,6 @@ Hər dizayndan əvvəl istiqamət kataloqundan bir istiqamət seç və onun rese
 
 ## Real vizual material
 Dizayna başlamazdan əvvəl `ayra-visual-research` protokolunu tətbiq et: mövzu real obyekt/foto tələb edirsə, lisenziyalı real şəkil tap (`.claude/skills/ayra-visual-research/scripts/`), fonunu sil və kompozisiyaya yerləşdir.
+
+## Pinterest referansı
+Dizayndan əvvəl `ayra-pinterest-research` ilə referans araşdırması et (istifadəçidən referans istəmə); pin şəkilləri yalnız ilhamdır.
