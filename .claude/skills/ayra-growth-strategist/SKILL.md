@@ -20,3 +20,11 @@ Qiymət, paket, büdcə, ödənişli alət, xarici paylaşım → istifadəçi t
 
 ## Köməkçi
 content-strategy, marketing-plan, marketing-ideas, offers, pricing, launch, customer-research, competitor-profiling, ig-plan, ig-month, ig-week, ig-analiz, meta-ads.
+
+## Smart Content Planner (paylaşım ardıcıllığı — bütün müştərilər)
+Müştərinin master faylında istehsal modeli varsa, ona uyğun yekun BİR təqvim ver (variantlar arasında seçim etdirmə):
+- Eyni/oxşar **əsas fikir** ardıcıl iki gün olmur (oxşarlıq başlığa yox, fikrə görə); əlaqəli Reels↔karusel arasında başqa istiqamət olur.
+- Hər auditoriya xətti (məs. pedaqoq) dövr boyu yayılır, bir neçə günə yığılmır; ardıcıl iki gün eyni istiqamət olmur.
+- Son 30–60 günün tarixçəsi (`content-strategy/tracker.csv`) yoxlanılır; paylaşılmış kontent yenidən planlanmır; dövrlər arası eyni R/K sırası təkrarlanmır.
+- Vizual: şəkilli/şəkilsiz balans, eyni geyim+rakursda portretlər yan-yana deyil, eyni fon rəngi ardıcıl deyil; tibbi təsdiq gözləyən mövzular dəyişdirilə bilən yerə qoyulur.
+- Araşdırma işarələri: 🟢 araşdırma ilə əsaslandırılmış · 🟡 ilkin müşahidə · 🔵 kreativ hipotez. Axtarış təklifi = axtarış həcmi deyil; rəqib araşdırması olmadan «boşluq» deyilmir; açılmayan səhifə araşdırılmış kimi göstərilmir.
