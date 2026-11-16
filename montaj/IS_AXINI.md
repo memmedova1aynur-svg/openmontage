@@ -38,6 +38,7 @@ Hər videoya PREMIUM tətbiq edilmir. Remotion yalnız həqiqətən lazım olan 
 Ardıcıllıq: **MONTAJ → PREVIEW QA → FINAL RENDER (bir dəfə) → FINAL QC**.
 - PREVIEW QA video render olunmadan, yalnız kəsilmiş səs üzərində (saniyələr): artıq/yarımçıq söz, itmiş söz, danışıq içində kəsim, subtitr = danışıq, qrafika kadr daxilində. Keçmirsə video render olunmur.
 - FINAL RENDER: mənbə 60 fps olsa belə `fps=30` filtr zəncirinin ƏVVƏLİNDƏ; bir kodlama (aralıq baza faylı yoxdur); hissələr paralel; x264 `faster crf17` (= `medium crf18` SSIM, 24% az CPU); qrafikasız nüsxə render edilmir — üz örtülməsi render zamanı ölçülür.
+- Təhvil formatı (Instagram): H.264 High 4.2, 1080×1920, 30 fps, crf 20 + `maxrate 6M`, AAC 128k, `+faststart` — 1 dəq ≈ 40–45 MB (100 MB-dan böyük fayl telefonda paylaşıla bilmir; Instagram onsuz da ~3.5–5 Mbps-ə yenidən kodlayır).
 - FINAL QC: `qc_render` bir dəfə. Problem yoxdursa yenidən montaj/render yoxdur; varsa yalnız həmin problem düzəldilir. Hazır videonun ayrıca tam transkripti təkrarlanmır (PREVIEW QA artıq edib) — yalnız şübhəli yer ayrıca yoxlanır.
 - Brend faylları iş başında bir dəfə (`gate start`) oxunur; eyni müştərinin paketində rəng/kadraj ölçüləri, şriftlər, model keşdən istifadə olunur.
 
