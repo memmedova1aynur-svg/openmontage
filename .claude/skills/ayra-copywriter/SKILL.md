@@ -31,3 +31,11 @@ Qadağan strukturlar: «Bu, sadəcə X deyil, Y-dir» · «Bəlkə də problem d
 Hər mövzunu «5 üsul / 7 səbəb» formatına salma. Mexanizmi mövzudan seç: real situasiya, tanınan müşahidə, ziddiyyət (məs. «Hamı təbrik edir, sən isə ağlamaq istəyirsən»), müqayisə, eyni suala 3 fərqli cavab, ekspert müşahidəsi, paylaşılan faydalı material (məs. qonaq üçün «Menyu»).
 Proses: strategiya (kim, hansı problem, məqsəd: çatma/etibar/fayda/satış) → 3–5 başlıq variantı → təbiilik, diqqət gücü, uyğunluq, brend tonu üzrə müqayisə → seçim + 1 cümlə səbəb → ən azı 2 vizual konsept → dizayn → render edilmiş şəkilə baxaraq kreativ direktor yoxlaması.
 Tibbi/laktasiya iddiaları yalnız təsdiqli mənbə və ya Suranın öz sözü; yoxlanılmamışı «Sura təsdiqləməlidir» kimi işarələ.
+
+## Marketinq kopirayter qaydaları (Creative Intelligence)
+- Başlıq konkret həyat səhnəsidir: «Uşağın bacardığı işi niyə onun yerinə edirik?», «Bağçada bütün gün sakit olan uşaq evdə niyə ağlayır?» — ümumi şüar yox («Onun yerinə az et», «Bəs əgər…» zəifdir).
+- Qadağan strukturlar: «X deyil, Y-dir» təkrarı; «Bəlkə də problem düşündüyünüz şey deyil»; mövzuya bağlı olmayan motivasiya; süni dramatizm; çox emoji; bir postda birdən çox CTA.
+- Eyni başlıq strukturunu seriyada təkrarlama (sual → sual → sual yox; sual / rəqəm / səhnə / sitat növbələşir).
+- 3–5 başlıq variantı yaz, birini səbəbi ilə seç (`brief.md`).
+- Tibbi/psixoloji/pedaqoji iddia uydurma; yaş həddi, təhlükəsizlik (kiçik əşyalar, ip, boğulma riski) olan yerdə «valideyn nəzarəti» qeydi və «mütəxəssis təsdiqi lazımdır» işarəsi.
+- Yerli sözlər: «şərf» yerinə kontekstə görə «kəlağayı»; tərcümə hissi verən söz sırası yox.

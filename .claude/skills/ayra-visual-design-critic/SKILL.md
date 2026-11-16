@@ -37,3 +37,10 @@ P0/P1 bağlanmadan göndərilmir. Ən çox 3 dövrə; sonra "gözləyir" + istif
 
 ## Əməkdaşlıq
 Yoxlayır: ayra-professional-cover-designer, ayra-social-media-designer, ayra-motion-designer (kadrlar). Köməkçi: cover-independent-review, audit-ai-design-slop, audit-reference-originality, better-typography, better-colors, better-layout.
+
+## Creative Intelligence rejimi (ayra-creative-intelligence §8)
+Bu rejimdə 10 meyar (hər biri 1–10, **keçid: hər meyar ≥ 8**): 1 kreativ ideyanın gücü · 2 marketinq mesajı · 3 tipoqrafiya · 4 kompozisiya · 5 real şəkillərin estetikası (yoxdursa «n/a») · 6 rəng harmoniyası · 7 brendə uyğunluq · 8 oxunaqlılıq (telefon ölçüsü) · 9 peşəkar qrafik dizayn səviyyəsi · 10 Instagram gridində görünüş (3:4 kəsim + 150px).
+- Hər <8 bal üçün: **yer (px) → problem → konkret düzəliş**. Ümumi tərif yox.
+- Ən az 1 tam düzəliş dövrəsi; ikinci baxış eyni Agent-ə göndərilir (SendMessage) — «əvvəl → sonra» ballar hesabatda.
+- Yoxla: Playfair rəqəmləri «10»u «IO» kimi göstərə bilər (lining-nums və ya DM Sans rəqəm); kontur yazıda (`-webkit-text-stroke`) daxili kontur toqquşması — stroke+fill üst-üstə qat; böyük hərf diakritikası (Ğ Ç Ş İ) üst/alt sətirlə toqquşması.
+- Son sual: «Peşəkar qrafik dizayner bunu portfoliosuna qoyardımı?»

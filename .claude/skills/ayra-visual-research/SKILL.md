@@ -65,3 +65,13 @@ Tək şəkil üçün: `python3 $S/vr_cutout.py giriş.jpg çıxış.png` (obyekt
 | Playwright + Chromium | işləyir (render, ekran görüntüsü) |
 | Sharp (Node) | quraşdırılır, amma əlavə dəyər vermir — Pillow istifadə olunur |
 | Playwright MCP | quraşdırılmayıb (Playwright Python artıq eyni işi görür) |
+
+## Asset Curator meyarları (Creative Intelligence §6)
+Adına uyğun ilk şəkil yox — vizual yoxla: forma/estetika · rəng və material · foto keyfiyyəti (kəskinlik, ≥ 600px obyekt) · işıq · rakurs (bir dizaynda eyni rakurs: ya hamısı üstdən, ya hamısı yandan) · fon (təmiz kəsilə bilirmi) · brend dili · digər obyektlərlə harmoniya.
+Sahəyə görə:
+- **Uşaq inkişafı / Montessori**: təbii material (taxta, parça, kağız), sakit rəng; parlaq plastik və turist/böyük çantası yox; uşaq üçün təhlükəli görünən əşya (yumurta, kiçik hissələr) yox.
+- **Psixologiya**: insan jesti, əllər, gündəlik məkan; dramatik stok emosiya («başını tutan qadın») yox.
+- **Pedaqogika / təlim**: real sinif materialı, dəftər, lövhə; korporativ stok yox.
+- **Karyera / biznes**: iş masası, sənəd, real mühit; «əl sıxan kostyumlular» yox.
+Ən az 3 alternativ müqayisə et. Keyfiyyətsiz şəkli fonundan ayırmaq onu keyfiyyətli etmir — uyğun tapılmırsa obyekti çıxar və ya kompozisiyanı dəyiş, istifadəçiyə yaz.
+Ton uyğunlaşdırma icazəlidir (parlaqlıq, doyma ±30%, ağ balans) — obyektin formasını dəyişmək yox.

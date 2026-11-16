@@ -74,3 +74,11 @@ Dizayna başlamazdan əvvəl `ayra-visual-research` protokolunu tətbiq et: möv
 
 ## Pinterest referansı
 Dizayndan əvvəl `ayra-pinterest-research` ilə referans araşdırması et (istifadəçidən referans istəmə); pin şəkilləri yalnız ilhamdır.
+
+## Kreativ direktor sualları (Creative Intelligence §3 — hər dizayndan əvvəl, `brief.md`)
+1. Bu paylaşımı görən insan niyə dayanıb baxmalıdır?
+2. Hansı vizual ideya mövzunu ən güclü ifadə edir? (bir cümlə; «rəngli fonda mətn» ideya deyil)
+3. Hansı hiss yaranmalıdır?
+4. Real insan fotosu / obyekt fotosu / illüstrasiya / sırf tipoqrafiya — hansı daha effektivdir və niyə? Şəkil yalnız dizaynı gücləndirirsə.
+5. Bu işi fərqləndirən kreativ detal nədir?
+Nümunə (Sura, 16.11.2026): «Bağçada yemir, evdə hər şeyi yeyir» → boş (kontur) «BAĞÇADA» hərfləri ↔ dolu «EVDƏ» hərfləri = boş boşqab ↔ dolu boşqab.

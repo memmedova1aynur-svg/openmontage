@@ -15,3 +15,7 @@ AYRA Studio üçün hər kreativ dizayn tapşırığında `ayra-visual-research`
 ## AYRA Studio — daimi qayda (Pinterest Creative Research)
 
 Bütün müştərilər üçün hər cover, post, karusel, story, reklam və Instagram grid dizaynında standart axın: müştəri + mövzu → `ayra-pinterest-research` (Pinterest-də 15–20+ nəticə, vizual analiz, 3–5 referans) → kreativ istiqamət → `ayra-visual-research` (lisenziyalı real material) → dizayn → vizual yoxlama → nəticə. İstifadəçidən referans istənmir. Pinterest şəkilləri yalnız referansdır, yekun dizayna qoyulmur və kopyalanmır.
+
+## AYRA Studio — daimi qayda (Creative Intelligence System)
+
+Bütün müştərilər üçün hər dizayn tapşırığı `ayra-creative-intelligence` skill-i ilə idarə olunur: BRAND PROFILE → MARKETING STRATEGY → CREATIVE DIRECTION → PINTEREST RESEARCH → DESIGN ARCHITECTURE → ASSET CURATION → DESIGN → VISUAL CRITIQUE → REFINEMENT → FINAL EXPORT. Mərhələlər arasında təsdiq gözlənilmir; sual yalnız çatışmayan müştəri faktı və ya brend istiqamətini dəyişən qərar üçün verilir. İstifadəçiyə yalnız müstəqil tənqiddə hər meyarı ≥ 8 olan nəticə təqdim olunur. Hər müştərinin öz `instagram-clients/<m>/brand_profile.md` faylı var; istifadəçinin düzəlişləri oranın «Qərarlar jurnalı»na yazılır və bir müştərinin üslubu başqasına keçmir.

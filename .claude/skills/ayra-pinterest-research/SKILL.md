@@ -47,3 +47,6 @@ Render et, nəticəyə bax: üzün örtülməməsi, mətnin kəsilməməsi, 3:4 
 
 ## Test (16.11.2026)
 `claude mcp add` ilə layihəyə əlavə olundu; smoke test 7-dən 6 keçdi (related_pins giriş tələb edir). 5 sorğu → 54 pin önizləməsi yükləndi və vizual analiz edildi; Sura üçün 3 cover + 3 post bu referanslardan quruldu.
+
+## Üç istiqamət (Creative Intelligence §4)
+Hər yeni istiqamət üçün ayrı sorğu dəstləri: **dizayn** (kompozisiya, tipoqrafiya, grid) · **fotoqrafiya** (işıq, rakurs, obyekt düzümü — məs. «household objects flat lay editorial photography», «Montessori toys editorial product photography») · **brend** (sahənin vizual kimliyi — «premium early childhood education branding»). Seçilmiş referanslar `ayra-creative-intelligence` §5 cədvəli ilə struktur analizindən keçir.
