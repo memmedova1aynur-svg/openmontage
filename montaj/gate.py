@@ -231,6 +231,8 @@ def check(c: str, vid: str) -> list[str]:
         e = json.loads(ec.read_text())
         if ec.stat().st_mtime < fm.stat().st_mtime - 600:
             errs.append("edit_checks.json final.mp4-dən köhnədir")
+        if e.get("spoken_not_in_subtitle"):
+            errs.append(f"danışıqdakı söz subtitrdə yoxdur — subtitri danışığa uyğunlaşdır: {e['spoken_not_in_subtitle'][:5]}")
         if e.get("missing_spec_words"):
             errs.append(f"mətndəki söz səsdə yoxdur (artıq kəsilib, məzmun itib): {e['missing_spec_words'][:5]}")
         if e.get("missing_anchors"):
