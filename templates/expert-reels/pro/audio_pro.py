@@ -113,7 +113,11 @@ def gentle(x, m, target):
     y = Pedalboard([HighpassFilter(80), PeakFilter(250, -1.5, 1.0), Compressor(threshold_db=m["speech_db"] - 6, ratio=1.8, attack_ms=15, release_ms=200)])(
         x.reshape(1, -1).astype(np.float32), SR)[0]
     M = pyln.Meter(SR); lufs = M.integrated_loudness(y.astype(np.float64))
-    y = y * (10 ** ((target - lufs) / 20)); return (np.tanh(y / 0.89) * 0.89).astype(np.float32)
+    y = y * (10 ** ((target - lufs) / 20)); y = (np.tanh(y / 0.89) * 0.89).astype(np.float32)
+    # ağız/«p-b» çıqqıltıları və kəsim qovşaqları — adeclick (tam zəncirdəki kimi; 16.11: 05-də 2 klik)
+    d = Path(tempfile.mkdtemp()); a, b = d / "a.wav", d / "b.wav"; save(a, y)
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(a), "-af", "adeclick=w=55:o=75", str(b)], check=True)
+    z = load(b); return z[: len(y)] if len(z) >= len(y) else np.pad(z, (0, len(y) - len(z)))
 
 
 def process(src, dst, do_isolate=False, target=-14.0, mode="auto"):
