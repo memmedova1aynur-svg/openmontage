@@ -33,7 +33,12 @@ ROOT = Path(__file__).resolve().parents[1]
 CLIENTS = ROOT / "instagram-clients"
 QC_RENDER = ROOT / "templates/expert-reels/pro/qc_render.py"
 BRAND_FILES = ["MASTER_BRAND_FILE.md", "editing-dna.md", "brand_kit.json", "montage_rules.json"]  # bu sıra ilə oxunur
-RULES = "montage_rules.json"  # müştərinin kadraj hədləri (qc_render --rules)
+RULES = "montage_rules.json"
+
+
+def brand_files(cd: Path) -> list[str]:
+    """<MÜŞTƏRİ>_MASTER.md (giriş nöqtəsi) birinci, sonra standart brend faylları."""
+    return sorted(p.name for p in cd.glob("*_MASTER.md")) + BRAND_FILES  # müştərinin kadraj hədləri (qc_render --rules)
 REQUIRED_DNA = "editing-dna.md"
 CONCEPT_HEADS = ["Növ", "Məqsəd", "Hook", "Montaj üslubu", "Kadraj", "Vizual cihazlar", "Rəng", "Səs", "Subtitr", "İstifadə etmə"]
 DELIVERY_DIRS = ("yekun", "gonder", "final")
@@ -76,7 +81,7 @@ def read_brand(c: str) -> dict[str, str]:
     if not (d / REQUIRED_DNA).exists():
         die(f"{d / REQUIRED_DNA} yoxdur — montajdan əvvəl müştərinin Editing DNA faylı yaradılmalıdır.")
     seen = {}
-    for name in BRAND_FILES:
+    for name in brand_files(d):
         p = d / name
         if p.exists():
             seen[name] = sha(p)
@@ -166,7 +171,7 @@ def check(c: str, vid: str) -> list[str]:
     d = job_dir(c, vid)
     cd = client_dir(c)
     # 1. brend faylları oxunub və o vaxtdan dəyişməyib
-    for name in BRAND_FILES:
+    for name in brand_files(cd):
         p = cd / name
         if p.exists() and job["brand_read"].get(name) != sha(p):
             errs.append(f"{name} oxunduqdan sonra dəyişib və ya oxunmayıb → python -m montaj.gate reread {c} {vid}")
