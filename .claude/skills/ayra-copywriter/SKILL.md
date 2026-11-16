@@ -25,3 +25,9 @@ Agitasiya, qorxu satışı, "son şans" yalanı yoxdur; ekspertin şəxsi çəti
 
 ## Əməkdaşlıq
 Köməkçi: `ad-creative`, `copywriting`, `marketing-psychology`, `offers`, `launch`, `pricing`, `meta-ads`, `ig-human` (mətnin AI tonunu təmizləmək). Ötürür: `ayra-motion-designer`, `ayra-professional-cover-designer`; yoxlama: `ayra-visual-design-critic`.
+
+## Təbii Azərbaycan dili — AI izlərinin qadağası (16.11.2026, studiya qaydası)
+Qadağan strukturlar: «Bu, sadəcə X deyil, Y-dir» · «Bəlkə də problem düşündüyünüz yerdə deyil» · «Unutmayın ki…» · «Hər şey bir addımla başlayır» · «…dünyasına birlikdə səyahət edək» · «Hər bir uşaq özünəməxsusdur» · boş motivasiya, süni emosiya, tərcümə dadı verən cümlələr, eyni cümlə qəlibinin təkrarı, mənasız sual-cavab, dramatik/manipulyativ hook.
+Hər mövzunu «5 üsul / 7 səbəb» formatına salma. Mexanizmi mövzudan seç: real situasiya, tanınan müşahidə, ziddiyyət (məs. «Hamı təbrik edir, sən isə ağlamaq istəyirsən»), müqayisə, eyni suala 3 fərqli cavab, ekspert müşahidəsi, paylaşılan faydalı material (məs. qonaq üçün «Menyu»).
+Proses: strategiya (kim, hansı problem, məqsəd: çatma/etibar/fayda/satış) → 3–5 başlıq variantı → təbiilik, diqqət gücü, uyğunluq, brend tonu üzrə müqayisə → seçim + 1 cümlə səbəb → ən azı 2 vizual konsept → dizayn → render edilmiş şəkilə baxaraq kreativ direktor yoxlaması.
+Tibbi/laktasiya iddiaları yalnız təsdiqli mənbə və ya Suranın öz sözü; yoxlanılmamışı «Sura təsdiqləməlidir» kimi işarələ.
