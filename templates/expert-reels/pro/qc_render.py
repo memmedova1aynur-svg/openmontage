@@ -36,8 +36,15 @@ def grab(path, t, w=360):
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("mp4"); ap.add_argument("--clean"); ap.add_argument("--caption"); ap.add_argument("--subs"); ap.add_argument("--out")
     ap.add_argument("--full", default="", help="tam ekran kart aralıqları 'a-b,c-d' (üz yoxlanmır)")
+    ap.add_argument("--rules", help="müştərinin montage_rules.json faylı (kadraj hədləri) — instagram-clients/<m>/montage_rules.json")
     a = ap.parse_args(); mp4 = Path(a.mp4); out = Path(a.out) if a.out else mp4.parent / f"{mp4.stem}_QC"; out.mkdir(parents=True, exist_ok=True)
     R = {"fail": [], "warn": [], "info": {}}
+    # kadraj hədləri: ümumi (istifadəçi rəyi, noyabr 2026) + müştəri faylı varsa onun hədləri
+    LIM = {"head_top": [0.04, 0.36], "cx": [0.25, 0.75], "face_h": [0.07, 0.30]}
+    if a.rules:
+        import hashlib
+        rj = json.load(open(a.rules)); LIM.update({k: v for k, v in rj.get("frame", {}).items() if k in LIM})
+        R["info"]["rules"] = {"file": str(a.rules), "sha": hashlib.sha256(open(a.rules, "rb").read()).hexdigest()[:16], "frame": LIM}
     full = [tuple(map(float, x.split("-"))) for x in a.full.split(",") if x]
     in_full = lambda t: any(x <= t <= y for x, y in full)
     # export
@@ -90,7 +97,7 @@ def main():
         head_top = y0 - 0.35 * fh
         # hədlər istifadəçi rəyindən kalibrlənib (noyabr 2026): baş üstü 0.37–0.41 = «yuxarıda çox boşluq» (rədd),
         # 0.25–0.33 = təsdiqlənmiş; üz hündürlüyü > 0.30 = «çox yaxın»
-        if not (0.04 <= head_top <= 0.36) or not (0.25 <= cx <= 0.75) or not (0.07 <= fh <= 0.30):
+        if not (LIM["head_top"][0] <= head_top <= LIM["head_top"][1]) or not (LIM["cx"][0] <= cx <= LIM["cx"][1]) or not (LIM["face_h"][0] <= fh <= LIM["face_h"][1]):
             bad_frame.append({"t": round(t, 1), "head_top": round(head_top, 2), "cx": round(cx, 2), "face_h": round(fh, 2)})
         if c is not None:
             n_face += 1

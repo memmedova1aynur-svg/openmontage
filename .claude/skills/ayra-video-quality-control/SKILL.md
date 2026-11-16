@@ -20,5 +20,8 @@ description: "AYRA Post-Production — Video Quality Control. Final videonu real
 | Texniki | A/V sinxron, son kadr tam, uzunluq ≤ platforma limiti |
 | Brend | Editing DNA-ya uyğunluq, "istifadə etmə" siyahısı pozulmayıb |
 
+## Müştəri hədləri
+Müştərinin `instagram-clients/<m>/montage_rules.json` faylı varsa `--rules` ilə ver — onun kadraj hədləri ümumi hədlərdən üstündür. Darvaza `--rules`-suz QC-ni qəbul etmir.
+
 ## Qayda
-`qc_sheet.jpg`-yə ÖZÜN bax (Read). FAIL → düzəliş → yenidən render → yenidən QC. Nəticə qısa QC qeydi kimi təhvil paketinə.
+`qc_sheet.jpg`-yə ÖZÜN bax (Read) və nəticəni `QC/visual_review.md`-yə yaz («NƏTİCƏ: KEÇDİ» / «KEÇMƏDİ» + səbəb). FAIL → düzəliş → yenidən render → yenidən QC. Nəticə qısa QC qeydi kimi təhvil paketinə.

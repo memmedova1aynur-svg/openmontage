@@ -1,6 +1,6 @@
 # AYRA STUDIO — bacarıq xəritəsi (15.11.2026, Design Engine V3)
 
-Giriş nöqtəsi: **ayra-studio-director** (hər müştəri işi). Drive linki ilə montaj: reels-pro + ayra-senior-video-editor.
+Giriş nöqtəsi: **ayra-studio-director** (hər müştəri işi). Drive linki ilə montaj: reels-pro + ayra-senior-video-editor. Hər video `montaj.gate` darvazasından keçir (montaj/IS_AXINI.md).
 
 | şöbə | AYRA bacarığı | əvəz etdiyi / ləqəb | köməkçi (üçüncü tərəf və daxili) |
 |---|---|---|---|
