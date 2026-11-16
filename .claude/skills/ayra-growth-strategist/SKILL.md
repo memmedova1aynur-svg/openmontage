@@ -28,3 +28,14 @@ Müştərinin master faylında istehsal modeli varsa, ona uyğun yekun BİR təq
 - Son 30–60 günün tarixçəsi (`content-strategy/tracker.csv`) yoxlanılır; paylaşılmış kontent yenidən planlanmır; dövrlər arası eyni R/K sırası təkrarlanmır.
 - Vizual: şəkilli/şəkilsiz balans, eyni geyim+rakursda portretlər yan-yana deyil, eyni fon rəngi ardıcıl deyil; tibbi təsdiq gözləyən mövzular dəyişdirilə bilən yerə qoyulur.
 - Araşdırma işarələri: 🟢 araşdırma ilə əsaslandırılmış · 🟡 ilkin müşahidə · 🔵 kreativ hipotez. Axtarış təklifi = axtarış həcmi deyil; rəqib araşdırması olmadan «boşluq» deyilmir; açılmayan səhifə araşdırılmış kimi göstərilmir.
+
+## Instagram Research Workflow (universal — Instagram-a girişsiz)
+Instagram girişsiz açılmır (yoxlanılıb). Şifrə/giriş istənmir, təhlükəsizlik yoxlamaları keçilmir. Əvəzinə:
+1. **Instagram indeksi (axtarış mühərriki):** `WebSearch` alətində `allowed_domains=["instagram.com"]` — `site:` operatoru bu mühərrikdə İŞLƏMİR (yoxlanılıb). Dil başına 20–30 sorğu (sahə × problem × format: «reel», «video», «karusel»). Nəticədən YALNIZ başlıq + snippet + URL yazılır (profil/reel/post), JSON-a sorğu ilə birlikdə. Görünməyən video məzmunu, baxış sayı, reaksiya uydurulmur.
+2. **YouTube rəqib xəritəsi:** `scripts/research_youtube.py` — eyni sahədə kim danışır, hansı format, görünən baxış sayı və yaş (Instagram Reels-in çox vaxt YouTube-da da olduğu üçün faydalı əvəzedici).
+3. **Tələb:** `scripts/research_suggest.py` (Google autocomplete, AZ/TR/EN) — axtarış həcmi deyil.
+4. **Beynəlxalq yaradıcılıq:** eyni axtarış TR və EN dillərində (format/hook nümunələri: «say this not that», skript, checklist, mif–fakt, POV, çap edilən şablon).
+5. **Vizual nümunələr:** Google Images bu mühitdə yoxdur → `ayra-pinterest-research` (Pinterest) istifadə olunur.
+6. **Etibarlı məzmun:** rəsmi qurumlar (WHO, CDC, AAP, NAEYC və s.) + yerli rəsmi sənədlər; açılmayan səhifə «açılmadı» kimi qeyd olunur.
+7. **Nəticə:** `content-strategy/<dövr>/arasdirma/` (instagram_*.json, youtube_*.json, teklifler.json, menbeler.md) → Content Gap Map, hər sətirdə işarə 🟢/🟡/🔵 və mənbə linki.
+Məhdudiyyətlər hər hesabatda açıq yazılır: Instagram baxış/şərh sayı və tam caption görünmür; indeks natamamdır; bağlı qruplar əlçatmazdır.
