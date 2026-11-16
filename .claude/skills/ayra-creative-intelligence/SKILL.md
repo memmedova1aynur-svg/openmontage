@@ -74,3 +74,39 @@ Mənbə faylı: hər PNG ilə yanaşı redaktə edilə bilən `.html` (layer = e
 
 ## Master brend faylı
 Müştəri qovluğunda `MASTER_BRAND_FILE.md` varsa, hər işdən əvvəl ƏVVƏL o oxunur (mövqe, istiqamətlər, qadağalar, açıq suallar); `brand_profile.md` qərarlar jurnalıdır. Açıq sual olan mövzuda köhnə dəyər işlədilmir.
+
+## Creative Intelligence v2 — araşdırma, ideya, art direction, yaddaş (16.11.2026)
+
+### A. Multi-source research (mənbə → funksiya → alət; hamısı girişsiz və açarsız, real yoxlanılıb)
+| Mənbə | Nə üçün | Alət / vəziyyət |
+|---|---|---|
+| Google | auditoriyanın sualları, yerli rəqiblər | `ayra-growth-strategist/scripts/research_suggest.py` (autocomplete) · Instagram indeksi: `WebSearch` + `allowed_domains=["instagram.com"]` (`site:` İŞLƏMİR) · **Google Trends: 429 — bloklanır** |
+| YouTube | hook, struktur, izah metodu, kim nə danışır | `research_youtube.py` (görünən başlıq/baxış/tarix; şərhlər oxunmur) |
+| Pinterest | vizual prinsip, kompozisiya, obyekt foto | `ayra-pinterest-research` |
+| Behance | art direction, grid, tipoqrafiya, kampaniya sistemləri | `research_browser.py behance` (Playwright, girişsiz işləyir) |
+| Meta Ad Library | sahədə reklam mesajları və təklif dili | `research_browser.py adslib --country AZ` (girişsiz işləyir; aktiv qalmaq ≠ uğur) |
+| Ads of the World | kreativ reklam konseptləri | sayt açılır, axtarış səhifəsi zaman aşımı — `WebSearch` ilə |
+| Elm | faktın özü (caption üçün yox, fikir üçün) | WHO/CDC/AAP/ABM/NAEYC səhifələri; PubMed `eutils` API işləyir; **Google Scholar yönləndirir/bloklanır** |
+Hər tapıntı: mənbə linki + tarix + işarə: **FAKT** (mənbə ilə) · **MÜŞAHİDƏ** (araşdırmada görünən) · **HİPOTEZ** (kreativ ehtimal) · **TEST** (paylaşıb ölçüləcək). Autocomplete ≠ axtarış həcmi; Pinterest populyarlığı ≠ Instagram uğuru; YouTube baxışı ≠ Instagram zəmanəti. Məqsəd link yığmaq deyil — dövrün sonunda 8 nəticə: real problemlər · cavabsız suallar · təkrarlanan standart mövzular · ehtimal boşluqlar · ekspert rakursları · vizual ideyalar · format imkanları · fərqlənmə istiqaməti.
+
+### B. Creative Idea Engine (dizayndan ƏVVƏL, hər mövzu üçün `brief.md`)
+1 **Audience insight** (real problem/hiss/yanlış inanc, bir cümlə) → 2 **Strateji məqsəd** (yeni auditoriya · ekspert imici · etibar · yadda saxlanma · paylaşma · xidmətə maraq · yeni seqment) → 3 **Big idea**: daxildə ən az 3 rakurs düşün (gündəlik situasiya · vizual metafora · ekspert müşahidəsi · gözlənilməz sual · nümayiş · müqayisə · mini hekayə · tanınan səhnə), ən güclüsünü ÖZÜN seç və bir cümlə ilə səbəbini yaz — istifadəçiyə 3 variant təqdim etmə; digər ikisi `idea_bank.md`-yə → 4 **Hook** (məzmuna sadiq; qorxu, manipulyasiya, AI konstruksiyaları yox) → 5 **Treatment** (talking head · nümayiş · obyektlə izah · vizual müqayisə · sual-cavab · editorial karusel · infoqrafika · mini hekayə · situasiya). Ardıcıl iki kontent eyni treatment-də olmur.
+
+### C. Cross-industry art direction
+İlham yalnız müştərinin sahəsindən deyil: moda jurnalı (nəhəng kəsilmiş başlıq, boşluq, səhifə ritmi) · premium kosmetika still life (tək obyekt + monoxrom rəng sahəsi + sərt təbii kölgə + xammal yanında) · muzey/sərgi posteri (tipoqrafik sistem, təkrar, rəng bloku) · kitab/jurnal · təhsil brendləri · interyer · qida reklamı · sənədli film qrafikası · infoqrafika. Kopyalanmır — prinsip götürülür və müştərinin dünyasına çevrilir.
+**Art direction brief** (hər kontent): əsas vizual fikir · kompozisiya · palitra · tipoqrafik iyerarxiya · foto/obyekt · işıq və atmosfer · fokus · mətn yeri · grid görünüşü · mobil oxunaqlılıq. Gündəlik obyekt (ayaqqabı, stəkan, düymə, qaşıq, kitab) metafora ola bilər — mövzu ilə əlaqəsi aydın olmalı, dekorativ obyekt yox.
+
+### D. Vizual material — üç ayrı kateqoriya
+`references/` (Pinterest/Behance — yalnız referans, yekun dizayna girmir) · `assets/ayra-library/` (lisenziyalı stok, metadata ilə) · `instagram-clients/<m>/raw|assets` (müştərinin öz foto/videosu — üstünlük). Seçim meyarı: keyfiyyət · işıq · kompozisiya · mövzu · brend rəngi · fon · forma · estetika · crop · lisenziya. Zəif material dizaynı «tamamlamaq» üçün işlədilmir — alternativ kompozisiya seçilir.
+
+### E. Creative memory (müştəri başına, qarışmır)
+`instagram-clients/<m>/creative-library.md`: təsdiqlənmiş işlər · bəyənilmiş Figma frame-ləri · rədd edilənlər + səbəb · tipoqrafiya · karusel strukturları · foto kompozisiyaları · metaforalar · montaj yanaşmaları · işləyən hook strukturları · reklam ideyaları — hər birində «niyə güclüdür / hansı prinsipi öyrədir». Hər təsdiq/düzəlişdən sonra yenilənir. Agentlik səviyyəli ümumi prinsiplər: `templates/ayra/taste/TASTE_LIBRARY.md`.
+
+### F. Creative Review Board (final təqdimdən əvvəl, müstəqil Agent)
+4 baxış: **Brand manager** (mövqeyə xidmət edir?) · **Creative director** (fərqli və yadda qalan?) · **Designer/editor** (iyerarxiya, kompozisiya, foto, montaj, icra) · **Auditoriya + mövzu eksperti** (niyə baxsın? faydalı, aydın, etibarlı?). Meyarlar: ilk baxışda dayandırma · ideya · brend · ekspert etibarı · vizual keyfiyyət · oxunaqlılıq · dəyər · grid. Render/Figma screenshot üzərində; kod işləməsi keyfiyyət deyil; özünə yüksək bal yox; standartdan aşağı nəticə final kimi təqdim edilmir.
+
+### G. Strategy before quantity
+Say istehsal hədəfidir, strategiya deyil. Zəif mövzu daha güclüsü ilə əvəz olunur. Paket bütöv qiymətləndirilir: «Bu 15 paylaşım brendi hansı istiqamətə aparır? 15 gündən sonra auditoriya bu mütəxəssis haqqında hansı yeni fikrə sahib olacaq?» — cavab planın sonunda yazılır.
+
+### H. Performance learning loop
+İstifadəçi Insights ekran görüntüsü/rəqəm verəndə: baxış · izləmə müddəti · saxlama · paylaşma · şərh · profil ziyarəti · yeni izləyici · müraciət → `instagram-clients/<m>/analytics/insights.csv` (ID ilə). Hər kontent öz məqsədinə görə qiymətləndirilir (diqqət ≠ etibar ≠ satış; yüksək baxış satış demək deyil). Növbəti dövrün bölgüsü, format və hook seçimi buna görə dəyişir. Məlumat yoxdursa — «yoxdur» yazılır, statistika uydurulmur.
