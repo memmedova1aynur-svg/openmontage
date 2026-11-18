@@ -1,0 +1,23 @@
+<!doctype html><html lang="az"><head><meta charset="utf-8"><link rel="stylesheet" href="{{base_css}}"><style>
+/* C — Conceptual: mif xətlə pozulur; portret kəskin foto zolağında; ekspertin öz cümləsi danışıq qabarcığında, quyruq ona yönəlir */
+body{background:{{paper}}}
+.k{left:96px;top:{{k_y}}px;font-weight:600;font-size:24px;letter-spacing:.2em;text-transform:uppercase;color:{{acc}}}
+.myth{left:96px;top:{{m_y}}px;font-weight:500;font-size:{{m_size}}px;line-height:1.05;letter-spacing:-.02em;color:{{muted}};white-space:nowrap}
+.myth s{text-decoration:none;position:relative}
+.myth s:after{content:"";position:absolute;left:0;right:0;top:54%;height:6px;border-radius:3px;background:{{ink}};transform:rotate(-1.2deg)}
+.band{left:{{b_x}}px;top:{{b_y}}px;width:{{b_w}}px;height:{{b_h}}px;overflow:hidden;background:{{backdrop}}}
+.band img{position:absolute;left:{{img_x}}px;top:{{img_y}}px;width:{{img_w}}px}
+.bub{left:0;top:0;width:1080px;height:1920px}
+.q{left:{{q_x}}px;top:{{q_y}}px;width:{{q_w}}px;color:{{paper}}}
+.q .t{font-weight:600;font-size:{{q_size}}px;line-height:1.04;letter-spacing:-.025em}
+.q .t em{font-style:italic;font-weight:300}
+.q .a{margin-top:14px;font-size:36px;line-height:1.3;opacity:.92}
+.grain{left:0;top:0;width:1080px;height:1920px;opacity:.06;mix-blend-mode:overlay}
+</style></head><body>
+<div class="abs k" data-check="kicker">{{kicker}}</div>
+<div class="abs myth" data-check="mif"><s>{{myth}}</s></div>
+<div class="abs band"><img src="{{portrait}}"></div>
+<svg class="abs bub" viewBox="0 0 1080 1920"><path d="{{bubble}}" fill="{{ink}}"/></svg>
+<div class="abs q" data-check="sitat"><div class="t">{{quote}}</div><div class="a">{{attr}}</div></div>
+<img class="abs grain" src="{{grain}}">
+</body></html>

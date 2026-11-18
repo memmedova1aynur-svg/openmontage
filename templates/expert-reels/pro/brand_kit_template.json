@@ -5,7 +5,7 @@
  "theme": null,
  "palette": {},
  "cfg": {
-  "look": "natural",
+  "look": "auto",
   "music": null,
   "punch": null,
   "cta": "",
@@ -15,5 +15,35 @@
  "glossary": [],
  "forbiddenColors": [],
  "hashtags": [],
- "rules": []
+ "rules": [],
+ "profile": {
+  "_doc": "Daimi Brand Profile. Montaj, cover, caption hər dəfə buradan oxunur. 'approved': true olmayan rəng/şrift uydurulmur.",
+  "field": "",
+  "audience": "",
+  "colorDirection": "",
+  "paletteApproved": false,
+  "fonts": {
+   "head": "Montserrat",
+   "body": "Montserrat",
+   "accent": null
+  },
+  "captions": {
+   "style": "",
+   "highlight": "",
+   "maxWords": 3
+  },
+  "cover": {
+   "style": "",
+   "mustUseRealFace": true,
+   "titleRule": "qısa, videoda deyilən iddia"
+  },
+  "rhythm": "",
+  "music": "",
+  "broll": "",
+  "motion": "",
+  "liked": [],
+  "disliked": [],
+  "terminology": [],
+  "decisions": []
+ }
 }

@@ -1,0 +1,16 @@
+<!doctype html><html lang="az"><head><meta charset="utf-8"><link rel="stylesheet" href="{{base_css}}"><style>
+body{background:{{bg}}}
+.big{left:0;width:1080px;top:{{big_y}}px;text-align:center;font-weight:700;font-size:{{big_size}}px;letter-spacing:-.04em;line-height:.8;color:{{big_color}}}
+.cut{left:{{cut_x}}px;top:{{cut_y}}px;width:{{cut_w}}px}
+.panel{left:0;top:{{panel_y}}px;width:1080px;bottom:0;background:{{panel}}}
+.h{left:96px;top:{{h_y}}px;width:888px;font-weight:600;font-size:{{h_size}}px;line-height:1.04;letter-spacing:-.02em;color:{{h_color}}}
+.h em{font-style:italic;font-weight:300}
+.name{left:96px;top:{{name_y}}px;font-size:32px;font-weight:600;color:{{h_color}}}
+.name span{display:block;font-weight:400;font-size:26px;margin-top:4px;opacity:.9}
+</style></head><body>
+<div class="abs big" data-check="fon-söz">{{big}}</div>
+<img class="abs cut" src="{{cut}}">
+<div class="abs panel"></div>
+<div class="abs h" data-check="başlıq">{{headline}}</div>
+<div class="abs name" data-check="ad">{{name}}<span>{{role}}</span></div>
+</body></html>
