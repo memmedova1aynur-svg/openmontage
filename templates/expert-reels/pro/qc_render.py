@@ -113,7 +113,8 @@ def main():
     if not a.clean: R["warn"].append({"overlay_face": "yoxlanmadı (--clean yoxdur) — qc_sheet.jpg-yə gözlə bax"})
     # rəng
     import color_auto
-    cst, ciss = color_auto.verify(mp4); R["info"]["color"] = {k: (round(v, 3) if isinstance(v, float) else v) for k, v in cst.items() if k in ("face_y", "sat", "neutral")}
+    # rəng çəkilişə aiddir: qrafikasız (clean) versiya varsa, onda ölçülür — rəng blokları/neon qrafika doymanı saxta qaldırmasın
+    cst, ciss = color_auto.verify(Path(a.clean) if a.clean else mp4); R["info"]["color"] = {k: (round(v, 3) if isinstance(v, float) else v) for k, v in cst.items() if k in ("face_y", "sat", "neutral")}
     if ciss: R["fail"].append({"color": ciss})
     # mətn
     gl = json.load(open(A / "glossary_az.json")) if (A / "glossary_az.json").exists() else {}
