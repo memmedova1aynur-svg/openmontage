@@ -124,8 +124,8 @@ def process(src, dst, do_isolate=False, target=-14.0, mode="auto"):
     """mode: auto (ölçülmüş tam zəncir) | gentle (təmiz yazı: ≤6 dB küy təmizləmə + gentle())."""
     x = isolate(src) if do_isolate else load(src)
     m0 = measure(x); att = denoise_strength(m0)
-    if mode == "gentle":
-        att = min(att, 6); y = gentle(dfn(x, att), m0, target)
+    if mode.startswith("gentle"):  # «gentle:18» — tembr zənciri yumşaq, küy təmizləmə videoya görə (arxa fon səsi olan yazı)
+        att = min(att, int(mode.split(":")[1]) if ":" in mode else 6); y = gentle(dfn(x, att), m0, target)
     else:
         y = finish(chain(dfn(x, att), m0), target)
     save(dst, y)
