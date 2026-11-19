@@ -2,6 +2,8 @@
 
 Mənbə ideya: [mert-builds/rehberler — kamera.md](https://github.com/mert-builds/rehberler/blob/main/kamera.md) və onun əsaslandığı [Kapwing — The Complete AI Camera Prompt Guide: 77 Shots and Movements](https://www.kapwing.com/resources/the-complete-ai-camera-prompt-guide-77-shots-and-movements/) (hər hərəkətin nümunə klipi oradadır). Bu fayl həmin terminologiyanın AYRA üçün öz sözlərimizlə yazılmış xülasəsi və tətbiq qaydalarıdır; mətn köçürülməyib.
 
+**Tam cədvəl (hər termin üçün açıqlama + hazır ingiliscə komanda, 9 hazır kombinasiya, model qeydləri):** `instagram-clients/_agency/kamera_77_komut.md` — agentliyin daxili nüsxəsi (mənbədə lisenziya yoxdur, ona görə açıq repoya qoyulmur). Prompt yazanda komanda oradan götürülür; bu fayl qaydalar və AYRA tətbiqi üçündür.
+
 Üç yerdə işlənir:
 1. **Süni intellektlə B-roll / səhnə yaradanda** (ai-video-gen, Higgsfield, Seedance, Kling, Veo, Sora, Runway) — prompt formulu.
 2. **Montajda** (HyperFrames) — talking-head kadrında kamera hərəkətini təqlid etmək.
