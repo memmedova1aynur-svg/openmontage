@@ -18,6 +18,7 @@ Workspace (`instagram-clients/<m>/editing-dna.md`, `WORKSPACE.md`), dəqiq trans
    - Səs: musiqi əhvalı, SFX sıxlığı (ayra-sound-designer).
    - Subtitr: üslub (ayra-subtitle-designer), vurğu sözləri.
    - B-roll: lazımdırsa nə və niyə (ayra-broll-researcher); talking-head maarifdə çox vaxt lazım deyil.
+   - Kamera dili: plan ölçüsü, bucaq və hərəkət terminləri, montajda təqlidi və çəkiliş siyahısı → `kamera_dili.md` (77 termin; süni intellekt B-roll promptu üçün 4 hissəli formul).
    - **İstifadə etmə**: bu müştərinin DNA qadağaları + son 3 videoda işlənmiş cihazlar.
 3. **Dəyişkənlik**: son 3 videonun konsept kartı ilə müqayisə et — eyni hook, keçid və zoom təkrarlanmasın.
 4. Kartı ayra-senior-video-editor-a ötür.
