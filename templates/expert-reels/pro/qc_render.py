@@ -91,6 +91,7 @@ def main():
         ref = c if c is not None else f
         fs = facedet.faces(ref)
         if not fs: continue
+        fs = sorted(fs, key=lambda q: -q[4])   # ən etibarlı üz birinci (zəif yanlış tapıntı əsl üzü qabaqlamasın)
         n_chk += 1
         x0, y0, x1, y1, _ = fs[0]; fh = y1 - y0; cx = (x0 + x1) / 2
         # baş üstü: BlazeFace qutusu alından başlayır → başın üstü ≈ y0 − 0.35·fh
