@@ -30,6 +30,7 @@ import shutil
 import subprocess
 import sys
 import textwrap
+import time
 from pathlib import Path
 from typing import Any
 
@@ -1502,6 +1503,34 @@ def _print_intake(r: dict[str, Any]) -> None:
         print("material yoxlaması: problem tapılmadı")
 
 
+
+# ---------------------------------------------------------------------------
+# Çəkiliş paketi (montaj/batch.py) — bir qovluq, ~10 video, AI-sız hazırlıq
+# ---------------------------------------------------------------------------
+
+def cmd_batch(a: argparse.Namespace) -> None:
+    from montaj import batch
+
+    if not (a.link or a.file or a.id):
+        raise UserError("Paket üçün qovluq linki lazımdır.", "batch --link <Drive qovluğu> --client <ad> [--date YYYY-MM-DD]")
+    if a.id:
+        m = batch.load(a.id)
+    else:
+        if not a.client:
+            raise UserError("Müştəri göstərilməyib.", "--client \"<profil adı>\" verin.")
+        m = batch.create(a.client, a.date or time.strftime("%Y-%m-%d"), a.link, a.file, a.type)
+    print(f"paket: {m['id']}  video: {len(m['videos'])}")
+    m = batch.run(m, _parse_nums(a.only) or None, [s.strip() for s in a.steps.split(",")] if a.steps else None)
+    print(batch.summary(m))
+    print(batch.write_summary(m))
+
+
+def cmd_batch_status(a: argparse.Namespace) -> None:
+    from montaj import batch
+
+    print(batch.summary(batch.load(a.id)))
+
+
 def cmd_verify(a: argparse.Namespace) -> None:
     """Yekun render yoxlaması: kəsim sərhədləri, səs/görüntü, kliklər, yekun səsin yenidən tanınması."""
     from montaj import quality
@@ -2814,13 +2843,23 @@ def main(argv: list[str] | None = None) -> int:
     ae.add_argument("pid")
     ae.add_argument("edits")
     ae.add_argument("--assets-dir", help="redaktorun yüklədiyi faylların endirildiyi qovluq")
+    bt = sub.add_parser("batch", help="çəkiliş paketi: qovluqdakı bütün videolar → new, storyboard, voice-clean, retakes")
+    bt.add_argument("--link", help="Drive qovluğu (və ya tək fayl) linki")
+    bt.add_argument("--file", action="append", help="yerli fayl (təkrarlana bilər)")
+    bt.add_argument("--client")
+    bt.add_argument("--date", help="çəkiliş tarixi YYYY-MM-DD (standart: bu gün)")
+    bt.add_argument("--type", type=int, help="video növü (standart: hər video üçün sonra set-type)")
+    bt.add_argument("--id", help="mövcud paketi davam etdir")
+    bt.add_argument("--only", help="yalnız bu videolar, məs. 1,3,5")
+    bt.add_argument("--steps", help="addımlar vergüllə (standart: new,storyboard,voice-clean,retakes)")
+    sub.add_parser("batch-status", help="paketin vəziyyəti").add_argument("id")
     a = ap.parse_args(argv)
     try:
         {"new": cmd_new, "storyboard": cmd_storyboard, "edit": cmd_edit, "apply": cmd_apply,
          "render": cmd_render, "export": cmd_export, "editor": cmd_editor,
          "apply-edits": cmd_apply_edits, "set-client": cmd_set_client, "plan": cmd_plan, "looks": cmd_looks,
          "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "highlights": cmd_highlights, "extract": cmd_extract, "mg-scan": cmd_mg_scan, "tale-plan": cmd_tale_plan, "carousel-plan": cmd_carousel_plan, "types": cmd_types, "event-scan": cmd_event_scan, "event-plan": cmd_event_plan, "qa-plan": cmd_qa_plan, "duo": cmd_duo, "multicam": cmd_multicam, "slowmo": cmd_slowmo, "bg": cmd_bg, "captions-file": cmd_captions_file, "music": cmd_music, "stock": cmd_stock, "intake": cmd_intake, "bg-lib": cmd_bg_lib, "set-type": cmd_set_type, "carousel": cmd_carousel, "fix-word": cmd_fix_word,
-         "variants": cmd_variants, "choose": cmd_choose, "music-preview": cmd_music_preview}[a.cmd](a)
+         "variants": cmd_variants, "choose": cmd_choose, "batch": cmd_batch, "batch-status": cmd_batch_status, "music-preview": cmd_music_preview}[a.cmd](a)
     except UserError as err:
         print(f"XƏTA: {err.message}\nNƏ ETMƏLİ: {err.hint}", file=sys.stderr)
         return 2

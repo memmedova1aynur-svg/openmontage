@@ -25,12 +25,22 @@ def available() -> dict[str, Any]:
     return {"installed": installed, "model": DEFAULT_MODEL}
 
 
-def transcribe(src: Path, start: float, end: float, language: str | None = "az", hotwords: str | None = None) -> dict[str, Any]:
-    from faster_whisper import WhisperModel  # yalnız lazım olanda yüklənir
+_MODELS: dict[str, Any] = {}
 
+
+def _model() -> Any:
+    """Model prosesdə bir dəfə yüklənir (çəkiliş paketində 10+ video ardıcıl transkript olunur)."""
+    if DEFAULT_MODEL not in _MODELS:
+        from faster_whisper import WhisperModel  # yalnız lazım olanda yüklənir
+
+        _MODELS[DEFAULT_MODEL] = WhisperModel(DEFAULT_MODEL, device="cpu", compute_type="int8")
+    return _MODELS[DEFAULT_MODEL]
+
+
+def transcribe(src: Path, start: float, end: float, language: str | None = "az", hotwords: str | None = None) -> dict[str, Any]:
     from montaj.media import read_mono
 
-    model = WhisperModel(DEFAULT_MODEL, device="cpu", compute_type="int8")
+    model = _model()
     # PyAV versiya fərqlərindən asılı olmamaq üçün səsi ffmpeg ilə oxuyuruq
     audio = read_mono(src, 16000)
     a, b = int(max(0, start) * 16000), int(end * 16000)

@@ -27,31 +27,43 @@ Heç bir sənəddə yazılmayan qərar lazımdırsa — Claude **ən sakit, ən 
 
 ## 2. Sessiya (söhbət) qaydası
 
-- **Bir video = bir yeni söhbət.** Bir söhbətdə ikinci video edilmir.
-  Səbəb: uzun söhbət baha başa gəlir və müştərilər arasında qarışıqlıq yaradır.
+- **Bir çəkiliş = bir söhbət.** Bir çəkiliş: bir müştəri, eyni məkan/işıq, ~10 video (DataClone ~5).
+  Bir söhbətdə yalnız **bir müştəri** olur; başqa müştərinin videosu həmin söhbətdə edilmir.
+  Ortaq qərarlar (kadraj, səs, rəng) bir dəfə verilir, 10 plan bir səhifədə təsdiqlənir.
 - Müştəri yaddaşı söhbətdə yox, **müştəri profilində** saxlanır. Hər təhvildən sonra profilin `history`
   hissəsinə bir sətir yazılır.
-- Düzəliş də yeni söhbətdə ola bilər: layihə faylı (`*.montaj.json`, mediasız) təhvil zamanı saxlanır,
+- Düzəliş başqa gün yeni söhbətdə ola bilər: layihə faylı (`*.montaj.json`, mediasız) təhvil zamanı saxlanır,
   yeni söhbət onu bərpa edir, transkripsiya təkrarlanmır.
 - Söhbət başlatma mətni (sabit format, kopyala-yapışdır):
 
   ```
   MONTAJ
   Müştəri: <profil adı>
-  Növ: ekspert-reels
-  Fayl: <Drive linki və ya "qovluqdakı yeni fayl">
+  Çəkiliş: <YYYY-MM-DD>
+  Qovluq: <Drive qovluq linki>
   Qeyd: <varsa, bir cümlə>
   ```
 
 - Claude sessiyanın əvvəlində **yalnız** bunları oxuyur: bu fayl, növün üslub kitabçası, seçilən müştərinin profili.
   `AGENT_GUIDE.md` və digər OpenMontage təlimatları montaj sessiyasında oxunmur.
 
-## 3. İş axını (hər video)
+### 2.1 Drive qovluq quruluşu
+
+```
+<Müştəri>/
+  2026-12-01/        ← çəkilişin xam faylları (çəkiliş günü yüklənir)
+  2026-12-15/
+  Hazır/             ← təsdiqlənmiş yekun videolar
+```
+
+Fayl adları kamera adı ola bilər; sıra ada görə götürülür. Qovluq paylaşımı: "Linki olan hər kəs — Baxan".
+
+## 3. İş axını (hər çəkiliş)
 
 | # | Addım | Kim | AI lazımdır? |
 |---|---|---|---|
 | 1 | Material müştərinin Drive qovluğuna düşür | Müştəri | Yox |
-| 2 | Hazırlıq: endirmə, material yoxlaması, transkripsiya, səs təmizləmə, kadraj | Sistem | Yox |
+| 2 | Hazırlıq: `batch` əmri — endirmə, transkripsiya, material yoxlaması, səs təmizləmə, təkrar cəhdlər | Sistem | Yox |
 | 3 | Plan: kəsimlər, ekran yazıları, kartlar, B-roll, musiqi — kitabçaya və profilə görə | Claude | **Bəli** |
 | 4 | Plan təsdiqi — toplu səhifədə | Siz | Yox |
 | 5 | Render + avtomatik keyfiyyət qapısı | Sistem | Yox |
@@ -59,6 +71,17 @@ Heç bir sənəddə yazılmayan qərar lazımdırsa — Claude **ən sakit, ən 
 | 7 | Təhvil: müştərinin `Hazır` qovluğu (sonra Metricool) | Sistem | Yox |
 
 Müştəri ilə və sizinlə əlaqə yalnız 4-cü və 6-cı addımda olur. Ara sual verilmir, əlavə variant raundu təklif edilmir.
+
+### 3.0 Hazırlıq əmri (addım 2)
+
+```
+python -m montaj.session batch --link "<qovluq linki>" --client "<profil adı>" --date 2026-12-01
+python -m montaj.session batch-status <müştəri>-<tarix>
+```
+
+Hər fayl ayrıca layihə olur (`<müştəri>-<tarix>-01`, `-02` …). Əmr yarıda kəsilsə, eyni əmri təkrar işə salın:
+bitmiş addımlar təkrarlanmır. Bir videonun xətası digərlərini dayandırmır. Xülasə (müddət, material xəbərdarlıqları,
+xətalar): `out/batches/<id>.md`. Claude plan yazmağa yalnız bu xülasədən və transkriptlərdən başlayır.
 
 ### 3.1 Plan (addım 3) — nə yazılır
 
@@ -136,20 +159,20 @@ Kateqoriyalar: `kəsim`, `yazı`, `altyazı`, `səs`, `musiqi`, `SFX`, `rəng`, 
 Eyni kateqoriyada **2-ci səhv** olanda: ya kitabçaya dəqiq qayda yazılır, ya da §5-ə avtomatik yoxlama əlavə olunur.
 Məqsəd: hər həftə düzəliş sayı azalır.
 
-## 7. Miqyas (gündə 100+)
+## 7. Miqyas (iş qrafikinə görə, 2026-12-01-dən)
 
-Hədəf gündə 100+ video, tam pulsuz. Bunun üçün qaydalar:
-
-- AI yalnız 3-cü addımda (plan) işlədilir. Qalan bütün addımlar AI-sız, toplu işləyir.
-- Plan söhbəti qısa olmalıdır: bir söhbət ≈ bir plan + bir düzəliş. Uzun müzakirə yoxdur.
-- Rutin addımlar üçün ucuz model, plan üçün güclü model.
-- ⚠ **Məhdudiyyətlər (dürüst):** abunəliyin istifadə limiti və bulud konteynerində GPU olmaması gündəlik həcmi
-  məhdudlaşdıra bilər. İlk həftə hər video üçün vaxt və istifadə ölçülür; 100+ üçün nə çatışmadığı rəqəmlərlə qərarlaşdırılır.
+- Çəkiliş: 1, 3, 6-cı günlər. Montaj: 2, 4, 5-ci günlər. Hər müştəri ayda 2 dəfə, çəkiliş başına ~10 video.
+- Hədəf: ayda 350–400 video → **montaj günü orta ~30, ən sıx həftədə ~38 video**.
+- Sizin vaxtınız video başına **10–15 dəqiqə**: plan təsdiqi + yekun baxış.
+- AI yalnız 3-cü addımda (plan) işlədilir. Qalan addımlar AI-sız, toplu işləyir (hazırlıq çəkiliş günü axşam başlaya bilər).
+- Plan söhbəti qısadır: çəkiliş başına bir söhbət, bir plan raundu, bir düzəliş raundu.
+- ⚠ **Məhdudiyyət (dürüst):** abunəliyin istifadə limiti və GPU-suz konteyner (transkripsiya ~0.5x real vaxt) ölçülməlidir.
+  İlk iki həftə hər paketdə addım müddətləri (`batch-status`) və istifadə qeyd olunur.
 
 ### Hələ qurulmayanlar (ardıcıllıqla)
 
 1. ⚠ Yığcam sessiya girişi: `CLAUDE.md` montaj söhbətini birbaşa bu fayla yönləndirir.
-2. ⚠ Müştəri qovluğu skaneri: Drive qovluğundakı yeni faylları tapıb hazırlığı (addım 2) başlatmaq.
+2. ✓ Çəkiliş paketi əmri (`batch`). ⚠ Sonra: müştəri qovluğunda yeni çəkiliş qovluğunu avtomatik tapmaq.
 3. ⚠ Toplu plan təsdiqi səhifəsi (telefondan, 10–30 plan bir səhifədə).
 4. ⚠ §5-dəki əlavə avtomatik yoxlamalar.
 5. ⚠ Təhvil: `Hazır` qovluğu; sonra Metricool.
