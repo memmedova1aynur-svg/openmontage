@@ -256,7 +256,22 @@
     "look": "C",
     "music": "dinamik educational/corporate",
     "rotation": false,
-    "updated": "2026-11-23"
+    "updated": "2026-11-23",
+    "covers": {
+      "status": "grid-dən müşahidə (2026-11-23)",
+      "A_danisan": "Aytənin kadrı + aşağı-solda 2 sətirlik lent başlıq: 1-ci sətir ağ/açıq qutuda navy mətn, 2-ci sətir navy qutuda ağ mətn (və ya tərsi); qalın sans (Montserrat ExtraBold tipli). Yuxarı-solda kiçik 'AYTƏN CƏLİLOVA' etiketi.",
+      "B_dizayn": "Açıq powder-mavi/ağ və ya navy fon. Yuxarı-solda pill etiket '• VİDEO · KATEQORİYA' (məs. ÖYRƏNMƏ, KARYERA, SATIŞ). Başlıq: 1-ci sətir ağır qalın sans, 2-ci sətir kursiv serif (açıq fonda mavi, navy fonda açıq mavi). Altında UI-kart illüstrasiyası (çeklist, taymer, 01/02/03 kartları, qəbz, xəritə, test). Kiçik ✦ ulduzlar, aşağı-sağda navy pill 'mətn →', dairəvi stiker-nişan, bəzən aşağıda qaçan sətir (ticker).",
+      "vurgu_rengi": "Əsas navy + mavi; nadir hallarda narıncı (nişan, xəritə pin, etiket) və sarı (poster) — az dozada.",
+      "novbe": "Grid-də A və B covers növbələşir; eyni tip 2-dən çox ardıcıl gəlmir."
+    },
+    "carousels": {
+      "status": "qayda (istifadəçi 2026-11-23)",
+      "tezlik": "2 gündən bir; 15 günlük dövrdə ~7.",
+      "uslub": "Cover B ailəsi ilə eyni dizayn dili (navy/powder-mavi, ağır sans + kursiv serif, pill etiketlər, UI-kartlar), amma hər karusel öz kompozisiyası ilə — biri-birinin təkrarı olmamalı.",
+      "meqsed": "Saxla (save) və maraq: praktik, addım-addım, yoxlama siyahısı, test, mif→həqiqət, müqayisə formatları; son slayd — saxla/paylaş çağırışı.",
+      "mezmun": "Yalnız Aytənin mövzu sahəsindən və çəkilmiş videoların danışığından; yeni iddia/rəqəm uydurulmur.",
+      "qadaga": "Məşhur şəxslərin şəkli/tanınan personaj işlədilmir (müəllif və şəxsiyyət hüququ)."
+    }
   },
   "instagram_analiz": {
     "date": "2026-11-23",
@@ -299,48 +314,19 @@
       "3_tehsil_merkezi_satis": "3–4 post, ən zəif baxışlar"
     },
     "captions": "190–900 simvol (orta ~650); hook = sual və ya mif→həqiqət; sonluq = müzakirə sualı və ya kod söz; emoji az (🧠 💬 👇 📩)",
-    "fixes": [
-      {
-        "id": 1,
-        "who": "Aytən",
-        "what": "Telefon uyğunsuzluğu: bio-da …368 85 83, 2026-10-26 şəkil postunda …582 85 98. Hansı aktivdirsə, o qalır; köhnə postun caption-u düzəldilir."
-      },
-      {
-        "id": 2,
-        "who": "Aytən (mətn bizdən)",
-        "what": "Bio yeniləmə — kontentlə uyğunlaşdırmaq. Təklif: 'Öyrənməyi öyrədirəm · İlk təlimini qurmağa kömək edirəm · Konsultasiya üçün KONSULTASİYA yaz ↓'. Yekun mətn Aytənin təsdiqi ilə."
-      },
-      {
-        "id": 3,
-        "who": "biz (caption)",
-        "what": "Müraciət forması sabit: həmişə 'siz'. Caption-larda 'sən' işlənmir."
-      },
-      {
-        "id": 4,
-        "who": "biz (caption)",
-        "what": "Bir standart çağırış: satış postlarında yalnız 'Şərhdə KONSULTASİYA yazın'. SATIŞ, 'mesaj yaz' və s. ayrıca kampaniya olmadıqca işlənmir."
-      },
-      {
-        "id": 5,
-        "who": "biz (caption)",
-        "what": "Sabit heşteq seti (hər postda 5): #aytəncəlilova #öyrənmə #təlimçi #karyera #özünüinkişaf + mövzuya görə 0–2 əlavə."
-      },
-      {
-        "id": 6,
-        "who": "biz (plan)",
-        "what": "Kontent payı (15 günlük dövrdə 10 video): 5 öyrənmə/yaddaş, 4 təlimçi/karyera, 1 satış (təhsil mərkəzləri). Hər dövrdə ən az 2 video 'problem → həll → birbaşa təklif' formulunda (top-3-ün quruluşu)."
-      },
-      {
-        "id": 7,
-        "who": "biz (caption)",
-        "what": "Caption uzunluğu: 300–500 simvol; ilk sətir hook (≤90 simvol), son sətir tək çağırış və ya tək sual — ikisi birlikdə yox."
-      },
-      {
-        "id": 8,
-        "who": "siz",
-        "what": "Paylaşım vaxtı: 19:00 (Bakı) saxlanılır — batch-pack --time 19:00."
-      }
+    "status": "müşahidə — səhifə, bio, mövzular dəyişmir (istifadəçi 2026-11-23)",
+    "grid_screenshots": "2026-11-23: istifadəçinin göndərdiyi 5 ekran görüntüsü (profil + bütün grid) əsasında cover/karusel üslubu aşağıda"
+  },
+  "is_modeli": {
+    "rule": "Səhifə, bio, link, mövzular olduğu kimi qalır. Video mövzularını Aytən özü yazır və seçir — qarışmırıq.",
+    "bizim_isimiz": [
+      "Montaj: peşəkar, səhifənin rəng tonlarında (navy + powder/açıq mavi + ağ).",
+      "Cover: hər yeni reels üçün səhifə dizaynına uyğun dizayn edilmiş cover (videodan təsadüfi kadr yox).",
+      "Paylaşım sırası: 10 videonun 15 günə ardıcıllığı.",
+      "Caption + heşteq hər paylaşım üçün.",
+      "Karusel / poster: 2 gündən bir karusel (15 günlük dövrdə ~7), videolar arasına."
     ],
-    "status": "təklif — fixes 1–2 Aytənin təsdiqi ilə; 3–8 növbəti dövrün caption/planında tətbiq olunur"
+    "dovr": "Ayda 2 çəkiliş × 2 saat → hər biri ~10 video; 15 günlük dövr.",
+    "grid_meqsedi": "Səhifə əsasən videodur; karusellərlə balans bərpa olunur. Instagram-da grid-də yer dəyişmək mümkün olduğu üçün karusellər lazım olanda aşağılara sürüşdürülür."
   }
 }
