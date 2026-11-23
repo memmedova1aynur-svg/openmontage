@@ -1,3 +1,7 @@
+> **Əmr istinadı (2026-11-23-dən).** Əsas iş axını və qaydalar artıq [`QAYDALAR.md`](QAYDALAR.md)-dədir.
+> Bu fayldan yalnız xüsusi əmrlərin təfərrüatı üçün istifadə et; ziddiyyətdə `QAYDALAR.md` keçərlidir
+> (məs. sessiya qaydası, istifadəçi ilə əlaqə sayı, rəng/musiqi seçimi — sabit üslubdan götürülür).
+
 # Əsas iş axını: Drive linki → yekun MP4 (davamlı təlimat)
 
 Bu fayl istifadəçinin təsdiqlədiyi **əsas** iş axınıdır (sorğu → Drive linki → analiz → 3 storyboard → rəng/musiqi → MP4) və `SESSIYA_TELIMATI.md`-dən üstündür.

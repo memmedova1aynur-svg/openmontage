@@ -1,8 +1,7 @@
 # Montaj sistemi — QAYDALAR (tək mənbə)
 
-> Status: **QARALAMA — təsdiq gözləyir.** Təsdiqdən sonra köhnə sənədlər (`IS_AXINI.md`, `SESSIYA_TELIMATI.md`,
-> `YENI_SESSIYA_PROMPTU.md`, `marketinq-sistemi` §2a, müştəri profillərindəki "ümumi qaydalar") arxivə gedir və
-> ziddiyyət olanda **yalnız bu fayl** keçərlidir.
+> Status: **qüvvədədir (2026-11-23).** Ziddiyyət olanda **yalnız bu fayl** keçərlidir. `IS_AXINI.md` — yalnız əmr istinadı;
+> `arxiv/` — köhnə sənədlər; `marketinq-sistemi` §2a və müştəri profillərindəki köhnə "ümumi qaydalar" buraya köçürülüb.
 > `⚠` işarəli bəndlər mənim təklifimdir, sizin təsdiqinizi gözləyir.
 
 ## 0. Qaydaların iyerarxiyası

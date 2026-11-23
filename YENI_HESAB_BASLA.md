@@ -30,7 +30,7 @@ Pullu VPS/API/hosting yoxdur: emal Claude Code bulud sessiyasında, redaktə is�
 | `montaj/editor/raster.mjs`, `montaj/graphics.py` | Render: Chromium ilə şəffaf PNG → ffmpeg overlay (animasiya formulları önizləmə ilə eyni) |
 | `montaj/render.py`, `montaj/fonts.py` | Yekun MP4 (orijinal fayldan, H.264 CRF 18), şriftlər (Montserrat, Caveat — OFL) |
 | `montaj/analysis.py`, `montaj/transcribe.py` | Transkripsiya, söz vaxtları, sükut; nəticə keşlənir |
-| `montaj/SESSIYA_TELIMATI.md` | Sessiyadakı Claude üçün iş qaydaları |
+| `montaj/QAYDALAR.md` | Sessiyadakı Claude üçün iş qaydaları (tək mənbə) |
 | `montaj/TELEBLER.md` | Tələblər və status cədvəli (✅/🟡/⛔) |
 | `montaj/BUDCE_YOLU.md` | Pulsuz iş yolu əsaslandırması |
 | `templates/expert-reels/experts/*.json` | Müştəri profilləri (rənglər, şriftlər, üslub) |
