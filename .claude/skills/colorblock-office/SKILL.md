@@ -56,3 +56,9 @@ Skriptlər: `base_u02.py`, `cb_u02.py` (color-block fonlar — hamısı None, fo
 - Skriptlərdəki `{MÜŞTƏRİ}`, `{SPİKER_ADI}`, `{BREND}`, `{musteri}` yer tutucularını yeni işin real dəyərləri ilə əvəz et; `/tmp/claude-0/...` yollarını təzə skretç qovluğuna yönəlt.
 - Assets: Archivo / Space Mono Bold / Playfair (`/root/.fonts/` yoxdursa Google Fonts-dan endir), moodboard foto kəsikləri müştərinin öz şəkillərindən.
 - Hər yeni video əvvəlkinin kopyası olmur; format seçilir, palitra və obrazlar mövzuya uyğunlaşdırılır.
+
+## 7. Poster seriyası (U02, 21.11)
+- Bəyənilən istiqamətlər: A color blocking · B cəngəllik (sıx yarpaq fonu, boşluq yox) · C jurnal üz qabığı (orijinal fon qalır) · D tipoqrafik · E sürreal kollaj. Hamısında müştərinin öz iri portreti (bəzilərində fon silinir); «qəşəng moda jurnalı səhifəsi».
+- Xərçəng: real yox, başda yox — videodakı qırmızı cizgi xərçəng, kənarda/yuxarıda kiçik.
+- RƏDD: yarpaq tacı (stiker üslubu, «daha yaradıcı, gerçəkçi» gözlənilirdi); saçı cəngəlliklə doldurmaq (saç dəyişmiş kimi görünür).
+- Sınaq: «daş dövrü» (bəbir xəz geyim, mağara divarı, ocaq) — rəy gözlənilir.
