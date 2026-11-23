@@ -113,7 +113,15 @@ def find_in_library(idx: dict[str, list[Path]], sfx_type: str, used: dict[str, i
 
 
 def earshot_bin() -> str | None:
-    return os.environ.get("EARSHOT_BIN") or shutil.which("earshot")
+    env = os.environ.get("EARSHOT_BIN") or shutil.which("earshot")
+    if env:
+        return env
+    # installed by .claude/skills/earshot/scripts/install.sh (also run by the environment setup script)
+    for root in (Path.cwd(), Path(__file__).resolve().parents[4]):
+        cand = root / ".venv-earshot" / "bin" / "earshot"
+        if cand.exists():
+            return str(cand)
+    return None
 
 
 def earshot_make(sfx_type: str, out: Path, seed: int) -> Path | None:
