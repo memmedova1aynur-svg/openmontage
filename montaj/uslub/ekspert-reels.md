@@ -43,8 +43,8 @@
 ## 5. Kartlar və animasiyalar
 
 - Say: videoda **3–4**; hər biri **3–5 s**; danışılan sözə dəqiq (söz başlayanda giriş).
-- ⚠ Animasiyalar arasında ən az **4 s** boş (yalnız danışan) ekran. *(Köhnə qaydada "aralarında 1 s boşluq olmasın"
-  yazılıb — mənası aydın deyil, dəqiqləşdirin.)*
+- **İki animasiya/kart (və ya B-roll) ard-arda gəlmir:** biri bitəndən sonra növbətisinə qədər ən az **4 s** yalnız
+  danışan görünür. Səbəb: əvvəlki montajda iki görüntü 1 s fərqlə bir-birini əvəz etmişdi — tələsik və qeyri-peşəkar görünür.
 - İcazəli növlər: müştəri profilindəki `style.pops` kart üslubu; `title`, `emphasis`, `list`, `card`, `lower` (ad/titul).
 - Mətn yalnız danışıqdan (qısaldıla bilər, mənası dəyişmir). ⚠ Kartda ən çox 6 söz.
 - Kart üzü örtmür: üzün altında; yer yoxdursa kiçilir; sığmırsa başın üstündə.

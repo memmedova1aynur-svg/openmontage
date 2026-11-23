@@ -146,7 +146,7 @@ yenidən render edir, yalnız sonra göndərir. Yoxlananlar (mövcud olanlar):
 - B-roll-un başı örtməsi;
 - kitabçada olmayan effekt/animasiya istifadəsi (planda yalnız icazəli siyahıdan);
 - rəng: look C-dən başqa dəyər;
-- animasiya sayı və müddəti kitabçadakı hədlərdən kənar.
+- animasiya sayı və müddəti kitabçadakı hədlərdən kənar; iki animasiya/kart/B-roll arasında 4 s-dən az boşluq.
 
 ## 6. Səhv jurnalı — sistemin özünü düzəltməsi
 
