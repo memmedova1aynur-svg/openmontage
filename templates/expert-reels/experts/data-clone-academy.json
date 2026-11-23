@@ -26,5 +26,18 @@
     "cardAlpha": 0.94
   },
   "style": {},
-  "history": []
+  "history": [],
+  "house_style": {
+    "captions": [
+      "stroke"
+    ],
+    "cards": [
+      "dark"
+    ],
+    "look": "C",
+    "music": "dinamik tech/elektron",
+    "status": "təklif — ilk çəkilişdə yoxlanır",
+    "rotation": false,
+    "updated": "2026-11-23"
+  }
 }

@@ -31,5 +31,18 @@
     "emphasis": "#C3A15A"
   },
   "style": {},
-  "history": []
+  "history": [],
+  "house_style": {
+    "captions": [
+      "marker"
+    ],
+    "cards": [
+      "light"
+    ],
+    "look": "C",
+    "music": "dinamik corporate, ilhamverici",
+    "status": "təklif — ilk çəkilişdə yoxlanır",
+    "rotation": false,
+    "updated": "2026-11-23"
+  }
 }

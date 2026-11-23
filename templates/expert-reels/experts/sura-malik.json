@@ -1,165 +1,181 @@
 {
- "name": "Sura Malik",
- "status": "active",
- "activity": "Uşaq inkişafı, laktasiya və analıq mütəxəssisi: ana və körpə, süd vermə, analıq məktəbi / analıq təlimləri.",
- "palette": {
-  "family": "yumşaq çəhrayı, gül qurusu, pudra, isti krem, ağ",
-  "note": "Çəhrayı və krem tonların hər ikisi uyğundur (istifadəçi, 2026-11-01). Bəzən tünd çəhrayı da ola bilər."
- },
- "video_types": "ekspert danışığı, təlim dərsi, reklam, sual-cavab, digər uyğun materiallar",
- "cautions": [
-  "Tibbi və peşəkar məlumat danışıqda deyildiyindən daha qəti formada verilmir.",
-  "İstifadəçi (2026-10-30): sözləri QƏTİYYƏN kəsmə; zəif eşidilən söz sonlarını da saxla. Pauzaları qısaltma (tighten.py işlətmə) - boşluqları istifadəçi CapCut-da musiqi qoyarkən özü kəsir. Yalnız təkrar cəhdləri və lazımsız hissələri çıxar; kəsim sərhədlərini səs enerjisinə görə geniş qoy.",
-  "Sadə montaj: araya kadr/B-roll/cutaway yoxdur. Çəhrayı tonlar. Mövzuya uyğun kiçik ikon animasiyaları və uyğun səs effektləri olar.",
-  "İlk video nümunədir: istifadəçi baxıb təsdiqləyəndən sonra qalanları soruşmadan eyni üslubda et.",
-  "Çəkilişlər güzgü görüntüdə gəlir (qol etiketi tərs oxunur): hər videonu soruşmadan hflip ilə çevir (2026-10-30).",
-  "Fon bulanıqlaşdırılmır (istifadəçi bəyənmədi, 2026-10-30). Fonda insan keçirsə: həmin cümlə lazımsız/təkrardırsa çıxar, deyilsə saxla.",
-  "Rakurs: Suranı ortala, əyriliyi düzəlt (şaquli xətlərə görə), başın üstündəki artıq boşluğu kəs (crop ~1.25 + yüngül unsharp). Yazılar hicabın üstündə qalsın.",
-  "sura-01 nümunəsi təsdiqləndi (2026-10-30): qalan videoları soruşmadan et; hər video quruluşca fərqli olsun, insan montajı kimi.",
-  "Render-lər tək-tək getməlidir: Whisper + Remotion eyni anda 15 GB-ı aşır (2026-10-30). Checklist stikerləri çənəyə düşməsin deyə top >= 1000 və ya caption_shift istifadə et.",
-  "Ümumi istifadəçi qaydası (2026-11-01, bütün müştərilər, soruşmadan): rəng həmişə looks C (təmiz-neytral). Musiqi: piano/yavaş YOX — uşaq inkişafı mövzusunda dinamik kids/kindergarten, təhsil reklamında educational/corporate (yalnız CC0). B-roll başı örtmür: bölünmüş ekran — danışan yuxarıda, B-roll sinədən aşağı (pip y≈0.70, tam en), həmin anda altyazı başın üstündə (y≈0.17). Arxa fon bulanıqlaşdırılmır və qaraldılmır (istifadəçi: hiss olunur, başın ətrafında iz qalır) — fon orijinal qalır. Danışılmayan boş saniyələr (pauzalar ≥0.45 s) kəsilir, söz kəsilmir; kəsimdən sonra söz təkrarı olmadığını yoxla. Güzgü çevirmə (hflip) yoxdur."
- ],
- "theme_source": "pink theme chosen by us from the colour family and approved by the user on sura-01 (2026-10-30); brand colour = colour family (user rule 2026-10-31): nearby shades are fine, no 'unconfirmed code' warning",
- "theme": {
-  "primary": "#C9577D",
-  "primaryDeep": "#9E3D5E",
-  "accent": "#F7C6D4",
-  "accentSoft": "#FFF0F4",
-  "text": "#FFFFFF",
-  "onAccent": "#9E3D5E",
-  "cardAlpha": 0.94,
-  "emphasis": "#FFD3E0"
- },
- "style": {
-  "continuity": "Videolar bir-birinin davamı kimi olsun: eyni rəng ailəsi (çəhrayı/krem), oxşar ruh. Kopya olmasın — ton, altyazı üslubu, kart və effekt ardıcıllığı video-video dəyişə bilər; tamamilə fərqli üslub yox (istifadəçi, 2026-11-01).",
-  "mood": "ana-körpə mövzusu: yumşaq, isti, sakit; kəskin/aqressiv effekt yox"
- },
- "history": [
-  {
-   "video": "sura-01: Uşaq qucağa öyrəşərmi?",
-   "file": "projects/sura-01/renders/final_ig.mp4",
-   "style": {
-    "captions": "box",
-    "pills": "top-card",
-    "backdrop": "dots",
-    "pipShape": "circle",
-    "pipCorner": "br",
-    "pops": "dark"
-   },
-   "theme_primary": "#C9577D",
-   "notes": "güzgü -> hflip; söz kəsilmədi, boşluqlar saxlandı; blur yox; rotate -1.26, crop 864:1536:145:344; mərkəzi ikonlar; keçən insanlar olan 2 artıq cümlə kəsildi"
+  "name": "Sura Malik",
+  "status": "active",
+  "activity": "Uşaq inkişafı, laktasiya və analıq mütəxəssisi: ana və körpə, süd vermə, analıq məktəbi / analıq təlimləri.",
+  "palette": {
+    "family": "yumşaq çəhrayı, gül qurusu, pudra, isti krem, ağ",
+    "note": "Çəhrayı və krem tonların hər ikisi uyğundur (istifadəçi, 2026-11-01). Bəzən tünd çəhrayı da ola bilər."
   },
-  {
-   "video": "sura-02: Ağlayan uşağı sakitləşdirmək",
-   "file": "projects/sura-02/renders/final_ig.mp4",
-   "style": {
-    "captions": "chip",
-    "pills": "side-tag",
-    "backdrop": "dots",
-    "pipShape": "circle",
-    "pipCorner": "br",
-    "pops": "light"
-   },
-   "theme_primary": "#B5476E",
-   "notes": "güzgü -> hflip; söz kəsilmədi, boşluqlar saxlandı; blur yox; qbox + poll, yan ikonlar, TİP 1-3"
+  "video_types": "ekspert danışığı, təlim dərsi, reklam, sual-cavab, digər uyğun materiallar",
+  "cautions": [
+    "Tibbi və peşəkar məlumat danışıqda deyildiyindən daha qəti formada verilmir.",
+    "İstifadəçi (2026-10-30): sözləri QƏTİYYƏN kəsmə; zəif eşidilən söz sonlarını da saxla. Pauzaları qısaltma (tighten.py işlətmə) - boşluqları istifadəçi CapCut-da musiqi qoyarkən özü kəsir. Yalnız təkrar cəhdləri və lazımsız hissələri çıxar; kəsim sərhədlərini səs enerjisinə görə geniş qoy.",
+    "Sadə montaj: araya kadr/B-roll/cutaway yoxdur. Çəhrayı tonlar. Mövzuya uyğun kiçik ikon animasiyaları və uyğun səs effektləri olar.",
+    "İlk video nümunədir: istifadəçi baxıb təsdiqləyəndən sonra qalanları soruşmadan eyni üslubda et.",
+    "Çəkilişlər güzgü görüntüdə gəlir (qol etiketi tərs oxunur): hər videonu soruşmadan hflip ilə çevir (2026-10-30).",
+    "Fon bulanıqlaşdırılmır (istifadəçi bəyənmədi, 2026-10-30). Fonda insan keçirsə: həmin cümlə lazımsız/təkrardırsa çıxar, deyilsə saxla.",
+    "Rakurs: Suranı ortala, əyriliyi düzəlt (şaquli xətlərə görə), başın üstündəki artıq boşluğu kəs (crop ~1.25 + yüngül unsharp). Yazılar hicabın üstündə qalsın.",
+    "sura-01 nümunəsi təsdiqləndi (2026-10-30): qalan videoları soruşmadan et; hər video quruluşca fərqli olsun, insan montajı kimi.",
+    "Render-lər tək-tək getməlidir: Whisper + Remotion eyni anda 15 GB-ı aşır (2026-10-30). Checklist stikerləri çənəyə düşməsin deyə top >= 1000 və ya caption_shift istifadə et.",
+    "Ümumi istifadəçi qaydası (2026-11-01, bütün müştərilər, soruşmadan): rəng həmişə looks C (təmiz-neytral). Musiqi: piano/yavaş YOX — uşaq inkişafı mövzusunda dinamik kids/kindergarten, təhsil reklamında educational/corporate (yalnız CC0). B-roll başı örtmür: bölünmüş ekran — danışan yuxarıda, B-roll sinədən aşağı (pip y≈0.70, tam en), həmin anda altyazı başın üstündə (y≈0.17). Arxa fon bulanıqlaşdırılmır və qaraldılmır (istifadəçi: hiss olunur, başın ətrafında iz qalır) — fon orijinal qalır. Danışılmayan boş saniyələr (pauzalar ≥0.45 s) kəsilir, söz kəsilmir; kəsimdən sonra söz təkrarı olmadığını yoxla. Güzgü çevirmə (hflip) yoxdur."
+  ],
+  "theme_source": "pink theme chosen by us from the colour family and approved by the user on sura-01 (2026-10-30); brand colour = colour family (user rule 2026-10-31): nearby shades are fine, no 'unconfirmed code' warning",
+  "theme": {
+    "primary": "#C9577D",
+    "primaryDeep": "#9E3D5E",
+    "accent": "#F7C6D4",
+    "accentSoft": "#FFF0F4",
+    "text": "#FFFFFF",
+    "onAccent": "#9E3D5E",
+    "cardAlpha": 0.94,
+    "emphasis": "#FFD3E0"
   },
-  {
-   "video": "sura-03: 2 yaşında danışmayan uşaq",
-   "file": "projects/sura-03/renders/final_ig.mp4",
-   "style": {
-    "captions": "chip",
-    "pills": "top-card",
-    "backdrop": "dots",
-    "pipShape": "circle",
-    "pipCorner": "br",
-    "pops": "light"
-   },
-   "theme_primary": "#A85C74",
-   "notes": "güzgü -> hflip; söz kəsilmədi, boşluqlar saxlandı; blur yox; sitat kartları, AMMA pill, SƏBƏB tip-ləri, SOS checklist, CTA 'Mütəxəssisə görünün'"
+  "style": {
+    "continuity": "Videolar bir-birinin davamı kimi olsun: eyni rəng ailəsi (çəhrayı/krem), oxşar ruh. Kopya olmasın — ton, altyazı üslubu, kart və effekt ardıcıllığı video-video dəyişə bilər; tamamilə fərqli üslub yox (istifadəçi, 2026-11-01).",
+    "mood": "ana-körpə mövzusu: yumşaq, isti, sakit; kəskin/aqressiv effekt yox"
   },
-  {
-   "video": "sura-04: Qatı qidaya keçid",
-   "file": "projects/sura-04/renders/final_ig.mp4",
-   "style": {
-    "captions": "stroke",
-    "pills": "top-card",
-    "backdrop": "dots",
-    "pipShape": "circle",
-    "pipCorner": "br",
-    "pops": "dark"
-   },
-   "theme_primary": "#D0638A",
-   "notes": "güzgü -> hflip; söz kəsilmədi, boşluqlar saxlandı; blur yox; qbox, 4–6 ay pill, TİP 1-4 (dadımlıq, tərəvəz, 3 gün, meyvə), reaksiya checklist"
-  },
-  {
-   "video": "sura-05: Qorxu ilə qərar verən ana",
-   "file": "projects/sura-05/renders/final_ig.mp4",
-   "style": {
-    "captions": "stroke",
-    "pills": "top-card",
-    "backdrop": "dots",
-    "pipShape": "circle",
-    "pipCorner": "br",
-    "pops": "type"
-   },
-   "theme_primary": "#8E3B5A",
-   "notes": "güzgü -> hflip; söz kəsilmədi, boşluqlar saxlandı; blur yox; stroke/type, mif xətləri"
-  },
-  {
-   "video": "sura-06: Uşağı hər səhvdə cəzalandırmaq? (4 s sual)",
-   "file": "projects/sura-06/renders/final_ig.mp4",
-   "style": {
-    "captions": "box",
-    "pills": "top-card",
-    "backdrop": "dots",
-    "pipShape": "circle",
-    "pipCorner": "br",
-    "pops": "dark"
-   },
-   "theme_primary": "#C9577D",
-   "notes": "güzgü -> hflip; söz kəsilmədi, boşluqlar saxlandı; blur yox; poll + şərh səhnəsi"
-  },
-  {
-   "video": "sura-07: Soyuq əl ≠ üşümək",
-   "file": "projects/sura-07/renders/final_ig.mp4",
-   "style": {
-    "captions": "chip",
-    "pills": "side-tag",
-    "backdrop": "dots",
-    "pipShape": "circle",
-    "pipCorner": "br",
-    "pops": "type"
-   },
-   "theme_primary": "#C76B8E",
-   "notes": "güzgü -> hflip; söz kəsilmədi, boşluqlar saxlandı; blur yox; sitat pop-lar, HƏQİQƏT pill, 'Buradan yoxla' checklist, 20–22 °C pill"
-  },
-  {
-   "video": "sura-08: Laktasiya məsləhətçiliyi təlimi (reklam)",
-   "file": "projects/sura-08/renders/final_ig.mp4",
-   "style": {
-    "captions": "stroke",
-    "pills": "side-tag",
-    "backdrop": "dots",
-    "pipShape": "circle",
-    "pipCorner": "br",
-    "pops": "light"
-   },
-   "theme_primary": "#C2507A",
-   "notes": "güzgü -> hflip; söz kəsilmədi, boşluqlar saxlandı; blur yox; 'Öyrənəcəksən' checklist top 1000 + caption_shift, İLK ADDIM pill"
-  },
-  {
-   "video": "sura-09: Yatan uşağı oyadaqmı?",
-   "file": "projects/sura-09/renders/final_ig.mp4",
-   "style": {
-    "captions": "box",
-    "pills": "side-tag",
-    "backdrop": "dots",
-    "pipShape": "circle",
-    "pipCorner": "br",
-    "pops": "type"
-   },
-   "theme_primary": "#B04A6F",
-   "notes": "güzgü -> hflip; söz kəsilmədi, boşluqlar saxlandı; blur yox; SARILIQ VARSA / HƏR ŞEY QAYDASINDADIRSA pill-ləri, 'Oyatmaq lazımdır' checklist"
+  "history": [
+    {
+      "video": "sura-01: Uşaq qucağa öyrəşərmi?",
+      "file": "projects/sura-01/renders/final_ig.mp4",
+      "style": {
+        "captions": "box",
+        "pills": "top-card",
+        "backdrop": "dots",
+        "pipShape": "circle",
+        "pipCorner": "br",
+        "pops": "dark"
+      },
+      "theme_primary": "#C9577D",
+      "notes": "güzgü -> hflip; söz kəsilmədi, boşluqlar saxlandı; blur yox; rotate -1.26, crop 864:1536:145:344; mərkəzi ikonlar; keçən insanlar olan 2 artıq cümlə kəsildi"
+    },
+    {
+      "video": "sura-02: Ağlayan uşağı sakitləşdirmək",
+      "file": "projects/sura-02/renders/final_ig.mp4",
+      "style": {
+        "captions": "chip",
+        "pills": "side-tag",
+        "backdrop": "dots",
+        "pipShape": "circle",
+        "pipCorner": "br",
+        "pops": "light"
+      },
+      "theme_primary": "#B5476E",
+      "notes": "güzgü -> hflip; söz kəsilmədi, boşluqlar saxlandı; blur yox; qbox + poll, yan ikonlar, TİP 1-3"
+    },
+    {
+      "video": "sura-03: 2 yaşında danışmayan uşaq",
+      "file": "projects/sura-03/renders/final_ig.mp4",
+      "style": {
+        "captions": "chip",
+        "pills": "top-card",
+        "backdrop": "dots",
+        "pipShape": "circle",
+        "pipCorner": "br",
+        "pops": "light"
+      },
+      "theme_primary": "#A85C74",
+      "notes": "güzgü -> hflip; söz kəsilmədi, boşluqlar saxlandı; blur yox; sitat kartları, AMMA pill, SƏBƏB tip-ləri, SOS checklist, CTA 'Mütəxəssisə görünün'"
+    },
+    {
+      "video": "sura-04: Qatı qidaya keçid",
+      "file": "projects/sura-04/renders/final_ig.mp4",
+      "style": {
+        "captions": "stroke",
+        "pills": "top-card",
+        "backdrop": "dots",
+        "pipShape": "circle",
+        "pipCorner": "br",
+        "pops": "dark"
+      },
+      "theme_primary": "#D0638A",
+      "notes": "güzgü -> hflip; söz kəsilmədi, boşluqlar saxlandı; blur yox; qbox, 4–6 ay pill, TİP 1-4 (dadımlıq, tərəvəz, 3 gün, meyvə), reaksiya checklist"
+    },
+    {
+      "video": "sura-05: Qorxu ilə qərar verən ana",
+      "file": "projects/sura-05/renders/final_ig.mp4",
+      "style": {
+        "captions": "stroke",
+        "pills": "top-card",
+        "backdrop": "dots",
+        "pipShape": "circle",
+        "pipCorner": "br",
+        "pops": "type"
+      },
+      "theme_primary": "#8E3B5A",
+      "notes": "güzgü -> hflip; söz kəsilmədi, boşluqlar saxlandı; blur yox; stroke/type, mif xətləri"
+    },
+    {
+      "video": "sura-06: Uşağı hər səhvdə cəzalandırmaq? (4 s sual)",
+      "file": "projects/sura-06/renders/final_ig.mp4",
+      "style": {
+        "captions": "box",
+        "pills": "top-card",
+        "backdrop": "dots",
+        "pipShape": "circle",
+        "pipCorner": "br",
+        "pops": "dark"
+      },
+      "theme_primary": "#C9577D",
+      "notes": "güzgü -> hflip; söz kəsilmədi, boşluqlar saxlandı; blur yox; poll + şərh səhnəsi"
+    },
+    {
+      "video": "sura-07: Soyuq əl ≠ üşümək",
+      "file": "projects/sura-07/renders/final_ig.mp4",
+      "style": {
+        "captions": "chip",
+        "pills": "side-tag",
+        "backdrop": "dots",
+        "pipShape": "circle",
+        "pipCorner": "br",
+        "pops": "type"
+      },
+      "theme_primary": "#C76B8E",
+      "notes": "güzgü -> hflip; söz kəsilmədi, boşluqlar saxlandı; blur yox; sitat pop-lar, HƏQİQƏT pill, 'Buradan yoxla' checklist, 20–22 °C pill"
+    },
+    {
+      "video": "sura-08: Laktasiya məsləhətçiliyi təlimi (reklam)",
+      "file": "projects/sura-08/renders/final_ig.mp4",
+      "style": {
+        "captions": "stroke",
+        "pills": "side-tag",
+        "backdrop": "dots",
+        "pipShape": "circle",
+        "pipCorner": "br",
+        "pops": "light"
+      },
+      "theme_primary": "#C2507A",
+      "notes": "güzgü -> hflip; söz kəsilmədi, boşluqlar saxlandı; blur yox; 'Öyrənəcəksən' checklist top 1000 + caption_shift, İLK ADDIM pill"
+    },
+    {
+      "video": "sura-09: Yatan uşağı oyadaqmı?",
+      "file": "projects/sura-09/renders/final_ig.mp4",
+      "style": {
+        "captions": "box",
+        "pills": "side-tag",
+        "backdrop": "dots",
+        "pipShape": "circle",
+        "pipCorner": "br",
+        "pops": "type"
+      },
+      "theme_primary": "#B04A6F",
+      "notes": "güzgü -> hflip; söz kəsilmədi, boşluqlar saxlandı; blur yox; SARILIQ VARSA / HƏR ŞEY QAYDASINDADIRSA pill-ləri, 'Oyatmaq lazımdır' checklist"
+    }
+  ],
+  "house_style": {
+    "captions": [
+      "box",
+      "chip",
+      "stroke"
+    ],
+    "cards": [
+      "dark",
+      "light",
+      "type"
+    ],
+    "look": "C",
+    "music": "dinamik, isti, ana-körpə mövzusuna uyğun (aqressiv yox)",
+    "rotation": true,
+    "updated": "2026-11-23"
   }
- ]
 }

@@ -1,0 +1,35 @@
+{
+  "name": "Aygün İsmayılova",
+  "status": "active",
+  "activity": "Psixoloq və təlimçi.",
+  "palette": {
+    "family": "zeytun yaşılı və krem"
+  },
+  "video_types": "ekspert danışığı, reklam",
+  "theme_source": "derived from the colour family (istifadəçi, 2026-11-23: zeytun yaşılı + krem); kodlar təklifdir",
+  "theme": {
+    "primary": "#4F5B2C",
+    "primaryDeep": "#2F371A",
+    "accent": "#F3EEDF",
+    "accentSoft": "#B5BD8C",
+    "text": "#FFFFFF",
+    "onAccent": "#2F371A",
+    "cardAlpha": 0.94,
+    "emphasis": "#8A9A4B"
+  },
+  "style": {},
+  "house_style": {
+    "captions": [
+      "box"
+    ],
+    "cards": [
+      "light (krem)"
+    ],
+    "look": "C",
+    "music": "dinamik, mövzuya uyğun (psixologiya — aqressiv yox)",
+    "rotation": false,
+    "status": "təklif — ilk çəkilişdə yoxlanır",
+    "updated": "2026-11-23"
+  },
+  "history": []
+}

@@ -505,5 +505,18 @@
       "variant": "03 Öyrənməyi öyrən — REKLAM PRO",
       "look": "W"
     }
-  ]
+  ],
+  "house_style": {
+    "captions": [
+      "stroke",
+      "box"
+    ],
+    "cards": [
+      "fade animasiya"
+    ],
+    "look": "? (C və W müqayisəsindən sonra)",
+    "music": "dinamik, mövzuya uyğun (yavaş musiqi yox)",
+    "rotation": false,
+    "updated": "2026-11-23"
+  }
 }

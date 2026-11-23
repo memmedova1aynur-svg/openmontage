@@ -182,5 +182,17 @@
       },
       "notes": "güzgü -> hflip; təkrar cəhdlər kəsildi; 3 yanaşma checklist (pip), şərh CTA '1, 2 yoxsa 3?'; SFX/musiqi yox"
     }
-  ]
+  ],
+  "house_style": {
+    "captions": [
+      "box"
+    ],
+    "cards": [
+      "dark"
+    ],
+    "look": "C",
+    "music": "dinamik educational / mövzuya uyğun",
+    "rotation": false,
+    "updated": "2026-11-23"
+  }
 }

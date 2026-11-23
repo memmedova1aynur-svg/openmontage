@@ -74,5 +74,17 @@
       },
       "notes": "User supplied the opening ready-made (grey look + megaphone voice on 'Ağlama, heç nə yoxdur, öyrəşəcəksən'): keep such parts untouched. Title corrected to Azerbaijani norms: «ÖYRƏŞƏCƏK» DEMƏZDƏN ƏVVƏL BİR DƏ DÜŞÜNƏK. Collage scenes: bath (tub, crying kid, shower, Ağlayır/Qaçır/Etiraz edir), water (axan su, damcılar, duşun səsi), steps (təhlükəsiz temp, tədricən). Kept the user's 'DAVAMLILIQ' idea. RESULT: user: 'Əladır, superdir, mükəmməldir' - paper-cut collage approved."
     }
-  ]
+  ],
+  "house_style": {
+    "captions": [
+      "box (yumşaq yaşıl)"
+    ],
+    "cards": [
+      "ikon çipləri"
+    ],
+    "look": "C",
+    "music": "dinamik kids / mövzuya uyğun",
+    "rotation": false,
+    "updated": "2026-11-23"
+  }
 }

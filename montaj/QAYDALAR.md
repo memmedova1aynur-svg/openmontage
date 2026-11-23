@@ -121,7 +121,8 @@ Bunlar əvvəllər müxtəlif sənədlərdə və müştəri profillərində səp
 - **Təkrar cəhdlər:** sonuncu tam cəhd saxlanılır, əvvəlkilər çıxarılır.
 - **Səs:** hər videoda `voice-clean` yoxlanır; yekun səs **−14 LUFS**, pik ≤ −1 dBTP.
 - **Musiqi:** yalnız CC0 / lisenziyası yoxlanmış. Danışıqda avtomatik enir (ducking).
-  Yavaş piano yoxdur. Janr mövzuya görə (məs. təhsil reklamı → educational/corporate; uşaq mövzusu → dinamik kids).
+  **Hər müştəridə dinamik musiqi** — yavaş musiqi yoxdur; janr və enerji videonun mövzusuna uyğun
+  (məs. təhsil reklamı → educational/corporate; uşaq mövzusu → kids; ana-körpə, psixologiya → isti, amma aqressiv yox).
 - **Səs effektləri (SFX):** hər animasiya girişində, xarakterinə uyğun (bax kitabça). Nitqdən aşağı.
 - **B-roll başı örtmür:** bölünmüş ekran — danışan yuxarıda, B-roll sinədən aşağı; həmin anda altyazı başın üstündə.
 - **Animasiya ekranı örtəndə** altyazı göstərilmir.

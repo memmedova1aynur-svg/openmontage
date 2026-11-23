@@ -80,7 +80,7 @@ Hər animasiya girişinə bir SFX, xarakterinə görə (hər yerdə eyni səs yo
 
 - Yalnız CC0 / lisenziyası yoxlanmış.
 - Bütün video boyu, səviyyə 0.12, giriş 1.2 s, çıxış 2.0 s, danışıqda enir (ducking).
-- Janr: müştəri profilindəki `music` (sabit üslub); yoxdursa mövzuya görə. Yavaş piano yoxdur.
+- Həmişə dinamik, yavaş musiqi yoxdur. Janr: müştəri profilindəki `house_style.music`, enerjisi videonun mövzusuna uyğun.
 - ⚠ Musiqi danışıq zamanı nitqdən ən az 18 dB aşağı (yoxlanacaq).
 - Musiqi seçimi üçün variant göndərilmir — sabit üslubdan götürülür (yeni müştəri istisna).
 

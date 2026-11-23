@@ -40,5 +40,17 @@
       ],
       "notes": "Type 3, M01+M03, spoken order kept. Academic editorial look: cream cards, navy type, deep-gold labels (#946C22 for text on cream; #C9A45C rules). Source was mirrored (watch on her right wrist) - flipped after approval. Pre-cut file, 37 s. 'sizə yaza bilərsiniz' captioned as 'bizə'. End card: 077 346 08 70 + 'Bizə yaza bilərsiniz'. Voice cleaned with DeepFilterNet."
     }
-  ]
+  ],
+  "house_style": {
+    "captions": [
+      "marker (krem)"
+    ],
+    "cards": [
+      "edcard (krem + qızılı)"
+    ],
+    "look": "C",
+    "music": "dinamik educational/corporate",
+    "rotation": false,
+    "updated": "2026-11-23"
+  }
 }

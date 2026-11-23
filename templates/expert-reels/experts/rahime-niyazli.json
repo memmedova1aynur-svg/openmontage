@@ -192,5 +192,17 @@
       "tone": "#F7E6D0",
       "anim": "pop"
     }
-  ]
+  ],
+  "house_style": {
+    "captions": [
+      "stroke"
+    ],
+    "cards": [
+      "cream"
+    ],
+    "look": "C",
+    "music": "dinamik kids / mövzuya uyğun",
+    "rotation": false,
+    "updated": "2026-11-23"
+  }
 }
