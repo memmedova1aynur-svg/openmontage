@@ -18,6 +18,7 @@ Cue format (JSON list or {"cues": [...]}):
   anchor   "peak": the loudest moment lands on t (default for whoosh/riser/swipe/impact)
            "onset": the start lands 10 ms before t (default for everything else)
   gain_db  level of this sound in the stem (default -14 dB)
+  dur      optional: keep only this many seconds of the sound, with a soft fade-out
 
 Only stdlib + ffmpeg/ffprobe are required.
 """
@@ -68,11 +69,56 @@ def detect_cuts(video: str, threshold: float) -> list[float]:
     return [float(m) for m in re.findall(r"pts_time:([0-9.]+)", p.stderr)]
 
 
+def detect_dissolves(video: str, fps: int = 4, window: float = 1.0, min_gap: float = 1.5) -> list[float]:
+    """Soft transitions (crossfades, fades through black) that frame-to-frame scene scores miss.
+    Compares each tiny grayscale frame with the one `window` seconds earlier and returns the centre
+    of every clear peak of that difference."""
+    w, h = 32, 18
+    p = subprocess.run(["ffmpeg", "-loglevel", "error", "-i", video, "-an", "-vf",
+                        f"fps={fps},scale={w}:{h}:flags=area,format=gray", "-f", "rawvideo", "-"],
+                       capture_output=True, check=True)
+    n = w * h
+    fr = [p.stdout[i:i + n] for i in range(0, len(p.stdout) - n + 1, n)]
+    lag = max(1, int(round(window * fps)))
+    d = [0.0] * len(fr)
+    for i in range(lag, len(fr)):
+        a, b = fr[i], fr[i - lag]
+        d[i] = sum(abs(a[k] - b[k]) for k in range(n)) / n
+    m = [sum(f) / n for f in fr]  # mean brightness per frame
+    vals = sorted(x for x in d[lag:] if x > 0)
+    if not vals:
+        return []
+    floor = max(6.0, vals[len(vals) // 2] * 2.5)  # well above the typical motion level
+    cands: list[float] = []
+    # 1) fades / dips through black: the darkest frame of a clear brightness dip is the cut
+    span = int(1.5 * fps)
+    for i in range(1, len(m) - 1):
+        lo, hi = max(0, i - span), min(len(m), i + span + 1)
+        if m[i] != min(m[lo:hi]):
+            continue
+        rise = max(max(m[lo:i] or [m[i]]), max(m[i + 1:hi] or [m[i]])) - m[i]
+        if rise >= 4.0 and rise >= 0.3 * max(m[lo:hi]):
+            cands.append(i / fps)
+    # 2) crossfades: a peak of change that follows a calm stretch (moving footage is not a cut)
+    for i in range(2 * lag, len(d)):
+        lo, hi = max(lag, i - lag), min(len(d), i + lag + 1)
+        calm_before = min(d[i - 2 * lag:i - lag + 1]) < floor / 3
+        if d[i] >= floor and d[i] == max(d[lo:hi]) and calm_before:
+            cands.append((i - lag / 2) / fps)  # centre of the compared window
+    peaks: list[float] = []
+    for t in sorted(cands):
+        if not peaks or t - peaks[-1] >= min_gap:
+            peaks.append(round(t, 3))
+    return peaks
+
+
 def analyze(video: str, out: str, frames: str | None, threshold: float, min_gap: float) -> list[dict]:
     dur = probe_duration(video)
     cues, last = [], -1e9
-    for t in detect_cuts(video, threshold):
-        if t - last < min_gap or t < 0.15 or t > dur - 0.1:
+    hard = detect_cuts(video, threshold)
+    soft = [t for t in detect_dissolves(video) if all(abs(t - c) > 0.6 for c in hard)]
+    for t in sorted(hard + soft):
+        if t - last < min_gap or t < 0.8 or t > dur - 0.3:
             continue
         cues.append({"t": round(t, 3), "type": "whoosh", "gain_db": -16, "anchor": "peak",
                      "note": "scene cut (suggested; change type or delete)"})
@@ -206,7 +252,12 @@ def place(video: str, cues_path: str, out: str, lib: Path, use_earshot: bool, sf
         parts = []
         for k, r in enumerate(resolved):
             ms = int(round(r["start"] * 1000))
-            parts.append(f"[{k}:a]volume={r['gain_db'] + sfx_gain:.1f}dB,adelay={ms}|{ms}[s{k}]")
+            trim = ""
+            if r.get("dur"):  # cut a long sound (roar, ambience) with a soft fade-out
+                dd = float(r["dur"])
+                fo = min(0.6, dd / 3)
+                trim = f"atrim=0:{dd:.3f},afade=t=out:st={dd - fo:.3f}:d={fo:.3f},"
+            parts.append(f"[{k}:a]{trim}volume={r['gain_db'] + sfx_gain:.1f}dB,adelay={ms}|{ms}[s{k}]")
         mix_in = "".join(f"[s{k}]" for k in range(len(resolved)))
         parts.append(f"{mix_in}amix=inputs={len(resolved)}:normalize=0:dropout_transition=0,"
                      f"apad,atrim=0:{dur:.3f},alimiter=limit=0.89[out]")
