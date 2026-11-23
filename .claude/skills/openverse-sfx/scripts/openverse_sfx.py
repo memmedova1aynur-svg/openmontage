@@ -123,7 +123,7 @@ def download(r: dict, lib: Path, sfx_type: str) -> Path:
 def _row(r: dict) -> str:
     dur = (r.get("duration") or 0) / 1000.0
     lic = f"{r.get('license')} {r.get('license_version') or ''}".strip()
-    return f"{r['id']}  {dur:5.1f}s  {lic:<10} {r.get('source', ''):<12} {(r.get('title') or '')[:50]}"
+    return f"{r['id']}  {dur:5.1f}s  {lic:<10} {r.get('source', ''):<12} {(r.get('title') or '')[:50]}\n    {r.get('foreign_landing_url') or ''}"
 
 
 def main(argv=None) -> int:

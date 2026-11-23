@@ -24,7 +24,7 @@ istifadəçinin öz qovluğu da `--lib` ilə verilə bilər).
    {"t": 7.40, "file": "assets/sfx/camera/shutter.wav"}
    ```
    `anchor`: `peak` — səsin ən güclü anı `t`-yə düşür (whoosh/swipe/riser/impact üçün default);
-   `onset` — səs `t`-dən 10 ms əvvəl başlayır (qalanları üçün default).
+   `onset` — səs `t`-dən 10 ms əvvəl başlayır (qalanları üçün default). `dur` — uzun səsi (gurultu, fon) bu qədər saniyəyə kəsir, yumşaq sönmə ilə.
 3. **Yerləşdir:**
    ```bash
    python3 .claude/skills/real-sfx/scripts/real_sfx.py library            # nə var?
@@ -37,6 +37,12 @@ istifadəçinin öz qovluğu da `--lib` ilə verilə bilər).
 
 ## Peşəkar qaydalar (`skills/creative/sound-design.md`)
 - SFX səviyyəsi danışıqdan ən azı 6 dB aşağı: default −14…−18 dB. Danışıq zamanı avtomatik ducking var.
+- **Danışıq yoxdursa (trailer, musiqili montaj) `--no-duck` işlət** — əks halda ducking musiqiyə reaksiya verir və
+  effektlər itir. Sonra cue anlarında ölç (orijinal vs nəticə, 1.2 s ebur128): trailerdə SFX musiqidən 0–5 dB aşağı
+  olmalıdır; lazım olsa `--sfx-gain +3…+6`.
+- Analiz həm sərt kəsimləri, həm də yumşaq keçidləri (crossfade, qaranlıqdan keçid) tapır; yenə də kadrlara bax —
+  detektor hərəkətli kadrı keçid sanmamalıdır.
+- Sosial media üçün son faylı −14 LUFS / −1.5 dBTP-yə normallaşdır (`loudnorm`, iki keçidli) və `delivery_qc` işlət.
 - **Az çoxdur:** hər kəsimə whoosh qoyma. 30 s reel üçün təxminən 4–8 effekt; hər effektin səbəbi olsun.
 - Eyni tipin bir neçə variantı olsun — skript növbə ilə işlədir.
 - Videoda artıq sintetik/köhnə SFX varsa, ikiqat səs olmasın: həmin anları cue-lardan çıxar.
