@@ -16,7 +16,7 @@ Hər sətir profilin `house_style` hissəsinə yazılıb (2026-11-23). Musiqi: h
 | 6 | Səidə Əliyeva (`saide-aliyeva`) | box | dark | C | dinamik educational | tarixçə 10 video |
 | 7 | Xalidə Baycan (`xalide-baycan`) | **rotasiya:** chip · marker · stroke | dark / marker / ticket | C | dinamik kids / mövzuya uyğun | profil: "hər videoda fərqli" |
 | 8 | Aygün İsmayılova (`aygun-ismayilova`) | box | light (krem) | C | dinamik, aqressiv yox | psixoloq/təlimçi; zeytun yaşılı + krem; ⚠ rəng kodları təklifdir |
-| 9 | Sura Malik (`sura-malik`) | **rotasiya:** box · chip · stroke | dark · light · type | C | dinamik, isti (aqressiv yox) | profil: "kopya olmasın", ana-körpə — sakit |
+| 9 | Sura Malik (`sura-malik`) | **rotasiya:** box · chip · stroke | dark · light · type | C | dinamik, isti (aqressiv yox) | profil: "kopya olmasın", ana-körpə — yumşaq vizual |
 | 10 | Aytən Cəlilova (`aytan-calilova`) | chip | side-tag, orbs fon | C | dinamik educational/corporate | profildə yazılıb |
 | 11 | Aynur Həkimova (`aynur-hakimova`) | marker | light | C | dinamik corporate | ⚠ tarixçə yoxdur — təklif |
 | 12 | Nərgiz Məmmədova (`nargiz-mammadova`) | marker (krem) | edcard (krem + qızılı) | C | dinamik educational/corporate | profildə yazılıb |
