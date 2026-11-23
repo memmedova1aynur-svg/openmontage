@@ -257,5 +257,90 @@
     "music": "dinamik educational/corporate",
     "rotation": false,
     "updated": "2026-11-23"
+  },
+  "instagram_analiz": {
+    "date": "2026-11-23",
+    "source": "Apify: profil + son 30 post (2026-10-10 → 2026-11-22). Videoların montajı analiz edilməyib.",
+    "profile": {
+      "bio": "Karyera mentoru və təlimçi · Təlimçi mentorluğu · Karyera konsultasiyası; bio linki WhatsApp",
+      "followers": 509,
+      "posts": 42,
+      "category": "Education"
+    },
+    "format": "28 reels + 2 şəkil; reels 39–95 s (əksəriyyəti 45–65 s); hər gün ~1 paylaşım, əsasən 19:00–20:00 (Bakı)",
+    "performance": {
+      "top": [
+        {
+          "date": "2026-10-26",
+          "views": 246084,
+          "topic": "öyrənmə/yaddaş təlimi",
+          "cta": "mesaj yaz"
+        },
+        {
+          "date": "2026-10-26",
+          "views": 26757,
+          "topic": "təlimçi olmaq, 6 aylıq karyera xəritəsi",
+          "cta": "KONSULTASİYA yaz"
+        },
+        {
+          "date": "2026-11-07",
+          "views": 16527,
+          "topic": "Məndən təlimçi olar?",
+          "cta": "ilk addım / konsultasiya"
+        }
+      ],
+      "typical_views": "190–580",
+      "comments": "son 3 həftədə post başına 0–1, sual-sonluqlara baxmayaraq",
+      "note": "Sıçrayışlar yəqin ki reklam (boost) ilə bağlıdır — məlumatdan təsdiqlənmir."
+    },
+    "pillars": {
+      "1_oyrenme_yaddas": "ən çox post, ən güclü nəticə (abituriyent, tələbə, öz-özünə öyrənən)",
+      "2_telimci_karyera": "bioda vəd edilən əsas xidmət",
+      "3_tehsil_merkezi_satis": "3–4 post, ən zəif baxışlar"
+    },
+    "captions": "190–900 simvol (orta ~650); hook = sual və ya mif→həqiqət; sonluq = müzakirə sualı və ya kod söz; emoji az (🧠 💬 👇 📩)",
+    "fixes": [
+      {
+        "id": 1,
+        "who": "Aytən",
+        "what": "Telefon uyğunsuzluğu: bio-da …368 85 83, 2026-10-26 şəkil postunda …582 85 98. Hansı aktivdirsə, o qalır; köhnə postun caption-u düzəldilir."
+      },
+      {
+        "id": 2,
+        "who": "Aytən (mətn bizdən)",
+        "what": "Bio yeniləmə — kontentlə uyğunlaşdırmaq. Təklif: 'Öyrənməyi öyrədirəm · İlk təlimini qurmağa kömək edirəm · Konsultasiya üçün KONSULTASİYA yaz ↓'. Yekun mətn Aytənin təsdiqi ilə."
+      },
+      {
+        "id": 3,
+        "who": "biz (caption)",
+        "what": "Müraciət forması sabit: həmişə 'siz'. Caption-larda 'sən' işlənmir."
+      },
+      {
+        "id": 4,
+        "who": "biz (caption)",
+        "what": "Bir standart çağırış: satış postlarında yalnız 'Şərhdə KONSULTASİYA yazın'. SATIŞ, 'mesaj yaz' və s. ayrıca kampaniya olmadıqca işlənmir."
+      },
+      {
+        "id": 5,
+        "who": "biz (caption)",
+        "what": "Sabit heşteq seti (hər postda 5): #aytəncəlilova #öyrənmə #təlimçi #karyera #özünüinkişaf + mövzuya görə 0–2 əlavə."
+      },
+      {
+        "id": 6,
+        "who": "biz (plan)",
+        "what": "Kontent payı (15 günlük dövrdə 10 video): 5 öyrənmə/yaddaş, 4 təlimçi/karyera, 1 satış (təhsil mərkəzləri). Hər dövrdə ən az 2 video 'problem → həll → birbaşa təklif' formulunda (top-3-ün quruluşu)."
+      },
+      {
+        "id": 7,
+        "who": "biz (caption)",
+        "what": "Caption uzunluğu: 300–500 simvol; ilk sətir hook (≤90 simvol), son sətir tək çağırış və ya tək sual — ikisi birlikdə yox."
+      },
+      {
+        "id": 8,
+        "who": "siz",
+        "what": "Paylaşım vaxtı: 19:00 (Bakı) saxlanılır — batch-pack --time 19:00."
+      }
+    ],
+    "status": "təklif — fixes 1–2 Aytənin təsdiqi ilə; 3–8 növbəti dövrün caption/planında tətbiq olunur"
   }
 }
