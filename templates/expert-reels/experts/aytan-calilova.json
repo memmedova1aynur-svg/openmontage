@@ -247,7 +247,7 @@
     {
       "date": "2026-11-23",
       "video": "Grid cover yeniləməsi + karusel",
-      "note": "Hazırlanan cover-lər (1080×1920): 1.1 Vizual insanam, 1.3 Cəmi 20 saniyə, 2.2 Eyni gün, 3.1 Karyera planı, 3.3 100+ (açıq), 4.2 5 saat oxudum, 5.3 Reklama pul verirsən, 6.2 Həvəs bitdi (açıq mavi), 6.3 Bu peşəni sən seçmisən, 7.1 Bilirsən, 8.2 Öyrənirsən amma yadında qalmır, 9.1 Dərsə fokuslana; reklam seriyası (Öyrənməyi öyrən / Təlimçilik / 6 aylıq). Danışan kadr cover-ləri (12) gözləyir — videodan kadr lazımdır. Karusel: 'Qeydlərini 5 suallıq yoxlamaya çevir' (7 slayd, 16 noyabr reels-indən)."
+      "note": "Hazırlanan cover-lər (1080×1920): 1.1 Vizual insanam, 1.3 Cəmi 20 saniyə, 2.2 Eyni gün, 3.1 Karyera planı, 3.3 100+ (açıq), 4.2 5 saat oxudum, 5.3 Reklama pul verirsən, 6.2 Həvəs bitdi (açıq mavi), 6.3 Bu peşəni sən seçmisən, 7.1 Bilirsən, 8.2 Öyrənirsən amma yadında qalmır, 9.1 Dərsə fokuslana; reklam seriyası (Öyrənməyi öyrən / Təlimçilik / 6 aylıq). Danışan kadr cover-ləri (12) gözləyir — videodan kadr lazımdır. Cover-lər təsdiqləndi. Karusel ('Qeydlərini 5 suallıq yoxlamaya çevir') istifadəçi tərəfindən BƏYƏNİLMƏDİ — paylaşılmır."
     }
   ],
   "house_style": {
@@ -277,7 +277,8 @@
       "uslub": "Cover B ailəsi ilə eyni dizayn dili (navy/powder-mavi, ağır sans + kursiv serif, pill etiketlər, UI-kartlar), amma hər karusel öz kompozisiyası ilə — biri-birinin təkrarı olmamalı.",
       "meqsed": "Saxla (save) və maraq: praktik, addım-addım, yoxlama siyahısı, test, mif→həqiqət, müqayisə formatları; son slayd — saxla/paylaş çağırışı.",
       "mezmun": "Yalnız Aytənin mövzu sahəsindən və çəkilmiş videoların danışığından; yeni iddia/rəqəm uydurulmur.",
-      "qadaga": "Məşhur şəxslərin şəkli/tanınan personaj işlədilmir (müəllif və şəxsiyyət hüququ)."
+      "qadaga": "Məşhur şəxslərin şəkli/tanınan personaj işlədilmir (müəllif və şəxsiyyət hüququ).",
+      "novbeti_addim": "Karusel mövzu bankı hazırlanacaq (istifadəçi 2026-11-23); karusellər yalnız bankdan seçilən mövzu ilə qurulur."
     }
   },
   "instagram_analiz": {
