@@ -263,7 +263,7 @@
     "rotation": false,
     "updated": "2026-11-23",
     "covers": {
-      "status": "grid-dən müşahidə (2026-11-23)",
+      "status": "köhnə müşahidə — əsas qayda: house_style.dizayn_qaydalari",
       "A_danisan": "TƏSDİQLİ (2026-11-23): Aytənin kadrı + aşağıda yumşaq navy keçid (gradient, yalnız cover-də); 2 sətirlik lent başlıq sinə hündürlüyündə (kadrın ~58%-i): 1-ci sətir ağ qutuda navy, 2-ci sətir mavi (#2B54B8) qutuda ağ; Montserrat ExtraBold. Yuxarı-solda navy pill 'AYTƏN CƏLİLOVA'. Aşağı ~15% boş (baxış sayğacı).",
       "B_dizayn": "Açıq powder-mavi/ağ və ya navy fon. Yuxarı-solda pill etiket '• VİDEO · KATEQORİYA' (məs. ÖYRƏNMƏ, KARYERA, SATIŞ). Başlıq: 1-ci sətir ağır qalın sans, 2-ci sətir kursiv serif (açıq fonda mavi, navy fonda açıq mavi). Altında UI-kart illüstrasiyası (çeklist, taymer, 01/02/03 kartları, qəbz, xəritə, test). Kiçik ✦ ulduzlar, aşağı-sağda navy pill 'mətn →', dairəvi stiker-nişan, bəzən aşağıda qaçan sətir (ticker).",
       "vurgu_rengi": "Əsas navy + mavi; nadir hallarda narıncı (nişan, xəritə pin, etiket) və sarı (poster) — az dozada.",
@@ -274,11 +274,34 @@
     "carousels": {
       "status": "qayda (istifadəçi 2026-11-23)",
       "tezlik": "2 gündən bir; 15 günlük dövrdə ~7.",
-      "uslub": "Cover B ailəsi ilə eyni dizayn dili (navy/powder-mavi, ağır sans + kursiv serif, pill etiketlər, UI-kartlar), amma hər karusel öz kompozisiyası ilə — biri-birinin təkrarı olmamalı.",
+      "uslub": "Bax dizayn_qaydalari.aileler.4_karusel (grid-dəki redaksiya karuselləri). 2026-11-23 hazırlanan flat karusel bəyənilmədi.",
       "meqsed": "Saxla (save) və maraq: praktik, addım-addım, yoxlama siyahısı, test, mif→həqiqət, müqayisə formatları; son slayd — saxla/paylaş çağırışı.",
       "mezmun": "Yalnız Aytənin mövzu sahəsindən və çəkilmiş videoların danışığından; yeni iddia/rəqəm uydurulmur.",
       "qadaga": "Məşhur şəxslərin şəkli/tanınan personaj işlədilmir (müəllif və şəxsiyyət hüququ).",
       "novbeti_addim": "Karusel mövzu bankı hazırlanacaq (istifadəçi 2026-11-23); karusellər yalnız bankdan seçilən mövzu ilə qurulur."
+    },
+    "dizayn_qaydalari": {
+      "status": "TƏSDİQLİ — istifadəçi 2026-11-23: 'səhifə peşəkardır, heç nə dəyişmir'. Mənbə: grid-in 2026-11-23 vəziyyəti (5 ekran görüntüsü).",
+      "esas": [
+        "Mövcud grid və postlara toxunulmur. Reels cover yalnız istifadəçi konkret deyəndə dəyişdirilir.",
+        "Yeni karusel, poster, reels cover — aşağıdakı ailələrdən birinə uyğun hazırlanır; yeni üslub icad edilmir.",
+        "Hər yeni dizayn grid-dəki qonşuları ilə yan-yana yoxlanır (önbaxış), sonra göndərilir."
+      ],
+      "reng": {
+        "acig_fon": "powder-mavi #EEF4FD (yuxarı-sağda yumşaq #D6E4FA işıq), mətn navy #13213F, kursiv/vurğu mavi #2F5FD0",
+        "navy_fon": "MAT navy: linear-gradient(170deg,#2F4F95 → #244284 → #1B3369); kursiv #A9C8F2; nişan/kart mat mavi #5B87C2. Parlaq #2D5BD6 işlədilmir.",
+        "vurgu": "narıncı #EC7741 — nadir, kiçik dozada (nişan, qiymət etiketi, xəritə pin); sarı yalnız köhnə posterlərdə — yenisində yox.",
+        "nisbet": "Grid-də açıq və navy cover-lər qarışıq; ciddi şahmat yoxdur. Sıranı istifadəçi qurur."
+      },
+      "srift": "Başlıq: Montserrat 900 (sıx, -0.03em); ikinci sətir: kursiv serif (Instrument Serif tipli), açıq fonda mavi, navy fonda açıq mavi. Etiketlər: Montserrat 800, böyük hərf, geniş aralıq.",
+      "aileler": {
+        "1_video_dizayn": "Açıq və ya mat navy fon, nöqtə/dama naxış. Yuxarı-solda pill '• VİDEO · KATEQORİYA' (açıqda navy pill, navy-də ağ pill). Başlıq (qalın) + kursiv sətir. Altında BİR əsas UI element: kartlar 01/02/03, çeklist, test kartı, göstərici, taymer, qrafik, telefon maketi, bildiriş. Kiçik ✦. İstəyə görə: dairəvi stiker-nişan, '… →' pill düymə. Elementlər düz, üst-üstə yığılmır; ticker (qaçan sətir) işlədilmir.",
+        "2_danisan_kadr": "Aytənin kadrı tam ekran. Yuxarı-solda kiçik navy 'AYTƏN CƏLİLOVA' etiketi. Aşağı-solda 2 sətirlik lent başlıq: 1-ci sətir ağ qutuda navy mətn, 2-ci sətir navy/mavi qutuda ağ mətn; Montserrat ExtraBold. YENİ cover-lərdə lent baxış sayğacının üstündə qalır (aşağı ~15% boş).",
+        "3_hibrid": "Dizayn cover + Aytənin kəsilmiş şəkli (Həvəs bitdi, Yaddaşım zəifdir, 5 dəfə oxumaq ≠ bilmək, Qiyməti hələ demə, Təlimçilik). Şəkil yalnız yüksək keyfiyyətli kadrdan.",
+        "4_karusel": "Redaksiya üslubu: açıq masa/ofis foto fonu və ya mat navy; yuxarı-solda 'ÖYRƏNMƏ ——' (və ya TƏLİMÇİLİK / 'AYTƏN CƏLİLOVA —— SATIŞ'); BÖYÜK HƏRFLİ serif başlıq, bir hissəsi kursiv açıq mavi; nazik xətt; kiçik serif izah (çox vaxt tədqiqat/ad istinadı); aşağı-solda 'SÜRÜŞDÜR ——→'. Alternativ: navy fon + Montserrat qalın başlıq + 3D obyekt (Endirim etdin).",
+        "5_poster_reklam": "Sabitlənmiş/reklam posterləri daha zəngin ola bilər (premium navy seriya, kollaj), amma eyni palitra. Məşhur şəxs şəkli işlədilmir."
+      },
+      "texniki": "Reels cover 1080×1920, grid-də görünən 3:4 zona y 240–1680; aşağı ~15% və yuxarı-sağ künc boş. Karusel/post 1080×1350."
     }
   },
   "instagram_analiz": {
@@ -339,7 +362,7 @@
   },
   "grid_plan": {
     "date": "2026-11-23",
-    "rule": "Grid sırası istifadəçi tərəfindən qurulub — yer dəyişmir. 3 sabitlənmiş yerə toxunulmur (ora 2 reklam videosu + 1 poster yeni paylaşılacaq). Karusel/poster cover-i dəyişdirilə bilməz — yalnız reels cover-ləri.",
+    "rule": "Grid sırası və cover-lər istifadəçi tərəfindən təsdiqlənib (2026-11-23). Heç nə dəyişmir; dəyişiklik yalnız istifadəçi deyəndə.",
     "deyis_lent": [
       "1.2 Yaxşı öyrədirsən",
       "2.1 Çox öyrənirsən",
@@ -366,6 +389,7 @@
       "9.2 Təlimçilik sənə uyğundurmu (hazır premium cover var)",
       "10.1 İzah edə bilmirsənsə (ticker)"
     ],
-    "note": "Sıra.sütun — yuxarıdan (sabitlənmişlərdən sonra) sayılır."
+    "note": "Sıra.sütun — yuxarıdan (sabitlənmişlərdən sonra) sayılır.",
+    "status": "Siyahılar tarixi qeyddir — tətbiq olunmur."
   }
 }
