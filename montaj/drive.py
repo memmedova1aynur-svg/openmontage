@@ -83,13 +83,10 @@ def _api_key() -> str:
     return os.environ.get("GOOGLE_API_KEY") or os.environ.get("MONTAJ_DRIVE_API_KEY") or ""
 
 
-def list_folder(link: str, session: requests.Session | None = None) -> list[dict]:
-    """Açıq qovluqdakı fayllar: [{"id", "name", "link"}], ada görə sıralı. Alt qovluqlar daxil deyil."""
-    kind, fold = _ids(link)
-    if kind != "folder":
-        raise UserError("Bu qovluq linki deyil.", "Drive-da qovluğu açıb “Paylaş → Linki kopyala” edin.")
-    s = session or requests.Session()
-    out: list[dict] = []
+def _entries(fold: str, s: requests.Session) -> tuple[list[dict], list[dict]]:
+    """Qovluğun birbaşa içindəkilər: (fayllar, alt qovluqlar), hər biri [{"id", "name"}]."""
+    files: list[dict] = []
+    folders: list[dict] = []
     key = _api_key()
     if key:
         try:
@@ -101,17 +98,18 @@ def list_folder(link: str, session: requests.Session | None = None) -> list[dict
                     params["pageToken"] = tok
                 r = s.get(API_URL, params=params, timeout=30)
                 if r.status_code != 200:
-                    out = []
+                    files, folders = [], []
                     break
                 js = r.json()
-                out += [{"id": f["id"], "name": f["name"]} for f in js.get("files", [])
-                        if f.get("mimeType") != "application/vnd.google-apps.folder"]
+                for f in js.get("files", []):
+                    (folders if f.get("mimeType") == "application/vnd.google-apps.folder" else files).append(
+                        {"id": f["id"], "name": f["name"]})
                 tok = js.get("nextPageToken")
                 if not tok:
                     break
         except (requests.RequestException, ValueError):
-            out = []
-    if not out:
+            files, folders = [], []
+    if not files and not folders:
         try:
             r = s.get(FOLDER_URL, params={"id": fold}, timeout=30)
         except requests.RequestException as e:
@@ -119,18 +117,47 @@ def list_folder(link: str, session: requests.Session | None = None) -> list[dict
         if r.status_code != 200:
             raise UserError("Qovluq açıq deyil və ya tapılmadı.",
                             "Drive-da qovluğun paylaşımını “Linki olan hər kəs — Baxan” edin.", detail=f"HTTP {r.status_code}")
-        page = r.text
-        for m in re.finditer(r'id="entry-([A-Za-z0-9_-]{20,})"(.*?)flip-entry-title">([^<]*)<', page, re.DOTALL):
-            body = m.group(2)
-            if "/folders/" in body:
-                continue  # alt qovluq
-            out.append({"id": m.group(1), "name": _html.unescape(m.group(3)).strip()})
-        out.sort(key=lambda f: f["name"].lower())
+        for m in re.finditer(r'id="entry-([A-Za-z0-9_-]{20,})"(.*?)flip-entry-title">([^<]*)<', r.text, re.DOTALL):
+            item = {"id": m.group(1), "name": _html.unescape(m.group(3)).strip()}
+            (folders if "/folders/" in m.group(2) else files).append(item)
+    files.sort(key=lambda f: f["name"].lower())
+    folders.sort(key=lambda f: f["name"].lower())
+    return files, folders
+
+
+def list_folder(link: str, session: requests.Session | None = None) -> list[dict]:
+    """Açıq qovluqdakı fayllar: [{"id", "name", "link"}], ada görə sıralı. Alt qovluqlar daxil deyil."""
+    kind, fold = _ids(link)
+    if kind != "folder":
+        raise UserError("Bu qovluq linki deyil.", "Drive-da qovluğu açıb “Paylaş → Linki kopyala” edin.")
+    out, _ = _entries(fold, session or requests.Session())
     for f in out:
         f["link"] = f"https://drive.google.com/file/d/{f['id']}/view"
     if not out:
         raise UserError("Qovluqda fayl tapılmadı.",
                         "Qovluğun paylaşımını “Linki olan hər kəs — Baxan” edin; fayllar alt qovluqdadırsa, alt qovluğun linkini göndərin.")
+    return out
+
+
+SKIP_FOLDERS = ("hazır", "hazir", "ready", "arxiv", "archive")
+
+
+def list_tree(link: str, session: requests.Session | None = None) -> list[dict]:
+    """Müştəri qovluğu: kökdəki fayllar + bir səviyyə alt qovluqlardakı fayllar (məs. çəkiliş tarixi qovluqları).
+    `Hazır` / arxiv qovluqları atlanır. [{"id", "name", "link", "folder"}] — `folder` kökdə None."""
+    kind, fold = _ids(link)
+    if kind != "folder":
+        raise UserError("Bu qovluq linki deyil.", "Drive-da qovluğu açıb “Paylaş → Linki kopyala” edin.")
+    s = session or requests.Session()
+    files, folders = _entries(fold, s)
+    out = [dict(f, folder=None) for f in files]
+    for d in folders:
+        if d["name"].strip().lower() in SKIP_FOLDERS:
+            continue
+        sub, _ = _entries(d["id"], s)
+        out += [dict(f, folder=d["name"]) for f in sub]
+    for f in out:
+        f["link"] = f"https://drive.google.com/file/d/{f['id']}/view"
     return out
 
 

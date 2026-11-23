@@ -1511,10 +1511,20 @@ def _print_intake(r: dict[str, Any]) -> None:
 def cmd_batch(a: argparse.Namespace) -> None:
     from montaj import batch
 
-    if not (a.link or a.file or a.id):
-        raise UserError("Paket üçün qovluq linki lazımdır.", "batch --link <Drive qovluğu> --client <ad> [--date YYYY-MM-DD]")
+    if a.mark_seen:
+        if not a.client:
+            raise UserError("Müştəri göstərilməyib.", "--client \"<profil adı>\" verin.")
+        print(f"görülmüş kimi qeyd olundu: {batch.mark_seen(a.client)} video (növbəti --new yalnız sonrakıları götürür)")
+        return
+    if not (a.link or a.file or a.id or a.new):
+        raise UserError("Paket üçün qovluq linki lazımdır.",
+                        "batch --client <ad> --new (profildəki Drive qovluğu) və ya batch --link <Drive qovluğu> --client <ad>")
     if a.id:
         m = batch.load(a.id)
+    elif a.new:
+        if not a.client:
+            raise UserError("Müştəri göstərilməyib.", "--client \"<profil adı>\" verin.")
+        m = batch.new_from_profile(a.client, a.date, a.type)
     else:
         if not a.client:
             raise UserError("Müştəri göstərilməyib.", "--client \"<profil adı>\" verin.")
@@ -2866,6 +2876,8 @@ def main(argv: list[str] | None = None) -> int:
     bt.add_argument("--id", help="mövcud paketi davam etdir")
     bt.add_argument("--only", help="yalnız bu videolar, məs. 1,3,5")
     bt.add_argument("--steps", help="addımlar vergüllə (standart: new,storyboard,voice-clean,retakes)")
+    bt.add_argument("--new", action="store_true", help="profildəki Drive qovluğundan YALNIZ yeni videolar (link lazım deyil)")
+    bt.add_argument("--mark-seen", action="store_true", help="qovluqdakı indiki videoları 'görülmüş' say (ilk quraşdırma)")
     sub.add_parser("batch-status", help="paketin vəziyyəti").add_argument("id")
     bp = sub.add_parser("batch-pack", help="planlama paketi: yekun videolar + caption + örtük + 15 günlük təqvim")
     bp.add_argument("id")

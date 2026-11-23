@@ -38,10 +38,12 @@ Heç bir sənəddə yazılmayan qərar lazımdırsa — Claude **ən sakit, ən 
   ```
   MONTAJ
   Müştəri: <profil adı>
-  Çəkiliş: <YYYY-MM-DD>
-  Qovluq: <Drive qovluq linki>
+  Yeni çəkiliş
   Qeyd: <varsa, bir cümlə>
   ```
+
+  Drive linki yazılmır: müştərinin qovluğu profildədir (`drive.folder`), Claude oradan **yalnız yeni** videoları götürür (§3.0).
+  Profildə qovluq yoxdursa, `Qovluq: <link>` sətri bir dəfə əlavə olunur və profilə yazılır.
 
 - Claude sessiyanın əvvəlində **yalnız** bunları oxuyur: bu fayl, növün üslub kitabçası, seçilən müştərinin profili.
   `AGENT_GUIDE.md` və digər OpenMontage təlimatları montaj sessiyasında oxunmur.
@@ -56,27 +58,41 @@ Heç bir sənəddə yazılmayan qərar lazımdırsa — Claude **ən sakit, ən 
 ```
 
 Fayl adları kamera adı ola bilər; sıra ada görə götürülür. Qovluq paylaşımı: "Linki olan hər kəs — Baxan".
+Videolar kökə də, tarix alt qovluğuna da yüklənə bilər (bir səviyyə oxunur); `Hazır/` və arxiv qovluqları oxunmur.
+Alt qovluq adı `YYYY-MM-DD`-dirsə, paketin tarixi ondan götürülür.
 
 ## 3. İş axını (hər çəkiliş)
 
 | # | Addım | Kim | AI lazımdır? |
 |---|---|---|---|
-| 1 | Material müştərinin Drive qovluğuna düşür | Müştəri | Yox |
-| 2 | Hazırlıq: `batch` əmri — endirmə, transkripsiya, material yoxlaması, səs təmizləmə, təkrar cəhdlər | Sistem | Yox |
-| 3 | Plan: kəsimlər, ekran yazıları, kartlar, B-roll, musiqi — kitabçaya və profilə görə | Claude | **Bəli** |
-| 4 | Plan təsdiqi — toplu səhifədə | Siz | Yox |
+| 1 | Çəkiliş (telefon, bir kamera) → videolar müştərinin Drive qovluğuna yüklənir | Siz | Yox |
+| 2 | "Yeni çəkiliş" deyəndə: `batch --new` — yalnız yeni videolar; endirmə, transkripsiya, material yoxlaması, səs təmizləmə, təkrar cəhdlər | Sistem | Yox |
+| 3 | Hər videoya başdan sona baxış → format (növ) təyini → **2–3 storyboard versiyası** (kitabçaya və profilə görə) | Claude | **Bəli** |
+| 4 | Hər video üçün bir versiya seçilir (toplu səhifədə) | Siz | Yox |
 | 5 | Render + avtomatik keyfiyyət qapısı | Sistem | Yox |
 | 6 | Yekun baxış: `OK` və ya 1 raund düzəliş | Siz | Yox |
 | 7 | Təhvil: müştərinin `Hazır` qovluğu (sonra Metricool) | Sistem | Yox |
 
-Müştəri ilə və sizinlə əlaqə yalnız 4-cü və 6-cı addımda olur. Ara sual verilmir, əlavə variant raundu təklif edilmir.
+Müştəri ilə və sizinlə əlaqə yalnız 4-cü və 6-cı addımda olur. Ara sual verilmir.
+Versiyalar yalnız 3-cü addımda (storyboard) təklif olunur; render-dən sonra yeni versiya raundu yoxdur — yalnız §3.2 düzəlişi.
+
+**Çəkiliş hazırlığı tələb olunmur.** Mövzuları müştəri özü yazır və seçir, çəkiliş günü əvvəlcədən təyin olunur.
+Claude çəkiliş planı, ssenari və ya uzun hazırlıq istəmir; formatı materialdan özü təyin edir. Adi formatlar:
+studiyada danışıq (talking head, bir mövzu), söhbət, sual-cavab, müsahibə, reklam (prompterlə). Montajda B-roll və
+animasiya kitabçaya görə istifadə olunur.
 
 ### 3.0 Hazırlıq əmri (addım 2)
 
 ```
-python -m montaj.session batch --link "<qovluq linki>" --client "<profil adı>" --date 2026-12-01
+python -m montaj.session batch --client "<profil adı>" --new          # profildəki qovluqdan YALNIZ yeni videolar
 python -m montaj.session batch-status <müştəri>-<tarix>
 ```
+
+"Yeni" = profilin `drive.seen` siyahısında olmayan video faylı. Götürülən hər fayl ora yazılır (profil commit olunur),
+ona görə növbəti dəfə təkrar götürülmür; montaj olunmuş videolar yenidən gəlmir. Yeni video yoxdursa əmr bunu deyir.
+**İlk quraşdırma (bir dəfə):** profilə `"drive": {"folder": "<qovluq linki>"}` yazılır, sonra
+`batch --client "<ad>" --mark-seen` — qovluqdakı indiki (artıq montaj olunmuş) videolar "görülmüş" sayılır.
+Köhnə yol da işləyir: `batch --link "<qovluq linki>" --client "<ad>" --date YYYY-MM-DD`.
 
 Hər fayl ayrıca layihə olur (`<müştəri>-<tarix>-01`, `-02` …). Əmr yarıda kəsilsə, eyni əmri təkrar işə salın:
 bitmiş addımlar təkrarlanmır. Bir videonun xətası digərlərini dayandırmır. Xülasə (müddət, material xəbərdarlıqları,
@@ -138,12 +154,12 @@ Ay iki dövrə bölünür: **1–15** və **16–ay sonu**. Hər dövr bir müş
 
 | Addım | Nə | Harada |
 |---|---|---|
-| 1 | 15 günlük kontent strategiyası (mövzular, formatlar, satış məqsədi) | `ig-month` / `ig-plan` skill-ləri |
-| 2 | Çəkiliş: 2 saat → ~10 video (DataClone: 1 saat → ~5) | çəkiliş planı (1, 3, 6-cı günlər) |
-| 3 | Montaj: `batch` → plan → toplu təsdiq → render | §3 |
+| 1 | Mövzular — müştəri özü yazır və seçir (biz qarışmırıq); çəkiliş günü əvvəlcədən təyin olunur | müştəri |
+| 2 | Çəkiliş: telefon, bir kamera, 2 saat → ~10 video (DataClone: 1 saat → ~5); hazırlıq tələb olunmur | siz |
+| 3 | Montaj: `batch --new` → storyboard versiyaları → seçim → render | §3 |
 | 4 | Caption + hashtag: hər video üçün `out/<pid>/caption.json` | `ig-caption` skill-i |
-| 5 | Lazımdırsa karusel, poster | `ig-carousel`, `post-studio` |
-| 6 | Planlama paketi (aşağıda) | sistem |
+| 5 | Videolar arasına post, karusel, poster — müştərinin `house_style.dizayn_qaydalari`-na görə | `ig-carousel`, `post-studio` |
+| 6 | Planlama paketi: bütün videolar hazır olandan sonra 10 video + aralara post/karusel → 15 günlük təqvim | sistem |
 | 7 | Planlama: Meta Business Suite (pulsuz, müştəri sizi partnyor kimi əlavə edir) | siz |
 
 ### Planlama paketi
@@ -223,7 +239,8 @@ Məqsəd: hər həftə düzəliş sayı azalır.
 ### Hələ qurulmayanlar (ardıcıllıqla)
 
 1. ⚠ Yığcam sessiya girişi: `CLAUDE.md` montaj söhbətini birbaşa bu fayla yönləndirir.
-2. ✓ Çəkiliş paketi əmri (`batch`). ⚠ Sonra: müştəri qovluğunda yeni çəkiliş qovluğunu avtomatik tapmaq.
+2. ✓ Çəkiliş paketi əmri (`batch`). ✓ Müştəri qovluğundan yalnız yeni videolar (`batch --new`, profil `drive`).
+   ⚠ Toplu səhifədə hər video üçün storyboard versiyası (A/B/C) seçimi — hələ yoxdur; indilik versiyalar söhbətdə seçilir.
 3. ✓ Toplu plan təsdiqi səhifəsi (§3.1a).
 4. ⚠ §5-dəki əlavə avtomatik yoxlamalar.
 5. ⚠ Təhvil: `Hazır` qovluğu; sonra Metricool.

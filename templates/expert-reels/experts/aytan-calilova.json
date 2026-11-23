@@ -391,5 +391,22 @@
     ],
     "note": "Sıra.sütun — yuxarıdan (sabitlənmişlərdən sonra) sayılır.",
     "status": "Siyahılar tarixi qeyddir — tətbiq olunmur."
+  },
+  "drive": {
+    "folder": null,
+    "note": "Aytənin Drive qovluğunun linki (Linki olan hər kəs — Baxan). Yazılandan sonra bir dəfə: batch --client \"Aytən Cəlilova\" --mark-seen",
+    "seen": {}
+  },
+  "cekilis": {
+    "kamera": "telefon, bir kamera, studiya",
+    "formatlar": [
+      "talking head (bir mövzu)",
+      "söhbət",
+      "sual-cavab",
+      "müsahibə",
+      "reklam (prompterlə)"
+    ],
+    "movzular": "Aytən özü yazır və seçir — qarışmırıq",
+    "hazirliq": "tələb olunmur"
   }
 }

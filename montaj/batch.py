@@ -95,7 +95,8 @@ def _new_argv(m: dict[str, Any], v: dict[str, Any]) -> list[str]:
 
 
 def create(client: str, date: str, link: str | None = None, files: list[str] | None = None,
-           vtype: int | None = None, list_folder: Callable[[str], list[dict]] | None = None) -> dict[str, Any]:
+           vtype: int | None = None, list_folder: Callable[[str], list[dict]] | None = None,
+           entries: list[dict] | None = None) -> dict[str, Any]:
     """Paketi yarat və ya mövcudunu qaytar. Qovluqdakı yeni fayllar sona əlavə olunur (köhnələr toxunulmur)."""
     bid = batch_id(client, date)
     try:
@@ -105,20 +106,85 @@ def create(client: str, date: str, link: str | None = None, files: list[str] | N
     if vtype and not m.get("type"):
         m["type"] = vtype
     lister = list_folder or drive.list_folder
-    entries = ([{"name": f["name"], "link": f["link"]} for f in lister(link)] if link and drive.is_folder(link)
-               else [{"name": Path(link).name, "link": link}] if link else [])
+    entries = [dict(e) for e in entries or []] + (
+        [{"name": f["name"], "link": f["link"]} for f in lister(link)] if link and drive.is_folder(link)
+        else [{"name": Path(link).name, "link": link}] if link else [])
     entries += [{"name": Path(f).name, "file": str(f)} for f in files or []]
     known = {v.get("link") or v.get("file") for v in m["videos"]}
     for e in entries:
         if (e.get("link") or e.get("file")) in known:
             continue
         n = len(m["videos"]) + 1
-        m["videos"].append({"n": n, "name": e["name"], "link": e.get("link"), "file": e.get("file"),
+        m["videos"].append({"n": n, "name": e["name"], "link": e.get("link"), "file": e.get("file"), "drive_id": e.get("id"),
                             "title": f"{client} {date} {n:02d}", "pid": None, "steps": {}, "warnings": []})
     if not m["videos"]:
         raise UserError("Paketdə video yoxdur.", "Qovluq linkini (Linki olan hər kəs — Baxan) və ya --file verin.")
     save(m)
     return m
+
+
+VIDEO_EXT = (".mp4", ".mov", ".m4v", ".mkv", ".avi", ".webm", ".3gp")
+
+
+def _profile(client: str) -> tuple[Path, dict[str, Any]]:
+    from montaj.session import profile_path
+
+    pf = profile_path(client)
+    if not pf:
+        raise UserError(f"Profil tapılmadı: {client}", "Adı profildəki kimi yazın (templates/expert-reels/experts/).")
+    return pf, json.loads(pf.read_text(encoding="utf-8"))
+
+
+def _drive_videos(prof: dict[str, Any], lister: Callable[[str], list[dict]] | None) -> tuple[dict, list[dict]]:
+    d = prof.get("drive") or {}
+    if not d.get("folder"):
+        raise UserError("Profildə müştərinin Drive qovluğu yoxdur.",
+                        "Profilə \"drive\": {\"folder\": \"<qovluq linki>\"} yazın (paylaşım: Linki olan hər kəs — Baxan).")
+    tree = (lister or drive.list_tree)(d["folder"])
+    return d, [f for f in tree if f["name"].lower().endswith(VIDEO_EXT)]
+
+
+def _save_profile(pf: Path, prof: dict[str, Any]) -> None:
+    pf.write_text(json.dumps(prof, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def new_from_profile(client: str, date: str | None = None, vtype: int | None = None,
+                     lister: Callable[[str], list[dict]] | None = None) -> dict[str, Any]:
+    """Müştərinin Drive qovluğundan YALNIZ yeni (əvvəl götürülməmiş) videolar → paket.
+    Götürülən fayllar profilin `drive.seen` siyahısına yazılır, növbəti dəfə təkrar götürülmür."""
+    pf, prof = _profile(client)
+    d, vids = _drive_videos(prof, lister)
+    seen = d.get("seen") or {}
+    new = [f for f in vids if f["id"] not in seen]
+    if not new:
+        raise UserError("Qovluqda yeni video yoxdur.", "Yeni çəkilişi Drive qovluğuna yükləyin, sonra yenidən işə salın.")
+    if not date:
+        dates = {f.get("folder") for f in new}
+        one = next(iter(dates)) if len(dates) == 1 else None
+        date = one if one and len(one) == 10 and one[4] == "-" and one[7] == "-" else time.strftime("%Y-%m-%d")
+    m = create(prof["name"], date, vtype=vtype, entries=new)
+    for f in new:
+        seen[f["id"]] = f"{m['id']} · {(f.get('folder') + '/') if f.get('folder') else ''}{f['name']}"
+    d["seen"] = seen
+    prof["drive"] = d
+    _save_profile(pf, prof)
+    return m
+
+
+def mark_seen(client: str, lister: Callable[[str], list[dict]] | None = None) -> int:
+    """Qovluqdakı indiki bütün videoları "görülmüş" say (artıq montaj olunub) — növbəti `--new` yalnız sonrakıları götürür."""
+    pf, prof = _profile(client)
+    d, vids = _drive_videos(prof, lister)
+    seen = d.get("seen") or {}
+    n = 0
+    for f in vids:
+        if f["id"] not in seen:
+            seen[f["id"]] = f"əvvəlki · {(f.get('folder') + '/') if f.get('folder') else ''}{f['name']}"
+            n += 1
+    d["seen"] = seen
+    prof["drive"] = d
+    _save_profile(pf, prof)
+    return n
 
 
 def run(m: dict[str, Any], only: list[int] | None = None, steps: list[str] | None = None,
