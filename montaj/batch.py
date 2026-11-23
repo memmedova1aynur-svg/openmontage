@@ -175,3 +175,42 @@ def write_summary(m: dict[str, Any]) -> Path:
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(summary(m), encoding="utf-8")
     return p
+
+
+# ---------------------------------------------------------------------------
+# Toplu plan təsdiqi: hər videonun plan icmalı (Claude yazır) → bir data faylı → təsdiq səhifəsi
+# ---------------------------------------------------------------------------
+
+PLAN_FILE = "plan_icmal.json"
+PLAN_KEYS = ("summary", "before", "after", "cuts", "texts", "cards", "broll", "music", "doubts")
+
+
+def plan_path(pid: str) -> Path:
+    """Claude-un yazdığı plan icmalı: {summary, before, after, cuts[{at,len,why}], texts[{at,text}],
+    cards[{at,dur,kind,text}], broll[{at,dur,what}], music, doubts[str]} — vaxtlar "0:12" formatında."""
+    return out_root() / pid / PLAN_FILE
+
+
+def review_data(ids: list[str]) -> dict[str, Any]:
+    batches = []
+    for bid in ids:
+        m = load(bid)
+        videos = []
+        for v in m["videos"]:
+            plan = None
+            if v["pid"] and plan_path(v["pid"]).is_file():
+                raw = json.loads(plan_path(v["pid"]).read_text(encoding="utf-8"))
+                plan = {k: raw.get(k) for k in PLAN_KEYS}
+            videos.append({"n": v["n"], "pid": v["pid"], "name": v["name"], "warnings": v["warnings"][:5], "plan": plan})
+        batches.append({"id": m["id"], "client": m["client"], "date": m["date"], "videos": videos})
+    return {"generated": time.strftime("%Y-%m-%d %H:%M"), "batches": batches}
+
+
+def write_review(ids: list[str], out: Path) -> Path:
+    data = review_data(ids)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
+    missing = [f"{b['id']} #{v['n']}" for b in data["batches"] for v in b["videos"] if not v["plan"]]
+    if missing:
+        print("plan icmalı yoxdur: " + ", ".join(missing))
+    return out

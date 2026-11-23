@@ -1,0 +1,211 @@
+<title>Montaj Təsdiqi</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: bir sütun, telefon üçün; yuxarıda paket seçimi və irəliləyiş, altda video kartları (montaj masasının "slate"-i kimi) */
+:root {
+  --bg: #F3F4F1; --surface: #FFFFFF; --fg: #1A1D1A; --muted: #626A63; --line: #DCE0DA;
+  --accent: #1F6B52; --accent-soft: #DCEFE6; --warn: #9A5B00; --warn-soft: #FBEBD2; --note: #3D4FA8; --note-soft: #E3E7FA;
+  --font-body: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #121513; --surface: #1B1F1C; --fg: #E8ECE7; --muted: #9AA39B; --line: #2E3530;
+  --accent: #5CC29A; --accent-soft: #1E3A2F; --warn: #F0B35B; --warn-soft: #3A2C17; --note: #9DAAF5; --note-soft: #252B4A; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #121513; --surface: #1B1F1C; --fg: #E8ECE7; --muted: #9AA39B; --line: #2E3530;
+  --accent: #5CC29A; --accent-soft: #1E3A2F; --warn: #F0B35B; --warn-soft: #3A2C17; --note: #9DAAF5; --note-soft: #252B4A; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 48px }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg) }
+.wrap { max-width: 720px; margin: 0 auto; display: grid; gap: 16px }
+header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 14px 10px; display: grid; gap: 10px; border-bottom: 1px solid var(--line) }
+h1 { font-size: 20px; font-weight: 800; margin: 0; letter-spacing: -0.01em }
+.sub { color: var(--muted); font-size: 13px; margin: 0 }
+.chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px }
+.chip { flex: none; border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 999px; padding: 6px 12px; font: 600 13px var(--font-body); cursor: pointer }
+.chip[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg) }
+.progress { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted) }
+.bar { flex: 1; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden }
+.bar i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .3s }
+.banner { border-radius: 10px; padding: 10px 12px; font-size: 13px; background: var(--warn-soft); color: var(--warn) }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: grid; gap: 10px; min-width: 0 }
+.card.ok { border-color: var(--accent) }
+.card.note { border-color: var(--note) }
+.head { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap }
+.num { font: 500 13px var(--font-mono); color: var(--muted) }
+.name { font-weight: 700; min-width: 0; overflow-wrap: anywhere; flex: 1 }
+.pill { font-size: 12px; font-weight: 700; border-radius: 999px; padding: 2px 10px; background: var(--line); color: var(--muted) }
+.pill.ok { background: var(--accent-soft); color: var(--accent) }
+.pill.note { background: var(--note-soft); color: var(--note) }
+.dur { font: 500 13px var(--font-mono); color: var(--muted) }
+.summary { margin: 0 }
+details { border-top: 1px solid var(--line); padding-top: 8px }
+summary { cursor: pointer; font-weight: 600; font-size: 14px; list-style: none; display: flex; justify-content: space-between }
+summary::-webkit-details-marker { display: none }
+summary .cnt { color: var(--muted); font-weight: 500 }
+ul.rows { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px }
+ul.rows li { display: grid; grid-template-columns: 4.2em 1fr; gap: 8px; font-size: 14px }
+.tc { font: 500 13px var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; padding-top: 1px }
+.why { color: var(--muted) }
+.doubts { background: var(--warn-soft); color: var(--warn); border-radius: 8px; padding: 8px 10px; font-size: 14px }
+.doubts b { display: block; margin-bottom: 2px }
+.missing { color: var(--muted); font-style: italic; margin: 0 }
+.actions { display: flex; gap: 8px; flex-wrap: wrap }
+button.act { font: 700 14px var(--font-body); border-radius: 10px; padding: 10px 16px; cursor: pointer; border: 1px solid var(--line); background: var(--surface); color: var(--fg) }
+button.act.primary { background: var(--accent); border-color: var(--accent); color: var(--surface) }
+button.act:disabled { opacity: .5; cursor: default }
+button:focus-visible, textarea:focus-visible, .chip:focus-visible { outline: 2px solid var(--note); outline-offset: 2px }
+textarea { width: 100%; min-height: 84px; font: 14px/1.45 var(--font-mono); color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px }
+.hint { font-size: 12px; color: var(--muted); margin: 0 }
+.saved-note { background: var(--note-soft); color: var(--note); border-radius: 8px; padding: 8px 10px; font: 13px/1.45 var(--font-mono); white-space: pre-wrap; overflow-wrap: anywhere }
+.bulk { display: flex; gap: 8px; align-items: center; flex-wrap: wrap }
+.empty { text-align: center; color: var(--muted); padding: 40px 0 }
+@media (prefers-reduced-motion: reduce) { .bar i { transition: none } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1 id="title">Montaj təsdiqi</h1>
+      <p class="sub" id="sub">Planlar yüklənir…</p>
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="Çəkilişlər"></div>
+    <div class="progress"><div class="bar"><i id="bar"></i></div><span id="count">0 / 0</span></div>
+  </header>
+  <div id="banner" class="banner" hidden></div>
+  <div class="bulk" id="bulk" hidden>
+    <button class="act" id="bulkBtn" type="button">Qeydsiz olanların hamısını təsdiqlə</button>
+    <span id="bulkConfirm" hidden>
+      <button class="act primary" id="bulkYes" type="button">Bəli, təsdiqlə</button>
+      <button class="act" id="bulkNo" type="button">Ləğv et</button>
+    </span>
+  </div>
+  <main id="list" class="wrap"></main>
+</div>
+
+<script>
+(() => {
+  const S = { data: null, batch: null, approvals: {}, db: null, canWrite: false, open: {} };
+  const $ = (id) => document.getElementById(id);
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const key = (bid, n) => `${bid}--${String(n).padStart(2, "0")}`;
+  const fmt = (s) => { if (s == null || isNaN(s)) return "—"; s = Math.round(s); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; };
+
+  function banner(msg) { $("banner").textContent = msg; $("banner").hidden = !msg; }
+
+  function rows(title, items, render, open) {
+    const d = el("details"); if (open) d.open = true;
+    const s = el("summary"); s.append(el("span", null, title), el("span", "cnt", String(items.length)));
+    const ul = el("ul", "rows");
+    for (const it of items) { const li = el("li"); render(li, it); ul.append(li); }
+    d.append(s, ul); return d;
+  }
+
+  function videoCard(b, v) {
+    const k = key(b.id, v.n), a = S.approvals[k] || {}, st = a.status || "pending";
+    const c = el("article", "card" + (st === "ok" ? " ok" : st === "note" ? " note" : ""));
+    const h = el("div", "head");
+    h.append(el("span", "num", `#${String(v.n).padStart(2, "0")}`), el("span", "name", v.name),
+      el("span", "pill" + (st === "ok" ? " ok" : st === "note" ? " note" : ""), st === "ok" ? "Təsdiq" : st === "note" ? "Qeyd var" : "Gözləyir"));
+    c.append(h);
+    const p = v.plan;
+    if (!p) { c.append(el("p", "missing", "Plan hələ hazır deyil.")); return c; }
+    c.append(el("div", "dur", `${fmt(p.before)} → ${fmt(p.after)}`));
+    if (p.summary) c.append(el("p", "summary", p.summary));
+    if ((p.doubts || []).length) {
+      const d = el("div", "doubts"); d.append(el("b", null, "Claude əmin deyil:"));
+      for (const x of p.doubts) d.append(el("div", null, "• " + x));
+      c.append(d);
+    }
+    if ((v.warnings || []).length) {
+      const d = el("div", "doubts"); d.append(el("b", null, "Material:"));
+      for (const x of v.warnings) d.append(el("div", null, "• " + x));
+      c.append(d);
+    }
+    const tc = (li, at, body, why) => { li.append(el("span", "tc", at || "")); const t = el("span", null, body); if (why) t.append(" ", el("span", "why", why)); li.append(t); };
+    if ((p.cuts || []).length) c.append(rows("Çıxarılan hissələr", p.cuts, (li, x) => tc(li, x.at, x.len ? `${x.len} s` : "", x.why), S.open[k]));
+    if ((p.texts || []).length) c.append(rows("Ekran yazıları", p.texts, (li, x) => tc(li, x.at, x.text), S.open[k]));
+    if ((p.cards || []).length) c.append(rows("Kartlar", p.cards, (li, x) => tc(li, x.at, x.text, [x.kind, x.dur && `${x.dur} s`].filter(Boolean).join(" · ")), S.open[k]));
+    if ((p.broll || []).length) c.append(rows("B-roll", p.broll, (li, x) => tc(li, x.at, x.what, x.dur && `${x.dur} s`), S.open[k]));
+    if (p.music) { const d = el("div", "dur"); d.textContent = "Musiqi: " + p.music; c.append(d); }
+    if (a.note) c.append(el("div", "saved-note", a.note));
+
+    const act = el("div", "actions");
+    const ok = el("button", "act primary", st === "ok" ? "Təsdiqlənib ✓" : "Təsdiq");
+    ok.type = "button"; ok.disabled = !S.canWrite || st === "ok";
+    ok.onclick = () => save(k, { status: "ok", note: "" });
+    const nb = el("button", "act", a.note ? "Qeydi dəyiş" : "Qeyd yaz"); nb.type = "button"; nb.disabled = !S.canWrite;
+    act.append(ok, nb); c.append(act);
+    const box = el("div"); box.hidden = true; box.style.display = "grid"; box.style.gap = "8px";
+    const ta = el("textarea"); ta.id = "note-" + k; ta.value = a.note || ""; ta.placeholder = "0:12 söz kəsilib\n0:30 yazı: \"müəllim\" → \"müəllimlər\"\n0:45-0:52 çıxart";
+    const hint = el("p", "hint", "Hər sətir bir düzəliş. Claude yalnız yazılanları dəyişir.");
+    const send = el("button", "act primary", "Qeydi saxla"); send.type = "button";
+    send.onclick = () => { const t = ta.value.trim(); if (t) save(k, { status: "note", note: t }); };
+    box.append(ta, hint, send); c.append(box);
+    nb.onclick = () => { box.hidden = !box.hidden; if (!box.hidden) ta.focus(); };
+    return c;
+  }
+
+  function render() {
+    const d = S.data; if (!d) return;
+    const chips = $("chips"); chips.replaceChildren();
+    for (const b of d.batches) {
+      const ch = el("button", "chip", `${b.client} · ${b.date}`); ch.type = "button";
+      ch.setAttribute("aria-pressed", String(b.id === S.batch));
+      ch.onclick = () => { S.batch = b.id; try { localStorage.setItem("batch", b.id); } catch (e) {} render(); };
+      chips.append(ch);
+    }
+    const b = d.batches.find((x) => x.id === S.batch) || d.batches[0];
+    const list = $("list"); list.replaceChildren();
+    if (!b) { list.append(el("p", "empty", "Təsdiq gözləyən çəkiliş yoxdur.")); $("sub").textContent = ""; return; }
+    S.batch = b.id;
+    $("title").textContent = b.client;
+    $("sub").textContent = `Çəkiliş ${b.date} · ${b.videos.length} video · yenilənib ${d.generated}`;
+    let done = 0;
+    for (const v of b.videos) { const st = (S.approvals[key(b.id, v.n)] || {}).status; if (st) done++; list.append(videoCard(b, v)); }
+    $("count").textContent = `${done} / ${b.videos.length}`;
+    $("bar").style.width = b.videos.length ? `${(100 * done) / b.videos.length}%` : "0";
+    $("bulk").hidden = !S.canWrite || done === b.videos.length;
+  }
+
+  async function save(k, val) {
+    if (!S.db) return;
+    const prev = S.approvals[k];
+    S.approvals[k] = { ...val, at: new Date().toISOString() }; render();
+    try { await S.db.collection("approvals").doc(k).set(S.approvals[k]); banner(""); }
+    catch (e) { S.approvals[k] = prev; render(); banner("Saxlanmadı: " + (e && e.message ? e.message : "naməlum xəta") + ". Bir az sonra yenidən sınayın."); }
+  }
+
+  $("bulkBtn").onclick = () => { $("bulkConfirm").hidden = false; $("bulkBtn").hidden = true; };
+  $("bulkNo").onclick = () => { $("bulkConfirm").hidden = true; $("bulkBtn").hidden = false; };
+  $("bulkYes").onclick = async () => {
+    $("bulkConfirm").hidden = true; $("bulkBtn").hidden = false;
+    const b = S.data.batches.find((x) => x.id === S.batch);
+    for (const v of b.videos) { const k = key(b.id, v.n); if (!S.approvals[k] && v.plan) await save(k, { status: "ok", note: "" }); }
+  };
+
+  async function boot() {
+    try { S.batch = localStorage.getItem("batch"); } catch (e) {}
+    try {
+      const r = await fetch("plans.json", { cache: "no-store" });
+      S.data = await r.json();
+    } catch (e) { $("sub").textContent = "Planlar yüklənmədi. Səhifəni yeniləyin."; return; }
+    render();
+    const db = await window.claude?.use?.("db");
+    const user = await window.claude?.use?.("user");
+    if (!db) { banner("Təsdiqləri saxlamaq üçün claude.ai-a daxil olun. Planlara baxmaq olar."); return; }
+    S.db = db;
+    S.canWrite = (await user?.canEdit?.()) ?? true;
+    const timer = setTimeout(() => banner("Təsdiqlər gecikir. İnternet bağlantısını yoxlayın."), 10000);
+    db.collection("approvals").onSnapshot((snap) => {
+      clearTimeout(timer); banner("");
+      const next = {}; for (const d of snap.docs) next[d.id] = d.data(); S.approvals = next; render();
+    }, (e) => { clearTimeout(timer); banner("Təsdiqlər oxunmadı: " + (e && e.message ? e.message : "xəta")); });
+    render();
+  }
+  boot();
+})();
+</script>

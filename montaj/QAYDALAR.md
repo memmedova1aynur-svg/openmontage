@@ -96,6 +96,29 @@ Plan qısa və yoxlanıla biləndir, hər video üçün eyni formatda:
 
 Planda şəkil yalnız ehtiyac olanda göndərilir: storyboard kadrları yalnız şübhəli yerlər üçün.
 
+### 3.1a Plan icmalı və toplu təsdiq səhifəsi (addım 3–4)
+
+Claude hər video üçün `out/<pid>/plan_icmal.json` yazır (vaxtlar yekun videoya görə, "0:12" formatında):
+
+```json
+{"summary": "bir cümlə", "before": 96, "after": 58,
+ "cuts":  [{"at": "0:14", "len": 6.4, "why": "təkrar cəhd"}],
+ "texts": [{"at": "0:01", "text": "..."}],
+ "cards": [{"at": "0:09", "dur": 4, "kind": "list", "text": "..."}],
+ "broll": [{"at": "0:26", "dur": 3, "what": "..."}],
+ "music": "janr + trek", "doubts": ["0:33 — ..."]}
+```
+
+Sonra:
+1. `python -m montaj.session batch-review <paket-id> [<paket-id> …]` → `.montaj/review/plans.json`
+   (təsdiq gözləyən bütün paketlər bir faylda).
+2. Səhifəni yenilə: Artifact publish — `file_path: .montaj/review/index.html` (mənbə: `montaj/review/review.html`),
+   `files: {"plans.json": ".montaj/review/plans.json"}`, `url: https://claude.ai/artifact/4zkyDDwpJQwNQ3fNYDWwRW`
+   (URL dəyişmir; səhifə hər dəfə eyni linkdədir).
+3. İstifadəçi telefonda hər videoya "Təsdiq" və ya "Qeyd" verir.
+4. Claude təsdiqləri oxuyur: `ArtifactData list`, collection `approvals`, sənəd id `<paket-id>--<NN>`
+   (`{status: "ok"|"note", note}`). `ok` → render; `note` → yalnız yazılanlar dəyişir (§3.2), sonra render.
+
 ### 3.2 Düzəliş (addım 6) — 1 raund, sabit format
 
 Bütün düzəlişlər **bir mesajda**, hər sətir bir düzəliş:
@@ -174,6 +197,6 @@ Məqsəd: hər həftə düzəliş sayı azalır.
 
 1. ⚠ Yığcam sessiya girişi: `CLAUDE.md` montaj söhbətini birbaşa bu fayla yönləndirir.
 2. ✓ Çəkiliş paketi əmri (`batch`). ⚠ Sonra: müştəri qovluğunda yeni çəkiliş qovluğunu avtomatik tapmaq.
-3. ⚠ Toplu plan təsdiqi səhifəsi (telefondan, 10–30 plan bir səhifədə).
+3. ✓ Toplu plan təsdiqi səhifəsi (§3.1a).
 4. ⚠ §5-dəki əlavə avtomatik yoxlamalar.
 5. ⚠ Təhvil: `Hazır` qovluğu; sonra Metricool.

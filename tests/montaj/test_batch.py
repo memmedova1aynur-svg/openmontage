@@ -55,3 +55,21 @@ def test_batch_error_does_not_stop_other_videos(env, monkeypatch):
     text = batch.summary(m)
     assert "hazır: 1" in text and "transkripsiya alınmadı" in text
     assert (batch.out_root() / "batches" / "lamiye-2026-12-02.md").is_file()
+
+
+def test_batch_review_collects_plans(env):
+    import json
+
+    from montaj import batch
+
+    m = batch.create("Lamiyə", "2026-12-03", files=env)
+    m = batch.run(m, steps=["new"], log=lambda s: None)
+    p = batch.plan_path(m["videos"][0]["pid"])
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps({"summary": "Sınaq", "before": 60, "after": 42, "cuts": [{"at": "0:12", "len": 1.5, "why": "təkrar"}],
+                             "extra": "yox"}), encoding="utf-8")
+    out = batch.write_review([m["id"]], batch.out_root() / "review" / "plans.json")
+    d = json.loads(out.read_text())
+    v1, v2 = d["batches"][0]["videos"]
+    assert v1["plan"]["cuts"][0]["why"] == "təkrar" and "extra" not in v1["plan"]
+    assert v2["plan"] is None
