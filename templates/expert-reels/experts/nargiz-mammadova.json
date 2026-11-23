@@ -92,5 +92,25 @@
     },
     "caption": "105–860 simvol (orta ~450); hook sual və ya problem; sonluq müzakirə sualı və ya telefon (077 346 08 70 — bio ilə eyni); 'sən' və 'siz' qarışıq; heşteq 0–5, sabit set yoxdur (ən çox #ingilisdili #cambridge #ingilisdilimüəllimi)",
     "status": "müşahidə — səhifəyə, bio-ya, mövzulara toxunulmur (Aytəndəki qayda); bizim iş: montaj, cover, caption, karusel/poster, plan"
+  },
+  "positioning": "Metodika öyrədən müəllim + ingilis dili müəllimi: ingilis dili üzrə mentor, mütəxəssis, coach, kurs rəhbəri; müəllimlər üçün təlimlər (istifadəçi 2026-11-23).",
+  "cekilis": {
+    "kamera": "telefon, bir kamera",
+    "tezlik": "ayda 2 çəkiliş, hər biri ~2 saat → ~10 video",
+    "formatlar": [
+      "talking head (metodika mövzusu)",
+      "reklam (təlim)"
+    ],
+    "movzular": "istifadəçi ilə Nərgiz birlikdə qərar verir",
+    "hazirliq": "uzun hazırlıq yoxdur"
+  },
+  "drive": {
+    "folder": null,
+    "note": "Nərgizin əsas qovluğu (Linki olan hər kəs — Baxan); içində çəkiliş qovluqları tarixli (2026-12-01 və ya 01.12.2026). Yazılandan sonra bir dəfə: batch --client \"Nərgiz Məmmədova\" --mark-seen",
+    "seen": {}
+  },
+  "grid_plan": {
+    "date": "2026-11-23",
+    "rule": "İstifadəçi cover-ləri yenidən qurmaq və səhifəni yeni, səliqəli görünüşə gətirmək istəyir. Yeni dizayn qaydaları grid ekran görüntülərindən sonra təklif olunur, təsdiqdən sonra yazılır."
   }
 }
