@@ -259,10 +259,11 @@
     "updated": "2026-11-23",
     "covers": {
       "status": "grid-dən müşahidə (2026-11-23)",
-      "A_danisan": "Aytənin kadrı + aşağı-solda 2 sətirlik lent başlıq: 1-ci sətir ağ/açıq qutuda navy mətn, 2-ci sətir navy qutuda ağ mətn (və ya tərsi); qalın sans (Montserrat ExtraBold tipli). Yuxarı-solda kiçik 'AYTƏN CƏLİLOVA' etiketi.",
+      "A_danisan": "TƏSDİQLİ (2026-11-23): Aytənin kadrı + aşağıda yumşaq navy keçid (gradient, yalnız cover-də); 2 sətirlik lent başlıq sinə hündürlüyündə (kadrın ~58%-i): 1-ci sətir ağ qutuda navy, 2-ci sətir mavi (#2B54B8) qutuda ağ; Montserrat ExtraBold. Yuxarı-solda navy pill 'AYTƏN CƏLİLOVA'. Aşağı ~15% boş (baxış sayğacı).",
       "B_dizayn": "Açıq powder-mavi/ağ və ya navy fon. Yuxarı-solda pill etiket '• VİDEO · KATEQORİYA' (məs. ÖYRƏNMƏ, KARYERA, SATIŞ). Başlıq: 1-ci sətir ağır qalın sans, 2-ci sətir kursiv serif (açıq fonda mavi, navy fonda açıq mavi). Altında UI-kart illüstrasiyası (çeklist, taymer, 01/02/03 kartları, qəbz, xəritə, test). Kiçik ✦ ulduzlar, aşağı-sağda navy pill 'mətn →', dairəvi stiker-nişan, bəzən aşağıda qaçan sətir (ticker).",
       "vurgu_rengi": "Əsas navy + mavi; nadir hallarda narıncı (nişan, xəritə pin, etiket) və sarı (poster) — az dozada.",
-      "novbe": "Grid-də A və B covers növbələşir; eyni tip 2-dən çox ardıcıl gəlmir."
+      "novbe": "Grid-də A və B covers növbələşir; eyni tip 2-dən çox ardıcıl gəlmir.",
+      "B_dizayn_premium": "Reklam/vacib cover-lər: tünd navy fon + mavi işıq + nöqtəli naxış; '— AYTƏN CƏLİLOVA' sətri, kontur pill etiket, ağır sans + kursiv serif (Instrument Serif). Hər cover-in öz əsas elementi (böyük rəqəm / göstərici / yol xəritəsi) — eyni şablonun təkrarı yox."
     },
     "carousels": {
       "status": "qayda (istifadəçi 2026-11-23)",
@@ -328,5 +329,36 @@
     ],
     "dovr": "Ayda 2 çəkiliş × 2 saat → hər biri ~10 video; 15 günlük dövr.",
     "grid_meqsedi": "Səhifə əsasən videodur; karusellərlə balans bərpa olunur. Instagram-da grid-də yer dəyişmək mümkün olduğu üçün karusellər lazım olanda aşağılara sürüşdürülür."
+  },
+  "grid_plan": {
+    "date": "2026-11-23",
+    "rule": "Grid sırası istifadəçi tərəfindən qurulub — yer dəyişmir. 3 sabitlənmiş yerə toxunulmur (ora 2 reklam videosu + 1 poster yeni paylaşılacaq). Karusel/poster cover-i dəyişdirilə bilməz — yalnız reels cover-ləri.",
+    "deyis_lent": [
+      "1.2 Yaxşı öyrədirsən",
+      "2.1 Çox öyrənirsən",
+      "2.3 Sənə öyrənməyi öyrədən olubmu",
+      "3.2 Məndən təlimçi olar",
+      "4.1 Təcrübən çox",
+      "4.3 Hər sətrin altından xətt",
+      "5.2 Karyeranı dəyişirsən",
+      "6.1 Təlimçi olmaq istəyirsən",
+      "7.2 Kursu bitirdin",
+      "7.3 Saatlarla oxudun",
+      "10.2 Eyni 10 tapşırıq",
+      "12.1 Təlimçi olsam"
+    ],
+    "deyis_dizayn": [
+      "1.1 Cədvəl (ekran yazısı)",
+      "1.3 Aylıq hesabat (ekran yazısı)"
+    ],
+    "istesenz": [
+      "3.1 Karyera planı (ticker)",
+      "3.3 100+ (hazır premium cover var)",
+      "5.3 Reklama pul verirsən",
+      "7.1 Bilirsən (ticker)",
+      "9.2 Təlimçilik sənə uyğundurmu (hazır premium cover var)",
+      "10.1 İzah edə bilmirsənsə (ticker)"
+    ],
+    "note": "Sıra.sütun — yuxarıdan (sabitlənmişlərdən sonra) sayılır."
   }
 }
