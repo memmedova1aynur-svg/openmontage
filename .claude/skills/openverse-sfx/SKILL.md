@@ -30,6 +30,11 @@ Openverse ~1M+ açıq lisenziyalı audio indeksləyir (Freesound, Wikimedia Comm
 - `OPENVERSE_TOKEN` env (istəyə bağlı) — yüksək limit üçün.
 
 ## Əgər bağlıdırsa
-`api.openverse.org` şəbəkədə bloklanıbsa skript `openverse error ... 403` qaytarır (rc=2). Onda:
-mühitin şəbəkə ayarlarına `api.openverse.org` (+ fayl hostları, məs. `cdn.freesound.org`) əlavə etməyi təklif et,
-və ya həmin səsi **earshot** skill-i ilə yarat. Nəticə uydurma.
+- Axtarış serverdə süzülmür: Openverse-in `category` sahəsi çox qeyddə boşdur və çoxdəyərli `license` süzgəci
+  HTTP 500 qaytarır. Ona görə lisenziya/müddət süzgəci skriptin içindədir. Anonim `page_size` maksimum 20-dir.
+- **Bulud mühitində (Claude Code web)** axtarış işləyir, amma fayl hostları yükləməni rədd edir: Freesound CDN → 403,
+  Wikimedia → 429. Skript bu halda səsin səhifə linkini və lisenziyasını çap edir. Bu halda istifadəçiyə linkləri ver
+  (öz kompüterindən yükləyib `assets/sfx/<tip>/`-ə atsın) və ya həmin səsi **earshot** ilə yarat. Başlıq dəyişdirib
+  blokdan yan keçməyə çalışma.
+- `api.openverse.org` özü bloklanıbsa `openverse error ... 403` (rc=2) çıxır: şəbəkə ayarlarına əlavə etməyi təklif et.
+- Öz kompüterində (lokal Claude Code) yükləmə adətən problemsiz işləyir. Nəticə uydurma.

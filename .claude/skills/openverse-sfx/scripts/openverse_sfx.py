@@ -29,6 +29,11 @@ API = os.environ.get("OPENVERSE_API", "https://api.openverse.org/v1")
 UA = "openmontage-sfx/1.0 (+https://openverse.org)"
 # CC0 / PDM need no credit; BY / BY-SA need credit; NC / ND are excluded by default.
 LICENSE_TYPES = {"commercial": "commercial", "modification": "commercial,modification", "all": ""}
+ALLOWED_LICENSES = {
+    "commercial": {"cc0", "pdm", "by", "by-sa", "by-nd"},  # commercial use allowed
+    "modification": {"cc0", "pdm", "by", "by-sa"},          # commercial + may be edited (what video needs)
+    "all": None,
+}
 
 
 def _get(url: str, timeout: int = 30) -> bytes:
@@ -40,27 +45,32 @@ def _get(url: str, timeout: int = 30) -> bytes:
         return r.read()
 
 
-def search(q: str, n: int = 10, license: str = "commercial", max_sec: float | None = 5.0,
+def search(q: str, n: int = 10, license: str = "modification", max_sec: float | None = 5.0,
            source: str | None = None, category: str = "sound_effect") -> list[dict]:
-    params = {"q": q, "page_size": str(min(max(n * 3, 10), 50)), "mature": "false"}
-    if category:
-        params["category"] = category
-    lt = LICENSE_TYPES.get(license, "commercial")
-    if lt:
-        params["license_type"] = lt
-    if source:
-        params["source"] = source
-    if max_sec is not None:
-        # Openverse length buckets: shortest (<30s), short (30s-2m), medium, long
-        params["length"] = "shortest"
-    data = json.loads(_get(f"{API}/audio/?{urllib.parse.urlencode(params)}"))
-    out = []
-    for r in data.get("results", []):
-        dur = (r.get("duration") or 0) / 1000.0
-        if max_sec is not None and dur and dur > max_sec:
-            continue
-        out.append(r)
-        if len(out) >= n:
+    # Server-side filters are unreliable: most records have no `category` (filter -> 0 hits) and
+    # multi-value `license`/`license_type` return HTTP 500. So only q/source go to the API and
+    # license / duration / category are filtered here, over a few pages.
+    allowed = ALLOWED_LICENSES.get(license)
+    out: list[dict] = []
+    for page in range(1, 6):
+        params = {"q": q, "page_size": "20", "page": str(page)}  # anonymous max = 20
+        if source:
+            params["source"] = source
+        data = json.loads(_get(f"{API}/audio/?{urllib.parse.urlencode(params)}"))
+        for r in data.get("results", []):
+            dur = (r.get("duration") or 0) / 1000.0
+            if max_sec is not None and dur and dur > max_sec:
+                continue
+            if allowed is not None and (r.get("license") or "").lower() not in allowed:
+                continue
+            if category and r.get("category") not in (None, "", category):
+                continue  # explicitly music / podcast etc.
+            if r.get("mature"):
+                continue
+            out.append(r)
+            if len(out) >= n:
+                return out
+        if page >= (data.get("page_count") or 1):
             break
     return out
 
@@ -86,10 +96,11 @@ def download(r: dict, lib: Path, sfx_type: str) -> Path:
         raise RuntimeError(f"record {r.get('id')} has no file url")
     ext = (r.get("filetype") or Path(urllib.parse.urlparse(url).path).suffix.lstrip(".") or "mp3").lower()
     d = lib / sfx_type
-    d.mkdir(parents=True, exist_ok=True)
     path = d / f"{_slug(r.get('title'))}__{str(r['id'])[:8]}.{ext}"
     if not path.exists():
-        path.write_bytes(_get(url, timeout=120))
+        data = _get(url, timeout=120)  # raises on 403/429 before anything is written
+        d.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(data)
     # manifest
     mf = lib / "openverse_manifest.json"
     items = json.loads(mf.read_text()) if mf.exists() else []
@@ -122,7 +133,7 @@ def main(argv=None) -> int:
         p = sub.add_parser(name)
         p.add_argument("query", nargs="?")
         p.add_argument("--n", type=int, default=10 if name == "search" else 3)
-        p.add_argument("--license", choices=list(LICENSE_TYPES), default="commercial")
+        p.add_argument("--license", choices=list(LICENSE_TYPES), default="modification")
         p.add_argument("--max-sec", type=float, default=5.0, help="max duration; 0 = no limit")
         p.add_argument("--source", help="e.g. freesound, wikimedia_audio")
         p.add_argument("--any-category", action="store_true", help="do not restrict to sound_effect")
@@ -159,7 +170,9 @@ def main(argv=None) -> int:
         try:
             print(f"saved {download(r, lib, a.type)}  [{r.get('license')}]")
         except Exception as e:
-            print(f"skip {r.get('id')}: {e}", file=sys.stderr)
+            print(f"skip {r.get('id')}: {e}\n  file host refused the download (Freesound CDN / Wikimedia often block "
+                  f"cloud servers). Download by hand: {r.get('foreign_landing_url')}\n  then put it in "
+                  f"{lib / a.type}/ — license {r.get('license')} {r.get('license_version') or ''}", file=sys.stderr)
     return 0
 
 
