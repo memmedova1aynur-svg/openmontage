@@ -408,5 +408,30 @@
     ],
     "movzular": "Aytən özü yazır və seçir — qarışmırıq",
     "hazirliq": "tələb olunmur"
+  },
+  "paylasim": {
+    "vaxt": "19:30 (hər gün 1 reels) — batch-pack --time 19:30",
+    "aletl": "Instagram-ın öz planlaması (Planlanmış məzmun)",
+    "planlanib_qeyd_2026_11_23": {
+      "araliq": "2026-11-23 → 2026-12-02 (10 reels, hər gün 19:30)",
+      "movzular": [
+        "Sabah başlayacam / təxirə salma",
+        "Kitabı 2 günə bitirdiniz — bir həftə sonra nə qalır",
+        "Bazar günü 3 saat oxumaq",
+        "Pomodoro 25 dəqiqə uyğun gəlmir",
+        "Peşəni sosial şəbəkədə görüb bəyənmək",
+        "İş alınmayanda «heç nəyi bacarmıram»",
+        "Telefon masadadır — ekran işıqlanır",
+        "Kompüteri açırsınız, masanı yığışdırırsınız (başlamağı uzatmaq)",
+        "Bir səhifəni 3 dəfə oxumaq",
+        "Yeni təlimə yazılmazdan əvvəl bir sual"
+      ]
+    },
+    "novbeti_paket_baslangic": "2026-12-03",
+    "cekilisler": {
+      "2026-11-24": "noyabr çəkilişi (ayı tamamlayır)",
+      "2026-12": "2 çəkiliş (tarixlər təyin olunacaq)"
+    },
+    "qeyd": "Karusel/post mövzuları planlanmış reels mövzularını təkrarlamamalıdır."
   }
 }
