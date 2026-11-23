@@ -84,3 +84,13 @@ def test_list_tree_reads_date_subfolders_and_skips_ready(monkeypatch):
 
     out = drive.list_tree("https://drive.google.com/drive/folders/" + root, session=S())
     assert [(f["name"], f["folder"]) for f in out] == [("kök.mov", None), ("IMG_9.MOV", "2026-12-01")]
+
+
+def test_folder_date_formats():
+    from montaj.batch import folder_date
+
+    assert folder_date("2026-11-24") == "2026-11-24"
+    assert folder_date("24.11.2026") == "2026-11-24"
+    assert folder_date("Çəkiliş 3.12.2026") == "2026-12-03"
+    assert folder_date("Hazır") is None
+    assert folder_date(None) is None

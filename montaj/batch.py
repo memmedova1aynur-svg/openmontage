@@ -148,6 +148,25 @@ def _save_profile(pf: Path, prof: dict[str, Any]) -> None:
     pf.write_text(json.dumps(prof, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
+def folder_date(name: str | None) -> str | None:
+    """Qovluq adındakı tarix → YYYY-MM-DD: "2026-11-24", "24.11.2026", "24-11-2026", "Çəkiliş 24.11.2026"."""
+    import re
+
+    if not name:
+        return None
+    m = re.search(r"(20\d\d)[-_.](\d{1,2})[-_.](\d{1,2})", name)
+    if m:
+        y, mo, d = m.groups()
+    else:
+        m = re.search(r"(\d{1,2})[-_./](\d{1,2})[-_./](20\d\d)", name)
+        if not m:
+            return None
+        d, mo, y = m.groups()
+    if not (1 <= int(mo) <= 12 and 1 <= int(d) <= 31):
+        return None
+    return f"{y}-{int(mo):02d}-{int(d):02d}"
+
+
 def new_from_profile(client: str, date: str | None = None, vtype: int | None = None,
                      lister: Callable[[str], list[dict]] | None = None) -> dict[str, Any]:
     """Müştərinin Drive qovluğundan YALNIZ yeni (əvvəl götürülməmiş) videolar → paket.
@@ -159,9 +178,9 @@ def new_from_profile(client: str, date: str | None = None, vtype: int | None = N
     if not new:
         raise UserError("Qovluqda yeni video yoxdur.", "Yeni çəkilişi Drive qovluğuna yükləyin, sonra yenidən işə salın.")
     if not date:
-        dates = {f.get("folder") for f in new}
+        dates = {folder_date(f.get("folder")) for f in new}
         one = next(iter(dates)) if len(dates) == 1 else None
-        date = one if one and len(one) == 10 and one[4] == "-" and one[7] == "-" else time.strftime("%Y-%m-%d")
+        date = one or time.strftime("%Y-%m-%d")
     m = create(prof["name"], date, vtype=vtype, entries=new)
     for f in new:
         seen[f["id"]] = f"{m['id']} · {(f.get('folder') + '/') if f.get('folder') else ''}{f['name']}"

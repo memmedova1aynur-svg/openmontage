@@ -59,7 +59,8 @@ Heç bir sənəddə yazılmayan qərar lazımdırsa — Claude **ən sakit, ən 
 
 Fayl adları kamera adı ola bilər; sıra ada görə götürülür. Qovluq paylaşımı: "Linki olan hər kəs — Baxan".
 Videolar kökə də, tarix alt qovluğuna da yüklənə bilər (bir səviyyə oxunur); `Hazır/` və arxiv qovluqları oxunmur.
-Alt qovluq adı `YYYY-MM-DD`-dirsə, paketin tarixi ondan götürülür.
+Hər çəkiliş üçün əsas qovluğun **içində** tarixli alt qovluq açılır (`2026-11-24` və ya `24.11.2026`) — icazə əsas qovluqdan keçir,
+link yalnız bir dəfə (profilə) verilir; paketin tarixi qovluğun adından götürülür.
 
 ## 3. İş axını (hər çəkiliş)
 
