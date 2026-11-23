@@ -139,3 +139,9 @@ When the **audio_mixer** tool is used in the compose stage:
 6. Keep true peak below -1.5 dBTP
 7. For AI TTS narration, apply the processing chain above before mixing
 8. Test the final mix on phone speakers — most viewers watch on mobile
+
+## SFX toolchain (find → place → generate)
+
+- **Find real recordings:** `.claude/skills/openverse-sfx` — Openverse CC audio search/download into `assets/sfx/<type>/`, attribution in `assets/sfx/CREDITS.md`.
+- **Place on frames:** `.claude/skills/real-sfx` — cut analysis + per-cue stills, peak/onset alignment, voice ducking, MP4 + separate SFX stem.
+- **Generate missing sounds:** `.claude/skills/earshot` — code-rendered SFX (no model, no network), whoosh apex control, UI/game/film sets.

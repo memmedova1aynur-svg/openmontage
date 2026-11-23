@@ -119,3 +119,6 @@ deploy/.env
 instagram-clients/*
 !instagram-clients/README.md
 !instagram-clients/_template/
+
+# earshot CLI (installed by .claude/skills/earshot/scripts/install.sh)
+.venv-earshot/
