@@ -214,3 +214,76 @@ def write_review(ids: list[str], out: Path) -> Path:
     if missing:
         print("plan icmalı yoxdur: " + ", ".join(missing))
     return out
+
+
+# ---------------------------------------------------------------------------
+# Planlama paketi: 15 günlük dövr üçün yekun videolar + caption + örtük + təqvim (Meta Business Suite-ə yükləmək üçün)
+# ---------------------------------------------------------------------------
+
+CAPTION_FILE = "caption.json"  # Claude yazır: {"caption": "...", "hashtags": ["#..."], "cover_at": 1.0}
+
+
+def latest_render(pid: str) -> Path | None:
+    mp4s = sorted((out_root() / pid).glob(f"{pid}_r*.mp4"), key=lambda x: int(x.stem.rsplit("_r", 1)[1]))
+    return mp4s[-1] if mp4s else None
+
+
+def schedule(n: int, start: str, days: int = 15, time_of_day: str = "19:00") -> list[tuple[str, str]]:
+    """n paylaşımı `days` günə bərabər payla (ilk gün başlanğıc tarixi). Nəticə: [(YYYY-MM-DD, HH:MM)]."""
+    import datetime as dt
+
+    d0 = dt.date.fromisoformat(start)
+    return [((d0 + dt.timedelta(days=int(i * days / max(n, 1)))).isoformat(), time_of_day) for i in range(n)]
+
+
+def _cover(mp4: Path, at: float, dst: Path) -> bool:
+    import subprocess
+
+    r = subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", f"{max(0.0, at):.2f}", "-i", str(mp4), "-frames:v", "1",
+                        "-q:v", "2", str(dst)], capture_output=True, check=False)
+    return r.returncode == 0 and dst.is_file()
+
+
+def pack(bid: str, start: str, days: int = 15, time_of_day: str = "19:00") -> dict[str, Any]:
+    m = load(bid)
+    ready, missing = [], []
+    for v in m["videos"]:
+        mp4 = latest_render(v["pid"]) if v["pid"] else None
+        (ready if mp4 else missing).append((v, mp4))
+    out = out_root() / "batches" / f"{bid}_paket"
+    out.mkdir(parents=True, exist_ok=True)
+    rows = []
+    for (v, mp4), (day, hm) in zip(ready, schedule(len(ready), start, days, time_of_day)):
+        cap_f = out_root() / v["pid"] / CAPTION_FILE
+        cap = json.loads(cap_f.read_text(encoding="utf-8")) if cap_f.is_file() else {}
+        stem = f"{len(rows) + 1:02d}_{day}_{hm.replace(':', '-')}"
+        dst = out / f"{stem}.mp4"
+        if dst.exists():
+            dst.unlink()
+        try:
+            os.link(mp4, dst)  # disk qənaəti
+        except OSError:
+            import shutil
+
+            shutil.copyfile(mp4, dst)
+        text = (cap.get("caption") or "").strip()
+        tags = " ".join(cap.get("hashtags") or [])
+        (out / f"{stem}_caption.txt").write_text((text + ("\n\n" + tags if tags else "")).strip() + "\n", encoding="utf-8")
+        cover = _cover(mp4, float(cap.get("cover_at", 1.0)), out / f"{stem}_cover.jpg")
+        rows.append({"n": len(rows) + 1, "date": day, "time": hm, "file": dst.name, "video": v["n"], "source": v["name"],
+                     "caption": bool(text), "cover": cover, "first_line": text.splitlines()[0] if text else ""})
+    lines = [f"# Planlama paketi: {m['client']} — {start} (+{days} gün)", "",
+             f"Paylaşım: {len(rows)} · render olmayan: {len(missing)} · saat qurşağı: Asia/Baku", "",
+             "| # | Tarix | Saat | Fayl | Caption | Örtük |", "|---|---|---|---|---|---|"]
+    lines += [f"| {r['n']} | {r['date']} | {r['time']} | {r['file']} | {r['first_line'][:50] or '⚠ yoxdur'} | "
+              f"{'✓' if r['cover'] else '⚠'} |" for r in rows]
+    if missing:
+        lines += ["", "## Pakete düşməyənlər (render yoxdur)"] + [f"- #{v['n']} {v['name']}" for v, _ in missing]
+    (out / "teqvim.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    import csv
+
+    with open(out / "teqvim.csv", "w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=["n", "date", "time", "file", "video", "source", "caption", "cover", "first_line"])
+        w.writeheader()
+        w.writerows(rows)
+    return {"dir": str(out), "rows": rows, "missing": [v["n"] for v, _ in missing]}

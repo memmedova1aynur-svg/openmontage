@@ -73,3 +73,29 @@ def test_batch_review_collects_plans(env):
     v1, v2 = d["batches"][0]["videos"]
     assert v1["plan"]["cuts"][0]["why"] == "təkrar" and "extra" not in v1["plan"]
     assert v2["plan"] is None
+
+
+def test_schedule_spreads_over_period():
+    from montaj import batch
+
+    s = batch.schedule(10, "2026-12-01")
+    assert s[0] == ("2026-12-01", "19:00") and s[-1][0] == "2026-12-14"
+    assert len({d for d, _ in s}) == 10, "hər paylaşım ayrı gündə"
+
+
+def test_batch_pack_builds_calendar(env):
+    import json
+    import shutil as sh
+
+    from montaj import batch
+
+    m = batch.create("Lamiyə", "2026-12-04", files=env)
+    m = batch.run(m, steps=["new"], log=lambda s: None)
+    pid = m["videos"][0]["pid"]
+    sh.copyfile(env[0], batch.out_root() / pid / f"{pid}_r3.mp4")
+    (batch.out_root() / pid / "caption.json").write_text(json.dumps({"caption": "Birinci sətir\nikinci", "hashtags": ["#uşaq"]}))
+    r = batch.pack(m["id"], "2026-12-02")
+    d = batch.out_root() / "batches" / f"{m['id']}_paket"
+    assert [x["file"] for x in r["rows"]] == ["01_2026-12-02_19-00.mp4"] and r["missing"] == [2]
+    assert (d / "01_2026-12-02_19-00_caption.txt").read_text().endswith("#uşaq\n")
+    assert (d / "teqvim.csv").is_file() and "Birinci sətir" in (d / "teqvim.md").read_text()

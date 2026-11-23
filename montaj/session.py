@@ -1531,6 +1531,14 @@ def cmd_batch_review(a: argparse.Namespace) -> None:
     print(batch.write_review(a.ids, Path(a.out)))
 
 
+def cmd_batch_pack(a: argparse.Namespace) -> None:
+    from montaj import batch
+
+    r = batch.pack(a.id, a.start, a.days, a.time)
+    print(Path(r["dir"]) / "teqvim.md")
+    print(f"paylaşım: {len(r['rows'])}" + (f"; render olmayan videolar: {r['missing']}" if r["missing"] else ""))
+
+
 def cmd_batch_status(a: argparse.Namespace) -> None:
     from montaj import batch
 
@@ -2859,6 +2867,11 @@ def main(argv: list[str] | None = None) -> int:
     bt.add_argument("--only", help="yalnız bu videolar, məs. 1,3,5")
     bt.add_argument("--steps", help="addımlar vergüllə (standart: new,storyboard,voice-clean,retakes)")
     sub.add_parser("batch-status", help="paketin vəziyyəti").add_argument("id")
+    bp = sub.add_parser("batch-pack", help="planlama paketi: yekun videolar + caption + örtük + 15 günlük təqvim")
+    bp.add_argument("id")
+    bp.add_argument("--start", required=True, help="dövrün ilk günü YYYY-MM-DD")
+    bp.add_argument("--days", type=int, default=15)
+    bp.add_argument("--time", default="19:00", help="paylaşım saatı (Asia/Baku)")
     bv = sub.add_parser("batch-review", help="toplu təsdiq səhifəsi üçün data (plan_icmal.json-lardan)")
     bv.add_argument("ids", nargs="+")
     bv.add_argument("--out", default=".montaj/review/plans.json")
@@ -2868,7 +2881,7 @@ def main(argv: list[str] | None = None) -> int:
          "render": cmd_render, "export": cmd_export, "editor": cmd_editor,
          "apply-edits": cmd_apply_edits, "set-client": cmd_set_client, "plan": cmd_plan, "looks": cmd_looks,
          "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "highlights": cmd_highlights, "extract": cmd_extract, "mg-scan": cmd_mg_scan, "tale-plan": cmd_tale_plan, "carousel-plan": cmd_carousel_plan, "types": cmd_types, "event-scan": cmd_event_scan, "event-plan": cmd_event_plan, "qa-plan": cmd_qa_plan, "duo": cmd_duo, "multicam": cmd_multicam, "slowmo": cmd_slowmo, "bg": cmd_bg, "captions-file": cmd_captions_file, "music": cmd_music, "stock": cmd_stock, "intake": cmd_intake, "bg-lib": cmd_bg_lib, "set-type": cmd_set_type, "carousel": cmd_carousel, "fix-word": cmd_fix_word,
-         "variants": cmd_variants, "choose": cmd_choose, "batch": cmd_batch, "batch-status": cmd_batch_status, "batch-review": cmd_batch_review, "music-preview": cmd_music_preview}[a.cmd](a)
+         "variants": cmd_variants, "choose": cmd_choose, "batch": cmd_batch, "batch-status": cmd_batch_status, "batch-review": cmd_batch_review, "batch-pack": cmd_batch_pack, "music-preview": cmd_music_preview}[a.cmd](a)
     except UserError as err:
         print(f"XƏTA: {err.message}\nNƏ ETMƏLİ: {err.hint}", file=sys.stderr)
         return 2

@@ -133,6 +133,34 @@ musiqi: daha sakit
 Claude yalnız yazılanları dəyişir, qalanına toxunmur, bütün planı yenidən qurmur.
 **Hər düzəlişin səbəbi qeydə alınır** (§6): eyni səhv ikinci dəfə olmamalıdır.
 
+## 3a. 15 günlük iş dövrü (hər müştəri, ayda 2 dəfə)
+
+Ay iki dövrə bölünür: **1–15** və **16–ay sonu**. Hər dövr bir müştəri üçün bir iş paketidir:
+
+| Addım | Nə | Harada |
+|---|---|---|
+| 1 | 15 günlük kontent strategiyası (mövzular, formatlar, satış məqsədi) | `ig-month` / `ig-plan` skill-ləri |
+| 2 | Çəkiliş: 2 saat → ~10 video (DataClone: 1 saat → ~5) | çəkiliş planı (1, 3, 6-cı günlər) |
+| 3 | Montaj: `batch` → plan → toplu təsdiq → render | §3 |
+| 4 | Caption + hashtag: hər video üçün `out/<pid>/caption.json` | `ig-caption` skill-i |
+| 5 | Lazımdırsa karusel, poster | `ig-carousel`, `post-studio` |
+| 6 | Planlama paketi (aşağıda) | sistem |
+| 7 | Planlama: Meta Business Suite (pulsuz, müştəri sizi partnyor kimi əlavə edir) | siz |
+
+### Planlama paketi
+
+```
+python -m montaj.session batch-pack <paket-id> --start 2026-12-02 [--days 15] [--time 19:00]
+```
+
+`out/batches/<paket-id>_paket/`: `01_2026-12-02_19-00.mp4`, `…_caption.txt` (caption + hashtag), `…_cover.jpg`
+(örtük; `caption.json`-da `cover_at` saniyəsi, standart 1.0), `teqvim.md` və `teqvim.csv`. Paylaşımlar dövrə bərabər
+paylanır (10 video → 15 günə, hər biri ayrı gündə). Render olmayan videolar pakete düşmür və siyahıda göstərilir.
+`caption.json`: `{"caption": "...", "hashtags": ["#..."], "cover_at": 1.0}`.
+
+Alətlər: müştərilərin planlaması — **Meta Business Suite** (pulsuz, limitsiz). **Metricool** (pulsuz plan, 1 brend) —
+yalnız öz səhifəniz üçün statistika. Ödənişli planlama aləti (SocialBee və s.) istifadə olunmur.
+
 ## 4. Ümumi montaj qaydaları (bütün növlər, bütün müştərilər)
 
 Bunlar əvvəllər müxtəlif sənədlərdə və müştəri profillərində səpələnmişdi; indi yalnız buradadır.
