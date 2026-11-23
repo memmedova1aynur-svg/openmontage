@@ -53,5 +53,44 @@
     "rotation": false,
     "updated": "2026-11-23"
   },
-  "instagram": "englishwithnargiz_"
+  "instagram": "englishwithnargiz_",
+  "instagram_analiz": {
+    "date": "2026-11-23",
+    "source": "Apify: profil + son 30 post (2026-09-15 → 2026-11-18). Videoların montajı analiz edilməyib.",
+    "profile": {
+      "ad_setri": "Nərgiz | Müəllim təlimləri",
+      "bio": "İngilis dili müəllimləri üçün təlimçi · 12 il müəllim · 5 il təlimçi · TESOL · Teacher Training · Kids English · Gamification · Cambridge",
+      "link": "WhatsApp",
+      "followers": 371,
+      "posts": 42,
+      "category": "Education"
+    },
+    "format": "29 reels + 1 şəkil; reels qısadır: 19–54 s (əksəriyyəti 25–40 s)",
+    "tezlik": "Nizamsız: bəzi həftələr hər gün, bəzən 5–7 gün boşluq; son paylaşım 2026-11-18",
+    "performance": {
+      "top": [
+        {
+          "date": "2026-10-28",
+          "views": 5890,
+          "topic": "Cambridge imtahanlarına hazırlıq — müəllimlər üçün təlim (reklam)"
+        },
+        {
+          "date": "2026-09-20",
+          "views": 4774,
+          "topic": "Uşaqlara ingilis dili öyrətmək — necə öyrətməyi bilmək (reklam)"
+        }
+      ],
+      "typical_views": "100–640; oktyabrın sonundan 100–310",
+      "comments": "əksəriyyəti 0–3; ən çox: məzun/təlim sonu (14), oyunlaşdırma (9)",
+      "note": "Sıçrayışlar yəqin reklam (boost) — məlumatdan təsdiqlənmir."
+    },
+    "sutunlar": {
+      "1_metodika": "müəllimlər üçün tədris tövsiyələri (səhvi düzəltmə, qrammatikanı hansı dildə izah, metod seçimi, oyunlaşdırma) — ən çox post",
+      "2_telim_reklami": "Cambridge müəllim hazırlığı, oyunlaşdırma təlimi, 'yenidən müəllimliyə qayıt', beynəlxalq yanaşmalar",
+      "3_tedbir_neticə": "məzuniyyət, Halloween dərsi, tələbələr oxuyur",
+      "4_oyrenen_ucun": "danışarkən sözlərin yaddan çıxması, modal feillər, kitab seçimi, müəllim seçimi — bioda vəd edilən auditoriyadan (müəllimlər) kənar"
+    },
+    "caption": "105–860 simvol (orta ~450); hook sual və ya problem; sonluq müzakirə sualı və ya telefon (077 346 08 70 — bio ilə eyni); 'sən' və 'siz' qarışıq; heşteq 0–5, sabit set yoxdur (ən çox #ingilisdili #cambridge #ingilisdilimüəllimi)",
+    "status": "müşahidə — səhifəyə, bio-ya, mövzulara toxunulmur (Aytəndəki qayda); bizim iş: montaj, cover, caption, karusel/poster, plan"
+  }
 }
