@@ -263,7 +263,8 @@
       "B_dizayn": "Açıq powder-mavi/ağ və ya navy fon. Yuxarı-solda pill etiket '• VİDEO · KATEQORİYA' (məs. ÖYRƏNMƏ, KARYERA, SATIŞ). Başlıq: 1-ci sətir ağır qalın sans, 2-ci sətir kursiv serif (açıq fonda mavi, navy fonda açıq mavi). Altında UI-kart illüstrasiyası (çeklist, taymer, 01/02/03 kartları, qəbz, xəritə, test). Kiçik ✦ ulduzlar, aşağı-sağda navy pill 'mətn →', dairəvi stiker-nişan, bəzən aşağıda qaçan sətir (ticker).",
       "vurgu_rengi": "Əsas navy + mavi; nadir hallarda narıncı (nişan, xəritə pin, etiket) və sarı (poster) — az dozada.",
       "novbe": "Grid-də A və B covers növbələşir; eyni tip 2-dən çox ardıcıl gəlmir.",
-      "B_dizayn_premium": "Reklam/vacib cover-lər: tünd navy fon + mavi işıq + nöqtəli naxış; '— AYTƏN CƏLİLOVA' sətri, kontur pill etiket, ağır sans + kursiv serif (Instrument Serif). Hər cover-in öz əsas elementi (böyük rəqəm / göstərici / yol xəritəsi) — eyni şablonun təkrarı yox."
+      "B_dizayn_premium": "Reklam/vacib cover-lər: tünd navy fon + mavi işıq + nöqtəli naxış; '— AYTƏN CƏLİLOVA' sətri, kontur pill etiket, ağır sans + kursiv serif (Instrument Serif). Hər cover-in öz əsas elementi (böyük rəqəm / göstərici / yol xəritəsi) — eyni şablonun təkrarı yox.",
+      "navy_ton": "Səhifənin navy-si MAT-dır (parlaq yox): fon linear-gradient(170deg,#2F4F95 → #244284 → #1B3369), yumşaq işıq #3A5A9C; nişan/vurğu mat mavi #5B87C2, açıq vurğu #A9C8F2. Parlaq #2D5BD6 / #2F5FD0 navy cover-lərdə işlədilmir (istifadəçi 2026-11-23)."
     },
     "carousels": {
       "status": "qayda (istifadəçi 2026-11-23)",
