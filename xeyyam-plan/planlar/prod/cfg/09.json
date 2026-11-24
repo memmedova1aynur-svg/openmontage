@@ -1,0 +1,124 @@
+{
+ "n": "09",
+ "name": "Valideynlere",
+ "keep": [
+  [
+   0,
+   45.3
+  ]
+ ],
+ "base": {
+  "s": 0.88,
+  "cx": 0.47,
+  "cy": 0.54
+ },
+ "end_at": 45.3,
+ "fix": {
+  "abdurientlər": "abituriyentlər",
+  "reaziyyət": "riyaziyyat",
+  "təmbəlliyinə,": "tənbəlliyinə,",
+  "nəyisi": "nəyisə",
+  "kimi@19.44": "kim",
+  "şakirlər": "şagirdlər",
+  "şakirdə": "şagirdə",
+  "şakirlərə": "şagirdlərə",
+  "Öyrənmək@33.10": "«Öyrənməyi",
+  "-öyrən": "öyrən»",
+  "toplamada": "toplamaqda"
+ },
+ "plan": {
+  "sub_card": {
+   "x": 60,
+   "y": 1150,
+   "w": 960,
+   "h": 320,
+   "color": "#FFFFFF",
+   "alpha": "04",
+   "border": "#0F3B2E",
+   "border_w": 8,
+   "r": 30
+  },
+  "word_color": "#0F3B2E",
+  "accent": "#2E9B57",
+  "word_size": 98,
+  "word_mv": 568,
+  "word_outline": 0,
+  "word_shadow": 0,
+  "max_chars": 13,
+  "q_bg": "#0F3B2E",
+  "q_size": 60,
+  "q_mv": 215,
+  "card_size": 92
+ },
+ "el": {
+  "questions": [
+   [
+    0.3,
+    2.9,
+    "Nəticələr istədiyiniz\\Nkimi olmur?"
+   ]
+  ],
+  "cards": [
+   [
+    11.1,
+    15.9,
+    "{\\an8\\pos(540,140)}TƏNBƏLLİK DEYİL"
+   ],
+   [
+    17.3,
+    21.4,
+    "{\\an8\\pos(540,140)}HAMI ÖYRƏDİR.\\NÖYRƏNMƏYİ KİM ÖYRƏDİR?"
+   ]
+  ]
+ },
+ "fx": [
+  {
+   "theme": "subjects",
+   "a": 3.3,
+   "b": 9.9,
+   "opts": {
+    "x": 790,
+    "y": 420,
+    "rows": [
+     [
+      "Tarix",
+      0.0
+     ],
+     [
+      "Coğrafiya",
+      0.14
+     ],
+     [
+      "Riyaziyyat",
+      0.27
+     ]
+    ]
+   }
+  },
+  {
+   "theme": "paths",
+   "a": 21.6,
+   "b": 32.8,
+   "opts": {
+    "x": 770,
+    "y": 330
+   }
+  },
+  {
+   "theme": "cta",
+   "a": 33.1,
+   "b": 45.3,
+   "hold": 1,
+   "opts": {
+    "x": 268,
+    "y": 70,
+    "sc": 0.85,
+    "w": 640,
+    "title": "ÖYRƏNMƏYİ ÖYRƏN",
+    "sub": "şagirdlər üçün təlim",
+    "btn": "Bizə yazın →",
+    "btnAt": 0.6
+   }
+  }
+ ]
+}
