@@ -160,6 +160,21 @@
    },
    "theme_primary": "#B04A6F",
    "notes": "güzgü -> hflip; söz kəsilmədi, boşluqlar saxlandı; blur yox; SARILIQ VARSA / HƏR ŞEY QAYDASINDADIRSA pill-ləri, 'Oyatmaq lazımdır' checklist"
+  },
+  {
+   "video": "sura-ana-sudu (sınaq): Ana südünün faydası — 'Bir damcının səyahəti' (3D animasiya, danışıqsız)",
+   "file": "projects/cell-journey-sura-ana-sudu/final_ig.mp4",
+   "template": "templates/cell-journey (story: stories/sura-ana-sudu.json)",
+   "style": {
+    "type": "3d-animation",
+    "look": "B: isti-yumşaq (krem fon, pastel çəhrayı), damar səhnəsi tünd gül",
+    "font": "Lora italic + Inter",
+    "music": "earshot CC0 notları: kalimba/arfa/selesta/pad, 100 BPM",
+    "sfx": "yumşaq (damcı, whoosh, ding, parıltı), --no-duck"
+   },
+   "theme_primary": "#C9577D",
+   "approved": "2026-11-24",
+   "notes": "İstifadəçi bəyəndi: 'çox qəşəngdi'. Damcı → damar → qalxan → neyronlar → ürək. Tibbi mətnlər sınaq üçün yumşaq yazılıb (antikor, beyin inkişafı) — real yayımdan əvvəl Sura təsdiqləsin; titul dəqiqləşdirilsin. Bu üslub maarifləndirici animasiyalar üçün təsdiqlənmiş istiqamətdir."
   }
  ]
 }
