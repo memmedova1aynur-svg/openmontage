@@ -431,10 +431,16 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
 
     bgs = project.get("background") or {}
 
+    fxr = project.get("fxRender") or {}
+
     def with_bg(m: dict[str, Any]) -> dict[str, Any]:
         b = bgs.get(m["id"])  # arxa fonu dəyişdirilmiş törəmə video (orijinal dəyişmir, səs orijinaldan)
-        if b and b.get("file") and (media_root / b["file"]).is_file():
-            return {**m, "file": b["file"], "hdr": False, "isImage": False}
+        base = b["file"] if b and b.get("file") and (media_root / b["file"]).is_file() else m["file"]
+        x = fxr.get(m["id"])  # dərinlik effektləri (depthfx) — yalnız indiki mənbə üzərində hazırlanıbsa
+        if x and x.get("base") == base and (media_root / x["file"]).is_file():
+            return {**m, "file": x["file"], "hdr": False, "isImage": False}
+        if base != m["file"]:
+            return {**m, "file": base, "hdr": False, "isImage": False}
         return m
 
     vlabels = []

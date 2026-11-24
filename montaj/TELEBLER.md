@@ -258,20 +258,6 @@ real danışıqda səs sinxronu və görünən keyfiyyət, iPhone Safari, Instag
 | 33.1 | `music`: sorğu profil/növə görə (soruşulmur), Freesound yalnız CC0 (köhnə alətdə lisenziya süzgəci yox idi), piano/yavaş atılır, 2–3 namizəd + dinləmə + plan hissəsi | ✅ | `test_music_auto_cc0_and_course_placement` |
 | 33.2 | Standart yerləşmə: Reels — bütün video boyu (ducking); kurs — yalnız açılış və sonluq, çox yumşaq; plan `music` siyahısı (`dur`) | ✅ | Test |
 | 33.3 | `music`-də Mixkit musiqisi (açarsız): kateqoriya səhifəsindən ad/müəllif/etiket/müddət, piano/yavaş/bayram mövzusu atılır; Freesound az və ya açarsızdırsa Mixkit | ✅ | `test_music_mixkit_fallback` + real axtarış (kids: 4 trek, corporate: 3 trek) |
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+| 34.1 | Dərinlik effektləri `fx` (`depthfx.py`): yazı insanın arxasında, 3D yazı, stiker kəsik, yalnız fona effekt, 2.5D kamera, çərçivədən çıxmaq — zaman xəttində pəncərə, fon törəməsinin üstündə, render avtomatik götürür | ✅ | `test_depthfx.py` (9 test, sintetik insan) + real danışıq videosu (56 s, oturan, mikrofonlu): 6 effekt, MediaPipe maskası; 600 kadr ~3.5 dəq |
+| 34.2 | `fx` peşəkar səviyyə: saç səviyyəsində maska (guided filter), yazı səhnəyə oturur (başın kölgəsi, otaq işığı, dənəvərlik), hərf-hərf animasiya + hərəkət bulanıqlığı, 3D-də parıltı keçidi və hərəkət bulanıqlığı, kəskin stiker konturu + "qalxma", kartda xəyalətsiz keçid + başın avtomatik çıxması + başlıq, avtomatik səs effektləri (earshot) | ✅ | `test_depthfx.py` (13 test) + real video, yaxın plan yoxlaması |
+| 34.3 | `fx` `icon3d`: 3D ikonlar (beyin, kitablar, lampa, ürək, ulduz, təsdiq — prosedur Three.js, şəffaf kadrlar, keş), başın yanında avtomatik yer, insanın arxasında, işıq halosu + kölgə, səs (whoosh + pop) | ✅ | `test_icon3d_behind_person`, `test_icon3d_real_render` + real video |

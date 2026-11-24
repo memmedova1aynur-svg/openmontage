@@ -82,6 +82,34 @@ Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq,
    - Məhdudiyyət (dürüst de): saç ucları, sürətli əl hərəkəti, fonla eyni rəngli geyim kənarda səhv verə bilər; ən təmiz nəticə
      yaşıl ekranla. **Etik qayda:** ekspertin olmadığı real məkanı (başqa ofis, ölkə) həqiqi kimi göstərmə — brend rəngi,
      qrafika, bulanıq fon normaldır.
+3d. **Dərinlik effektləri (Premiere/CapCut tərzi) — danışıq və reklam videolarında, mövzuya uyğun** (yerli, pulsuz: eyni
+   MediaPipe maskası + OpenCV; `montaj/depthfx.py`). Hər effekt zaman xəttində pəncərədir (`start`, `dur` — transkriptdəki
+   sözün vaxtına bağla), yalnız o kadrlar emal olunur; fon dəyişdirilibsə effekt onun üstündə işləyir:
+   - `behind` — **yazı insanın arxasında** (açar söz, başlıq): `text`, `y` (0.3 — başın hündürlüyü; baş hərfləri örtsün),
+     `size`, `style` solid|outline, `anim` stagger (hərf-hərf, hərəkət bulanıqlığı ilə — standart)|rise|scale|slide|fade,
+     `color` (standart — brend rəngi). Yazı səhnəyə "oturur" (`integrate` 0.8): başın kölgəsi hərflərə düşür, parlaqlıq
+     otaq işığına uyğunlaşır, kamera dənəvərliyi.
+   - `text3d` — **3D yazı** (qalınlıq, işıq, üzərindən parıltı keçir, girişdə hərəkət bulanıqlığı): `anim` swing|fly|tilt,
+     `behind` true/false, `depth`, `color` + `side` (yan üz).
+   - `icon3d` — **3D ikon** (əsl 3D obyekt, Three.js; yazı əvəzinə və ya yazı ilə): `kind` brain (beyin) | books (kitablar)
+     | bulb (lampa — fikir) | heart | star | check; fırlanaraq peyda olur, başın yanında dayanır, bir hissəsi insanın
+     arxasında (`x`/`y` "auto" — başa görə; `size`, `color`, `behind`). Danışıqdakı ANLAYIŞA bağla ("beyin" deyəndə beyin).
+     Yeni ikon lazımdırsa: `montaj/icons3d_web/index.html`-ə funksiya + `icons3d.KINDS`. İlk render ~30 s (keşlənir).
+   - `sticker` — **stiker kəsik**: insan azca "qalxır" (`lift`), ətrafında kəskin ağ kontur + kölgə, fon
+     `dim`|`color`|`blur`|`keep` (vurğu anı, hook).
+   - `focus` — **yalnız fona effekt**, insan toxunulmaz: `bg` dim|blur|gray|color|image, `amount` (diqqəti cümləyə çək).
+   - `parallax` — **2.5D kamera**: insan fondan çox yaxınlaşır, fon azca sürüşür (insanın arxası avtomatik doldurulur).
+   - `popout` — **çərçivədən çıxmaq**: video brend fonunda karta kiçilir (keçid həndəsidir, kadrlar qarışmır), baş kartın
+     üst kənarından çölə çıxır (`cardTop` "auto" — başa görə); `title` — kartın üstündə hərf-hərf başlıq (CTA, təlimin adı).
+   Maska saç səviyyəsindədir (guided filter — kənar kadrın özünü izləyir). **Səs avtomatikdir:** `--apply` hər effektə
+   uyğun səs qoyur (yazı — yumşaq whoosh, 3D — whoosh + zərbə, stiker və kart — pop, fon effekti — enən səs, 2.5D — riser;
+   earshot ilə, s1 trekində, `origin: fx`; təkrar `--apply` köhnələrini əvəzləyir). Səssiz: `--no-sfx`.
+   Axın: `fx <pid> --add '{"type":"behind","text":"SİRR","start":3.2,"dur":2.5}'` (bir neçə dəfə) → `fx <pid> --preview`
+   (`effektler.jpg`: hər effekt 3 kadrda — qərar mesajına əlavə et) → `fx <pid> --apply` → `render`. `--list`, `--remove N`,
+   `--clear`; yalnız sınaq üçün `--preview --spec '{...}'` (layihəyə yazılmır). ~1 dəq / 10 s effekt (1080x1920).
+   **Ölçü:** 30–60 s videoda 2–4 effekt; ən güclü anlara (hook, əsas fikir, rəqəm, CTA). Hər kəsimdə effekt olmaz.
+   Sakit profillərdə (məs. ana-körpə) `focus` / `behind` yumşaq `fade` ilə; `sticker`, `text3d` swing — enerjili reklam üçün.
+   Məhdudiyyət: maska saç ucunda və sürətli əl hərəkətində səhv verə bilər — önizləmədə yoxla; yazı əlin önünə düşə bilər.
 3b. **Arxa səsin təmizlənməsi — HƏR videoda yoxlanır.** `voice-clean <pid>` (standart `auto`): kafe uğultusu,
    uzaq danışıq, çəngəl-bıçaq, uzaqdan musiqi azaldılır; **danışanın səsi qorunur** (zəiflətmə ≤20 dB, danışıq
    səviyyəsi orijinala bərabərləşdirilir, sinxron dəyişmir). Arxa səs azdırsa (studiya) özü tətbiq etmir.
