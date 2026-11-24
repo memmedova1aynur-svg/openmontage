@@ -192,7 +192,7 @@ WrapStyle: 0
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: S,{FONT},{B['fontsize']},&H00FFFFFF,&H00FFFFFF,&H00000000,&H64000000,{B.get('sub_bold', -1)},{B.get('sub_italic', 0)},0,0,100,100,0,0,1,{B.get('sub_outline', 3.2)},1.5,2,90,90,{B['mv']},1
-Style: D,{UI},{B.get('word_size', 92)},&H00FFFFFF,&H00FFFFFF,&H00101010,&H78000000,-1,0,0,0,100,100,0,0,1,{B.get('word_outline', 6)},{B.get('word_shadow', 2)},2,70,70,{B.get('word_mv', 640)},1
+Style: D,{UI},{B.get('word_size', 92)},{bgr(B.get('word_color', '#FFFFFF'))},&H00FFFFFF,&H00101010,&H78000000,-1,0,0,0,100,100,0,0,1,{B.get('word_outline', 6)},{B.get('word_shadow', 2)},2,70,70,{B.get('word_mv', 640)},1
 Style: Q,{UI},{B.get('q_size', 54)},&H00FFFFFF,&H00FFFFFF,{bgr(B.get('q_bg', '#0B2A20'))},{bgr(B.get('q_bg', '#0B2A20'))},-1,0,0,0,100,100,0,0,3,26,0,8,110,110,{B.get('q_mv', 330)},1
 Style: L,JetBrains Mono,30,{bgr(ACC)},&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,4,0,1,0,0,8,110,110,250,1
 Style: V,{UI},110,&H00FFFFFF,&H00FFFFFF,&H00FFFFFF,&H00000000,-1,0,0,0,100,100,0,0,3,34,0,5,80,80,0,1

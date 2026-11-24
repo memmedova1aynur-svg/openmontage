@@ -1,0 +1,90 @@
+{
+ "n": "01",
+ "name": "SozDilininUcunda",
+ "keep": [
+  [
+   0,
+   55.6
+  ]
+ ],
+ "fix": {
+  "olubmı": "olubmu",
+  "Bugün": "Bu gün",
+  "tez": "tez-tez",
+  "Tez": "Tez-tez",
+  "-tez": "",
+  "bəs": "bəhs",
+  "təşrarladığımız": "təkrarladığımız",
+  "Təşrarlamadığımız": "Təkrarlamadığımız",
+  "neyi": "niyə",
+  "öyrənmək@49.60": "«Öyrənməyi",
+  "-öyrən": "öyrən»"
+ },
+ "plan": {
+  "sub_card": {
+   "x": 60,
+   "y": 1290,
+   "w": 960,
+   "h": 300,
+   "color": "#FFFFFF",
+   "alpha": "08"
+  },
+  "word_color": "#0F3B2E",
+  "accent": "#2E9B57",
+  "word_size": 100,
+  "word_mv": 425,
+  "word_outline": 0,
+  "word_shadow": 0,
+  "max_chars": 13,
+  "q_bg": "#0F3B2E",
+  "q_size": 62,
+  "q_mv": 190,
+  "card_size": 100
+ },
+ "el": {
+  "questions": [
+   [
+    0.2,
+    3.6,
+    "Söz dilinin ucundadır,\\Namma yadına düşmür?"
+   ]
+  ],
+  "cards": [
+   [
+    42.15,
+    43.3,
+    "{\\an8\\pos(540,150)}BƏS NƏ ETMƏLİ?"
+   ],
+   [
+    49.6,
+    55.6,
+    "{\\an8\\pos(540,150)}ÖYRƏNMƏYİ ÖYRƏN"
+   ]
+  ]
+ },
+ "fx": [
+  {
+   "theme": "shelf",
+   "a": 22.75,
+   "b": 34.6,
+   "opts": {
+    "x": 30,
+    "y": 500,
+    "s": 1.5,
+    "pick": 3
+   }
+  },
+  {
+   "theme": "shelf",
+   "a": 35.02,
+   "b": 41.9,
+   "opts": {
+    "far": true,
+    "x": 650,
+    "y": 470,
+    "s": 1.1,
+    "seed": 9
+   }
+  }
+ ]
+}

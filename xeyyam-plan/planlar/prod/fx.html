@@ -1,0 +1,127 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:transparent}canvas{display:block}</style></head>
+<body><canvas id="c" width="1080" height="1920"></canvas>
+<script>
+// Neyron şəbəkəsi: iki yan klaster, psevdo-3D (perspektiv + dərinlik), əlaqələr tədricən qurulur.
+// draw(t, level, alpha): t — saniyə (hərəkət), level 0..1 — şəbəkənin qurulma dərəcəsi, alpha — ümumi görünmə.
+const cv=document.getElementById('c'),g=cv.getContext('2d');
+function rng(seed){let s=seed;return()=>{s=(s*1664525+1013904223)%4294967296;return s/4294967296}}
+const F=900;
+function cluster(seed,cx,cy,n,dir){
+  const r=rng(seed),nodes=[];
+  for(let i=0;i<n;i++){
+    // y boyunca bərabər paylanma + təsadüfi sürüşmə
+    const y=-300+600*(i+0.5)/n+(r()-0.5)*60;
+    nodes.push({x:(r()-0.5)*230,y,z:(r()-0.5)*320,r:21+r()*13,ph:r()*6.28,th:0});
+  }
+  // qonşular arası əlaqələr
+  const edges=[];
+  for(let i=0;i<n;i++){
+    const d=nodes.map((m,j)=>[Math.hypot(m.x-nodes[i].x,m.y-nodes[i].y,m.z-nodes[i].z),j]).filter(e=>e[1]!==i).sort((a,b)=>a[0]-b[0]);
+    for(const [,j] of d.slice(0,2)){const k=i<j?i+'-'+j:j+'-'+i;if(!edges.find(e=>e.k===k))edges.push({k,a:i,b:j,bend:(r()-0.5)*90,sp:0.5+r()*0.6,off:r()})}
+  }
+  // qurulma sırası: yuxarıdan aşağı dalğa
+  const order=nodes.map((m,i)=>i).sort((a,b)=>nodes[a].y-nodes[b].y);
+  order.forEach((i,k)=>nodes[i].th=0.02+0.5*k/n);
+  edges.forEach((e,k)=>e.th=Math.max(nodes[e.a].th,nodes[e.b].th)+0.06+0.36*(k/edges.length));
+  // kiçik dendrit budaqları
+  nodes.forEach(m=>{m.br=[];const c=3+Math.floor(r()*3);for(let q=0;q<c;q++)m.br.push({an:r()*6.28,len:36+r()*40,bend:(r()-0.5)*1.2})});
+  return {cx,cy,nodes,edges,dir};
+}
+const CL=[cluster(23,925,610,11,-1)];
+// "86 milyard" partlayışı üçün kiçik nöqtələr
+const SR=rng(99),STARS=[];for(let i=0;i<260;i++){const side=i%2?1:-1;STARS.push({x:540+side*(300+SR()*230),y:260+SR()*880,z:SR(),th:SR(),ph:SR()*6.28})}
+function proj(c,m,t){
+  const a=Math.sin(t*0.45+c.dir)*0.32*c.dir, ca=Math.cos(a), sa=Math.sin(a);
+  const bob=Math.sin(t*0.9+m.ph)*7;
+  const x=m.x*ca-m.z*sa, z=m.x*sa+m.z*ca, s=F/(F+z);
+  return {x:c.cx+x*s, y:c.cy+(m.y+bob)*s, s, z};
+}
+const ease=x=>x<0?0:x>1?1:1-Math.pow(1-x,3);
+function soma(p,rad,al){
+  const R=rad*p.s, dep=0.55+0.45*Math.min(1,Math.max(0,(200-p.z)/400));
+  let gr=g.createRadialGradient(p.x,p.y,0,p.x,p.y,R*3.2);
+  gr.addColorStop(0,`rgba(108,197,126,${0.34*al*dep})`);gr.addColorStop(1,'rgba(108,197,126,0)');
+  g.fillStyle=gr;g.beginPath();g.arc(p.x,p.y,R*3.2,0,6.28);g.fill();
+  gr=g.createRadialGradient(p.x-R*0.35,p.y-R*0.4,R*0.08,p.x,p.y,R);
+  gr.addColorStop(0,`rgba(255,255,255,${al})`);gr.addColorStop(0.35,`rgba(181,233,207,${al*dep})`);
+  gr.addColorStop(0.8,`rgba(62,158,87,${al*dep})`);gr.addColorStop(1,`rgba(20,84,52,${al*dep*0.9})`);
+  g.fillStyle=gr;g.beginPath();g.arc(p.x,p.y,R,0,6.28);g.fill();
+}
+function qpt(a,c,b,u){const v=1-u;return {x:v*v*a.x+2*v*u*c.x+u*u*b.x,y:v*v*a.y+2*v*u*c.y+u*u*b.y}}
+function neurons(t,level,burst){
+  g.lineCap='round';
+  if(burst>0){for(const s of STARS){const a=ease((burst-s.th*0.7)/0.3);if(a<=0)continue;
+    const tw=0.6+0.4*Math.sin(t*5+s.ph), R=(1.6+s.z*3.2)*a;
+    g.fillStyle=`rgba(${s.z>0.6?255:181},${s.z>0.6?255:233},${s.z>0.6?255:207},${(0.35+0.6*s.z)*a*tw})`;
+    g.beginPath();g.arc(s.x,s.y+Math.sin(t*0.8+s.ph)*5,R,0,6.28);g.fill()}}
+  for(const c of CL){
+    const P=c.nodes.map(m=>proj(c,m,t));
+    // əlaqələr
+    for(const e of c.edges){
+      const pr=ease((level-e.th)/0.14);if(pr<=0)continue;
+      const A=P[e.a],B=P[e.b],mx=(A.x+B.x)/2,my=(A.y+B.y)/2,dx=B.x-A.x,dy=B.y-A.y,L=Math.hypot(dx,dy)||1;
+      const C={x:mx-dy/L*e.bend,y:my+dx/L*e.bend},sc=(A.s+B.s)/2;
+      g.beginPath();g.moveTo(A.x,A.y);
+      const N=22;for(let i=1;i<=N*pr;i++){const q=qpt(A,C,B,i/N);g.lineTo(q.x,q.y)}
+      g.strokeStyle=`rgba(108,197,126,${0.22})`;g.lineWidth=13*sc;g.stroke();
+      g.strokeStyle=`rgba(210,245,224,${0.85})`;g.lineWidth=4*sc;g.stroke();
+      if(pr<1){const q=qpt(A,C,B,pr);g.fillStyle='rgba(255,255,255,0.95)';g.beginPath();g.arc(q.x,q.y,5*sc,0,6.28);g.fill()}
+      else{const u=((t*e.sp*0.55+e.off)%1),q=qpt(A,C,B,u);
+        let gr=g.createRadialGradient(q.x,q.y,0,q.x,q.y,13*sc);gr.addColorStop(0,'rgba(255,255,255,0.95)');gr.addColorStop(1,'rgba(108,197,126,0)');
+        g.fillStyle=gr;g.beginPath();g.arc(q.x,q.y,13*sc,0,6.28);g.fill()}
+    }
+    // neyronlar (uzaqdan yaxına)
+    c.nodes.map((m,i)=>i).sort((a,b)=>P[b].z-P[a].z).forEach(i=>{
+      const m=c.nodes[i],p=P[i],a=ease((level-m.th)/0.08);if(a<=0)return;
+      g.strokeStyle=`rgba(150,220,175,${0.7*a})`;
+      for(const b of m.br){const an=b.an+Math.sin(t*0.6+m.ph)*0.12,l=b.len*p.s*a;
+        g.lineWidth=3.2*p.s;g.beginPath();g.moveTo(p.x,p.y);
+        g.quadraticCurveTo(p.x+Math.cos(an+b.bend)*l*0.6,p.y+Math.sin(an+b.bend)*l*0.6,p.x+Math.cos(an)*l,p.y+Math.sin(an)*l);g.stroke()}
+      soma(p,m.r*(0.6+0.4*a)*(1+0.06*Math.sin(t*2.2+m.ph)),a);
+    });
+  }
+}
+const THEMES={neurons};
+/*THEMES*/
+// Kitab rəfi: kitablar bir-bir düşür; pick — bir kitab çıxarılır; far — uzaq, solğun rəf, sonda "?"
+function shade(hex,k){const n=parseInt(hex.slice(1),16),r=(n>>16)&255,gg=(n>>8)&255,b=n&255;return `rgb(${Math.round(r*k)},${Math.round(gg*k)},${Math.round(b*k)})`}
+THEMES.shelf=function(t,level,burst,o){
+  const far=!!o.far,sc=o.s||1,n=o.n||7,r=rng(o.seed||5),bob=Math.sin(t*1.1)*6;
+  const x0=(o.x??50),y0=(o.y??820)+bob,Wd=250*sc,dx=44*sc,dy=-28*sc,th=16*sc;
+  const fadeFar=far?Math.max(0.3,1-ease((level-0.55)/0.4)*0.7):1;
+  g.save();g.globalAlpha*=far?0.8*fadeFar:1;if(far)g.filter=`blur(${(0.5+level*2).toFixed(1)}px)`;
+  const COL=['#6CC57E','#FFFFFF','#B5E9CF','#3E9E57','#F4EEE2','#8FD9A5'];
+  // rəf lövhəsi
+  g.fillStyle='rgba(0,0,0,0.28)';g.beginPath();g.ellipse(x0+Wd/2+dx/2,y0+th+16*sc,Wd*0.62,12*sc,0,0,6.28);g.fill();
+  g.fillStyle='#1E6B4A';g.beginPath();g.moveTo(x0,y0);g.lineTo(x0+dx,y0+dy);g.lineTo(x0+Wd+dx,y0+dy);g.lineTo(x0+Wd,y0);g.closePath();g.fill();
+  g.fillStyle='#0F3B2E';g.fillRect(x0,y0,Wd,th);
+  g.fillStyle='#0A2A20';g.beginPath();g.moveTo(x0+Wd,y0);g.lineTo(x0+Wd+dx,y0+dy);g.lineTo(x0+Wd+dx,y0+dy+th);g.lineTo(x0+Wd,y0+th);g.closePath();g.fill();
+  g.strokeStyle='rgba(108,197,126,0.9)';g.lineWidth=2.5*sc;g.beginPath();g.moveTo(x0,y0);g.lineTo(x0+Wd,y0);g.stroke();
+  // kitablar
+  let bx=x0+12*sc;const bw0=(Wd-24*sc)/n;
+  for(let i=0;i<n;i++){
+    const bw=bw0*(0.72+r()*0.22),bh=(92+r()*62)*sc,col=COL[Math.floor(r()*COL.length)],a=ease((level-0.04-i/n*0.42)/0.12);
+    if(a>0){
+      let lift=(1-a)*-70*sc,gl=0;
+      if(o.pick===i){const pp=ease((level-0.66)/0.2);lift-=pp*58*sc;gl=pp}
+      const X=bx,Y=y0-bh+lift,ddx=dx*0.42,ddy=dy*0.42;
+      g.save();g.globalAlpha*=a;
+      if(gl>0){g.shadowColor='rgba(181,233,207,0.95)';g.shadowBlur=34*gl}
+      g.fillStyle=shade(col,0.62);g.beginPath();g.moveTo(X+bw,Y);g.lineTo(X+bw+ddx,Y+ddy);g.lineTo(X+bw+ddx,Y+ddy+bh);g.lineTo(X+bw,Y+bh);g.closePath();g.fill();
+      g.fillStyle=shade(col,0.82);g.beginPath();g.moveTo(X,Y);g.lineTo(X+ddx,Y+ddy);g.lineTo(X+bw+ddx,Y+ddy);g.lineTo(X+bw,Y);g.closePath();g.fill();
+      const gr=g.createLinearGradient(X,0,X+bw,0);gr.addColorStop(0,shade(col,1));gr.addColorStop(1,shade(col,0.86));g.fillStyle=gr;g.fillRect(X,Y,bw,bh);
+      g.shadowBlur=0;g.fillStyle='rgba(15,59,46,0.55)';g.fillRect(X+bw*0.22,Y+bh*0.16,bw*0.56,3*sc);g.fillRect(X+bw*0.22,Y+bh*0.16+8*sc,bw*0.56,3*sc);
+      g.restore();
+    }
+    bx+=bw0;
+  }
+  g.restore();
+  if(far){const q=ease((level-0.62)/0.2);if(q>0){g.save();g.globalAlpha*=q;g.font=`800 ${Math.round(120*sc)}px Montserrat, Arial`;g.textAlign='center';
+    g.shadowColor='rgba(0,0,0,0.5)';g.shadowBlur=18;g.fillStyle='#FFFFFF';g.fillText('?',x0+Wd/2+dx/2,y0-170*sc+Math.sin(t*2)*8);g.restore()}}
+};
+
+function draw(theme,t,level,alpha,burst,opts){g.clearRect(0,0,1080,1920);if(alpha<=0)return;g.save();g.globalAlpha=alpha;THEMES[theme](t,level,burst,opts||{});g.restore()}
+window.draw=draw;
+</script></body></html>
