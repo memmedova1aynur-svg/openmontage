@@ -85,6 +85,47 @@ function neurons(t,level,burst){
 }
 const THEMES={neurons};
 /*THEMES*/
+// Ağ ayı fikir balonu: ayı çıxır, "düşünmə" cəhdində kiçilir, sonra daha böyük qayıdır və çoxalır
+function bearFace(cx,cy,R){
+  g.fillStyle='#FFFFFF';for(const s of[-1,1]){g.beginPath();g.arc(cx+s*0.72*R,cy-0.72*R,0.34*R,0,6.28);g.fill()}
+  g.fillStyle='#CFE6DA';for(const s of[-1,1]){g.beginPath();g.arc(cx+s*0.72*R,cy-0.72*R,0.17*R,0,6.28);g.fill()}
+  const gr=g.createRadialGradient(cx-R*0.3,cy-R*0.35,R*0.1,cx,cy,R);gr.addColorStop(0,'#FFFFFF');gr.addColorStop(1,'#DDEEE6');
+  g.fillStyle=gr;g.beginPath();g.arc(cx,cy,R,0,6.28);g.fill();
+  g.fillStyle='#EEF6F1';g.beginPath();g.ellipse(cx,cy+0.3*R,0.42*R,0.32*R,0,0,6.28);g.fill();
+  g.fillStyle='#10241C';for(const s of[-1,1]){g.beginPath();g.arc(cx+s*0.36*R,cy-0.14*R,0.085*R,0,6.28);g.fill()}
+  g.beginPath();g.ellipse(cx,cy+0.16*R,0.14*R,0.1*R,0,0,6.28);g.fill();
+  g.strokeStyle='#10241C';g.lineWidth=Math.max(2,0.05*R);g.lineCap='round';g.beginPath();g.arc(cx,cy+0.3*R,0.16*R,0.25,2.9);g.stroke();
+}
+THEMES.bear=function(t,level,burst,o){
+  const cx=o.x??240,cy=(o.y??330)+Math.sin(t*1.3)*7,R0=o.r||92;
+  const pop=ease(level/0.08),sup=ease((level-0.34)/0.14),back=ease((level-0.56)/0.1);
+  const k=pop*(1-0.55*sup)+back*0.75, BR=R0*1.55*(0.85+0.15*pop);
+  g.save();g.shadowColor='rgba(0,0,0,0.3)';g.shadowBlur=26;g.shadowOffsetY=10;
+  g.fillStyle='#0F3B2E';g.beginPath();g.arc(cx,cy,BR*pop,0,6.28);g.fill();
+  const tx=o.tx??1,ty=o.ty??1;
+  g.beginPath();g.arc(cx+tx*BR*0.95,cy+ty*BR*0.95,24*pop,0,6.28);g.fill();g.beginPath();g.arc(cx+tx*BR*1.25,cy+ty*BR*1.3,13*pop,0,6.28);g.fill();g.restore();
+  g.strokeStyle='#6CC57E';g.lineWidth=5;g.beginPath();g.arc(cx,cy,BR*pop-9,0,6.28);g.stroke();
+  if(k>0.02)bearFace(cx,cy+6,R0*Math.min(k,1.22));
+  // qayıdan fikir: kiçik ayılar
+  const M=[[-1.75,-0.3,0.42],[1.55,-1.2,0.36],[1.9,0.35,0.3]];
+  M.forEach(([dx,dy,s],i)=>{const a=ease((level-0.66-i*0.06)/0.08);if(a>0){const x=cx+dx*R0,y=cy+dy*R0+Math.sin(t*2+i)*6;
+    g.save();g.shadowColor='rgba(0,0,0,0.25)';g.shadowBlur=14;g.fillStyle='#0F3B2E';g.beginPath();g.arc(x,y,R0*s*1.5*a,0,6.28);g.fill();g.restore();bearFace(x,y+2,R0*s*a)}});
+};
+// Vaxt intervalları: fokus (yaşıl) və fasilə (ağ) blokları ardıcıl dolur
+THEMES.blocks=function(t,level,burst,o){
+  const x=o.x??60,y=(o.y??310)+Math.sin(t*1.2)*5,W_=o.w||560,H_=150,a0=ease(level/0.08);
+  g.save();g.globalAlpha*=a0;g.shadowColor='rgba(0,0,0,0.3)';g.shadowBlur=24;g.shadowOffsetY=8;g.fillStyle='#0F3B2E';
+  g.beginPath();g.roundRect(x,y,W_,H_,34);g.fill();g.restore();
+  // saat
+  const cx=x+74,cy=y+H_/2;g.save();g.globalAlpha*=a0;g.strokeStyle='#FFFFFF';g.lineWidth=6;g.beginPath();g.arc(cx,cy,34,0,6.28);g.stroke();
+  g.lineCap='round';g.beginPath();g.moveTo(cx,cy);g.lineTo(cx,cy-22);g.moveTo(cx,cy);g.lineTo(cx+Math.cos(t*1.6-1.57)*17,cy+Math.sin(t*1.6-1.57)*17);g.stroke();g.restore();
+  const seq=[[3,1],[1,0],[3,1],[1,0],[3,1]],tot=seq.reduce((s,[w])=>s+w,0),x1=x+134,ww=W_-134-30,gap=10;let bx=x1,acc=0;
+  for(const [w,foc] of seq){const bw=ww*w/tot-gap,a=ease((level-0.12-acc/tot*0.62)/0.1);acc+=w;
+    g.fillStyle='rgba(255,255,255,0.14)';g.beginPath();g.roundRect(bx,y+48,bw,54,14);g.fill();
+    if(a>0){g.fillStyle=foc?'#6CC57E':'#FFFFFF';g.beginPath();g.roundRect(bx,y+48,bw*a,54,14);g.fill()}
+    bx+=bw+gap}
+};
+
 // Kitab rəfi: kitablar bir-bir düşür; pick — bir kitab çıxarılır; far — uzaq, solğun rəf, sonda "?"
 function shade(hex,k){const n=parseInt(hex.slice(1),16),r=(n>>16)&255,gg=(n>>8)&255,b=n&255;return `rgb(${Math.round(r*k)},${Math.round(gg*k)},${Math.round(b*k)})`}
 THEMES.shelf=function(t,level,burst,o){

@@ -1,0 +1,83 @@
+{
+ "n": "02",
+ "name": "DiqqetAgAyi",
+ "keep": [
+  [
+   0.3,
+   68.5
+  ]
+ ],
+ "fix": {
+  "etmişsəm": "etmisənmi?",
+  "mi?": "",
+  "Bugün": "Bu gün",
+  "Necə": "«Necə",
+  "yayınımı": "yəni?»",
+  "deyirsəm?": "deyirsən.",
+  "çalışdıq": "çalışdığı",
+  "düşünmədəsəm,": "düşünmə desəm,",
+  "ağından": "ağlından",
+  "qalışsan.": "qalırsan.",
+  "başlamalısın.": "başlamalısan.",
+  "necə@45.32": "necə"
+ },
+ "plan": {
+  "sub_card": {
+   "x": 60,
+   "y": 1255,
+   "w": 960,
+   "h": 290,
+   "color": "#6CC57E",
+   "alpha": "05"
+  },
+  "word_color": "#082219",
+  "accent": "#FFFFFF",
+  "word_size": 100,
+  "word_mv": 465,
+  "word_outline": 0,
+  "word_shadow": 0,
+  "max_chars": 13,
+  "q_bg": "#0F3B2E",
+  "q_size": 62,
+  "q_mv": 190
+ },
+ "el": {
+  "questions": [
+   [
+    0.5,
+    3.7,
+    "Diqqətin niyə\\Ntez yayınır?"
+   ],
+   [
+    17.5,
+    2.8,
+    "Diqqəti toplamağa\\NÇALIŞMA"
+   ],
+   [
+    45.06,
+    1.2,
+    "Bəs necə etməli?"
+   ]
+  ]
+ },
+ "fx": [
+  {
+   "theme": "bear",
+   "a": 35.6,
+   "b": 44.9,
+   "opts": {
+    "x": 235,
+    "y": 340
+   }
+  },
+  {
+   "theme": "blocks",
+   "a": 54.5,
+   "b": 60.4,
+   "opts": {
+    "x": 60,
+    "y": 300
+   }
+  }
+ ]
+}

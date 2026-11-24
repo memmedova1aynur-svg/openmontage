@@ -7,7 +7,9 @@ HERE = os.path.dirname(os.path.abspath(__file__)); PRO = '/home/user/openmontage
 C = json.load(open(sys.argv[1])); n = C['n']; os.chdir(HERE)
 A = json.load(open(glob.glob(os.path.expanduser(f'~/montaj-data/projects/xeyyam-yeni-{n}/analysis/*.json'))[0]))
 SRC = glob.glob(os.path.expanduser(f'~/montaj-data/projects/xeyyam-yeni-{n}/media/originals/*'))[0]
-sil0 = [(x, y) for x, y in A['silences'] if y - x >= 0.45]
+_sd = subprocess.run(['ffmpeg', '-nostdin', '-i', SRC, '-af', f"highpass=f=100,silencedetect=noise={C.get('noise', -42)}dB:d=0.4", '-vn', '-f', 'null', '-'], capture_output=True, text=True).stderr
+_v = [float(x) for x in re.findall(r'silence_(?:start|end): ([0-9.]+)', _sd)]
+sil0 = [(x, y) for x, y in zip(_v[0::2], _v[1::2]) if y - x >= 0.42]  # səs səviyyəsinə uyğun hədd (montaj detektoru zəif səsdə sözü udur)
 # sözün sonu səssizliyin içinə düşürsə (zəif səs), kəsimi sözün sonundan sonraya çək — son heca kəsilməsin
 sil = []
 for x, y in sil0:
