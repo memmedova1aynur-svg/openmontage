@@ -1,0 +1,25 @@
+{
+  "name": "Aygün",
+  "status": "active",
+  "activity": "Maarifləndirici danışıq videoları (ilk material: imtahan stresi və hazırlıq).",
+  "palette": {
+    "family": "bordo, tozlu çəhrayı, krem"
+  },
+  "video_types": "kameraya danışıq, maarifləndirmə",
+  "cautions": [
+    "Profil 2026-11-24 ilk materialdan yaradılıb: rəng ailəsi çəkiliş otağından (tozlu çəhrayı divar) və şaldan (krem + bordo naxış) götürülüb; müştərinin Instagram/brend rəngi verilsə dəyişdirilməlidir.",
+    "Ümumi istifadəçi qaydası (2026-11-01, bütün müştərilər): rəng looks C (təmiz-neytral); musiqi piano/yavaş YOX; arxa fon bulanıqlaşdırılmır; danışılmayan boş saniyələr kəsilir, söz kəsilmir; güzgü çevirmə yoxdur."
+  ],
+  "theme_source": "derived from the colour family (brand colour = colour family)",
+  "theme": {
+    "primary": "#5C2434",
+    "primaryDeep": "#3A1420",
+    "accent": "#F1D3CE",
+    "accentSoft": "#C98B94",
+    "text": "#FFFFFF",
+    "onAccent": "#5C2434",
+    "cardAlpha": 0.94
+  },
+  "style": {},
+  "history": []
+}
