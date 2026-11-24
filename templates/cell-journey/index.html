@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="az">
+<head>
+<meta charset="utf-8">
+<title>Bir damcının səyahəti</title>
+<style>
+  @font-face { font-family: "Lora"; font-style: italic; font-weight: 600;
+    src: url(node_modules/@fontsource/lora/files/lora-latin-ext-600-italic.woff2) format("woff2");
+    unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+  @font-face { font-family: "Lora"; font-style: italic; font-weight: 600;
+    src: url(node_modules/@fontsource/lora/files/lora-latin-600-italic.woff2) format("woff2");
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+  html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; }
+  body { background: radial-gradient(ellipse at 50% 38%, #FFFAF7 0%, #FBEDE9 45%, #F3DADD 100%); }
+  canvas { position: absolute; inset: 0; }
+  .txt { position: absolute; left: 90px; right: 90px; top: 1250px; text-align: center; opacity: 0; will-change: opacity, transform, filter; }
+  .h { font-family: "Lora", serif; font-style: italic; font-weight: 600; font-size: 86px; line-height: 1.12; letter-spacing: -0.01em; }
+  .s { font-family: "Inter", sans-serif; font-weight: 500; font-size: 42px; margin-top: 22px; letter-spacing: 0.01em; opacity: .9; }
+  .txt.glow::before { content: ""; position: absolute; left: -90px; right: -90px; top: -70px; bottom: -70px; z-index: -1;
+    background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255,250,247,.92) 0%, rgba(255,250,247,.7) 45%, rgba(255,250,247,0) 100%); }
+  .rule { width: 120px; height: 3px; margin: 30px auto 0; border-radius: 2px; }
+  #veil { position: absolute; inset: 0; background: #FFFBF8; opacity: 1; pointer-events: none; }
+  #vig { position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 55%, rgba(120,40,70,.18) 100%); }
+</style>
+<script type="importmap">{ "imports": { "three": "./node_modules/three/build/three.module.js" } }</script>
+</head>
+<body>
+<div id="vig"></div>
+<div class="txt" id="t1"><div class="h">Bir damcı ana südü…</div></div>
+<div class="txt" id="t2"><div class="h">körpənin bədəninə<br>yol alır</div></div>
+<div class="txt" id="t3"><div class="h">Qoruyucu antikorlar</div><div class="s">immunitetə dəstək olur</div></div>
+<div class="txt" id="t4"><div class="h">Beyin inkişafı üçün</div><div class="s">vacib qida maddələri</div></div>
+<div class="txt" id="t5"><div class="h">Ana südü —<br>ilk qayğı</div><div class="rule"></div><div class="s" id="t5s">Sura Malik · laktasiya mütəxəssisi</div></div>
+<div id="veil"></div>
+<script type="module">
+import * as THREE from "three";
+
+// ---------- story.json: texts (+ optional theme). Missing file -> the built-in Sura texts below.
+const story = await fetch("story.json").then(r => r.ok ? r.json() : null).catch(() => null) || {};
+const theme = Object.assign({ primary: "#C9577D", primaryDeep: "#9E3D5E", accent: "#F7C6D4", textDark: "#9E3D5E", textLight: "#FFF3F6" }, story.theme || {});
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])).replace(/\n/g, "<br>");
+for (const [i, sc] of (story.scenes || []).entries()) { const el = document.getElementById("t" + (i + 1)); if (!el || !sc) continue;
+  if (sc.title != null) el.querySelector(".h").innerHTML = esc(sc.title);
+  const sub = el.querySelector(".s"); if (sub && sc.subtitle != null) sub.innerHTML = esc(sc.subtitle);
+  else if (!sub && sc.subtitle) el.insertAdjacentHTML("beforeend", `<div class="s">${esc(sc.subtitle)}</div>`); }
+
+const W = 1080, H = 1920;
+const ROSE = new THREE.Color(theme.primary), ROSE_DEEP = new THREE.Color(theme.primaryDeep),
+      BLUSH = new THREE.Color(theme.accent), DUSTY = new THREE.Color("#DDB3BF"), MILK = new THREE.Color("#FFFBF4");
+
+// ---------- helpers (everything is a pure function of t: deterministic frames)
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const ramp = (t, a, b) => clamp((t - a) / (b - a));
+const sm = x => x * x * (3 - 2 * x);
+const eOut = x => 1 - Math.pow(1 - x, 3);
+const eInOut = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const eIn = x => x * x * x;
+function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+  t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1); renderer.setSize(W, H);
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
+document.body.insertBefore(renderer.domElement, document.body.firstChild);
+
+function glowTex() {
+  const c = document.createElement("canvas"); c.width = c.height = 128; const g = c.getContext("2d");
+  const gr = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  gr.addColorStop(0, "rgba(255,255,255,1)"); gr.addColorStop(.25, "rgba(255,255,255,.75)");
+  gr.addColorStop(.55, "rgba(255,255,255,.18)"); gr.addColorStop(1, "rgba(255,255,255,0)");
+  g.fillStyle = gr; g.fillRect(0, 0, 128, 128); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+const GLOW = glowTex();
+const glowSprite = (color, opacity = 1, additive = false) => new THREE.Sprite(new THREE.SpriteMaterial({
+  map: GLOW, color, transparent: true, opacity, depthWrite: false, blending: additive ? THREE.AdditiveBlending : THREE.NormalBlending }));
+const pointsMat = (size, additive = false) => new THREE.PointsMaterial({ size, map: GLOW, vertexColors: true,
+  transparent: true, depthWrite: false, sizeAttenuation: true, blending: additive ? THREE.AdditiveBlending : THREE.NormalBlending });
+
+// =====================================================================  S1: the drop
+const s1 = new THREE.Scene();
+const cam1 = new THREE.PerspectiveCamera(35, W / H, 0.05, 100);
+s1.add(new THREE.HemisphereLight(0xffffff, 0xf0c3cf, 1.6));
+const d1 = new THREE.DirectionalLight(0xffffff, 2.4); d1.position.set(-3, 5, 6); s1.add(d1);
+const d1b = new THREE.DirectionalLight(0xffc4d4, 1.4); d1b.position.set(4, -2, 3); s1.add(d1b);
+const prof = []; for (let i = 0; i <= 64; i++) { const a = Math.PI * i / 64; prof.push(new THREE.Vector2(Math.sin(a) * Math.pow(Math.sin(a / 2), 1.1), Math.cos(a))); }
+const drop = new THREE.Mesh(new THREE.LatheGeometry(prof, 96),
+  new THREE.MeshPhysicalMaterial({ color: MILK, roughness: .14, clearcoat: 1, clearcoatRoughness: .08, sheen: .6, sheenColor: BLUSH }));
+s1.add(drop);
+const halo1 = glowSprite(BLUSH, .95); halo1.scale.set(4.2, 4.2, 1); halo1.position.z = -1.2; s1.add(halo1);
+const rings = [0, 1, 2].map(() => { const m = new THREE.Mesh(new THREE.RingGeometry(.98, 1, 128),
+  new THREE.MeshBasicMaterial({ color: ROSE, transparent: true, opacity: 0, depthWrite: false })); s1.add(m); return m; });
+
+function updateS1(t) {
+  const fall = eOut(ramp(t, .15, 1.55));
+  const y = 6.5 * (1 - fall) - .35;
+  const land = ramp(t, 1.55, 2.3), sq = Math.sin(land * Math.PI * 3) * Math.exp(-land * 3.2) * .13;
+  drop.scale.set(1 + sq, 1.08 - sq, 1 + sq);
+  drop.position.y = y + Math.sin(t * 2.1) * .04 * ramp(t, 1.6, 2.4);
+  drop.rotation.y = t * .5;
+  halo1.position.y = drop.position.y; halo1.material.opacity = .95 * ramp(t, .6, 1.6);
+  rings.forEach((r, i) => { const k = ramp(t, 1.55 + i * .32, 3.2 + i * .32);
+    r.scale.setScalar(1.1 + k * 3.4); r.position.y = drop.position.y; r.material.opacity = .5 * (1 - k) * (k > 0 ? 1 : 0); });
+  const dive = eIn(ramp(t, 2.95, 3.95));
+  cam1.position.set(0, drop.position.y * dive * .9, 8.2 - dive * 7.55);
+  cam1.lookAt(0, drop.position.y * dive, 0);
+}
+
+// =====================================================================  S2: inside the vessel
+const s2 = new THREE.Scene();
+s2.fog = new THREE.Fog(0x5e2038, 2.5, 21);
+const cam2 = new THREE.PerspectiveCamera(62, W / H, 0.05, 80);
+const cpts = []; for (let i = 0; i < 16; i++) cpts.push(new THREE.Vector3(Math.sin(i * .62) * 3.2, Math.cos(i * .47) * 2.6, -i * 6));
+const curve = new THREE.CatmullRomCurve3(cpts);
+const TR = 1.25;
+const tubeG = new THREE.TubeGeometry(curve, 600, TR, 48, false);
+{ // soft colour variation on the vessel wall (veins of lighter/darker rose)
+  const p = tubeG.attributes.position, col = new Float32Array(p.count * 3), c = new THREE.Color();
+  for (let i = 0; i < p.count; i++) { const v = .5 + .5 * Math.sin(p.getX(i) * 2.3 + p.getZ(i) * .9) * Math.cos(p.getY(i) * 3.1 - p.getZ(i) * .4);
+    c.copy(new THREE.Color("#E9A0B5")).lerp(new THREE.Color("#B9506F"), v * .7); col.set([c.r, c.g, c.b], i * 3); }
+  tubeG.setAttribute("color", new THREE.BufferAttribute(col, 3));
+}
+s2.add(new THREE.Mesh(tubeG, new THREE.MeshStandardMaterial({ vertexColors: true, side: THREE.BackSide, roughness: .55, metalness: 0,
+  emissive: new THREE.Color("#5a1e36"), emissiveIntensity: .35 })));
+s2.add(new THREE.AmbientLight(0xffd9e4, .55));
+const camLight = new THREE.PointLight(0xfff0f3, 14, 0, 1.3); s2.add(camLight);
+const frames = curve.computeFrenetFrames(800, false);
+const atU = (u, r, th, out) => { u = clamp(u, 0, 1); const p = curve.getPointAt(u); const k = Math.round(u * 800);
+  return out.copy(p).addScaledVector(frames.normals[k], Math.cos(th) * r).addScaledVector(frames.binormals[k], Math.sin(th) * r); };
+const NP = 1600, R2 = rng(7), flow = [];
+const pPos = new Float32Array(NP * 3), pCol = new Float32Array(NP * 3);
+for (let i = 0; i < NP; i++) { flow.push({ b: R2(), s: .07 + R2() * .09, r: TR * .92 * Math.sqrt(R2()), th: R2() * 6.283, w: (R2() - .5) * .8 });
+  const c = R2() < .7 ? MILK : new THREE.Color("#FFD9A8"); pCol.set([c.r, c.g, c.b], i * 3); }
+const pGeo = new THREE.BufferGeometry(); pGeo.setAttribute("position", new THREE.BufferAttribute(pPos, 3)); pGeo.setAttribute("color", new THREE.BufferAttribute(pCol, 3));
+const milkPts = new THREE.Points(pGeo, pointsMat(.085, true)); s2.add(milkPts);
+const cells = []; const R3 = rng(11);
+for (let i = 0; i < 46; i++) { const m = new THREE.Mesh(new THREE.SphereGeometry(.16, 24, 16),
+  new THREE.MeshStandardMaterial({ color: new THREE.Color("#D2577A"), roughness: .4, emissive: new THREE.Color("#7a1f3d"), emissiveIntensity: .25 }));
+  m.scale.set(1, 1, .38); s2.add(m); cells.push({ m, b: R3(), s: .02 + R3() * .03, r: TR * .8 * Math.sqrt(R3()), th: R3() * 6.283, rx: R3() * 3, ry: R3() * 3 }); }
+const tmp = new THREE.Vector3(), tmp2 = new THREE.Vector3();
+function updateS2(t) {
+  const lt = t - 3.9, uc = .02 + lt * .0215 + eOut(ramp(lt, 0, 1.2)) * .01;
+  cam2.position.copy(curve.getPointAt(uc)); cam2.lookAt(curve.getPointAt(uc + .025));
+  camLight.position.copy(curve.getPointAt(uc + .008));
+  for (let i = 0; i < NP; i++) { const f = flow[i]; const rel = ((f.b + f.s * lt) % 1) * .3 - .012;
+    atU(uc + rel, f.r, f.th + f.w * lt, tmp); pPos.set([tmp.x, tmp.y, tmp.z], i * 3); }
+  pGeo.attributes.position.needsUpdate = true;
+  cells.forEach(c => { const rel = ((c.b + c.s * lt) % 1) * .28 + .004; atU(uc + rel, c.r, c.th, c.m.position);
+    c.m.rotation.set(c.rx + lt * .6, c.ry + lt * .4, 0); });
+}
+
+// =====================================================================  S3: the shield
+const s3 = new THREE.Scene();
+const cam3 = new THREE.PerspectiveCamera(36, W / H, .1, 100);
+s3.add(new THREE.HemisphereLight(0xffffff, 0xf0c3cf, 1.4));
+const d3 = new THREE.DirectionalLight(0xffffff, 2); d3.position.set(-3, 4, 6); s3.add(d3);
+const core = new THREE.Mesh(new THREE.SphereGeometry(.55, 64, 32), new THREE.MeshPhysicalMaterial({ color: new THREE.Color("#F4B8C8"),
+  roughness: .3, clearcoat: .8, sheen: 1, sheenColor: MILK, emissive: ROSE, emissiveIntensity: .12 }));
+s3.add(core);
+const coreHalo = glowSprite(BLUSH, .9); coreHalo.scale.set(3, 3, 1); coreHalo.position.z = -.6; s3.add(coreHalo);
+const shell = new THREE.Group(); s3.add(shell);
+const icoP = new THREE.IcosahedronGeometry(1.95, 5).attributes.position;
+const seen = new Set(), target = [];
+for (let i = 0; i < icoP.count; i++) { const k = `${icoP.getX(i).toFixed(3)},${icoP.getY(i).toFixed(3)},${icoP.getZ(i).toFixed(3)}`;
+  if (!seen.has(k)) { seen.add(k); target.push(new THREE.Vector3(icoP.getX(i), icoP.getY(i), icoP.getZ(i))); } }
+const NS = target.length, R4 = rng(21), sStart = [], sArr = [];
+const sPos = new Float32Array(NS * 3), sCol = new Float32Array(NS * 3);
+const palette3 = [new THREE.Color("#D9789A"), ROSE, new THREE.Color("#E9A3B8")];
+for (let i = 0; i < NS; i++) { const dir = new THREE.Vector3(R4() - .5, R4() - .5, R4() - .5).normalize();
+  sStart.push(dir.multiplyScalar(6 + R4() * 6)); sArr.push(9.35 + R4() * 1.9);
+  const c = palette3[i % 3]; sCol.set([c.r, c.g, c.b], i * 3); }
+const sGeo = new THREE.BufferGeometry(); sGeo.setAttribute("position", new THREE.BufferAttribute(sPos, 3)); sGeo.setAttribute("color", new THREE.BufferAttribute(sCol, 3));
+shell.add(new THREE.Points(sGeo, pointsMat(.27)));
+const wire = new THREE.LineSegments(new THREE.WireframeGeometry(new THREE.IcosahedronGeometry(1.95, 2)),
+  new THREE.LineBasicMaterial({ color: ROSE, transparent: true, opacity: 0 })); shell.add(wire);
+const shieldGlow = glowSprite(BLUSH, 0); shieldGlow.scale.set(8, 8, 1); shieldGlow.position.z = -2.5; s3.add(shieldGlow);
+const intruders = []; const R5 = rng(31);
+for (let i = 0; i < 7; i++) { const m = new THREE.Mesh(new THREE.OctahedronGeometry(.17, 0), new THREE.MeshStandardMaterial({ color: 0x8f8798, roughness: .6, transparent: true }));
+  const a = i / 7 * 6.283 + R5() * .4, el = (R5() - .5) * .9; s3.add(m);
+  intruders.push({ m, dir: new THREE.Vector3(Math.cos(a) * Math.cos(el), Math.sin(el) * 1.6, Math.sin(a) * Math.cos(el) * .6).normalize(), hit: 11.75 + i * .22 }); }
+function updateS3(t) {
+  for (let i = 0; i < NS; i++) { const k = eInOut(ramp(t, 9.1, sArr[i])); tmp.copy(sStart[i]).lerp(target[i], k); sPos.set([tmp.x, tmp.y, tmp.z], i * 3); }
+  sGeo.attributes.position.needsUpdate = true;
+  shell.rotation.set(.25, t * .32, 0);
+  const formed = ramp(t, 11.0, 11.7);
+  wire.material.opacity = .5 * sm(formed);
+  shieldGlow.material.opacity = .55 * sm(formed) * (1 + .15 * Math.sin(t * 4));
+  core.scale.setScalar(1 + .04 * Math.sin(t * 3.2));
+  intruders.forEach(o => { let r; if (t < o.hit) r = 2.3 + (7.5 - 2.3) * (1 - ramp(t, 9.1, o.hit));
+    else r = 2.3 + eOut(ramp(t, o.hit, o.hit + 1.4)) * 4.5;
+    o.m.position.copy(o.dir).multiplyScalar(r); o.m.rotation.set(t * 2, t * 1.4, 0);
+    o.m.material.opacity = t < o.hit ? 1 : 1 - ramp(t, o.hit + .3, o.hit + 1.4); });
+  const z = 11.2 - eInOut(ramp(t, 9.1, 14.1)) * 1.4;
+  cam3.position.set(0, -1.15, z); cam3.lookAt(0, -1.15, 0);
+}
+
+// =====================================================================  S4 + S5: neurons -> heart
+const s4 = new THREE.Scene();
+const cam4 = new THREE.PerspectiveCamera(36, W / H, .1, 100);
+s4.add(new THREE.HemisphereLight(0xffffff, 0xeec0cc, 1.3));
+const d4 = new THREE.DirectionalLight(0xffffff, 1.8); d4.position.set(-2, 4, 6); s4.add(d4);
+const neuro = new THREE.Group(); neuro.position.y = .9; s4.add(neuro);
+const R6 = rng(5), NN = 26, nodes = [];
+while (nodes.length < NN) { const v = new THREE.Vector3((R6() - .5) * 4.6, (R6() - .5) * 5.6 + .3, (R6() - .5) * 3.2);
+  if (nodes.every(n => n.distanceTo(v) > 1.05)) nodes.push(v); }
+// spanning tree (Prim) from the lowest node + a few extra short links
+const start = nodes.reduce((b, v, i) => v.y < nodes[b].y ? i : b, 0);
+const inT = new Set([start]), edges = [], depth = Array(NN).fill(0), parent = Array(NN).fill(-1);
+while (inT.size < NN) { let best = null; for (const a of inT) for (let b = 0; b < NN; b++) if (!inT.has(b)) {
+  const d = nodes[a].distanceTo(nodes[b]); if (!best || d < best[2]) best = [a, b, d]; }
+  inT.add(best[1]); parent[best[1]] = best[0]; depth[best[1]] = depth[best[0]] + 1; edges.push([best[0], best[1]]); }
+for (let a = 0; a < NN; a++) for (let b = a + 1; b < NN; b++) if (nodes[a].distanceTo(nodes[b]) < 1.45 && !edges.some(e => (e[0] === a && e[1] === b) || (e[0] === b && e[1] === a))) edges.push(depth[a] <= depth[b] ? [a, b] : [b, a]);
+const maxD = Math.max(...depth), act = depth.map(d => 14.55 + d * (4.4 / maxD));
+const somas = nodes.map((p, i) => { const m = new THREE.Mesh(new THREE.SphereGeometry(.15, 32, 16),
+  new THREE.MeshStandardMaterial({ color: DUSTY.clone(), roughness: .45, emissive: new THREE.Color(0), emissiveIntensity: 1 }));
+  m.position.copy(p); neuro.add(m); const h = glowSprite(new THREE.Color("#F08AAE"), 0); h.position.copy(p); neuro.add(h); return { m, h }; });
+const edgeObjs = edges.map(([a, b]) => { const A = nodes[a], B = nodes[b], mid = A.clone().add(B).multiplyScalar(.5);
+  mid.add(new THREE.Vector3(R6() - .5, R6() - .5, R6() - .5).multiplyScalar(.6));
+  const c = new THREE.QuadraticBezierCurve3(A.clone(), mid, B.clone());
+  const m = new THREE.Mesh(new THREE.TubeGeometry(c, 24, .026, 6, false), new THREE.MeshStandardMaterial({ color: new THREE.Color("#D9A9B6"), roughness: .6, transparent: true }));
+  neuro.add(m); const pulse = glowSprite(new THREE.Color("#FF8FB4"), 0, true); pulse.scale.set(.55, .55, 1); neuro.add(pulse);
+  return { a, b, c, m, pulse }; });
+nodes.forEach(p => { for (let k = 0; k < 3; k++) { const dir = new THREE.Vector3(R6() - .5, R6() - .5, R6() - .5).normalize();
+  const e = p.clone().addScaledVector(dir, .35 + R6() * .45), m2 = p.clone().addScaledVector(dir, .2).add(new THREE.Vector3(R6() - .5, R6() - .5, 0).multiplyScalar(.2));
+  const g = new THREE.TubeGeometry(new THREE.QuadraticBezierCurve3(p.clone(), m2, e), 8, .014, 4, false);
+  neuro.add(Object.assign(new THREE.Mesh(g, new THREE.MeshStandardMaterial({ color: new THREE.Color("#D9A9B6"), roughness: .6, transparent: true })), { userData: { den: 1 } })); } });
+// heart particles
+const heartPts = [], R7 = rng(41);
+const hx = a => 16 * Math.pow(Math.sin(a), 3), hy = a => 13 * Math.cos(a) - 5 * Math.cos(2 * a) - 2 * Math.cos(3 * a) - Math.cos(4 * a);
+for (let i = 0; i < 300; i++) { const a = i / 300 * 6.283; heartPts.push(new THREE.Vector3(hx(a) * .11, hy(a) * .11 + .9, (R7() - .5) * .25)); }
+while (heartPts.length < 520) { // interior: points on shrunken outlines (sqrt keeps density even)
+  const k = Math.sqrt(R7()) * .92, q = R7() * 6.283;
+  heartPts.push(new THREE.Vector3(hx(q) * k * .11, hy(q) * k * .11 + .9, (R7() - .5) * .5)); }
+const NH = heartPts.length, hStart = [], hDel = [], hPos = new Float32Array(NH * 3), hCol = new Float32Array(NH * 3);
+for (let i = 0; i < NH; i++) { hStart.push(nodes[i % NN].clone().add(new THREE.Vector3(R7() - .5, R7() - .5, R7() - .5).multiplyScalar(.5)));
+  hDel.push(R7() * .7); const c = i < 300 ? ROSE : (R7() < .5 ? new THREE.Color("#E58AA8") : BLUSH); hCol.set([c.r, c.g, c.b], i * 3); }
+const hGeo = new THREE.BufferGeometry(); hGeo.setAttribute("position", new THREE.BufferAttribute(hPos, 3)); hGeo.setAttribute("color", new THREE.BufferAttribute(hCol, 3));
+const heartMat = pointsMat(.17); const heart = new THREE.Points(hGeo, heartMat); s4.add(heart);
+const heartGlow = glowSprite(BLUSH, 0); heartGlow.scale.set(7, 7, 1); heartGlow.position.set(0, .5, -1); s4.add(heartGlow);
+const cOff = new THREE.Color("#D9A9B6"), cOn = new THREE.Color("#C9577D");
+function updateS4(t) {
+  const fadeN = 1 - ramp(t, 20.1, 21.3);
+  somas.forEach((s, i) => { const k = sm(ramp(t, act[i], act[i] + .35)), flash = Math.exp(-Math.max(0, t - act[i]) * 2.2) * (t > act[i] ? 1 : 0);
+    s.m.material.color.copy(DUSTY).lerp(ROSE, k); s.m.material.emissive.copy(new THREE.Color("#FF6F9C")).multiplyScalar(.15 * k + .5 * flash);
+    s.m.material.opacity = fadeN; s.m.material.transparent = true; s.m.scale.setScalar((1 + .5 * flash) * (.4 + .6 * fadeN));
+    s.h.material.opacity = (.55 * k + .45 * flash) * fadeN; s.h.scale.setScalar(.9 + 1.3 * k + flash); });
+  edgeObjs.forEach(e => { const ta = act[e.a], tb = Math.max(act[e.b], ta + .25), k = ramp(t, ta, tb);
+    e.m.material.color.copy(cOff).lerp(cOn, sm(ramp(t, tb - .1, tb + .3))); e.m.material.opacity = .9 * fadeN;
+    if (k > 0 && k < 1) { e.pulse.position.copy(e.c.getPoint(k)); e.pulse.material.opacity = .95 * fadeN; } else e.pulse.material.opacity = 0; });
+  neuro.children.forEach(c => { if (c.userData.den) c.material.opacity = .8 * fadeN; });
+  neuro.rotation.y = -.35 + eInOut(ramp(t, 14.1, 21)) * .6;
+  // morph to heart
+  for (let i = 0; i < NH; i++) { const k = eInOut(ramp(t, 20.0 + hDel[i], 21.9 + hDel[i]));
+    tmp.copy(hStart[i]).applyAxisAngle(new THREE.Vector3(0, 1, 0), neuro.rotation.y); tmp.y += neuro.position.y; tmp.lerp(heartPts[i], k); hPos.set([tmp.x, tmp.y, tmp.z], i * 3); }
+  hGeo.attributes.position.needsUpdate = true;
+  heartMat.opacity = ramp(t, 19.6, 20.4);
+  const beat = Math.exp(-Math.pow((t - 22.9) * 9, 2)) + .7 * Math.exp(-Math.pow((t - 23.25) * 9, 2)) + Math.exp(-Math.pow((t - 24.1) * 9, 2)) * .8;
+  heart.scale.setScalar(1 + .06 * beat);
+  heartGlow.material.opacity = (.5 + .35 * beat) * ramp(t, 21.4, 22.4);
+  const z = 17.5 - eInOut(ramp(t, 14.1, 21)) * 4.0 - eOut(ramp(t, 21, 25)) * .6;
+  cam4.position.set(0, .05, z); cam4.lookAt(0, .05, 0);
+}
+
+// =====================================================================  text + veil + timeline
+const T = [["t1", 1.05, 3.55], ["t2", 4.7, 8.65], ["t3", 10.2, 13.75], ["t4", 15.3, 19.85], ["t5", 21.55, 99]];
+const textColor = { t1: theme.textDark, t2: theme.textLight, t3: theme.textDark, t4: theme.textDark, t5: theme.textDark };
+for (const [id] of T) { const el = document.getElementById(id); el.style.color = textColor[id];
+  const r = el.querySelector(".rule"); if (r) r.style.background = theme.primary;
+  if (id !== "t2") el.classList.add("glow");
+  if (id === "t2") el.style.textShadow = "0 4px 28px rgba(60,10,30,.55)"; }
+const veilPulse = (t, c, h) => sm(clamp(1 - Math.abs(t - c) / h));
+window.renderAt = (t) => {
+  for (const [id, a, b] of T) { const el = document.getElementById(id);
+    const k = sm(ramp(t, a, a + .7)) * (1 - sm(ramp(t, b - .45, b)));
+    el.style.opacity = k; el.style.transform = `translateY(${(1 - sm(ramp(t, a, a + .9))) * 34}px)`; el.style.filter = `blur(${(1 - sm(ramp(t, a, a + .6))) * 10}px)`;
+    if (id === "t5") { const s = document.getElementById("t5s"); s.style.opacity = sm(ramp(t, 22.4, 23.1)) * .9;
+      el.querySelector(".rule").style.width = (sm(ramp(t, 22.1, 22.9)) * 120) + "px"; } }
+  const veil = Math.max(1 - sm(ramp(t, 0, .45)), veilPulse(t, 3.92, .38), veilPulse(t, 9.1, .36), veilPulse(t, 14.1, .36), sm(ramp(t, 24.45, 25)));
+  document.getElementById("veil").style.opacity = veil;
+  document.getElementById("vig").style.opacity = (t >= 3.92 && t < 9.1) ? 0 : 1;
+  let scene, cam;
+  if (t < 3.92) { updateS1(t); scene = s1; cam = cam1; renderer.setClearColor(0, 0); }
+  else if (t < 9.1) { updateS2(t); scene = s2; cam = cam2; renderer.setClearColor(0x5e2038, 1); }
+  else if (t < 14.1) { updateS3(t); scene = s3; cam = cam3; renderer.setClearColor(0, 0); }
+  else { updateS4(t); scene = s4; cam = cam4; renderer.setClearColor(0, 0); }
+  renderer.render(scene, cam);
+  return true;
+};
+window.ready = document.fonts.ready.then(() => true);
+</script>
+</body>
+</html>

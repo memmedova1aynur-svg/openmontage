@@ -1,0 +1,14 @@
+{
+  "name": "Sura Malik — Ana südünün faydası (Bir damcının səyahəti)",
+  "client": "sura-malik",
+  "approved": "2026-11-24",
+  "note": "Tibbi mətnlər sınaq üçün yumşaq ifadələrlədir; yayımdan əvvəl Sura təsdiqləməlidir.",
+  "scenes": [
+    { "title": "Bir damcı ana südü…" },
+    { "title": "körpənin bədəninə\nyol alır" },
+    { "title": "Qoruyucu antikorlar", "subtitle": "immunitetə dəstək olur" },
+    { "title": "Beyin inkişafı üçün", "subtitle": "vacib qida maddələri" },
+    { "title": "Ana südü —\nilk qayğı", "subtitle": "Sura Malik · laktasiya mütəxəssisi" }
+  ],
+  "theme": { "primary": "#C9577D", "primaryDeep": "#9E3D5E", "accent": "#F7C6D4", "textDark": "#9E3D5E", "textLight": "#FFF3F6" }
+}
