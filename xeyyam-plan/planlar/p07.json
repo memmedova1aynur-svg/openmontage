@@ -1,0 +1,130 @@
+{
+ "src": "/root/montaj-data/projects/xeyyam-yeni-07/media/originals/m_fbd79bc254.mov",
+ "words": "w07.json",
+ "fix": {
+  "10": "10%-ini",
+  "%": "",
+  "-ini": "",
+  "doluq?": "doğrudur?",
+  "əfsanələrdir": "əfsanələridir",
+  "neuronlardan": "neyronlardan",
+  "neuronlar": "neyronlar",
+  "neuronlardır.": "neyronlardır.",
+  "neuron": "neyron",
+  "edilir,": "edir,",
+  "yenilir.": "yeniləyir.",
+  "yenilirik,": "yeniləyirik,",
+  "öyrəndiyicə": "öyrəndikcə",
+  "sayır.": "sayıdır."
+ },
+ "cap_first": true,
+ "accent": "#6CC57E",
+ "base": {
+  "s": 0.88,
+  "cx": 0.47,
+  "cy": 0.54
+ },
+ "style": "dinamik",
+ "questions": [
+  [
+   0.15,
+   4.3,
+   "Beynimizin yalnız\\N10%-ini işlədirik?"
+  ]
+ ],
+ "q_bg": "#0F3B2E",
+ "out": "out/07_Beynin10faizi.mp4",
+ "q_mv": 215,
+ "q_size": 64,
+ "word_mv": 560,
+ "segs": [
+  [
+   1.95,
+   6.89,
+   1.0
+  ],
+  [
+   8.46,
+   10.3,
+   1.18
+  ],
+  [
+   15.5,
+   18.02,
+   1.0
+  ],
+  [
+   18.02,
+   22.62,
+   1.18
+  ],
+  [
+   22.82,
+   27.96,
+   1.0
+  ],
+  [
+   28.17,
+   30.88,
+   1.18
+  ],
+  [
+   30.88,
+   34.43,
+   1.0
+  ],
+  [
+   34.62,
+   35.42,
+   1.18
+  ],
+  [
+   35.78,
+   37.66,
+   1.0
+  ],
+  [
+   38.02,
+   39.66,
+   1.18
+  ],
+  [
+   39.66,
+   43.6,
+   1.0
+  ],
+  [
+   43.6,
+   46.76,
+   1.18
+  ],
+  [
+   46.97,
+   52.3,
+   1.0
+  ]
+ ],
+ "cards": [
+  [
+   5.0,
+   6.7,
+   "{\\an8\\pos(540,140)}ŞƏHƏR ƏFSANƏSİ"
+  ],
+  [
+   8.5,
+   11.0,
+   "{\\an8\\pos(540,140)}NEYRONLAR"
+  ],
+  [
+   21.8,
+   24.3,
+   "{\\an8\\pos(540,140)}YENİ ŞƏBƏKƏ"
+  ],
+  [
+   40.8,
+   42.05,
+   "{\\an8\\pos(540,140)}86 MİLYARD"
+  ]
+ ],
+ "card_size": 108
+}
