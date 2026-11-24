@@ -85,6 +85,37 @@ function neurons(t,level,burst){
 }
 const THEMES={neurons};
 /*THEMES*/
+// Musiqi notları: dalğalanan not xətləri üzərində süzən notlar
+function note(x,y,s,al,beam){g.save();g.translate(x,y);g.scale(s,s);g.globalAlpha*=al;g.shadowColor='rgba(108,197,126,0.8)';g.shadowBlur=16;
+  const gr=g.createRadialGradient(-6,-5,2,0,0,18);gr.addColorStop(0,'#FFFFFF');gr.addColorStop(1,'#8FD9A5');g.fillStyle=gr;g.strokeStyle='#FFFFFF';g.lineWidth=5;g.lineCap='round';
+  g.save();g.rotate(-0.35);g.beginPath();g.ellipse(0,0,17,12,0,0,6.28);g.fill();g.restore();g.beginPath();g.moveTo(15,-4);g.lineTo(15,-62);g.stroke();
+  if(beam){g.save();g.translate(46,10);g.rotate(-0.35);g.beginPath();g.ellipse(0,0,17,12,0,0,6.28);g.fill();g.restore();g.beginPath();g.moveTo(61,6);g.lineTo(61,-52);g.stroke();g.lineWidth=9;g.beginPath();g.moveTo(15,-62);g.lineTo(61,-52);g.stroke()}
+  else{g.beginPath();g.moveTo(15,-62);g.quadraticCurveTo(40,-48,32,-24);g.stroke()}
+  g.restore()}
+THEMES.notes=function(t,level,burst,o){
+  const x0=o.x??760,x1=o.x1??1075,cy=o.y??560,a=ease(level/0.08),amp=o.amp||26;
+  g.save();g.globalAlpha*=a;
+  for(let k=0;k<5;k++){g.beginPath();for(let x=x0;x<=x1;x+=8){const u=(x-x0)/(x1-x0),y=cy+(k-2)*26+Math.sin(u*5+t*1.4+k*0.25)*amp*u;x===x0?g.moveTo(x,y):g.lineTo(x,y)}
+    const gr=g.createLinearGradient(x0,0,x1,0);gr.addColorStop(0,'rgba(181,233,207,0)');gr.addColorStop(0.4,'rgba(181,233,207,0.75)');gr.addColorStop(1,'rgba(181,233,207,0.25)');g.strokeStyle=gr;g.lineWidth=2.5;g.stroke()}
+  const r=rng(o.seed||3);for(let i=0;i<6;i++){const sp=0.11+r()*0.07,ph=r(),u=((t*sp+ph)%1),th=r()*0.5,b=ease((level-th)/0.08);if(b<=0)continue;
+    const x=x0+30+(x1-x0-80)*(0.15+0.85*r()),y=cy+170-u*520,sc=(0.7+r()*0.6)*(0.9+0.2*Math.sin(t*2+i));
+    note(x+Math.sin(u*6+i)*22,y,sc,Math.sin(u*3.14)*b,i%3===0)}
+  g.restore();
+};
+// Qrafik: qısa müddətdə yüksəliş, uzun müddətdə qırıq xətt və "?"
+THEMES.graph=function(t,level,burst,o){
+  const x=o.x??700,y=(o.y??330)+Math.sin(t*1.1)*5,W_=350,H_=290,a=ease(level/0.06);g.save();g.globalAlpha*=a;
+  g.shadowColor='rgba(0,0,0,0.4)';g.shadowBlur=28;g.shadowOffsetY=8;g.fillStyle='#0F3B2E';g.beginPath();g.roundRect(x,y,W_,H_,34);g.fill();g.shadowColor='transparent';
+  const ox=x+40,oy=y+H_-56,gw=W_-80,gh=H_-120;g.strokeStyle='rgba(255,255,255,0.35)';g.lineWidth=3;g.beginPath();g.moveTo(ox,oy-gh-8);g.lineTo(ox,oy);g.lineTo(ox+gw,oy);g.stroke();
+  const p=ease((level-0.1)/0.3),q=ease((level-(o.longAt??0.55))/0.2),f=u=>oy-gh*(0.12+0.78*(1-Math.exp(-u*9)));
+  g.strokeStyle='#6CC57E';g.lineWidth=7;g.lineCap='round';g.beginPath();for(let i=0;i<=30*p;i++){const u=i/30*0.42;const X=ox+gw*u,Y=f(u);i?g.lineTo(X,Y):g.moveTo(X,Y)}g.stroke();
+  if(p>0.9){g.fillStyle='#FFFFFF';g.beginPath();g.arc(ox+gw*0.42,f(0.42),9,0,6.28);g.fill()}
+  if(q>0){g.setLineDash([10,12]);g.strokeStyle='rgba(255,255,255,0.8)';g.lineWidth=5;g.beginPath();g.moveTo(ox+gw*0.42,f(0.42));g.lineTo(ox+gw*(0.42+0.58*q),f(0.42)+10*q);g.stroke();g.setLineDash([]);
+    g.font='800 54px Montserrat, MontserratExt, Arial';g.fillStyle='#FFFFFF';g.textAlign='center';g.globalAlpha*=ease((q-0.6)/0.4);g.fillText('?',ox+gw*0.9,f(0.42)-22)}
+  g.restore();g.save();g.globalAlpha*=a;g.font='700 24px Montserrat, MontserratExt, Arial';g.fillStyle='#B5E9CF';g.textAlign='left';g.fillText(o.l1||'qısa müddət',ox,oy+34);
+  if(q>0){g.textAlign='right';g.globalAlpha*=q;g.fillText(o.l2||'uzun müddət',ox+gw,oy+34)}g.restore();
+};
+
 // Yoxlama siyahısı: sətirlər bir-bir çıxır ("?"), solve anında yaşıl işarəyə çevrilir
 THEMES.checklist=function(t,level,burst,o){
   const rows=o.rows||[],x=o.x??50,y=(o.y??210)+Math.sin(t*1.1)*5,W_=o.w||600,rh=74,H_=rows.length*rh+44,a=ease(level/0.03),sv=ease((level-(o.solve??2))/0.05);

@@ -1,0 +1,112 @@
+{
+ "n": "06",
+ "name": "MusiqiVeMozart",
+ "keep": [
+  [
+   0,
+   64.98
+  ]
+ ],
+ "base": {
+  "s": 0.88,
+  "cx": 0.47,
+  "cy": 0.54
+ },
+ "end_at": 64.98,
+ "fix": {
+  "arxafonda": "arxa fonda",
+  "kəmək": "kömək",
+  "edirmək": "edirmi,",
+  "akor": "akkord",
+  "kərpəlikdən": "körpəlikdən",
+  "dinlədim.": "dinlədin.",
+  "edirmək?": "edirmi?",
+  "məqala": "məqalə",
+  "Eric": "Erik",
+  "Seti,": "Sati,",
+  "nətic": "nəticə",
+  "digərlərlə": "digərlərindən",
+  "deməkdir": "deməkdirmi?",
+  "mi?": "",
+  "Qısa@64.88": "",
+  "müddətdə@64.88": "",
+  "var.@65.06": "",
+  "uşağa": "uşağı"
+ },
+ "plan": {
+  "sub_card": {
+   "x": 70,
+   "y": 1160,
+   "w": 940,
+   "h": 290,
+   "color": "#6CC57E",
+   "alpha": "04",
+   "r": 120
+  },
+  "word_color": "#082219",
+  "accent": "#FFFFFF",
+  "word_size": 98,
+  "word_mv": 590,
+  "word_outline": 0,
+  "word_shadow": 0,
+  "max_chars": 13,
+  "q_bg": "#0F3B2E",
+  "q_size": 60,
+  "q_mv": 215,
+  "card_size": 96
+ },
+ "el": {
+  "questions": [
+   [
+    0.15,
+    5.5,
+    "Oxuyanda musiqi:\\Nkömək, yoxsa mane?"
+   ]
+  ],
+  "cards": [
+   [
+    32.7,
+    35.1,
+    "{\\an8\\pos(540,140)}MOZART EFFEKTİ?"
+   ],
+   [
+    61.3,
+    64.9,
+    "{\\an8\\pos(540,140)}UZUN MÜDDƏTDƏ\\NDATA YOXDUR"
+   ]
+  ]
+ },
+ "fx": [
+  {
+   "theme": "notes",
+   "a": 11.6,
+   "b": 25.3,
+   "opts": {
+    "x": 740,
+    "y": 560
+   }
+  },
+  {
+   "theme": "notes",
+   "a": 27.6,
+   "b": 32.6,
+   "opts": {
+    "x": 740,
+    "y": 560,
+    "seed": 8
+   }
+  },
+  {
+   "theme": "graph",
+   "a": 44.3,
+   "b": 60.3,
+   "opts": {
+    "x": 700,
+    "y": 330,
+    "longAt": 0.62,
+    "l1": "qısa",
+    "l2": "uzun"
+   }
+  }
+ ]
+}
