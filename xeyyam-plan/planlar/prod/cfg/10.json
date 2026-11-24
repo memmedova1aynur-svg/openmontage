@@ -1,0 +1,124 @@
+{
+ "n": "10",
+ "name": "OyrenmeUsullari",
+ "keep": [
+  [
+   0,
+   5.34
+  ],
+  [
+   6.92,
+   46.25
+  ]
+ ],
+ "base": {
+  "s": 0.88,
+  "cx": 0.47,
+  "cy": 0.54
+ },
+ "end_at": 46.25,
+ "fix": {
+  "Danloskinin": "Dunloskinin",
+  "öyrəndiğimiz": "öyrəndiyimiz",
+  "Hamının": "Hamı",
+  "xədçəkir,": "xətt çəkir,",
+  "pistir.": "pisdir.",
+  "Bu,@33.22": "",
+  "self": "self-explanation,",
+  "-explanation": ""
+ },
+ "plan": {
+  "sub_card": {
+   "x": 70,
+   "y": 1160,
+   "w": 940,
+   "h": 290,
+   "color": "#FFFFFF",
+   "alpha": "04",
+   "r": 130
+  },
+  "word_color": "#0F3B2E",
+  "accent": "#2E9B57",
+  "word_size": 98,
+  "word_mv": 590,
+  "word_outline": 0,
+  "word_shadow": 0,
+  "max_chars": 13,
+  "q_bg": "#0F3B2E",
+  "q_size": 60,
+  "q_mv": 215,
+  "card_size": 88,
+  "items_y": 120,
+  "items_step": 100,
+  "i_size": 52,
+  "items_end": 46.5
+ },
+ "el": {
+  "questions": [
+   [
+    0.15,
+    5.0,
+    "Hamıya uyğun öyrənmə\\Nüsulu varmı?"
+   ]
+  ],
+  "cards": [
+   [
+    7.54,
+    9.9,
+    "{\\an8\\pos(540,140)}DUNLOSKY ARAŞDIRMASI"
+   ]
+  ],
+  "items": [
+   [
+    34.4,
+    "Sorğulama"
+   ],
+   [
+    38.44,
+    "Özünə izah"
+   ]
+  ]
+ },
+ "fx": [
+  {
+   "theme": "page",
+   "a": 17.9,
+   "b": 25.9,
+   "opts": {
+    "x": 770,
+    "y": 380
+   }
+  },
+  {
+   "theme": "meter",
+   "a": 26.1,
+   "b": 33.1,
+   "opts": {
+    "x": 900,
+    "y": 560
+   }
+  },
+  {
+   "theme": "bubbles",
+   "a": 34.4,
+   "b": 46.2,
+   "hold": 1,
+   "opts": {
+    "x": 730,
+    "y": 400,
+    "items": [
+     [
+      "Niyə belədir?",
+      0,
+      1
+     ],
+     [
+      "Çünki…",
+      0.36,
+      0
+     ]
+    ]
+   }
+  }
+ ]
+}

@@ -85,6 +85,35 @@ function neurons(t,level,burst){
 }
 const THEMES={neurons};
 /*THEMES*/
+// Səhifə: mətn sətirləri, marker ilə altından xətt çəkilir
+THEMES.page=function(t,level,burst,o){
+  const x=o.x??770,y=(o.y??360)+Math.sin(t*1.2)*6,W_=270,H_=350,a=ease(level/0.08);g.save();g.globalAlpha*=a;g.translate(x+W_/2,y+H_/2);g.rotate(0.06);g.translate(-W_/2,-H_/2);
+  g.shadowColor='rgba(0,0,0,0.45)';g.shadowBlur=28;g.shadowOffsetY=10;g.fillStyle='#FFFFFF';g.beginPath();g.roundRect(0,0,W_,H_,18);g.fill();g.shadowColor='transparent';
+  const r=rng(12);for(let i=0;i<7;i++){const ly=44+i*42,lw=(W_-60)*(0.62+r()*0.38),p=ease((level-0.14-i*0.085)/0.1);
+    if(p>0){g.fillStyle='rgba(108,197,126,0.6)';g.fillRect(28,ly-13,lw*p,26)}
+    g.fillStyle='#0F3B2E';g.globalAlpha=a*0.75;g.beginPath();g.roundRect(30,ly-5,lw,10,5);g.fill();g.globalAlpha=a}
+  g.restore();
+};
+// Göstərici: aşağı – orta – yüksək fayda, əqrəb ortaya gəlir
+THEMES.meter=function(t,level,burst,o){
+  const cx=o.x??900,cy=(o.y??560)+Math.sin(t*1.1)*5,R=o.r||130,a=ease(level/0.08);g.save();g.globalAlpha*=a;
+  g.shadowColor='rgba(0,0,0,0.45)';g.shadowBlur=28;g.fillStyle='#0F3B2E';g.beginPath();g.roundRect(cx-R-36,cy-R-40,2*R+72,R+120,36);g.fill();g.shadowColor='transparent';
+  const seg=[['rgba(255,255,255,0.25)',3.1416,4.1888],['#6CC57E',4.1888,5.236],['rgba(255,255,255,0.25)',5.236,6.2832]];g.lineWidth=26;
+  seg.forEach(([c,a0,a1])=>{g.strokeStyle=c;g.beginPath();g.arc(cx,cy,R,a0+0.03,a1-0.03);g.stroke()});
+  const p=ease((level-0.12)/0.35),an=3.1416+0.25+(1.5708-0.25)*p+Math.sin(t*6)*0.03*(1-p);
+  g.strokeStyle='#FFFFFF';g.lineWidth=8;g.lineCap='round';g.beginPath();g.moveTo(cx,cy);g.lineTo(cx+Math.cos(an)*(R-30),cy+Math.sin(an)*(R-30));g.stroke();g.fillStyle='#FFFFFF';g.beginPath();g.arc(cx,cy,11,0,6.28);g.fill();
+  g.font='800 34px Montserrat, MontserratExt, Arial';g.textAlign='center';g.fillStyle='#FFFFFF';g.globalAlpha*=ease((level-0.4)/0.1);g.fillText(o.label||'ORTA FAYDA',cx,cy+56);g.restore();
+};
+// Söhbət balonları: sual və izah
+THEMES.bubbles=function(t,level,burst,o){
+  const x=o.x??740,y=o.y??360,B=o.items||[["Niyə belədir?",0,1],["Çünki…",0.42,0]];
+  B.forEach(([txt,th,left],i)=>{const b=ease((level-th)/0.07);if(b<=0)return;g.save();g.font='800 36px Montserrat, MontserratExt, Arial';const tw=g.measureText(txt).width,bw=tw+64,bh=88,bx=left?x:x+320-bw,by=y+i*150+Math.sin(t*1.3+i)*6;
+    g.globalAlpha*=b;g.translate(bx+bw/2,by+bh/2);g.scale(0.7+0.3*b,0.7+0.3*b);g.translate(-bw/2,-bh/2);
+    g.shadowColor='rgba(0,0,0,0.4)';g.shadowBlur=22;g.shadowOffsetY=8;g.fillStyle=left?'#FFFFFF':'#6CC57E';g.beginPath();g.roundRect(0,0,bw,bh,32);g.fill();
+    g.beginPath();if(left){g.moveTo(26,bh-6);g.lineTo(10,bh+26);g.lineTo(62,bh-6)}else{g.moveTo(bw-26,bh-6);g.lineTo(bw-10,bh+26);g.lineTo(bw-62,bh-6)}g.fill();g.shadowColor='transparent';
+    g.fillStyle='#0B2A20';g.textAlign='left';g.fillText(txt,32,bh/2+13);g.restore()});
+};
+
 // Fənn kartları: 3D əyilmiş plitələr bir-bir çıxır
 THEMES.subjects=function(t,level,burst,o){
   const rows=o.rows||[],x=o.x??800,y0=o.y??380,W_=o.w||250,H_=96,gap=22;
