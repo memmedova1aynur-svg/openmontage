@@ -36,7 +36,7 @@
  "out": "out/07_Beynin10faizi.mp4",
  "q_mv": 215,
  "q_size": 64,
- "word_mv": 560,
+ "word_mv": 490,
  "segs": [
   [
    1.95,
@@ -126,5 +126,15 @@
    "{\\an8\\pos(540,140)}86 MİLYARD"
   ]
  ],
- "card_size": 108
+ "card_size": 108,
+ "sub_card": {
+  "x": 60,
+  "y": 1200,
+  "w": 960,
+  "h": 330
+ },
+ "word_size": 104,
+ "word_outline": 0,
+ "word_shadow": 0,
+ "max_chars": 13
 }

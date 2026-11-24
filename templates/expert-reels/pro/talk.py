@@ -155,6 +155,11 @@ def circ(cx, cy, r):
     k = r * 0.552
     return (f"m {cx} {cy-r} b {cx+k} {cy-r} {cx+r} {cy-k} {cx+r} {cy} b {cx+r} {cy+k} {cx+k} {cy+r} {cx} {cy+r} "
             f"b {cx-k} {cy+r} {cx-r} {cy+k} {cx-r} {cy} b {cx-r} {cy-k} {cx-k} {cy-r} {cx} {cy-r}")
+if B.get("sub_card"):  # altyazı kartı: altyazının arxasında sabit yuvarlaq künclü kart (məs. qarın hissəsini örtür)
+    sc = B["sub_card"]; cx0, cy0, cw, ch = sc.get("x", 60), sc.get("y", 1215), sc.get("w", 960), sc.get("h", 300)
+    ev.append(f"Dialogue: 0,{ts(0)},{ts(T)},F,,0,0,0,,{{\\an7\\pos(0,0)\\p1\\c{bgr(sc.get('color', '#0F3B2E'))}\\alpha&H{sc.get('alpha', '0A')}&\\fad(250,0)}}{rrect(cx0, cy0, cw, ch, sc.get('r', 44))}{{\\p0}}")
+    if sc.get("line", True):
+        ev.append(f"Dialogue: 0,{ts(0)},{ts(T)},F,,0,0,0,,{{\\an7\\pos(0,0)\\p1\\c{bgr(ACC)}\\fad(250,0)}}{rrect(cx0 + cw / 2 - 60, cy0 + ch - 44, 120, 8, 4)}{{\\p0}}")
 if B.get("progress"):  # yuxarıda izləmə xətti (sona qədər baxmağa təşviq)
     ev.append(f"Dialogue: 6,{ts(0)},{ts(T)},F,,0,0,0,,{{\\an7\\pos(0,0)\\p1\\c{bgr(ACC)}\\fscx0\\t(0,{int(T*1000)},\\fscx100)}}m 0 0 l 1080 0 l 1080 10 l 0 10{{\\p0}}")
 if B.get("headline"):  # bütün video boyu sabit başlıq
@@ -187,7 +192,7 @@ WrapStyle: 0
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: S,{FONT},{B['fontsize']},&H00FFFFFF,&H00FFFFFF,&H00000000,&H64000000,{B.get('sub_bold', -1)},{B.get('sub_italic', 0)},0,0,100,100,0,0,1,{B.get('sub_outline', 3.2)},1.5,2,90,90,{B['mv']},1
-Style: D,{UI},{B.get('word_size', 92)},&H00FFFFFF,&H00FFFFFF,&H00101010,&H78000000,-1,0,0,0,100,100,0,0,1,6,2,2,70,70,{B.get('word_mv', 640)},1
+Style: D,{UI},{B.get('word_size', 92)},&H00FFFFFF,&H00FFFFFF,&H00101010,&H78000000,-1,0,0,0,100,100,0,0,1,{B.get('word_outline', 6)},{B.get('word_shadow', 2)},2,70,70,{B.get('word_mv', 640)},1
 Style: Q,{UI},{B.get('q_size', 54)},&H00FFFFFF,&H00FFFFFF,{bgr(B.get('q_bg', '#0B2A20'))},{bgr(B.get('q_bg', '#0B2A20'))},-1,0,0,0,100,100,0,0,3,26,0,8,110,110,{B.get('q_mv', 330)},1
 Style: L,JetBrains Mono,30,{bgr(ACC)},&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,4,0,1,0,0,8,110,110,250,1
 Style: V,{UI},110,&H00FFFFFF,&H00FFFFFF,&H00FFFFFF,&H00000000,-1,0,0,0,100,100,0,0,3,34,0,5,80,80,0,1
