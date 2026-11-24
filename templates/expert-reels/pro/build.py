@@ -67,7 +67,7 @@ for s0, e0 in zip(ss, se):
     if s0 <= 0.05: start = max(0.0, e0 - KB); continue
     if s0 > last_e - 0.1: continue
     if (e0 - KB) - (s0 + KA) >= 0.06: REM.append((round(s0 + KA, 3), round(e0 - KB, 3)))  # sözün başı (B, P, T partlayışı) da qorunur  # sözün sonu (zəif samitlər) qorunur
-for r in CFG.get("extraCut", []): REM.append(tuple(r))
+for r in CFG.get("extraCut", []) + CFG.get("autoCut", []): REM.append(tuple(r))  # autoCut: disfluency.py --to-config (yarımçıq dubl, ıı/ee, çəkiliş söhbəti)
 REM.sort()
 END = min(DUR, last_e + 1.0); HOLD = round(max(0.0, 1.0 - (DUR - last_e)), 2) if DUR - last_e < 1.0 else 0.0
 def mk(rem):
@@ -281,6 +281,12 @@ json.dump(plan, open(W_DIR / "plan.json", "w"), ensure_ascii=False, indent=1)
 r = run(["python", "-m", "montaj.session", "choose", pid, str(W_DIR / "plan.json")])
 print("\n".join(l for l in (r.stdout + r.stderr).splitlines() if "plan tətbiq" in l or "XƏTA" in l or "NƏ ET" in l or "Error" in l))
 if r.returncode: raise SystemExit("choose xətası: " + r.stderr[-1500:])
+if CFG.get("look", "auto") == "auto" and "auto" not in LOOKS:  # hər video üçün ayrıca rəng analizi (color_auto.py) — standart
+    import color_auto
+    _st = color_auto.stats(color_auto.frames(src, color_auto.sdr_chain(color_auto.probe(src)[0])))
+    _lk, _mix, _why = color_auto.decide(_st)
+    if _mix: _lk["temperature"] = round(min(7300, max(5800, 6500 + (_mix[2] - _mix[0]) * 12000)))
+    LOOKS["auto"] = _lk; CFG["look"] = "auto"; print("rəng (avto):", "; ".join(_why) or "baza premium düzəliş")
 # 7) güzgü + yumşaq kamera hərəkəti (push) — hər klip boyu yavaş yaxınlaşma
 q = store.load(pid); PUSH = CFG.get("push", 1.045); k_ = 0
 for c in q["clips"]:
@@ -444,6 +450,10 @@ tick("render bitdi")
 qa = subprocess.run([sys.executable, str(A / "qa.py"), sys.argv[1], dst], capture_output=True, text=True)
 print(qa.stdout.strip()); tick("QA")
 if qa.returncode: raise SystemExit(3)
+# 9b) render səviyyəsində yoxlama: kadraj (baş üstü), rəng normaları, səs/görüntü uzunluğu, qara kadr, yazılış
+qc = subprocess.run([sys.executable, str(A / "qc_render.py"), dst, "--out", str(W_DIR / "QC")], capture_output=True, text=True)
+print((qc.stdout.strip().splitlines() or [qc.stderr[-400:]])[-1][:600]); tick("QC")
+if qc.returncode: raise SystemExit(3)
 for step in ("exports", "cover", "brief"):  # QA keçəndən sonra: əlavə formatlar, üz qabığı, caption/hook paketi
     if step == "exports" and not CFG.get("exports", BRAND.get("exports")): continue
     pr = subprocess.run([sys.executable, str(A / ("brief.py" if step == "brief" else "postfx.py")), *([] if step == "brief" else [step]), sys.argv[1], dst], capture_output=True, text=True)

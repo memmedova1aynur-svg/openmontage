@@ -11,6 +11,37 @@ Ara düzəliş raundları təklif etmə.
 
 Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq, ritm, J/L-cut, etika): [`KINO_DILI.md`](KINO_DILI.md).
 
+## Montaj darvazası (məcburi, kodla yoxlanır — 16.11.2026)
+
+Hər video bu ardıcıllıqla gedir; addım atlanırsa `python -m montaj.gate` təhvili bloklayır:
+
+1. **Müştəri** → `python -m montaj.gate start <müştəri> <video_id> --type N [--approach Mxx]` — MASTER_BRAND_FILE, editing-dna, brand_kit, montage_rules çap olunur və oxunması (sha) qeyd edilir. Fayl sonradan dəyişsə: `gate reread`.
+2. **Növ** — `python -m montaj.session types`; növsüz iş açılmır; bir şablon bütün formatlara tətbiq edilmir.
+3. **Analiz → istiqamət** — `concept.md` (ayra-creative-video-director): Növ, Məqsəd, Hook, Montaj üslubu, Kadraj, Vizual cihazlar, Rəng, Səs, Subtitr, İstifadə etmə. Son 3 təhvil verilmiş videonun hook-u/üslubu ilə eyni olsa bloklanır.
+4. **Montaj planı + icra** — `templates/expert-reels/pro` (disfluency, engine, color_auto, audio_pro); `cut_report.md`. Müvəqqəti/köhnə skript dəstləri istifadə edilmir.
+5. **Render** — iş qovluğunda `final.mp4` + qrafikasız `clean.mp4`.
+6. **QC** — `qc_render.py final.mp4 --clean clean.mp4 --out QC --rules instagram-clients/<m>/montage_rules.json` (müştərinin kadraj hədləri); `QC/qc_sheet.jpg`-yə gözlə bax → `QC/visual_review.md` («NƏTİCƏ: KEÇDİ»).
+7. **Təhvil** — yalnız `python -m montaj.gate deliver <müştəri> <video_id> --to paketler/yekun/<ad>.mp4`. `yekun/`, `gonder/`, `final/` qovluqlarına birbaşa yazma `.claude/hooks/montaj_guard.py` ilə bloklanır. Darvazadan keçməyən video «YEKUN/FINAL» adlandırılmır.
+
+Bir videoya deyilən düzəliş yalnız həmin videonun `concept.md`-sinə yazılır; başqa videoya keçmir.
+
+## Montaj rejimləri və sürət qaydaları (17.11.2026 — ölçülüb)
+
+Rejim videonun mürəkkəbliyinə görə seçilir (keyfiyyət səviyyəsi hamısında eynidir), `concept.md`-də yazılır:
+| Rejim | Nə üçün | Hədəf |
+|---|---|---|
+| **FAST EDIT** (standart) | talking head, ekspert, sual-cavab, gündəlik maarif Reels: düzgün kəsim, təbii rəng, təmiz səs, altyazı, hook, lazım olanda yüngül zoom/qrafika | 4–6 dəq |
+| **CREATIVE EDIT** | B-roll, motion, animasiya, xüsusi kompozisiya | 7–12 dəq |
+| **PREMIUM EDIT** | reklam, mürəkkəb motion graphics, kampaniya | 15–25 dəq |
+Hər videoya PREMIUM tətbiq edilmir. Remotion yalnız həqiqətən lazım olan animasiyada; sadə kəsim/rəng/səs/altyazı/overlay — ffmpeg + numpy.
+
+Ardıcıllıq: **MONTAJ → PREVIEW QA → FINAL RENDER (bir dəfə) → FINAL QC**.
+- PREVIEW QA video render olunmadan, yalnız kəsilmiş səs üzərində (saniyələr): artıq/yarımçıq söz, itmiş söz, danışıq içində kəsim, subtitr = danışıq, qrafika kadr daxilində. Keçmirsə video render olunmur.
+- FINAL RENDER: mənbə 60 fps olsa belə `fps=30` filtr zəncirinin ƏVVƏLİNDƏ; bir kodlama (aralıq baza faylı yoxdur); hissələr paralel; x264 `faster crf17` (= `medium crf18` SSIM, 24% az CPU); qrafikasız nüsxə render edilmir — üz örtülməsi render zamanı ölçülür.
+- Təhvil formatı (Instagram): H.264 High 4.2, 1080×1920, 30 fps, crf 20 + `maxrate 6M`, AAC 128k, `+faststart` — 1 dəq ≈ 40–45 MB (100 MB-dan böyük fayl telefonda paylaşıla bilmir; Instagram onsuz da ~3.5–5 Mbps-ə yenidən kodlayır).
+- FINAL QC: `qc_render` bir dəfə. Problem yoxdursa yenidən montaj/render yoxdur; varsa yalnız həmin problem düzəldilir. Hazır videonun ayrıca tam transkripti təkrarlanmır (PREVIEW QA artıq edib) — yalnız şübhəli yer ayrıca yoxlanır.
+- Brend faylları iş başında bir dəfə (`gate start`) oxunur; eyni müştərinin paketində rəng/kadraj ölçüləri, şriftlər, model keşdən istifadə olunur.
+
 ## Addımlar
 
 1. **Əvvəl qısa sorğu — Drive linkindən ÖNCƏ.** İstifadəçi yeni video istəyəndə (və ya link sorğusuz gəlsə)

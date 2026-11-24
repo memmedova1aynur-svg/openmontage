@@ -1,0 +1,19 @@
+<!doctype html><html lang="az"><head><meta charset="utf-8"><link rel="stylesheet" href="{{base_css}}"><style>
+/* B — Signature expert portrait: krem səhifə, sağda kəskin kənarlı studiya portreti (sağa daşır), solda başlıq sütunu və imza */
+body{background:{{paper}}}
+.photo{left:{{ph_x}}px;top:{{ph_y}}px;width:{{ph_w}}px;height:{{ph_h}}px;overflow:hidden;background:{{backdrop}}}
+.photo img{position:absolute;left:{{img_x}}px;top:{{img_y}}px;width:{{img_w}}px}
+.k{left:96px;top:{{k_y}}px;font-weight:600;font-size:24px;letter-spacing:.2em;text-transform:uppercase;color:{{acc}}}
+.h{left:96px;top:{{h_y}}px;width:{{h_w}}px;font-weight:600;font-size:{{h_size}}px;line-height:1.02;letter-spacing:-.03em;color:{{ink}}}
+.h em{font-style:italic;font-weight:300;color:{{acc}}}
+.sig{left:96px;top:{{sig_y}}px;width:{{h_w}}px;border-top:2px solid {{ink}};padding-top:20px}
+.sig b{display:block;font-weight:600;font-size:44px;letter-spacing:-.02em;color:{{ink}}}
+.sig span{display:block;margin-top:6px;font-size:36px;line-height:1.3;color:{{ink}}}
+.grain{left:0;top:0;width:1080px;height:1920px;opacity:.06;mix-blend-mode:overlay}
+</style></head><body>
+<div class="abs photo"><img src="{{portrait}}"></div>
+<div class="abs" style="left:96px;top:300px;width:80px;height:2px;background:{{acc}}"></div><div class="abs k" data-check="kicker">{{kicker}}</div>
+<div class="abs h" data-check="başlıq">{{headline}}<div style="margin-top:34px;font-weight:400;font-size:40px;line-height:1.28;letter-spacing:0;color:{{ink}}">{{sub}}</div></div>
+<div class="abs sig" data-check="imza"><b>{{name}}</b><span>{{role}}</span></div>
+<img class="abs grain" src="{{grain}}">
+</body></html>

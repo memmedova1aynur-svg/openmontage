@@ -1,0 +1,16 @@
+<!doctype html><html lang="az"><head><meta charset="utf-8"><link rel="stylesheet" href="{{base_css}}"><style>
+body{background:{{paper}}}
+.photo{left:96px;top:{{photo_y}}px;width:888px;background:{{photo_bg}};height:{{photo_h}}px;border-radius:28px;overflow:hidden}
+.photo img{position:absolute;width:{{img_w}}px;left:{{img_x}}px;top:{{img_y}}px}
+.tag{left:96px;top:256px;font-weight:600;font-size:26px;letter-spacing:.24em;color:{{ink}};text-transform:uppercase;display:flex;gap:16px;align-items:center}
+.tag i{display:block;width:56px;height:3px;background:{{ink}}}
+.h{left:94px;top:340px;width:900px;font-weight:600;font-size:{{h_size}}px;line-height:1.02;letter-spacing:-.025em;color:{{ink}}}
+.h em{font-style:normal;color:{{acc}}}
+.name{left:96px;top:{{name_y}}px;width:804px;display:flex;justify-content:space-between;font-size:26px;font-weight:500;color:{{ink}}}
+.name b{font-weight:600}
+</style></head><body>
+<div class="abs tag" data-check="etiket"><i></i>{{tag}}</div>
+<div class="abs h" data-check="başlıq">{{headline}}</div>
+<div class="abs photo"><img src="{{photo}}"></div>
+<div class="abs name" data-check="ad"><b>{{name}}</b><span>{{role}}</span></div>
+</body></html>

@@ -15,6 +15,8 @@ metadata:
 
 # Video Generation (Multi-Gateway)
 
+> Camera prompting: build every prompt as scene → shot size + angle → one camera move → fixed style line. Term list (77 moves/angles/sizes) and rules: `.claude/skills/ayra-creative-video-director/kamera_dili.md`. Never generate or alter a real client's face.
+
 Generate AI videos from text prompts. Supports multiple providers via two API gateways:
 
 | Gateway | Env Variable | Providers | Tool |

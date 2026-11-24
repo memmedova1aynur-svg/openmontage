@@ -14,3 +14,13 @@ mediapipe==1.1.1
 # 4.x keeps the Haar cascades used as the face_tracker fallback (5.0 dropped them)
 opencv-contrib-python==4.12.0.88
 numpy==2.2.6
+# --- engine v3 (templates/expert-reels/pro: audio_pro, align_mms, timeline_export, qc) — 14.11.2026 CPU-da sınanıb
+pedalboard==0.9.26        # studio audio chain (GPL-3.0; daxili istifadə)
+pyloudnorm==0.2.0         # BS.1770 LUFS ölçümü
+soundfile==0.14.0
+opentimelineio==0.18.1    # NLE layihə eksportu (Apache-2.0)
+otio-fcp-adapter          # Premiere Pro (FCP7 XML)
+otio-fcpx-xml-adapter     # DaVinci Resolve / Final Cut (FCPXML)
+scenedetect==0.7.3        # səhnə/dubl sərhədləri (BSD)
+# demucs==4.1.0 — "pip install --no-deps demucs" + dora-search einops julius lameenc openunmix safetensors sphn (torch-u yeniləməsin)
+# MMS forced alignment: torchaudio.pipelines.MMS_FA (model ilk dəfə endirilir, ~1.2 GB)
