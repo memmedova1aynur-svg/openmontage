@@ -177,3 +177,29 @@ def test_sfx_cues_follow_effects():
     kinds = [c["kind"] for c in cues]
     assert kinds == ["fx_whoosh_soft", "fx_whoosh", "fx_hit", "fx_pop"]
     assert abs(cues[0]["t"] - 2.12) < 1e-6 and cues[2]["t"] > cues[1]["t"]
+
+
+def test_icon3d_behind_person(monkeypatch):
+    """3D ikon: kadrlar (burada saxta — qırmızı kvadrat) başın yanına qoyulur, insanı örtmür."""
+    from montaj import icons3d
+
+    spr = np.zeros((200, 200, 4), np.uint8)
+    spr[20:180, 20:180] = (255, 0, 0, 255)
+    monkeypatch.setattr(icons3d, "frames", lambda kind, color, dur, size: [spr] * 90)
+    f8, m, out = run_frame({"type": "icon3d", "kind": "brain", "start": 0, "dur": 3, "x": 0.5, "y": 0.3, "glow": 0, "integrate": 0}, 1.0)
+    red = (out[..., 0] > 180) & (out[..., 1] < 60) & (out[..., 2] < 60)
+    assert red.sum() > 3000 and not red[m > 0.99].any()  # görünür, amma insanın arxasında
+    with pytest.raises(ValueError):
+        depthfx.normalize({"type": "icon3d", "kind": "ufo", "start": 0, "dur": 1})
+
+
+def test_icon3d_real_render():
+    """Əsl Three.js renderi (node + three varsa): şəffaf fon, ikon görünür."""
+    from montaj import icons3d
+
+    try:
+        fr = icons3d.frames("heart", None, 0.5, 160)
+    except Exception as e:  # noqa: BLE001
+        pytest.skip(f"3D render mühiti yoxdur: {e}")
+    last = fr[-4]
+    assert last.shape == (160, 160, 4) and last[0, 0, 3] == 0 and (last[..., 3] > 200).sum() > 1500

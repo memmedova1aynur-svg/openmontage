@@ -9,6 +9,8 @@ Növlər:
              anim stagger (hərf-hərf, standart) | rise | scale | slide | fade
   text3d   — 3D yazı: qalınlıq, yuxarıdan işıq, üzərindən parıltı keçir, perspektivdə fırlanma (hərəkət bulanıqlığı ilə).
              text, size, y, color, side (yan rəng), depth, anim swing|fly|tilt, behind (true — insanın arxasında)
+  icon3d   — 3D İKON (beyin, kitablar, lampa, ürək, ulduz, təsdiq): fırlanaraq peyda olur, başın yanında, bir hissəsi
+             insanın arxasında. kind brain|books|bulb|heart|star|check, size, x / y ("auto" — başa görə), color, behind, glow
   sticker  — stiker kəsik: insan bir az "qalxır", ətrafında kəskin kontur + kölgə, fon dəyişir.
              outline (eni payı), outlineColor, bg dim|color|blur|keep, bgColor, dim, lift
   focus    — yalnız FONA effekt (diqqət anı), insan toxunulmaz: bg dim|blur|gray|color|image, amount, color, file
@@ -33,13 +35,15 @@ import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
-TYPES = ("behind", "text3d", "sticker", "focus", "parallax", "popout")
+TYPES = ("behind", "text3d", "icon3d", "sticker", "focus", "parallax", "popout")
 COMMON = {"fadeIn": 0.35, "fadeOut": 0.35}
 DEFAULTS: dict[str, dict[str, Any]] = {
     "behind": {"size": 0.2, "y": 0.3, "style": "solid", "upper": True, "anim": "stagger", "font": "Montserrat", "weight": 800,
                "maxWidth": 0.94, "integrate": 0.8},
     "text3d": {"size": 0.21, "y": 0.28, "anim": "swing", "behind": True, "depth": 0.03, "font": "Montserrat", "weight": 800,
                "upper": True, "maxWidth": 0.9, "integrate": 0.8},
+    "icon3d": {"kind": "brain", "size": 0.44, "x": "auto", "y": "auto", "behind": True, "glow": 0.3, "integrate": 0.7,
+               "fadeIn": 0.0, "fadeOut": 0.0},
     "sticker": {"outline": 0.011, "outlineColor": "#FFFFFF", "bg": "dim", "dim": 0.6, "shadow": True, "lift": 0.03},
     "focus": {"bg": "dim", "amount": 0.6},
     "parallax": {"zoom": 0.09, "bgZoom": 0.02, "drift": 0.015, "fadeOut": 0.7},
@@ -72,6 +76,11 @@ def normalize(e: dict[str, Any], theme: dict[str, Any] | None = None) -> dict[st
     if t == "text3d":
         s.setdefault("color", primary)
         s.setdefault("side", deep)
+    if t == "icon3d":
+        from montaj import icons3d
+
+        if s["kind"] not in icons3d.KINDS:
+            raise ValueError(f"naməlum ikon: {s['kind']} ({', '.join(icons3d.KINDS)})")
     if t == "sticker":
         s.setdefault("bgColor", deep)
     if t == "focus" and s["bg"] == "color":
@@ -89,7 +98,7 @@ def normalize(e: dict[str, Any], theme: dict[str, Any] | None = None) -> dict[st
 def effects_key(effects: list[dict[str, Any]], src: Path) -> str:
     st = src.stat()
     h = hashlib.sha1(json.dumps(effects, sort_keys=True, ensure_ascii=False).encode())
-    h.update(f"{src.name}:{st.st_size}:{int(st.st_mtime)}:v2".encode())
+    h.update(f"{src.name}:{st.st_size}:{int(st.st_mtime)}:v3".encode())
     return h.hexdigest()[:10]
 
 
@@ -460,6 +469,41 @@ def fx_text3d(f, m, e, lt, env, cache):
     return out * (1 - a[..., None]) + col * a[..., None]
 
 
+def fx_icon3d(f, m, e, lt, env, cache):
+    """3D ikon (Three.js kadrları, giriş/çıxış animasiyası kadrlarda) — standart olaraq insanın arxasında, yanında."""
+    H, W = m.shape
+    if "fr" not in cache:
+        from montaj import icons3d
+
+        px = int(min(760, max(120, W * float(e["size"])))) // 2 * 2
+        cache["fr"] = icons3d.frames(e["kind"], e.get("color"), e["dur"], px)
+        ys, xs = np.where(m > 0.5)
+        pcx, top = (float(xs.mean()) / W, float(ys.min()) / H) if len(xs) else (0.5, 0.3)
+        half = float(e["size"]) / 2
+        x = e["x"] if e["x"] != "auto" else (pcx + 0.25 if pcx <= 0.5 else pcx - 0.25)  # başın yanında, bir hissəsi arxada
+        y = e["y"] if e["y"] != "auto" else top + 0.01
+        cache["pos"] = (min(1 - half * 0.75, max(half * 0.75, float(x))), max(half * W / H * 0.8, float(y)))
+    fr = cache["fr"]
+    spr = fr[min(len(fr) - 1, int(round(lt * 30)))].astype(np.float32) / 255.0
+    cx, cy = cache["pos"]
+    rgb, a = np.zeros_like(f), np.zeros(m.shape, np.float32)
+    _paste(rgb, a, spr, int(cx * W - spr.shape[1] / 2), int(cy * H - spr.shape[0] / 2))
+    if not (a > 0.01).any():
+        return f
+    occ = (1 - m) if e.get("behind", True) else 1.0
+    out = f
+    g = float(e.get("glow") or 0)
+    if g > 0:  # ikonun arxasında yumşaq işıq — tünd fonda ayrılsın
+        halo = cv2.GaussianBlur(a, (0, 0), W * 0.05) * g * occ
+        tintc = (rgb * a[..., None]).sum(axis=(0, 1)) / max(float(a.sum()), 1e-3)
+        out = np.clip(out + halo[..., None] * tintc, 0, 1)
+    sh = _shift(cv2.GaussianBlur(a, (0, 0), W * 0.014), int(W * 0.016), int(W * 0.008)) * 0.35 * occ
+    out = out * (1 - sh[..., None])
+    rgb = _integrate(rgb, a, f, m, float(e.get("integrate", 0.7)), int(lt * 1000))
+    vis = (a * occ)[..., None]
+    return out * (1 - vis) + rgb * vis
+
+
 def _dilate(m: np.ndarray, r: int) -> np.ndarray:
     k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2 * r + 1, 2 * r + 1))
     d = cv2.dilate((m > 0.5).astype(np.uint8), k)
@@ -577,9 +621,9 @@ def fx_popout(f, m, e, lt, env, cache):
     return out
 
 
-FX: dict[str, Callable] = {"behind": fx_behind, "text3d": fx_text3d, "sticker": fx_sticker, "focus": fx_focus,
+FX: dict[str, Callable] = {"behind": fx_behind, "text3d": fx_text3d, "icon3d": fx_icon3d, "sticker": fx_sticker, "focus": fx_focus,
                            "parallax": fx_parallax, "popout": fx_popout}
-ORDER = {"focus": 0, "sticker": 1, "behind": 2, "text3d": 2, "parallax": 3, "popout": 4}  # fon → yazı → kamera → çərçivə
+ORDER = {"focus": 0, "sticker": 1, "behind": 2, "text3d": 2, "icon3d": 2, "parallax": 3, "popout": 4}  # fon → yazı → kamera → çərçivə
 
 
 def apply_frame(f8: np.ndarray, m: np.ndarray, effects: list[dict[str, Any]], tls: list[float],
@@ -623,6 +667,9 @@ def sfx_cues(effects: list[dict[str, Any]], peaks: dict[str, float] | None = Non
         elif t == "text3d":
             at_peak("fx_whoosh", s + 0.45, 0.35)
             at_onset("fx_hit", s + 0.75, 0.4)
+        elif t == "icon3d":
+            at_peak("fx_whoosh_soft", s + 0.2, 0.3)
+            at_onset("fx_pop", s + 0.3, 0.4)
         elif t == "sticker":
             at_onset("fx_pop", s, 0.45)
         elif t == "focus":

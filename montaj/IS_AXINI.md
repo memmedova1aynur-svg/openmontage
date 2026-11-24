@@ -91,6 +91,10 @@ Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq,
      otaq işığına uyğunlaşır, kamera dənəvərliyi.
    - `text3d` — **3D yazı** (qalınlıq, işıq, üzərindən parıltı keçir, girişdə hərəkət bulanıqlığı): `anim` swing|fly|tilt,
      `behind` true/false, `depth`, `color` + `side` (yan üz).
+   - `icon3d` — **3D ikon** (əsl 3D obyekt, Three.js; yazı əvəzinə və ya yazı ilə): `kind` brain (beyin) | books (kitablar)
+     | bulb (lampa — fikir) | heart | star | check; fırlanaraq peyda olur, başın yanında dayanır, bir hissəsi insanın
+     arxasında (`x`/`y` "auto" — başa görə; `size`, `color`, `behind`). Danışıqdakı ANLAYIŞA bağla ("beyin" deyəndə beyin).
+     Yeni ikon lazımdırsa: `montaj/icons3d_web/index.html`-ə funksiya + `icons3d.KINDS`. İlk render ~30 s (keşlənir).
    - `sticker` — **stiker kəsik**: insan azca "qalxır" (`lift`), ətrafında kəskin ağ kontur + kölgə, fon
      `dim`|`color`|`blur`|`keep` (vurğu anı, hook).
    - `focus` — **yalnız fona effekt**, insan toxunulmaz: `bg` dim|blur|gray|color|image, `amount` (diqqəti cümləyə çək).
