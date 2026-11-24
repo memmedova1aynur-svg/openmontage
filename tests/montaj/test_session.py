@@ -1424,3 +1424,51 @@ def test_music_mixkit_fallback(monkeypatch):
     monkeypatch.setattr(music, "mixkit_search", lambda *a, **k: [{"id": "mixkit-9", "source": "mixkit"}])
     tracks, notes = music.find("kids", music.AVOID, 20, 200, 3)
     assert tracks == [{"id": "mixkit-9", "source": "mixkit"}] and any("yalnız Mixkit" in x for x in notes)
+
+
+def test_depth_fx_cli(tmp_path, monkeypatch, capsys):
+    """fx: effekt əlavə et → önizləmə (layihə dəyişmir) → tətbiq (törəmə video, kadr sayı eyni, səs effektləri s1-də)
+    → render törəməni götürür → --clear hamısını geri qaytarır."""
+    import subprocess
+
+    import numpy as np
+
+    from montaj import background
+
+    try:
+        background.model_path("accurate")
+    except Exception:  # noqa: BLE001
+        pytest.skip("seqmentasiya modeli endirilmədi (şəbəkə)")
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import session, store
+
+    monkeypatch.setattr(session, "data_dir", lambda: tmp_path / "data")
+    capsys.readouterr()
+    assert session.main(["fx", pid, "--add", '{"type":"behind","start":0.5,"dur":1}']) != 0  # text yoxdur
+    assert session.main(["fx", pid, "--add", '{"type":"behind","text":"SİRR","start":0.4,"dur":1.6,"color":"#FF2020","y":0.45}']) == 0
+    assert store.load(pid)["fx"][0]["anim"] == "stagger"
+    assert session.main(["fx", pid, "--preview"]) == 0
+    assert (tmp_path / "out" / pid / "effektler.jpg").stat().st_size > 5000
+    assert not store.load(pid).get("fxRender"), "önizləmə layihəni dəyişmir"
+    assert session.main(["fx", pid, "--apply"]) == 0
+    q = store.load(pid)
+    mid = q["media"][0]["id"]
+    der = store.project_dir(pid) / q["fxRender"][mid]["file"]
+    cnt = lambda f: int(subprocess.run(["ffprobe", "-v", "error", "-count_frames", "-select_streams", "v:0", "-show_entries",
+                                        "stream=nb_read_frames", "-of", "csv=p=0", str(f)], capture_output=True, text=True).stdout.strip())
+    assert abs(cnt(der) - cnt(store.project_dir(pid) / q["media"][0]["file"])) <= 1
+    fx_clips = [c for c in q["clips"] if c.get("origin") == "fx"]
+    from montaj.config import REPO_ROOT
+    if (REPO_ROOT / ".venv-earshot" / "bin" / "earshot").is_file():
+        assert fx_clips and all(c["track"] == "s1" for c in fx_clips), "effektin səsi s1 trekində"
+    assert session.main(["render", pid]) == 0
+    mp4 = sorted((tmp_path / "out" / pid).glob(f"{pid}_r*.mp4"))[-1]
+    W, H = q["width"], q["height"]
+    raw = subprocess.run(["ffmpeg", "-v", "error", "-ss", "1.5", "-i", str(mp4), "-frames:v", "1", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
+                         capture_output=True, check=True).stdout
+    px = np.frombuffer(raw, np.uint8).reshape(H, W, 3).astype(int)
+    red = ((px[..., 0] > 150) & (px[..., 1] < 90) & (px[..., 2] < 90)).sum()
+    assert red > 300, "render effektli törəməni götürür (qırmızı yazı görünür)"
+    assert session.main(["fx", pid, "--clear"]) == 0
+    q = store.load(pid)
+    assert not q.get("fx") and not q.get("fxRender") and not [c for c in q["clips"] if c.get("origin") == "fx"]

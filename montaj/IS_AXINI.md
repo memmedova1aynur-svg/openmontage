@@ -86,12 +86,20 @@ Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq,
    MediaPipe maskası + OpenCV; `montaj/depthfx.py`). Hər effekt zaman xəttində pəncərədir (`start`, `dur` — transkriptdəki
    sözün vaxtına bağla), yalnız o kadrlar emal olunur; fon dəyişdirilibsə effekt onun üstündə işləyir:
    - `behind` — **yazı insanın arxasında** (açar söz, başlıq): `text`, `y` (0.3 — başın hündürlüyü; baş hərfləri örtsün),
-     `size`, `style` solid|outline, `anim` rise|scale|slide|fade, `color` (standart — brend rəngi).
-   - `text3d` — **3D yazı** (qalınlıq, işıq, perspektivdə fırlanma): `anim` swing|fly|tilt, `behind` true/false, `depth`.
-   - `sticker` — **stiker kəsik**: insanın ətrafında ağ kontur + kölgə, fon `dim`|`color`|`blur`|`keep` (vurğu anı, hook).
+     `size`, `style` solid|outline, `anim` stagger (hərf-hərf, hərəkət bulanıqlığı ilə — standart)|rise|scale|slide|fade,
+     `color` (standart — brend rəngi). Yazı səhnəyə "oturur" (`integrate` 0.8): başın kölgəsi hərflərə düşür, parlaqlıq
+     otaq işığına uyğunlaşır, kamera dənəvərliyi.
+   - `text3d` — **3D yazı** (qalınlıq, işıq, üzərindən parıltı keçir, girişdə hərəkət bulanıqlığı): `anim` swing|fly|tilt,
+     `behind` true/false, `depth`, `color` + `side` (yan üz).
+   - `sticker` — **stiker kəsik**: insan azca "qalxır" (`lift`), ətrafında kəskin ağ kontur + kölgə, fon
+     `dim`|`color`|`blur`|`keep` (vurğu anı, hook).
    - `focus` — **yalnız fona effekt**, insan toxunulmaz: `bg` dim|blur|gray|color|image, `amount` (diqqəti cümləyə çək).
    - `parallax` — **2.5D kamera**: insan fondan çox yaxınlaşır, fon azca sürüşür (insanın arxası avtomatik doldurulur).
-   - `popout` — **çərçivədən çıxmaq**: video brend fonunda karta kiçilir, baş kartın üst kənarından çölə çıxır.
+   - `popout` — **çərçivədən çıxmaq**: video brend fonunda karta kiçilir (keçid həndəsidir, kadrlar qarışmır), baş kartın
+     üst kənarından çölə çıxır (`cardTop` "auto" — başa görə); `title` — kartın üstündə hərf-hərf başlıq (CTA, təlimin adı).
+   Maska saç səviyyəsindədir (guided filter — kənar kadrın özünü izləyir). **Səs avtomatikdir:** `--apply` hər effektə
+   uyğun səs qoyur (yazı — yumşaq whoosh, 3D — whoosh + zərbə, stiker və kart — pop, fon effekti — enən səs, 2.5D — riser;
+   earshot ilə, s1 trekində, `origin: fx`; təkrar `--apply` köhnələrini əvəzləyir). Səssiz: `--no-sfx`.
    Axın: `fx <pid> --add '{"type":"behind","text":"SİRR","start":3.2,"dur":2.5}'` (bir neçə dəfə) → `fx <pid> --preview`
    (`effektler.jpg`: hər effekt 3 kadrda — qərar mesajına əlavə et) → `fx <pid> --apply` → `render`. `--list`, `--remove N`,
    `--clear`; yalnız sınaq üçün `--preview --spec '{...}'` (layihəyə yazılmır). ~1 dəq / 10 s effekt (1080x1920).

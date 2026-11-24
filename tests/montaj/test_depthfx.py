@@ -101,7 +101,7 @@ def test_text3d_front_and_behind():
 
 
 def test_sticker_outline_and_no_wraparound():
-    f8, m, out = run_frame({"type": "sticker", "start": 0, "dur": 3}, 1.0)
+    f8, m, out = run_frame({"type": "sticker", "start": 0, "dur": 3, "lift": 0}, 1.0)
     ring = (depthfx._dilate(m, int(W * 0.012) - 1) > 0.9) & (m < 0.01)
     assert out[ring].mean() > 200  # ağ kontur
     assert out[:3].mean() > 0.3 * f8[:3].mean()  # kölgə aşağı kənardan yuxarı keçmir
@@ -142,3 +142,38 @@ def test_process_video(tmp_path, fake_seg):
     assert info["frames"] == 60
     assert 30 <= info["touched"] <= 40  # yalnız pəncərələr (0.5–1.1, 1.2–1.8)
     assert background.probe(tmp_path / "out.mp4")["w"] == W
+
+
+def test_sticker_lift_enlarges_person():
+    f8, m, out = run_frame({"type": "sticker", "start": 0, "dur": 3, "lift": 0.05, "bg": "color", "bgColor": "#000000"}, 1.0)
+    skin = (np.abs(out.astype(int) - np.array([225, 180, 150])).sum(axis=2) < 20).sum()
+    skin0 = (np.abs(f8.astype(int) - np.array([225, 180, 150])).sum(axis=2) < 20).sum()
+    assert skin > skin0 * 1.05  # insan bir az böyüyüb ("qalxır")
+
+
+def test_stagger_letters_enter_one_by_one():
+    e = {"type": "behind", "text": "ABCDEF", "start": 0, "dur": 3, "y": 0.15, "integrate": 0}
+    _, _, early = run_frame(e, 0.08)
+    f8, _, late = run_frame(e, 1.0)
+    d_early = (np.abs(early.astype(int) - f8.astype(int)).sum(axis=2) > 40).sum()
+    d_late = (np.abs(late.astype(int) - f8.astype(int)).sum(axis=2) > 40).sum()
+    assert 0 < d_early < d_late * 0.5  # əvvəl yalnız ilk hərflər
+
+
+def test_popout_transition_has_no_ghost():
+    """Keçidin ortasında kadr kiçilir — iki kadrın yarımşəffaf qarışığı (xəyalət) olmamalıdır."""
+    e = depthfx.normalize({"type": "popout", "start": 0, "dur": 3}, TH)
+    f8, m = frame(0), person_mask(0)
+    out = depthfx.apply_frame(f8, m, [e], [e["fadeIn"] * 0.5], [{}])
+    canvas_top = np.abs(out[3, 3].astype(int) - np.array([201, 87, 125])).sum()
+    assert canvas_top < 80  # künc — təmiz brend fonu, orijinal kadrla qarışıq deyil
+
+
+def test_sfx_cues_follow_effects():
+    fx = [depthfx.normalize(e, TH) for e in [{"type": "behind", "text": "x", "start": 2, "dur": 2},
+                                             {"type": "text3d", "text": "y", "start": 5, "dur": 2},
+                                             {"type": "sticker", "start": 8, "dur": 1}]]
+    cues = depthfx.sfx_cues(fx, {"fx_whoosh_soft": 0.1, "fx_whoosh": 0.15})
+    kinds = [c["kind"] for c in cues]
+    assert kinds == ["fx_whoosh_soft", "fx_whoosh", "fx_hit", "fx_pop"]
+    assert abs(cues[0]["t"] - 2.12) < 1e-6 and cues[2]["t"] > cues[1]["t"]

@@ -2043,6 +2043,37 @@ def _fx_at(p: dict[str, Any], tl: float) -> tuple[dict[str, Any], float] | None:
     return None
 
 
+def _fx_sfx(pid: str, fx: list[dict[str, Any]]) -> int:
+    """Effektlərin səsləri (whoosh, zərbə, pop…) s1 trekinə; əvvəlki effekt səsləri (origin "fx") əvəzlənir.
+    earshot yoxdursa — səssiz (xəbərdarlıqla)."""
+    from montaj import depthfx
+    from montaj.config import REPO_ROOT
+
+    exe = shutil.which("earshot") or next((str(p) for p in [REPO_ROOT / ".venv-earshot" / "bin" / "earshot"] if p.is_file()), None)
+    q = store.load(pid)
+    q["clips"] = [c for c in q["clips"] if c.get("origin") != "fx"]
+    if not exe or not fx:
+        if fx:
+            print("xəbərdarlıq: earshot yoxdur — effektlər səssiz (`bash .claude/skills/earshot/scripts/install.sh`)")
+        store.save(pid, q, q["revision"])
+        return 0
+    peaks = depthfx.make_sfx(data_dir() / "sfx", exe)
+    cues = depthfx.sfx_cues(fx, peaks)
+    for s in cues:
+        _sfx_media(pid, s["kind"])
+    q = store.load(pid)
+    q["clips"] = [c for c in q["clips"] if c.get("origin") != "fx"]
+    for s in cues:
+        med = next(x for x in store.load(pid)["media"] if x["id"] == f"sfx_{s['kind']}")
+        if not any(x["id"] == med["id"] for x in q["media"]):
+            q["media"].append(med)
+        q = node_tl("addMedia", {**q, "media": [x for x in q["media"] if x["id"] != med["id"]]}, med,
+                    {"targetTrack": "s1", "at": s["t"]})
+        q["clips"][-1].update(volume=s["vol"], origin="fx")
+    store.save(pid, q, q["revision"])
+    return len(cues)
+
+
 def cmd_fx(a: argparse.Namespace) -> None:
     """Dərinlik effektləri: yazı insanın arxasında, 3D yazı, stiker kəsik, fon effekti, 2.5D kamera, çərçivədən çıxmaq."""
     from PIL import Image, ImageDraw, ImageFont
@@ -2072,6 +2103,7 @@ def cmd_fx(a: argparse.Namespace) -> None:
         cur["fx"] = fx
         if not fx:
             cur.pop("fxRender", None)
+            cur["clips"] = [c for c in cur["clips"] if c.get("origin") != "fx"]
         saved = store.save(a.pid, cur, cur["revision"])
         print(f"effektlər saxlandı ({len(fx)}); versiya {saved['revision']} — `fx {a.pid} --preview`, sonra `--apply`")
         p = cur
@@ -2135,7 +2167,11 @@ def cmd_fx(a: argparse.Namespace) -> None:
             out[m["id"]] = {"file": rel, "base": base, "key": key}
         cur = store.load(a.pid)
         cur["fxRender"] = out
-        saved = store.save(a.pid, cur, cur["revision"])
+        store.save(a.pid, cur, cur["revision"])
+        n = _fx_sfx(a.pid, fx if not a.no_sfx else [])
+        if n:
+            print(f"səs effektləri: {n} (whoosh / zərbə / pop — effektlərin anlarına, s1 trekində)")
+        saved = store.load(a.pid)
         print(f"saxlandı: versiya {saved['revision']} — render <pid> (orijinal dəyişmir; `fx <pid> --clear` effektləri silir)")
 
 
@@ -2840,6 +2876,7 @@ def main(argv: list[str] | None = None) -> int:
     fxp.add_argument("--preview", action="store_true")
     fxp.add_argument("--apply", action="store_true")
     fxp.add_argument("--media")
+    fxp.add_argument("--no-sfx", action="store_true", help="effektlərə səs qoyma")
     bl = sub.add_parser("bg-lib", help="fon kitabxanası: add <fayllar> | list")
     bl.add_argument("action", choices=["add", "list"])
     bl.add_argument("files", nargs="*")
