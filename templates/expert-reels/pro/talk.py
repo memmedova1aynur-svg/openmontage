@@ -157,7 +157,7 @@ def circ(cx, cy, r):
             f"b {cx-k} {cy+r} {cx-r} {cy+k} {cx-r} {cy} b {cx-r} {cy-k} {cx-k} {cy-r} {cx} {cy-r}")
 if B.get("sub_card"):  # altyazı kartı: altyazının arxasında sabit yuvarlaq künclü kart (məs. qarın hissəsini örtür)
     sc = B["sub_card"]; cx0, cy0, cw, ch = sc.get("x", 60), sc.get("y", 1215), sc.get("w", 960), sc.get("h", 300)
-    ev.append(f"Dialogue: 0,{ts(0)},{ts(T)},F,,0,0,0,,{{\\an7\\pos(0,0)\\p1\\c{bgr(sc.get('color', '#0F3B2E'))}\\alpha&H{sc.get('alpha', '0A')}&\\fad(250,0)}}{rrect(cx0, cy0, cw, ch, sc.get('r', 44))}{{\\p0}}")
+    ev.append(f"Dialogue: 0,{ts(0)},{ts(T)},F,,0,0,0,,{{\\an7\\pos(0,0)\\p1\\c{bgr(sc.get('color', '#0F3B2E'))}\\1a&H{sc.get('alpha', '0A')}&{('\\bord' + str(sc.get('border_w', 4)) + '\\3c' + bgr(sc['border'])) if sc.get('border') else ''}\\fad(250,0)}}{rrect(cx0, cy0, cw, ch, sc.get('r', 44))}{{\\p0}}")
     if sc.get("line", True):
         ev.append(f"Dialogue: 0,{ts(0)},{ts(T)},F,,0,0,0,,{{\\an7\\pos(0,0)\\p1\\c{bgr(ACC)}\\fad(250,0)}}{rrect(cx0 + cw / 2 - 60, cy0 + ch - 44, 120, 8, 4)}{{\\p0}}")
 if B.get("progress"):  # yuxarıda izləmə xətti (sona qədər baxmağa təşviq)

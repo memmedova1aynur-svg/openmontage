@@ -1,0 +1,109 @@
+{
+ "n": "04",
+ "name": "YuxuVeOyrenme",
+ "keep": [
+  [
+   0,
+   3.98
+  ],
+  [
+   5.44,
+   20.68
+  ],
+  [
+   23.36,
+   43.5
+  ]
+ ],
+ "base": {
+  "s": 0.88,
+  "cx": 0.47,
+  "cy": 0.54
+ },
+ "zooms": [
+  1.0,
+  1.1
+ ],
+ "fix": {
+  "Bəs,": "Bəs",
+  "7": "7–9",
+  "-9": "",
+  "bir@16.78": "",
+  "mənalı": "birmənalı",
+  "eğer": "əgər",
+  "fiziyologiyanıza": "fiziologiyanıza",
+  "etdiniz": "etdiyiniz"
+ },
+ "plan": {
+  "sub_card": {
+   "x": 60,
+   "y": 1150,
+   "w": 960,
+   "h": 320,
+   "color": "#082219",
+   "alpha": "30",
+   "border": "#6CC57E",
+   "border_w": 5
+  },
+  "word_size": 100,
+  "word_mv": 565,
+  "word_outline": 0,
+  "word_shadow": 0,
+  "max_chars": 13,
+  "q_bg": "#0F3B2E",
+  "q_size": 62,
+  "q_mv": 215,
+  "card_size": 104
+ },
+ "el": {
+  "questions": [
+   [
+    0.15,
+    2.5,
+    "Yuxu öyrənməyə\\Ntəsir edir?"
+   ]
+  ],
+  "cards": [
+   [
+    2.84,
+    3.95,
+    "{\\an8\\pos(540,140)}ÇOX TƏSİRİ VAR"
+   ],
+   [
+    12.3,
+    16.9,
+    "{\\an8\\pos(540,140)}7–9 SAAT"
+   ],
+   [
+    24.7,
+    27.2,
+    "{\\an8\\pos(540,140)}PLANLAŞDIR"
+   ],
+   [
+    40.34,
+    43.5,
+    "{\\an8\\pos(540,140)}EYNİ SAATDA\\NYAT VƏ QALX"
+   ]
+  ]
+ },
+ "fx": [
+  {
+   "theme": "moon",
+   "a": 5.5,
+   "b": 20.6,
+   "opts": {
+    "x": 900,
+    "y": 520
+   }
+  },
+  {
+   "theme": "sleepclock",
+   "a": 29.6,
+   "b": 36.9,
+   "opts": {
+    "x": 880,
+    "y": 520
+   }
+  }
+ ]
+}
