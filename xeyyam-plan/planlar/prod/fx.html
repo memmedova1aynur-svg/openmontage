@@ -88,10 +88,13 @@ const THEMES={neurons};
 // Səhifə: mətn sətirləri, marker ilə altından xətt çəkilir
 THEMES.page=function(t,level,burst,o){
   const x=o.x??770,y=(o.y??360)+Math.sin(t*1.2)*6,W_=270,H_=350,a=ease(level/0.08);g.save();g.globalAlpha*=a;g.translate(x+W_/2,y+H_/2);g.rotate(0.06);g.translate(-W_/2,-H_/2);
-  g.shadowColor='rgba(0,0,0,0.45)';g.shadowBlur=28;g.shadowOffsetY=10;g.fillStyle='#FFFFFF';g.beginPath();g.roundRect(0,0,W_,H_,18);g.fill();g.shadowColor='transparent';
+  g.shadowColor='rgba(0,0,0,0.45)';g.shadowBlur=28;g.shadowOffsetY=10;g.fillStyle=o.dark?'#0F3B2E':'#FFFFFF';g.beginPath();g.roundRect(0,0,W_,H_,18);g.fill();g.shadowColor='transparent';
   const r=rng(12);for(let i=0;i<7;i++){const ly=44+i*42,lw=(W_-60)*(0.62+r()*0.38),p=ease((level-0.14-i*0.085)/0.1);
-    if(p>0){g.fillStyle='rgba(108,197,126,0.6)';g.fillRect(28,ly-13,lw*p,26)}
-    g.fillStyle='#0F3B2E';g.globalAlpha=a*0.75;g.beginPath();g.roundRect(30,ly-5,lw,10,5);g.fill();g.globalAlpha=a}
+    const keep=(o.keep||[]).includes(i),fd=o.fade?(keep?1:1-ease((level-0.15-i*0.07)/0.14)):1;
+    if(o.fade){if(keep){const k=ease((level-0.7)/0.15);g.fillStyle=`rgba(108,197,126,${0.75*k})`;g.fillRect(24,ly-15,lw+12,30)}}
+    else if(p>0){g.fillStyle=o.dark?'rgba(108,197,126,0.85)':'rgba(108,197,126,0.6)';g.fillRect(28,ly-13,lw*(o.fill?1:p),26)}
+    if(o.fill&&p<=0)continue;
+    g.fillStyle=o.dark?'#FFFFFF':'#0F3B2E';g.globalAlpha=a*0.85*fd;g.beginPath();g.roundRect(30,ly-5,lw,10,5);g.fill();g.globalAlpha=a}
   g.restore();
 };
 // Göstərici: aşağı – orta – yüksək fayda, əqrəb ortaya gəlir
@@ -330,6 +333,7 @@ THEMES.shelf=function(t,level,burst,o){
   const fadeFar=far?Math.max(0.3,1-ease((level-0.55)/0.4)*0.7):1;
   g.save();g.globalAlpha*=far?0.8*fadeFar:1;if(far)g.filter=`blur(${(0.5+level*2).toFixed(1)}px)`;
   const COL=['#6CC57E','#FFFFFF','#B5E9CF','#3E9E57','#F4EEE2','#8FD9A5'];
+  if(o.panel){g.save();g.shadowColor='rgba(0,0,0,0.3)';g.shadowBlur=24;g.fillStyle='#0F3B2E';g.beginPath();g.roundRect(x0-30,y0-190*sc,Wd+dx+60,250*sc,34);g.fill();g.restore()}
   // rəf lövhəsi
   g.fillStyle='rgba(0,0,0,0.28)';g.beginPath();g.ellipse(x0+Wd/2+dx/2,y0+th+16*sc,Wd*0.62,12*sc,0,0,6.28);g.fill();
   g.fillStyle='#1E6B4A';g.beginPath();g.moveTo(x0,y0);g.lineTo(x0+dx,y0+dy);g.lineTo(x0+Wd+dx,y0+dy);g.lineTo(x0+Wd,y0);g.closePath();g.fill();

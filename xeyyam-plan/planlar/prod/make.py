@@ -14,7 +14,7 @@ sil0 = [(x, y) for x, y in zip(_v[0::2], _v[1::2]) if y - x >= 0.42]  # səs sə
 sil = []
 for x, y in sil0:
     tails = [w['e'] for w in A['words'] if x - 0.05 < w['e'] < y - 0.2 and w['s'] < x + 0.1]
-    x2 = min(max([x] + [e + 0.10 - 0.18 for e in tails]), y - 0.45)
+    x2 = min(max([x] + [e + 0.10 - 0.18 for e in tails]), x + C.get('tail_max', 9), y - 0.45)
     if y - x2 >= 0.4: sil.append((max(x, x2), y))
 W = []
 for w in A['words']:

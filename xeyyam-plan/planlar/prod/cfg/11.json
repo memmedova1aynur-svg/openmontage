@@ -1,0 +1,106 @@
+{
+ "n": "11",
+ "name": "UnutmaqDaOyrenmedir",
+ "keep": [
+  [
+   0,
+   47.05
+  ]
+ ],
+ "end_at": 47.05,
+ "zooms": [
+  1.0,
+  1.1
+ ],
+ "tail_max": 0.3,
+ "fix": {
+  "Geçən": "Keçən",
+  "getmişdi": "getmişdik",
+  "dedi@12.24": "deyəndə",
+  "ki,@12.42": "",
+  "nəyə": "nəyi",
+  "bütünlüyülə,": "bütünlüklə,",
+  "söz@16.66": "sözbəsöz",
+  "bə": "",
+  "söz@16.98": "",
+  "gündəli": "gündəlik",
+  "bol": "bol-bol",
+  "-bol": ""
+ },
+ "plan": {
+  "sub_card": {
+   "x": 60,
+   "y": 1255,
+   "w": 960,
+   "h": 290,
+   "color": "#0F3B2E",
+   "alpha": "03",
+   "border": "#6CC57E",
+   "border_w": 6
+  },
+  "word_size": 100,
+  "word_mv": 465,
+  "word_outline": 0,
+  "word_shadow": 0,
+  "max_chars": 13,
+  "q_bg": "#0F3B2E",
+  "q_size": 60,
+  "q_mv": 190
+ },
+ "el": {
+  "questions": [
+   [
+    19.98,
+    3.6,
+    "Hər şeyi yadda saxlamaq\\Nmümkün olsaydı?"
+   ],
+   [
+    41.78,
+    5.2,
+    "Unutmaq da öyrənmənin\\Nbir parçasıdır."
+   ]
+  ]
+ },
+ "fx": [
+  {
+   "theme": "shelf",
+   "a": 0.4,
+   "b": 5.9,
+   "opts": {
+    "x": 90,
+    "y": 420,
+    "s": 1.25,
+    "panel": true,
+    "pick": 4,
+    "seed": 14
+   }
+  },
+  {
+   "theme": "page",
+   "a": 15.0,
+   "b": 19.3,
+   "opts": {
+    "x": 110,
+    "y": 150,
+    "dark": true,
+    "fill": true
+   }
+  },
+  {
+   "theme": "page",
+   "a": 28.9,
+   "b": 41.6,
+   "opts": {
+    "x": 110,
+    "y": 150,
+    "dark": true,
+    "fade": true,
+    "keep": [
+     1,
+     4
+    ]
+   }
+  }
+ ],
+ "noise": -40
+}
