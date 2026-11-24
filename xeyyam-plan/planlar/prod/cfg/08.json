@@ -1,0 +1,104 @@
+{
+ "n": "08",
+ "name": "Multitasking",
+ "keep": [
+  [
+   0,
+   47.95
+  ],
+  [
+   68.08,
+   75.75
+  ]
+ ],
+ "base": {
+  "s": 0.88,
+  "cx": 0.47,
+  "cy": 0.54
+ },
+ "end_at": 75.75,
+ "max_shot": 4.6,
+ "fix": {
+  "illuziyadır.": "illüziyadır.",
+  "yuxudada": "yuxuda da",
+  "keçirdi": "keçir",
+  "ya,": "deyə,",
+  "öyrənincə": "öyrənəndə",
+  "kimdir.": "kimidir.",
+  "çalışıyordum.": "çalışırdım.",
+  "əməd,": "",
+  "illərdə": "",
+  "səviyyə": "səviyyəyə",
+  "gələndə": "gələndən",
+  "bilirik.@47.54": "bilmirsən.",
+  "müddətlilə": "müddətli",
+  "his": "hiss"
+ },
+ "plan": {
+  "sub_card": {
+   "x": 60,
+   "y": 1150,
+   "w": 960,
+   "h": 320,
+   "color": "#0F3B2E",
+   "alpha": "04"
+  },
+  "word_size": 100,
+  "word_mv": 565,
+  "word_outline": 0,
+  "word_shadow": 0,
+  "max_chars": 13,
+  "progress": true,
+  "h_size": 50,
+  "h_mv": 150,
+  "h_fg": "#0B2A20"
+ },
+ "el": {
+  "headline": "Eyni anda çox iş\\N= daha məhsuldar?"
+ },
+ "fx": [
+  {
+   "theme": "juggle",
+   "a": 0.9,
+   "b": 9.4,
+   "opts": {
+    "x": 890,
+    "y": 620
+   }
+  },
+  {
+   "theme": "graph",
+   "a": 13.1,
+   "b": 26.0,
+   "opts": {
+    "x": 775,
+    "y": 380,
+    "drop": true,
+    "longAt": 0.68,
+    "l1": "əvvəl",
+    "l2": "sonra",
+    "sc": 0.84
+   }
+  },
+  {
+   "theme": "juggle",
+   "a": 39.4,
+   "b": 47.9,
+   "opts": {
+    "x": 890,
+    "y": 620,
+    "n": 3,
+    "acc": 1.2
+   }
+  },
+  {
+   "theme": "juggle",
+   "a": 68.1,
+   "b": 71.7,
+   "opts": {
+    "x": 890,
+    "y": 620
+   }
+  }
+ ]
+}
