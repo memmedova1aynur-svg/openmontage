@@ -1,0 +1,116 @@
+{
+ "n": "03",
+ "name": "FasiledeTelefon",
+ "keep": [
+  [
+   1.74,
+   15.94
+  ],
+  [
+   17.2,
+   30.17
+  ],
+  [
+   31.04,
+   66.75
+  ]
+ ],
+ "base": {
+  "s": 0.88,
+  "cx": 0.47,
+  "cy": 0.54
+ },
+ "fix": {
+  "telefonu": "Telefona",
+  "fəslə": "fasilə",
+  "əqiqətən": "həqiqətən",
+  "5": "5–10",
+  "-10": "",
+  "yatarak": "yataraq",
+  "əzində": "ərzində",
+  "45@46.20": "45–15",
+  "-15": ""
+ },
+ "plan": {
+  "sub_card": {
+   "x": 60,
+   "y": 1150,
+   "w": 960,
+   "h": 330,
+   "color": "#082219",
+   "alpha": "06"
+  },
+  "word_size": 112,
+  "word_mv": 560,
+  "word_outline": 0,
+  "word_shadow": 0,
+  "max_chars": 12,
+  "max_words": 2,
+  "upper": true,
+  "progress": true,
+  "q_bg": "#0F3B2E",
+  "q_size": 60,
+  "q_mv": 215,
+  "card_size": 100
+ },
+ "el": {
+  "questions": [
+   [
+    1.8,
+    3.9,
+    "Telefondan sonra\\Nöyrənmək niyə çətindir?"
+   ]
+  ],
+  "cards": [
+   [
+    20.8,
+    23.5,
+    "{\\an8\\pos(540,140)}FASİLƏ = TELEFON?"
+   ],
+   [
+    42.6,
+    44.1,
+    "{\\an8\\pos(540,140)}ƏN PİS ŞEY?"
+   ],
+   [
+    63.1,
+    66.7,
+    "{\\an8\\pos(540,140)}TELEFON GÜNAHKAR DEYİL"
+   ]
+  ]
+ },
+ "fx": [
+  {
+   "theme": "phone",
+   "a": 4.1,
+   "b": 9.5,
+   "opts": {
+    "x": 905,
+    "y": 560,
+    "speed": 260
+   }
+  },
+  {
+   "theme": "phone",
+   "a": 28.6,
+   "b": 40.2,
+   "opts": {
+    "x": 925,
+    "y": 600,
+    "s": 0.9,
+    "timer": "5–10",
+    "speed": 120
+   }
+  },
+  {
+   "theme": "ring",
+   "a": 46.2,
+   "b": 56.0,
+   "opts": {
+    "x": 900,
+    "y": 520
+   }
+  }
+ ],
+ "end_at": 66.72
+}

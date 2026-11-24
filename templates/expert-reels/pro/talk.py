@@ -130,7 +130,7 @@ elif B["sub"] == "words":  # dinamik: iri, söz-söz, aktiv söz vurğu rəngind
         endc = min(c[-1]["e"] + 0.2, chunks[j + 1][0]["s"] if j + 1 < len(chunks) else T)
         for i, w in enumerate(c):
             e = c[i + 1]["s"] if i + 1 < len(c) else endc
-            U = (lambda x: x.upper().replace("i", "İ") if B.get("upper") else x)
+            U = (lambda x: x.replace("i", "İ").replace("ı", "I").upper() if B.get("upper") else x)
             KW = set(k.lower() for k in B.get("keywords", []))
             parts = [(f"{{\\c{bgr(ACC)}\\t(0,90,\\fscx112\\fscy112)\\t(90,180,\\fscx100\\fscy100)}}{U(x['t'])}{{\\r}}" if x is w else
                       (f"{{\\c{bgr(B.get('accent2', '#7CE0A3'))}}}{U(x['t'])}{{\\r}}" if re.sub(r"[^\\w]", "", x["t"].lower()) in KW else U(x["t"]))) for x in c]

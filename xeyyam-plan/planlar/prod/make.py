@@ -44,6 +44,7 @@ for a, b in segs:
         w = min(cand, key=lambda w: abs(w['end'] - tgt)); nx = next((v for v in W if v['start'] >= w['end'] - 0.01 and v is not w), None)
         pts.append(round((w['end'] + nx['start']) / 2 if nx else w['end'], 2))
     pts.append(b); out += [[x, y] for x, y in zip(pts, pts[1:])]
+if C.get('end_at'): out[-1][1] = C['end_at']  # son sakit söz üçün əl ilə uzatma
 Z = C.get('zooms', [1.0, 1.16]); segs = [[round(a, 2), round(b, 2), Z[i % len(Z)]] for i, (a, b) in enumerate(out)]
 def fin(t):  # mənbə vaxtı → hazır videonun vaxtı
     off = 0.0
