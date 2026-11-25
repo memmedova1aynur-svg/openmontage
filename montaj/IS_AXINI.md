@@ -342,6 +342,13 @@ Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq,
 
 ## Qənaət və ünsiyyət
 
+### Qənaət rejimi (standart)
+- Storyboard: standart **1 variant**; istifadəçi açıq “3 variant” istəyəndə 3.
+- Sualları ilkin sorğuda bir dəfəyə topla; sonra təkrar soruşma.
+- Cavablar qısa: 1–3 cümlə, hesabat yazma. Düzəlişləri bir mesajda topla, yalnız dəyişən elementi tətbiq et.
+- Söhbət uzanıbsa (çox düzəliş/yazışma), istifadəçiyə növbəti video üçün **yeni sessiya** aç deyə xatırlat.
+- Model Sonnet kifayətdir; montajda yeni kod/funksiya yazma, ayrıca sessiyada et.
+
 - Hazır kodu, şablonları, keşlənmiş analizi işlət; hər video üçün kod yazma. Yalnız seçilən müştərinin profilini oxu.
 - Ödənişli API/hosting qoşma.
 - İstifadəçiyə uzun texniki hesabat yazma: yalnız seçimlər, vacib suallar, real maneələr və hazır nəticə.
