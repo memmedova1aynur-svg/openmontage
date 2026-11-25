@@ -83,7 +83,7 @@ Qaydalar: hook salamsız — sitat və ya rəqəmlə (`equote`) başlayır; hər
 | açar (kit.cfg və ya video konfiqi) | nə edir |
 |---|---|
 | `"music": {"file": "...", "volume": 0.12}` | bütöv musiqi yatağı, danışıqda avtomatik aşağı (sidechain). `null` = musiqi yoxdur (Xəyyam) |
-| `"look": "warm_cinematic \| clean_studio \| natural \| moody"` | rəng preseti, yalnız danışan kadra |
+| `"look": "warm_cinematic \| clean_studio \| natural \| moody"` | əl ilə rəng preseti (yalnız danışan kadra); verilməsə — avtomatik Adaptive Crystal Clear (`UMUMI_QAYDALAR.md`) |
 | `"punch": "auto"` və ya `[{"from": "söz", "until": "söz", "scale": 1.1}]` | vacib yerdə yüngül yaxınlaşma (tam ekran kartlarda yox) |
 | `"broll": [{"file": "...", "from": "söz", "dur": 2.5, "mode": "cover"}]` | müştərinin öz kadrları sözə bağlı |
 | `"corrections": [{"from": "...", "to": "..."}]` | bu videonun altyazı düzəlişləri |

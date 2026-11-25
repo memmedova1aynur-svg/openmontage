@@ -47,7 +47,7 @@ Hər nəticə `_vN` versiyası ilə yazılır (təsdiqlənmiş fayl qorunur), ya
 - altyazı: `sub` (`lines`/`words`/`none`), `font`, `fontsize`, `sub_bold`, `sub_italic`, `sub_outline`, `mv`, `upper`, `max_words`, `max_chars`, `keywords`, `word_size`, `word_mv`
 - tempo və kadr: `zooms`, `gap`, `cut_sfx`, `cut_sfx_db`, `color` (ffmpeg rəng zənciri), `letterbox`, `grain`
 - elementlər: `sub_card` (altyazı arxasında kart: `{x, y, w, h, color}`; `word_outline`, `word_shadow`), `progress`, `headline`, `items`, `comment`, `inserts`, `timer`, `questions`, `statements`, `verdicts`, `cards`
-- rəng: `accent` (müştəri kitindən də gələ bilər), `accent2`, `q_bg`, `split_bg`, `full_bg`
+- rəng: `color` (ffmpeg zənciri; verilməsə **Adaptive Crystal Clear** avtomatik — `UMUMI_QAYDALAR.md`), `accent` (müştəri kitindən də gələ bilər), `accent2`, `q_bg`, `split_bg`, `full_bg`
 
 Hər element istənilən tərzlə birləşə bilər: məs. `dinamik` + `headline` + `progress`.
 

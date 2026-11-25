@@ -83,6 +83,11 @@ Every production, in every pipeline, is edited and finished to a professional ed
 1. **Before the edit/assembly/compose stage**, read `skills/creative/editing-craft.md` and the playbook for the format: `creative/video-editing.md` (talking head), `creative/ad-editing.md` (ads/promos), `creative/faceless-explainer-editing.md` (animated/narrated). With narration, also read `creative/vo-production.md`.
 2. **Before presenting any final render** to the user, run `skills/meta/editor-qc.md`: the `delivery_qc` tool (loudness, true peak, black/frozen frames, dead air, shot rhythm, bitrate) plus the 8-dimension rubric. A render with a `fail` is not delivered; report the measurements and scores with the video.
 
+## Görüntü keyfiyyəti standartı (bütün müştərilər)
+
+Rəng/görüntü optimallaşdırması üçün **[`UMUMI_QAYDALAR.md`](UMUMI_QAYDALAR.md)** — Adaptive Crystal Clear Natural Look (`montaj/crystal.py`): avtomatik, adaptiv,
+rəng variantı və təsdiq soruşulmur. Müştəri profillərində təkrarlanmır.
+
 ## What OpenMontage Is
 
 OpenMontage is an instruction-driven video production system. The AI agent IS the intelligence — it reads instructions (pipeline manifests + stage director skills + meta skills) and drives the pipeline using tools.

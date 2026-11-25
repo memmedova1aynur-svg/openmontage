@@ -245,6 +245,9 @@ HDR_TO_SDR = ("zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709,tonemap=t
 def color_filters(adj: dict[str, Any]) -> list[str]:
     """Rəng düzəlişi (ölçüdən əvvəl). Render və `session looks` eyni funksiyanı işlədir."""
     f: list[str] = []
+    if adj.get("crystal"):  # Adaptive Crystal Clear Natural Look (montaj/crystal.py): videoya görə hesablanmış yüngül parametrlər
+        from montaj import crystal
+        f += crystal.filters(adj["crystal"])
     dn = float(adj.get("denoise") or 0)
     if dn > 0.01:  # ştativ çəkilişi: güclü zaman (kadrlar arası), yüngül məkan təmizləməsi — detal qorunur
         f.append(f"hqdn3d=luma_spatial={2.2 * dn:.2f}:chroma_spatial={3.5 * dn:.2f}:luma_tmp={13 * dn:.2f}:chroma_tmp={15 * dn:.2f}")

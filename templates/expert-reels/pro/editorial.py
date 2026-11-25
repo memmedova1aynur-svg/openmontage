@@ -33,7 +33,8 @@ def brand_talk(name):
 B = {**brand_talk(P.get("brand")), **P}
 SRC = rp(B["src"]); T = float(B.get("T") or K.probe_dur(SRC)); OUT = K.next_version(rp(B["out"]))
 WORK = OUT.parent / (OUT.stem + "_work"); WORK.mkdir(parents=True, exist_ok=True)
-COLOR = B.get("color", "eq=contrast=1.04:saturation=0.94:gamma=0.99,curves=master='0/0 0.06/0.05 0.6/0.6 0.92/0.9 1/0.97',colortemperature=temperature=6300:mix=0.6")
+sys.path.insert(0, str(Path(__file__).resolve().parents[3])); from montaj import crystal  # Adaptive Crystal Clear Natural Look (UMUMI_QAYDALAR.md)
+COLOR = B.get("color") or crystal.chain_for(SRC)  # açıq "color" (üslub/əl ilə) varsa o; yoxsa videoya görə adaptiv, toxunulmaz hissələr 0
 bc = B["base"]
 
 # 1) baza keçidi: CFR 30, güzgü, rəng, kadraj (mov vaxt damğası problemlərini də aradan qaldırır)

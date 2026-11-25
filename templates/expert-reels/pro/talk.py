@@ -247,7 +247,8 @@ T_MONTAJ = T_ANALIZ - T_TRANSKRIPT
 bc = B.get("base")
 pre = ("hflip," if B.get("hflip") else "")
 if bc: pre += f"crop=iw*{bc['s']}:ih*{bc['s']}:iw*{bc['cx'] - bc['s'] / 2:.4f}:ih*{bc['cy'] - bc['s'] / 2:.4f},scale=1080:1920:flags=lanczos,"
-COLOR = B.get("color", "eq=contrast=1.04:saturation=0.96:gamma=0.99,curves=master='0/0 0.06/0.05 0.6/0.6 0.92/0.9 1/0.97',colortemperature=temperature=6300:mix=0.6")
+sys.path.insert(0, str(Path(__file__).resolve().parents[3])); from montaj import crystal  # Adaptive Crystal Clear Natural Look (UMUMI_QAYDALAR.md)
+COLOR = B.get("color") or crystal.chain_for(SRC)  # açıq "color" (üslub/əl ilə) varsa o; yoxsa videoya görə adaptiv, toxunulmaz hissələr 0
 fc, cat, INP = [], "", []
 for i, (a, b, z) in enumerate(segs):
     INP += ["-ss", f"{a:.3f}", "-t", f"{b - a:.3f}", "-i", SRC]

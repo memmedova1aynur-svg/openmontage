@@ -1,0 +1,43 @@
+{
+ "name": "Crystal Clear Natural Look — V3 (təsdiqlənmiş vizual referans)",
+ "approved": "2026-11-25",
+ "source_frame": "Xəyyam Həsənov, video 05 (xeyyam-yeni-05), 20.0 s, 1080x1920, telefon çəkilişi, ağ divar, orta parlaqlıq 118/255",
+ "note": "Bu parametrlər YALNIZ həmin kadr üçün seçilib; digər videolara mexaniki tətbiq olunmur. montaj/crystal.py ölçülərə görə hər video üçün tənzimləyir (yaxşı parametrə toxunmur).",
+ "real_parameters_v3": {
+  "ffmpeg_chain": [
+   "hqdn3d=luma_spatial=0.4:chroma_spatial=1.6:luma_tmp=0:chroma_tmp=0",
+   "unsharp=13:13:0.09:13:13:0",
+   "unsharp=5:5:0.14:5:5:0",
+   "curves=master='0/0 0.25/0.256 0.6/0.614 1/1'",
+   "vibrance=intensity=0.012"
+  ],
+  "not_used": [
+   "colortemperature",
+   "selectivecolor",
+   "eq (kadrı qaraldırdı)",
+   "S-əyri/kölgə qaldırma",
+   "yerli üz maskası"
+  ],
+  "measured_effect_on_frame": {
+   "yanaq_R/G": "1.614→1.623",
+   "divar_R/G": "1.005→1.005",
+   "parlaqlıq": "+1…+3 /255"
+  },
+  "why_not_other_values": "vibrance 0.02 yanaqda qırmızılığı artırırdı → 0.012; eq filtri kadrı ~1–3 /255 qaraldırdı → yüngül curves ilə əvəz olundu"
+ },
+ "reference_metrics": {
+  "mean_luma": 117.716,
+  "sharp": 6.583,
+  "noise": 0.628,
+  "chroma_noise": 0.53,
+  "sat": 0.107
+ },
+ "reference_images": [
+  "reference_original.jpg",
+  "reference_v3.jpg"
+ ],
+ "rejected": {
+  "V1": "qırmızılıq (R/G 1.629, sarı-isti sürüşmə, güclü kəskinlik)",
+  "V2": "solğunluq (R/G 1.44, yerli üz maskası, selectivecolor)"
+ }
+}

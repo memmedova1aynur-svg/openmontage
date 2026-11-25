@@ -814,9 +814,25 @@ LOOK_LABELS = {"A": "orijinala yaxın, təbii", "B": "yumşaq və isti", "C": "t
                "E": "kəskin və kontrastlı", "F": "isti premium", "G": "sərin, kino tonu",
                "H": "təmiz işıqlı, sarılıqsız neytral",
                "W": "isti kitabxana tonu, təbii dəri, ağlar nəzarətdə"}
-LOOK_KEYS = ("brightness", "contrast", "saturation", "vibrance", "depth", "sharpen", "temperature", "denoise", "shadows", "gamma", "highlights")
+LOOK_KEYS = ("brightness", "contrast", "saturation", "vibrance", "depth", "sharpen", "temperature", "denoise", "shadows", "gamma", "highlights", "crystal")
+ADAPTIVE_LOOKS = ("CRYSTAL",)  # hər video üçün ölçüyə görə hesablanır (montaj/crystal.py); standart
 DARK_LUMA = 85  # 8-bit orta parlaqlıq bundan aşağıdırsa — zəif işıq (D variantı təklif olunur)
-DEFAULT_LOOK = "A"
+DEFAULT_LOOK = "CRYSTAL"  # Adaptive Crystal Clear Natural Look; A–W şablonları yalnız əl ilə seçiləndə (`looks` müqayisəsi)
+
+
+_CRYSTAL_MEMO: dict[tuple[str, str], dict[str, float]] = {}
+
+
+def _crystal_for(pid: str, q: dict[str, Any], clip: dict[str, Any]) -> dict[str, float]:
+    """Adaptiv parametrlər: hər media üçün bir dəfə (kadr analizi + nümunə yoxlaması); HDR/yaxşı vəziyyətdə olan mənbədə korreksiya yoxdur."""
+    from montaj import crystal
+    m = next(x for x in q["media"] if x["id"] == clip["media"])
+    key = (pid, m["id"])
+    if key not in _CRYSTAL_MEMO:
+        r = crystal.prepare(store.project_dir(pid) / m["file"])
+        print(f"rəng ({m.get('name')}): {r['mode']} [{r['source']}] " + "; ".join(r["notes"] + r["fixes"]))
+        _CRYSTAL_MEMO[key] = r["params"]
+    return _CRYSTAL_MEMO[key]
 
 
 def _rep_frames(p: dict[str, Any], n: int = 3) -> list[tuple[dict[str, Any], float]]:
@@ -1160,15 +1176,17 @@ def apply_plan(pid: str, p: dict[str, Any], plan: dict[str, Any], plan_name: str
 
     # rəng: plan şablonu ("look" işarəsi olan) yenilənir, əl ilə dəyişdirilmiş rəngə toxunulmur
     look_name = plan.get("look", DEFAULT_LOOK)
-    if look_name and look_name not in LOOKS:
-        raise UserError(f"Naməlum rəng şablonu: {look_name}", "Mövcud: " + ", ".join(LOOKS))
+    if look_name and look_name not in LOOKS and look_name not in ADAPTIVE_LOOKS:
+        raise UserError(f"Naməlum rəng şablonu: {look_name}", "Mövcud: " + ", ".join([*ADAPTIVE_LOOKS, *LOOKS]))
     vids = [c for c in q["clips"] if c["track"] in ("v1", "v2")]
     owned = [c for c in vids if not any(k in (c.get("adjust") or {}) for k in LOOK_KEYS) or (c.get("adjust") or {}).get("look")]
     expo = quality.exposure_offsets([c for c in owned if c["track"] == "v1"], {m["id"]: m for m in q["media"]}, store.project_dir(pid)) \
         if look_name and plan.get("matchExposure", True) else {}
     for c in owned:
         adj = {k: v for k, v in (c.get("adjust") or {}).items() if k not in LOOK_KEYS and k != "look"}
-        if look_name:
+        if look_name in ADAPTIVE_LOOKS:
+            adj.update(crystal=_crystal_for(pid, q, c), look=look_name)
+        elif look_name:
             adj.update(LOOKS[look_name], look=look_name)
             if c["id"] in expo:
                 adj["brightness"] = round(adj.get("brightness", 0) + expo[c["id"]], 3)

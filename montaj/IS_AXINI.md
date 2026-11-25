@@ -1,11 +1,11 @@
 # Əsas iş axını: Drive linki → yekun MP4 (davamlı təlimat)
 
-Bu fayl istifadəçinin təsdiqlədiyi **əsas** iş axınıdır (sorğu → Drive linki → analiz → 3 storyboard → rəng/musiqi → MP4) və `SESSIYA_TELIMATI.md`-dən üstündür.
+Bu fayl istifadəçinin təsdiqlədiyi **əsas** iş axınıdır (sorğu → Drive linki → analiz → 3 storyboard → musiqi → MP4; rəng — avtomatik adaptiv, təsdiq tələb olunmur) və `SESSIYA_TELIMATI.md`-dən üstündür.
 İstifadəçi yalnız **Drive linkini** verir — montajın hamısı Claude-da edilir və bir dəfəyə təhvil verilir. Redaktor paneli
 istifadə olunmur: linkini göndərmə, təklif etmə (yalnız istifadəçi açıq istəyəndə — faylın sonundakı "Redaktor paneli").
 
 Hədəf: video ilk dəfədən hazır olsun, əlavə düzəliş tələb etməsin. İstifadəçi ilə yalnız **iki dəfə** əlaqə:
-(1) sorğu, (2) **bir qərar mesajı** — storyboard variantları + kadraj (əvvəl/sonra) + rəng variantları + musiqi
+(1) sorğu, (2) **bir qərar mesajı** — storyboard variantları + kadraj (əvvəl/sonra) + musiqi (rəng variantı YOXDUR — `UMUMI_QAYDALAR.md`: Adaptive Crystal Clear)
 nümunələri birlikdə göndərilir, istifadəçi bir cavabla seçir (məs. “B, rəng A, musiqi 2”). Sonra yalnız **yekun MP4**.
 Ara düzəliş raundları təklif etmə.
 
@@ -140,7 +140,7 @@ Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq,
    - **Kadr və keyfiyyət**: üfüqi çəkiliş (YouTube ölçüsü) — `new --type 15` (`--size` VERMƏ): çıxış mənbənin öz ölçüsü və
      keyfiyyətidir (4K mənbə → 3840x2160, kiçildilmir); render H.264 CRF 18 (gözlə fərqlənməz). 4K-da 15 dəqiqəlik render uzun çəkir —
      bölümləri tək-tək render et. Üfüqi çəkilişdə layout lazım deyil: qrafika kadrın boş tərəfinə (danışanın üzünü örtməsin —
-     `verify` yoxlayır), x-i özün ver. **Rəng korreksiyası məcburidir** (`looks` → variant seçimi; solğun qalmasın, kliplər arası
+     `verify` yoxlayır), x-i özün ver. **Rəng korreksiyası avtomatikdir** (Adaptive Crystal Clear, `UMUMI_QAYDALAR.md`; variant seçimi yoxdur; kliplər arası
      işıq bərabərləşir). Çəkiliş şaquli (telefon) olarsa — `--size 1920x1080` və planda
      `"layout": {"speaker": "left", "width": 0.42, "bg": "#rəng"}`: danışan solda paneldə, sağ sahə qrafika üçün (plan qrafikalarının
      `x`-i avtomatik boş tərəfin mərkəzidir); fon müştərinin sakit rəngi (və ya `"blur"`). Üfüqi çəkilişdə layout lazım deyil.
@@ -245,9 +245,10 @@ Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq,
    (4) 2–3 musiqi nümunəsi; (5) arxa səs təmizlənibsə `ses_evvel_sonra.m4a`; (6) material yoxlamasının `!` qeydləri (bir cümlə);
    (7) istifadəçi fon dəyişməsini istəyibsə `arxafon.jpg`. Yeni imkanları (davamlılıq tonu `variation`, plan ölçüləri `multicam`,
    J/L, yavaşlatma) ayrıca soruşma — uyğun olanları storyboard variantlarının içinə qoy (məs. A — təklif olunan ton, B — plan
-   ölçüləri ilə), qalanını özün standart seç. Cavab bir sətir olsun: “B, rəng A, musiqi 2”.
-   - Rəng: `looks <pid>` → `reng_variantlari.jpg` (3 təmsilçi kadr × Orijinal, A təbii, B yumşaq-isti,
-     C təmiz-neytral; orta parlaqlıq aşağıdırsa avtomatik **D: zəif işıq** — dən azalır, kölgə açılır). Göndər, seçim gözlə. Seçim planda `"look": "A"|"B"|"C"` (`null` — düzəliş yoxdur).
+   ölçüləri ilə), qalanını özün standart seç. Cavab bir sətir olsun: “B, musiqi 2”.
+   - Rəng: **avtomatik** — plan `"look"` standartı `CRYSTAL` (Adaptive Crystal Clear Natural Look, `montaj/crystal.py`): hər media üçün kadr analizi,
+     yalnız ehtiyac olan parametrlər, nümunə kadrda yoxlama. Rəng variantı hazırlama, təsdiq soruşma (`UMUMI_QAYDALAR.md`). `looks` yalnız istifadəçi
+     müqayisə istəyəndə; əl ilə seçim planda `"look": "A"|"B"|"C"` (`null` — düzəliş yoxdur).
      Fərqli işıqlanan kliplər avtomatik yaxınlaşdırılır (`"matchExposure": true`, ±0.04).
      Dəri rəngi və detal qorunur; güclü doyumluluq, kəskinləşdirmə, “4K effekti” yoxdur;
      retuş/gözəlləşdirmə yalnız ayrıca istəklə.

@@ -139,7 +139,7 @@ def _draft_and_analysis(pid):
 
 
 def test_plan_look_choice_and_manual_color_kept(tmp_path, monkeypatch):
-    """Rəng: standart A; seçilən şablon (C) render filtrinə düşür; əl ilə rəngə toxunulmur; "look": null götürür."""
+    """Rəng: standart Adaptive Crystal Clear; əl ilə seçilən şablon (C) render filtrinə düşür; əl ilə rəngə toxunulmur; "look": null götürür."""
     pid = _fixture(tmp_path, monkeypatch)
     from montaj import render, session, store
 
@@ -147,7 +147,7 @@ def test_plan_look_choice_and_manual_color_kept(tmp_path, monkeypatch):
     plan.write_text(json.dumps({"captions": {"enabled": True, "style": {"type": "caption"}}}))
     assert session.main(["plan", pid, str(plan)]) == 0
     vids = [c for c in store.load(pid)["clips"] if c["track"] == "v1"]
-    assert vids and all(c["adjust"]["look"] == "A" for c in vids), "standart: A (təbii)"
+    assert vids and all(c["adjust"]["look"] == "CRYSTAL" and "crystal" in c["adjust"] for c in vids), "standart: adaptiv Crystal Clear"
     plan.write_text(json.dumps({"look": "C"}))
     assert session.main(["plan", pid, str(plan)]) == 0
     v = next(c for c in store.load(pid)["clips"] if c["track"] == "v1")
