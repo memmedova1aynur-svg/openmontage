@@ -1,0 +1,56 @@
+# Müştəri faylı — Xəyyam Həsənov
+
+Mənbə: `templates/expert-reels/experts/xeyyam-huseynov.json` (cautions, theme, history; son tarix 2026-11-04).
+Ortaq qaydalar: `UMUMI_QAYDALAR.md`. Bu fayl ortaq qaydadan üstündür.
+⚠ ilə işarələnənlər profildə ziddiyyətlidir və istifadəçi təsdiqi gözləyir (aşağıda "Açıq suallar").
+
+## A. Məcburi
+1. **Müştəri:** Xəyyam Həsənov. Təhsil/öyrənmə mövzusu, ekspert. Auditoriya: öyrənmək, yadda saxlamaq istəyənlər. Ton: sakit, premium, ilhamverici.
+2. **Video növləri:** kameraya danışıq, reklam, qarışıq. Format 9:16.
+3. **Rəng (HEX):** fon/tam ekran kart tünd meşə yaşılı `#0F3B2E` (dərin `#082219`); vurğu yarpaq yaşılı `#6CC57E`; ağ fon/kart; yazı ağ `#FFFFFF`, vurğu üstündə yazı `#0B2A20`; kart şəffaflığı 0.95. Gradient: `#3E9E57 → #6CC57E → #B5E9CF`. Tipoqrafiya üçün açıq kağız fon ola bilər (təmiz ağ, krem yox, qaydaya bax).
+4. **Qadağan rənglər:** laym/fosforlu yaşıl (`#C5E01F` daxil, 2026-11-04 qərarı), sarı, narıncı, mavi, bənövşəyi. Krem fon yoxdur (təmiz ağ).
+5. **Şrift:** Montserrat qalın (başlıq və altyazı). Vurğu sözü üçün bəzən italik serif.
+6. **Altyazı:** iri, qalın, ağ, sola düzlənmiş; yer: boğazdan aşağı (x 0.5, y ≈ 0.74) və ya başın üstündəki boşluq (y ≈ 0.17–0.19); altında qısa yaşıl xətt; arxasında yumşaq tünd gradient. Yazı üzə, ağıza, başa, əllərə heç vaxt düşmür.
+7. **3 imza element:**
+   1. Yaşıl "marker" ilə vurğulanan söz (soldan sağa işıqlanma) — təklif, təsdiq gözləyir ⚠
+   2. Ağ yuvarlaq künclü kart + yaşıl "pill" etiket
+   3. Tam ekran tipoqrafiya anı (mövzu sözü hərf-hərf itir/bulanır) və ya bölünmüş ekran (Xəyyam yuxarıda, göstərilən aşağıda)
+8. **Musiqi:** sözsüz, sakit, premium, ilhamverici; yalnız CC0 (OpenGameArt-da səhifəsində CC0 yazılan). **Qadağan:** piano, yavaş/dramatik, trend səs, lisenziyası CC0 olmayan. Musiqi ən sonda seçilir. Danışıqda −20…−24 dB, pauzada bir az qalxır.
+9. **Kadraj:** aşağı sərhəd oturduğu yerin başlanğıcı (ayaq və qarnın altı görünmür), başın üstündə boşluq, yanlardan kəsim s ≈ 0.85–0.91. **Yazı/kart qoyulmayan yerlər:** üz, ağız, baş, əllər.
+10. **Pauzalar:** ≥ 0.45 s danışılmayan pauzalar kəsilir; söz kəsilmir; kəsimdən sonra söz təkrarı yoxlanır; son sözdən sonra 1 s. Təkrarın ən yaxşısı saxlanır, yarımçıq cümlə kəsilir.
+11. **Rəng korreksiyası:** neytral, təmiz işıqlı, sarı/isti ton yoxdur, yüngül kəskinlik. ⚠ look hərfi ziddiyyətlidir (aşağıya bax).
+12. **Digər qadağalar:** arxa fon bulanıqlaşdırılmır və qaraldılmır (orijinal qalır); güzgü çevirmə (hflip) yoxdur — lazım olsa əvvəl/sonra göstər, təsdiqdən sonra; B-roll başı örtmür; oyuncaq effektlər yoxdur; qiymət/tarix/CTA uydurulmur; təhvildən əvvəl yenidən transkripsiya ilə yoxla.
+
+## B. İstəyə görə
+- **Kart tərzi/müddəti:** tam ekran kartlar 3–5 s, səs davam edir; danışan hissə 6 s-dən uzun olmasın.
+- **Animasiya:** sakit, premium: fade/blur keçid, yazı sözlə sinxron, kamera yavaş yaxınlaşır. Qadağa: oyuncaq effektlər.
+- **B-roll:** bölünmüş ekran: Xəyyam yuxarıda, B-roll sinədən aşağı (pip y ≈ 0.70, tam en); həmin anda altyazı başın üstündə (y ≈ 0.17).
+- **Səs effekti:** tipoqrafiyada çox yüngül whoosh/tick; səsə artıq emal yoxdur.
+- **Tipik axın (təhsil Reels):** 01 hook sual → 02 tam ekran tipoqrafiya → 03 açar anlayış (ağ kart, tünd yaşıl yazı) → 04 ziddiyyət (tünd yaşılda sual, arxada eyni sözün solğun təkrarı) → 05 həll (Xəyyam + qısa cümlə) → 06 CTA (Xəyyamın öz çağırışı, sonda yaşıl nöqtə).
+- **İş qaydası:** 6 kadrlıq storyboard → təsdiq → render; videolar bir-bir; hər birindən əvvəl storyboard.
+- **Vizual istinad:** onun Instagram səhifəsi (tünd yaşıl fon, ağ yuvarlaq kartlar, pill düymələr, marker effekti, qalın sans başlıq, bəzən italik serif vurğu sözü).
+- **Qadağan oxşarlıq:** laym vurğulu başqa ekspert səhifələrinə bənzəməsin.
+
+## C. Təsdiqlənmiş daimi düzəlişlər
+| Tarix | Qayda | Mənbə |
+|---|---|---|
+| 2026-11-01 | Rəng: təmiz-neytral look; musiqi piano/yavaş yox (yalnız CC0); B-roll bölünmüş ekranda; fon bulanıq/qaraldılmır; pauzalar ≥ 0.45 s kəsilir; hflip yox | bütün müştərilər üçün ümumi |
+| 2026-11-03 | Kadraj (ayaq görünmür, baş üstü boşluq, s ≈ 0.85–0.91); kart/yazı yalnız baş üstü boşluqda və ya boğazdan aşağı; musiqi ən sonda | Xəyyam |
+| 2026-11-03 | Təhsil brifi: tünd yaşıl fon, Montserrat qalın, 6 kadrlıq axın, sakit premium hərəkət | Xəyyam |
+| 2026-11-04 | Laym qadağan; vurğu `#6CC57E`, fon tünd yaşıl və ya təmiz ağ (krem yox) | Xəyyam |
+
+## D. Video tarixçəsi (özet; 43 qeyd, 2026-11-03/04)
+| Variant | Say | Look | Altyazı | Animasiya |
+|---|---|---|---|---|
+| Sözlər yadınıza düşmür — premium | 13 | W | stroke/box | fade/pop |
+| Təxirəsalma (v3, PRO, sinematik) | 14 | W/H | box/stroke | pop/fade |
+| McCollough — PRO | 4 | W | — | — |
+| Öyrənməyi öyrən — REKLAM PRO | 3 | W | — | — |
+
+Qeyd: 43 videonun 41-i look W, 2-si H; altyazı stroke 20, box 11; animasiya fade 20, pop 11. Eyni üslub təkrarlanma riski yüksəkdir — ortaq qaydanın 10-cu bəndinə (fərq testi) uyğun olaraq növbəti videolarda imza elementlərindən ən azı biri dəyişdirilməlidir.
+
+## Açıq suallar (istifadəçi cavab verməlidir)
+1. **Look hərfi:** profildə üç fərqli qayda var: "həmişə C" (11-01), "H" (11-03), tarixçədə isə faktiki "W" istifadə olunub. Hansı qüvvədədir?
+2. **Yazının yeri:** brifdə "hər videoda yazının yeri və animasiyası bir az dəyişir" yazılıb, kadraj qaydasında isə sabit yerlər (y ≈ 0.17–0.19 və 0.74). Dəyişmə yalnız bu iki yer arasında olsun?
+3. **Marker effekti** (imza 1) təsdiqlənirmi, yoxsa başqa imza hərəkət istəyirsən?
+4. **Brifdəki "Təxirəsalma/McCollough/Öyrənməyi öyrən" seriyası:** davam edir, yoxsa yeni mövzulara keçirik?
