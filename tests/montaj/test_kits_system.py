@@ -26,7 +26,7 @@ def test_every_kit_builds_from_spoken_content_only():
         blob = json.dumps(p["graphics"], ensure_ascii=False).lower()
         for must in ("televizor", "oyuncaq"):
             assert must in blob, f"{k}: nümunə danışıqdan götürülməlidir"
-        assert all(g["type"] in {"title", "list", "emphasis", "type", "block", "note", "bars", "veil"} for g in p["graphics"])
+        assert all(g["type"] in {"title", "list", "emphasis", "type", "block", "note", "bars", "veil", "frame"} for g in p["graphics"])
         assert all(z.get("scale", 1) <= 1.12 for z in p["zooms"]), "zoom hamar və ≤1.12"
 
 
@@ -56,7 +56,7 @@ def test_memory_blocks_recent_and_rejected_and_suggests_spread(tmp_path, monkeyp
     bl = memory.blocked(prof)
     assert set(bl) == {"editorial", "handnote", "kinetic"}
     sug = memory.suggest(prof, 3)
-    assert not set(sug) & set(bl) and len(sug) == 2 and set(sug) == {"classic", "colorblock"}
+    assert not set(sug) & set(bl) and set(sug) == {"classic", "colorblock", "frame"}
     warn = memory.check_plans(prof, {"A": {"kit": "kinetic"}, "B": {"kit": "colorblock"}})
     assert len(warn) == 1 and "rədd" in warn[0]
 
@@ -75,7 +75,7 @@ def test_new_graphic_types_rasterize_full_bleed(tmp_path):
     W, H = 360, 640
     theme = {"primary": "#C9577D", "primaryDeep": "#9E3D5E", "accentSoft": "#F2E4D6", "accent": "#C9577D", "text": "#FFFFFF"}
     items = []
-    for n, k in enumerate(("editorial", "colorblock", "handnote", "kinetic")):
+    for n, k in enumerate(("editorial", "frame", "colorblock", "handnote", "kinetic")):
         for j, g in enumerate(kits.build(k, CONTENT, theme)["graphics"]):
             c = dict(g, id=f"{k}{j}", srcIn=0, srcOut=float(g["dur"]))
             items.append((f"{k}_{j}", c, min(1.0, float(g["dur"]) - 0.1)))
@@ -87,6 +87,8 @@ def test_new_graphic_types_rasterize_full_bleed(tmp_path):
             assert info["w"] >= W - 4, "rəng bloku tam enlidir"
         if name.startswith("kinetic"):
             assert info["h"] >= H - 4, "sinema zolaqları tam kadrdır"
+        if name.startswith("frame_0"):
+            assert info["w"] >= W - 4 and info["h"] >= H - 4, "çərçivə tam kadrdır"
 
 
 @needs_node
@@ -158,3 +160,24 @@ def test_serif_font_has_all_azerbaijani_letters():
     for f in faces:
         cm = TTFont(f["path"]).getBestCmap()
         assert all(ord(c) in cm for c in "əƏğĞıİöÖüÜşŞçÇ"), f
+
+
+def test_frame_kit_is_framed_centered_serif_and_differs_from_editorial():
+    b = kits.build("frame", CONTENT, {"primary": "#C9577D"})
+    assert b["graphics"][0]["type"] == "frame" and b["graphics"][0]["bleed"] and b["graphics"][0]["dur"] == CONTENT["duration"]
+    texts = [g for g in b["graphics"] if g["type"] == "type"]
+    assert texts and all(g["align"] == "center" and g["font"] == "serif" for g in texts)
+    assert any(g.get("inline") and g.get("italic") for g in texts), "nümunələr bir sətirdə, nöqtə ilə, kursivlə"
+    assert all(g["type"] != "veil" or g["a"] <= 0.45 for g in b["graphics"])
+    d = difference.check({"A": kits.build("editorial", CONTENT), "B": b})
+    assert d["ok"] and d["pairs"][0]["diff"] >= 4
+    assert "frame" in memory.global_decisions()["liked"], "istifadəçi seçdi (2026-11-25)"
+    assert memory.suggest({}, 3)[:2] == ["editorial", "frame"] or "frame" in memory.suggest({}, 3)
+
+
+def test_editorial_scales_long_hook_instead_of_overflowing():
+    long = {"hook": {"text": "Hər səhvə cəza düzgündürmü?", "start": 0.1, "dur": 3}}
+    big = {"hook": {"text": "CƏZA?", "start": 0.1, "dur": 3}}
+    s_long = [g for g in kits.build("editorial", long)["graphics"] if g["type"] == "type"][0]["size"]
+    s_big = [g for g in kits.build("editorial", big)["graphics"] if g["type"] == "type"][0]["size"]
+    assert s_long < s_big

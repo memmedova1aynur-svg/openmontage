@@ -11,7 +11,7 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const [jobsFile, outDir] = process.argv.slice(2);
 const cfg = JSON.parse(fs.readFileSync(jobsFile, 'utf8'));
 fs.mkdirSync(outDir, { recursive: true });
-const faces = cfg.fonts.map((f) => `@font-face{font-family:"${f.family}";font-weight:${f.weight};src:url("${pathToFileURL(f.path)}") format("${f.fmt || 'woff2'}");unicode-range:${f.range}}`).join('\n');
+const faces = cfg.fonts.map((f) => `@font-face{font-family:"${f.family}";font-weight:${f.weight};font-style:${f.style || 'normal'};src:url("${pathToFileURL(f.path)}") format("${f.fmt || 'woff2'}");unicode-range:${f.range}}`).join('\n');
 const html = `<!doctype html><html><head><meta charset="utf-8"><style>${faces}
 html,body{margin:0;background:transparent}#stage{position:relative;width:${cfg.W}px;height:${cfg.H}px}
 #el{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:max-content;max-width:100%}</style></head>
