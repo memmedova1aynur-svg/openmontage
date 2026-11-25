@@ -3,7 +3,7 @@
 Drive linki + montaj sorğusu gələndə **yalnız bu fayl** oxunur. Başqa qayda faylına baxmaq lazım deyil (köhnə qayda faylları silinib). `IS_AXINI.md` yalnız
 **əmr istinadıdır** (fx, bg, karusel, seminar, kurs, tədbir və s. necə işlədilir); ziddiyyətdə bu fayl keçərlidir.
 Müştəri profilindən (`templates/expert-reels/experts/<ad>.json`) yalnız **müştəriyə aid** olanlar götürülür: rəng ailəsi, şrift,
-ad/titul, lüğət və müştərinin öz məhdudiyyətləri (məs. animasiya/araya kadr yoxdur — onlar qorunur). Ümumi qayda profilə yazılmır.
+ad/titul, lüğət və müştərinin istifadəçi tərəfindən təsdiqlənmiş öz məhdudiyyətləri. "Araya kadr/B-roll yoxdur" kimi qadağa profilə yazılmır: B-roll və animasiya hər videoda storyboardda təklif olunur, lazımdırsa qoyulur, lazım deyilsə qoyulmur — qərarı istifadəçi verir. Ümumi qayda profilə yazılmır.
 
 ## 1. İş axını
 1. Link gələndə ilkin sorğu yoxdur. Yalnız müştəri adı bilinmirsə onu soruş. Qovluqda bir neçə video varsa — **ardıcıl**, hər biri ayrı.
