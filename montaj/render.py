@@ -134,6 +134,36 @@ def render_plan(project: dict[str, Any]) -> dict[str, Any]:
 EDGE_FADE = 0.012  # danışıq kəsimində səs keçidi (klik və fon qırılması olmasın; söz səsi hiss olunmur)
 
 
+DISSOLVE_DEFAULT = 0.20  # yumşaq video keçidi (saniyə); kəsim nöqtəsi dissolve-un ortasındadır, ümumi müddət dəyişmir
+
+
+def dissolve_plan(project: dict[str, Any], vplan: list[dict[str, Any]], media: dict[str, Any], fps: float) -> dict[int, int]:
+    """Video sərhədlərində dissolve: {i: yarım_kadr} (i-ci və i+1-ci klip arası). Mənbədə kifayət qədər ehtiyat yoxdursa və ya
+    klip çox qısadırsa keçid kəsim olaraq qalır. project["dissolve"] = {"dur": 0.2, "auto": "broll"|"all"|None, "at": {"<növbəti klip id>": 0.3}}."""
+    cfg = project.get("dissolve") or {}
+    if not cfg:
+        return {}
+    base = float(cfg.get("dur") or DISSOLVE_DEFAULT)
+    out: dict[int, int] = {}
+    for i in range(len(vplan) - 1):
+        a, b = vplan[i]["clip"], vplan[i + 1]["clip"]
+        if _continuous(a, b):
+            continue
+        d = (cfg.get("at") or {}).get(b["id"])
+        if d is None and (cfg.get("auto") == "all" or (cfg.get("auto") == "broll" and (a.get("broll") or b.get("broll")))):
+            d = base
+        if not d or float(d) <= 0:
+            continue
+        nh = max(1, round(float(d) * fps / 2))
+        h = nh / fps
+        ma, mb = media.get(a["media"]) or {}, media.get(b["media"]) or {}
+        ok_a = ma.get("isImage") or not ma.get("duration") or float(a["srcOut"]) + h <= float(ma["duration"]) - 0.05
+        ok_b = mb.get("isImage") or float(b["srcIn"]) - h >= 0.0
+        if ok_a and ok_b and vplan[i]["frames"] >= 4 * nh and vplan[i + 1]["frames"] >= 4 * nh:
+            out[i] = nh
+    return out
+
+
 def _continuous(a: dict[str, Any], b: dict[str, Any]) -> bool:
     """İki ardıcıl klip mənbədə davamlıdır (plan ölçüsü, danışana keçid bölünməsi) — kəsim deyil."""
     return a.get("media") == b.get("media") and abs(float(a["srcOut"]) - float(b["srcIn"])) < 0.02
@@ -448,14 +478,28 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
         return m
 
     vlabels = []
+    dis = dissolve_plan(project, plan["video"], media, plan["fps"])
+    run_label, run_frames = None, 0  # davam edən dissolve zənciri: etiket və kadr sayı
     for i, v in enumerate(plan["video"]):
         c = v["clip"]
         m = with_bg(media[c["media"]])
-        k = add_input(m, float(c["srcIn"]), v["dur"])
+        e_in, e_out = dis.get(i - 1, 0), dis.get(i, 0)
+        k = add_input(m, float(c["srcIn"]) - e_in / plan["fps"], v["dur"] + (e_in + e_out) / plan["fps"])
+        v = {**v, "frames": v["frames"] + e_in + e_out}
         if project.get("layout") and not c.get("broll") and not c.get("split") and m.get("hasVideo") and not m.get("isImage"):
             c = {**c, "layout": project["layout"]}  # dərs kadrı (B-roll tam ekran qalır)
         filters.append(f"[{k}:v]{video_chain(c, m, W, H, fps_str, mirror_all, v['frames'], tag=f'sp{i}')}[v{i}]")
-        vlabels.append(f"[v{i}]")
+        if e_in and run_label:
+            ov = 2 * e_in
+            filters.append(f"[{run_label}][v{i}]xfade=transition=fade:duration={ov / plan['fps']:.4f}:offset={(run_frames - ov) / plan['fps']:.4f}[x{i}]")
+            run_label, run_frames = f"x{i}", run_frames + v["frames"] - ov
+        else:
+            if run_label:
+                vlabels.append(f"[{run_label}]")
+            run_label, run_frames = f"v{i}", v["frames"]
+        if i + 1 >= len(plan["video"]) or not e_out:
+            vlabels.append(f"[{run_label}]")
+            run_label = None
     main = plan["main"]
     if vlabels:
         filters.append(f"{''.join(vlabels)}concat=n={len(vlabels)}:v=1:a=0[vcat]")
