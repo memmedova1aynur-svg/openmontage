@@ -178,7 +178,7 @@
     }
     if (type === 'pblur') {  // mütərəqqi bulanıqlıq: kadrın yuxarısı yuxarıdan aşağı sönən bulanıqlıq (maska qradiyent); özü yalnız çox yüngül tündləşmə
       const h = H * (clip.h ?? 0.42), stops = [0, 0.2, 0.4, 0.6, 0.8, 1].map((k) => [k, Math.pow(1 - k, 1.5)]);
-      const css = MASK ? stops.map(([k, a]) => `rgba(255,255,255,${a}) ${k * 100}%`).join(',') : stops.map(([k, a]) => `rgba(20,5,12,${a * (clip.a ?? 0.16)}) ${k * 100}%`).join(',');
+      const css = MASK ? stops.map(([k, a]) => `rgba(255,255,255,${a}) ${k * 100}%`).join(',') : stops.map(([k, a]) => `rgba(${clip.tint || '20,5,12'},${a * (clip.a ?? 0.16)}) ${k * 100}%`).join(',');
       return node(doc, 'div', { width: `${VW}px`, height: `${h}px`, background: `linear-gradient(to bottom, ${css})` });
     }
     if (type === 'veil') {  // yazının arxasında kadrın yuxarısında tam enli, çox yumşaq tünd keçid (kinoda "title-safe" qradiyent) — ləkə yox
