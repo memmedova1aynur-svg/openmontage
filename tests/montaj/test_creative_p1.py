@@ -61,13 +61,29 @@ def test_caption_contrast_box_ok():
 
 
 def test_single_rule_file_is_entry_point():
+    import glob
+    import json
     from pathlib import Path
 
     root = Path(__file__).resolve().parents[2]
     rules = (root / "montaj" / "MONTAJ_QAYDALARI.md").read_text(encoding="utf-8")
     guide = (root / "AGENT_GUIDE.md").read_text(encoding="utf-8")
     assert "montaj/MONTAJ_QAYDALARI.md" in guide
-    for must in ("framefix", "hook-design", "caption-typography", "broll-function", "look: auto", "--remember", '"auto"'):
+    for must in ("framefix", "hook-design", "caption-typography", "broll-function", "look: auto", "--remember", '"auto"',
+                 "3 storyboard", "variants <pid>", "fikir bitəndən sonra"):
         assert must in rules
-    for stale in ("tighten", "hflip", "variants <pid>"):  # köhnə/ləğv edilmiş qaydalar bu faylda olmamalıdır
-        assert stale not in rules
+    assert "tighten" not in rules and "standart 1 variant" not in rules
+    # köhnə qayda faylları silinib, istinad qalmayıb
+    for gone in ("SESSIYA_TELIMATI", "YENI_SESSIYA_PROMPTU", "KURS_SESSIYA_PROMPTU", "BUDCE_YOLU", "KINO_DILI"):
+        assert not (root / "montaj" / f"{gone}.md").exists()
+    # profillərdə ümumi qayda təkrarı yoxdur (yalnız müştəriyə aid məlumat)
+    for f in glob.glob(str(root / "templates" / "expert-reels" / "experts" / "*.json")):
+        txt = Path(f).read_text(encoding="utf-8")
+        json.loads(txt)
+        assert "Ümumi istifadəçi qaydası" not in txt and "hflip ilə çevir" not in txt
+
+
+def test_segment_and_punchin_checks():
+    from montaj import preflight
+
+    assert preflight.MIN_SEG >= 2.0

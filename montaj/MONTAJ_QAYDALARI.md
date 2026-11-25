@@ -1,62 +1,82 @@
 # Montaj qaydaları — TƏK MƏNBƏ (hər videoda məcburi)
 
-Drive linki + montaj sorğusu gələndə **yalnız bu fayl** oxunur. Başqa qayda faylına baxmaq lazım deyil
-(`IS_AXINI.md`, `KINO_DILI.md`, profillərdəki köhnə "ümumi qaydalar" — ziddiyyət olarsa bu fayl keçərlidir).
-Müştəri profilindən (`templates/expert-reels/experts/<ad>.json`) yalnız **müştəriyə aid** olanlar götürülür: rəng ailəsi
-(`palette`, `theme`), şrift, musiqi janrı, animasiya/B-roll qadağaları, ad/titul, lüğət (`glossary`). Qalanı nəzərə alınmır.
+Drive linki + montaj sorğusu gələndə **yalnız bu fayl** oxunur. Başqa qayda faylına baxmaq lazım deyil (köhnə qayda faylları silinib). `IS_AXINI.md` yalnız
+**əmr istinadıdır** (fx, bg, karusel, seminar, kurs, tədbir və s. necə işlədilir); ziddiyyətdə bu fayl keçərlidir.
+Müştəri profilindən (`templates/expert-reels/experts/<ad>.json`) yalnız **müştəriyə aid** olanlar götürülür: rəng ailəsi, şrift,
+ad/titul, lüğət və müştərinin öz məhdudiyyətləri (məs. animasiya/araya kadr yoxdur — onlar qorunur). Ümumi qayda profilə yazılmır.
 
-## 1. İş axını (bir keçid, əlavə kod və yeni render yoxdur)
-1. Qısa sorğu — yalnız məlum olmayanı soruş (müştəri adı, məqsəd). Sonra linki istə. Qovluqda bir neçə video varsa — **ardıcıl**, hər biri ayrı.
-2. `python -m montaj.session new --title "<ad>" --link "<link>" --client "<Ad Soyad (profil adı)>" --type <N>`
-3. `storyboard <pid> --quick` → `framefix <pid>` → `voice-clean <pid>` → transkripti oxu (`retakes <pid>` köməkçidir).
-4. `music <pid>` → plan yaz (bölmə 3–7) → `choose <pid> <plan.json>` → `render <pid>` → `verify <pid>`.
-5. Yekun `_ig.mp4`-ü göndər + 2–4 sətir (nə edildi, ASR şübhəli sözlər siyahısı, yoxlanmayan nə qaldı).
-6. İstifadəçi təsdiq edəndən sonra: `choose <pid> --remember` (profilin `history`-sinə yazır).
-
-**Qadağa:** 3 variant, `variants`, storyboard şəkli, rəng variantları, ara yoxlama mesajları, təkrar render, yeni kod/funksiya
-yazmaq — istifadəçi açıq istəməyibsə. Səhvlər `render` daxilindəki preflight-da tutulur; tam render **bir dəfə**.
-`verify` yalnız yekun faylda, **bir dəfə**. `!` varsa yalnız həmin elementi düzəldib yenidən render et.
+## 1. İş axını
+1. Link gələndə ilkin sorğu yoxdur. Yalnız müştəri adı bilinmirsə onu soruş. Qovluqda bir neçə video varsa — **ardıcıl**, hər biri ayrı.
+2. `new --title "<ad>" --link "<link>" --client "<Profil adı>" --type <N>` → `storyboard <pid> --quick` → `framefix` → `voice-clean`
+   → transkripti oxu (`retakes` köməkçidir) → `music`.
+3. **Hər video üçün 3 storyboard variantı (məcburi).** Üç variant bir-birindən tamamilə fərqli montaj üslubu olmalıdır
+   (montaj növü, animasiya ilə cümləyə bağlı və ya birbaşa kadr dəyişmə, hook üsulu, ritm, tipoqrafiya, musiqi) — yalnız rəng/mətn fərqi yox.
+   Hər variantın yanında 1–2 cümlə: bu video üçün **niyə** seçilib (reklamda — hansı daha çox geri dönüş gətirər).
+   `variants <pid> A.json B.json C.json` → `storyboard_variantlari.jpg` (360p proksidən, saniyələr; video önizləmə üçün `--mp4`).
+   Göndər: storyboard şəkli + variant izahları + 2–3 musiqi nümunəsi + `kadraj.jpg` + material qeydləri. İstifadəçi ilə birlikdə seçilir.
+4. Seçimdən sonra: `choose <pid> <plan.json>` → `render <pid>` (preflight daxildir) → `verify <pid>` → yekun `_ig.mp4` + 2–4 sətir.
+5. İstifadəçi təsdiq edəndən sonra: `choose <pid> --remember` (profilin `history`-sinə yazır; təsdiqsiz heç nə yazılmır).
+6. **Tam render bir dəfə.** Səhvlər renderdən əvvəl (variants, preflight) tutulur. `verify` yalnız yekun faylda, bir dəfə.
 
 ## 2. Hər videoda məcburi
-| # | Qayda |
-|---|---|
-| 1 | **Kadraj:** `framefix` — əyrilik düzəlir, obyekt ortalanır, baş üstü və yan boşluq ayarlanır; yaxınlaşma ≤1.12x (daha çox lazımdırsa bunu yaz). |
-| 2 | **Kəsim:** yalnız təkrar, alınmayan cəhd və kənar söhbət çıxır. Söz və heca kəsilmir. Vurğu yaradan və ya fikri anlamağa vaxt verən pauza **saxlanır**; saniyə həddi ilə mexaniki kəsim YOXDUR. |
-| 3 | **Hook:** ilk saniyələr `skills/creative/hook-design.md` ilə seçilir (üsul + səbəb 1 cümlə). Sıra dəyişmir; səssiz baxışda başa düşülməlidir. |
-| 4 | **Altyazı:** `skills/creative/caption-typography.md` — rollar ayrı (altyazı, hook, vurğu, CTA); Azərbaycan hərfləri düzgün; ən çox 2 sətir; safe zone; mətn bloku enin ≤86%-i; üzü örtmür. ASR səhvləri düzəlir (`corrections`), mənanı dəyişən təxmin YOX — şübhəlini istifadəçiyə siyahıla. |
-| 5 | **Kart/B-roll:** `skills/creative/broll-function.md` — hər elementin funksiyası və izah etdiyi fikir var; yoxdursa qoyulmur. 56 s-də 0–4 element normaldır. Profil qadağan edirsə (animasiya, araya kadr) qoyulmur. |
-| 6 | **Musiqi:** standart VAR (yalnız istifadəçi bu müştəri/video üçün "yox" deyibsə istisna). Yalnız CC0 və Mixkit. Planda `volume`/`vol` YAZMA — `"auto"` (danışığa görə hesablanır). |
-| 7 | **SFX:** yalnız vizual elementə bağlı; element silinirsə SFX də silinir; planda `vol` yazma. |
-| 8 | **Rəng:** `look: auto`. Şablon, müştəriyə bağlı sabit filtr, saturation artımı, üz/dəri emalı YOX. Brend rəngi yalnız altyazı və qrafikaya aiddir. |
-| 9 | **Çıxış:** Instagram üçün 1080x1920 (4K/ağır fayl göndərilmir), H.264, −14 LUFS, pik ≤−1.5 dBTP. HDR mənbə SDR-ə çevrilir (render özü edir). |
-| 10 | **Uydurma yoxdur:** qiymət, tarix, əlaqə, rəqəm, çağırış, titul yalnız danışıqdan/profildən/istifadəçidən. Real olmayan məkan həqiqi kimi göstərilmir. |
-| 11 | **Davamlılıq + müxtəliflik:** müştərinin rəng ailəsi sabit; hook, altyazı üslubu və kart ardıcıllığı son 3 videodan (`history`) fərqli (`variation`). |
-| 12 | **Təhvil:** `verify` təmiz və ya qalan `!` açıq yazılıb; qulaqla dinlənilməyibsə bunu de. "Sıfır keyfiyyət itkisi" zəmanəti vermə. |
+**Kadr.** `framefix`: əyrilik düzəlir, obyekt ortalanır, baş üstü, aşağı və yan boşluq ayarlanır; uzaqdan çəkilibsə düzgün yaxınlaşdırılır
+(≤1.12x, çoxu lazımdırsa bunu yaz). Yazı və kartlar bədənin böyük hissələrini örtmür; yer lazımdırsa kadr 2 hissəyə bölünür
+(danışan bir hissədə, element digərində). Üz heç vaxt örtülmür.
 
-## 3. Plan faylı (şablon — hər video üçün mətnləri danışıqdan yaz)
+**Element növbəsi (B-roll, animasiya, kart, birbaşa kadr dəyişmə).** Element girəndə ya tam kadr dəyişir (ekspert görünmür —
+ya B-roll, ya animasiya), ya kadr bölünür; yarıörtmə yoxdur. Dəyişiklik **fikir bitəndən sonra** olur. 0.1–1 s göstərilən
+element və ya ekspert olmaz: element ən azı ~2 s, elementlər arasında ekspert ən azı ~2 s. Bəzi videoda animasiya danışıqdakı
+cümlələrə bağlı ekranda gəlir, bəzisində birbaşa kadr dəyişir — **videoya və mövzuya görə sən seç**. "Hər videoda B-roll/animasiya
+olmalıdır" və ya "hamısı dümdüz olmalıdır" kimi qayda yoxdur.
+
+**Hook və axıcılıq.** İlk saniyələr `skills/creative/hook-design.md` ilə seçilir (üsul + səbəb 1 cümlə); danışığın sırası dəyişmir.
+Video başdan sona izləyicini saxlamalı, dinamik olmalıdır — mexaniki "hər N saniyə effekt" yoxdur, dinamika məzmundan gəlir.
+`skills/creative/broll-function.md`: hər elementin funksiyası və izah etdiyi fikir var; yoxdursa qoyulmur.
+
+**Kəsim və pauza.** Yalnız təkrar, alınmayan cəhd və kənar söhbət çıxır. Söz və heca kəsilmir. Vurğu yaradan və ya fikri anlamağa vaxt
+verən pauza qalır; saniyə həddi ilə mexaniki kəsim yoxdur. Arxa səs kəsiləndə/təmizlənəndə ekspertin səsi dəyişmir (`voice-clean`).
+
+**Zoom və keçidlər.** Zoom yalnız hamar və yumşaq olur (`multicam` calm və ya yavaş yaxınlaşma). `zooms` (punch-in) qadağandır — sıçrayışdır.
+Kəsimdə keçid hiss edilməməlidir: kəsim cümlə sərhədində, səsin ən sakit yerində, 12 ms səs keçidi, lazım olsa J/L-cut. Sərt sıçrayış yoxdur.
+
+**Altyazı.** `skills/creative/caption-typography.md`: 4 rol ayrıdır (altyazı, hook, vurğu, CTA); Azərbaycan hərfləri düzgün; ≤2 sətir;
+safe zone; mətn bloku enin ≤86%-i; kontrast kifayət qədər. ASR səhvləri `corrections` ilə düzəlir; mənanı dəyişən təxmin yoxdur — şübhəli sözlər siyahıda.
+
+**Musiqi.** Standart olaraq VAR (yalnız istifadəçi bu müştəri/video üçün "yox" deyibsə istisna). Dinamik və sahəyə uyğun (uşaq/ana → şən kids;
+təhsil/reklam → educational/corporate; hekayə/psixologiya → mövzuya uyğun, amma yavaş piano və kədərli yox). Yalnız CC0 və Mixkit; CC-BY və
+qeyri-kommersiya yox. Planda `volume`/`vol` yazma — `"auto"` (danışıqdan ≈16 LU aşağı).
+
+**SFX.** Videoya və vizual elementə uyğun seçilir; hər SFX bir elementə bağlıdır; element silinirsə SFX də silinir; köhnə versiyadan qalan SFX olmur.
+
+**Rəng.** `look: auto`. Şablon, müştəriyə bağlı sabit filtr, saturation artımı, üz/dəri emalı yoxdur. Brend rəngi yalnız altyazı və qrafikaya aiddir.
+
+**Çıxış.** Instagram üçün 1080x1920 (4K göndərilmir), H.264, −14 LUFS, pik ≤−1.5 dBTP. Zəmanət ("sıfır keyfiyyət itkisi", ölçülməmiş vaxt) verilmir.
+
+**Dürüstlük.** Qiymət, tarix, əlaqə, rəqəm, çağırış, titul yalnız danışıqdan/profildən/istifadəçidən. Real olmayan məkan həqiqi kimi göstərilmir.
+Müştəri mediası, transkript və şəxsi məlumat GitHub-a yüklənmir.
+
+**Davamlılıq.** Müştərinin rəng ailəsi sabit; hook, altyazı üslubu və kart ardıcıllığı son 3 videodan (`history`) fərqli (`variation`).
+
+## 3. YALNIZ istifadəçi deyəndə
+Güzgü çevirmə (`hflip`), arxa fonu bulanıqlaşdırma/dəyişmə, ödənişli xidmət və API, hazır rəng şablonu.
+
+## 4. Hazırda sistemdə YOXDUR (əvəzi)
+- **Hamar zoom və hiss edilməyən video keçidi:** punch-in sıçrayışdır, videoda dissolve yoxdur → `multicam` calm + cümlə sərhədində kəsim; əsl hamar zoom və yumşaq keçid hələ icra olunmayıb.
+- **Bədən örtülməsi yoxlaması:** `verify`/preflight yalnız üzü yoxlayır → vizual kadrda özün yoxla, kart bədəni örtərsə kadrı böl.
+- **Element ≥2 s qaydası:** preflight xəbərdarlıq edir, avtomatik düzəltmir → planda vaxtları özün düzəlt.
+
+## 5. Plan faylı (şablon — mətnləri danışıqdan yaz)
 ```json
 {
-  "approach": "M01+M02",
-  "title": "<qısa ad>",
+  "approach": "M01+M02", "title": "<qısa ad>",
   "variation": {"tone": "...", "primary": "#...", "primaryDeep": "#...", "captions": "box", "anim": "pop"},
   "corrections": [{"from": "<ASR səhvi>", "to": "<düzgün>"}],
   "captions": {"enabled": true},
-  "graphics": [
-    {"type": "title", "text": "<hook sualı>", "start": 0.15, "dur": 4.5, "y": 0.19},
-    {"type": "emphasis", "text": "<əsas fikir>", "start": 28.4, "dur": 2.8, "y": 0.60}
-  ],
+  "graphics": [{"type": "title", "text": "<hook sualı>", "start": 0.15, "dur": 4.5, "y": 0.19}],
   "sfx": [{"kind": "pop", "t": 0.2}],
   "music": [{"start": 0.0, "volume": "auto", "fadeIn": 1.2, "fadeOut": 2.0, "duck": true, "file": "<music çıxışındakı fayl>"}],
   "look": "auto"
 }
 ```
-`variation` dəyərlərini `storyboard` çıxışındakı təklifdən götür. `music` faylı `music <pid>` çıxışındadır. Qrafika `y`-ləri preflight-da
-interfeys zonasına görə avtomatik düzəlir.
-
-## 4. Mətnlər və yazı (Azərbaycan dili)
-`ə ğ ı İ ö ü ş ç` şriftdə olmalıdır; böyük hərf `i→İ`, `ı→I` (`lib/az_text`). Rəqəmlər `1 200`, `4,5`.
-ASR tanıdığı kirill/oxşar `ә` simvolu `ə`-yə normallaşdırılır.
-
-## 5. Sürət (məqsəd, ölçülməyib)
-Qısa videoda hədəf ümumi 4–5 dəq. Ən böyük xərc: tam render (≈2–3 dəq, HDR mənbədə) və ilk transkripsiya (≈1 dəq). Bunları
-azaltmağın yolu — **təkrar render etməmək**; transkript və analiz keşdən istifadə olunur. Hədəfə çatılmayıbsa ən uzun addımı yaz.
+`variation` `storyboard` çıxışındakı təklifdən götürülür. Qrafika `y`-ləri preflight-da interfeys zonasına görə avtomatik düzəlir.
+Azərbaycan dili: `ə ğ ı İ ö ü ş ç` şriftdə olmalıdır; `i→İ`, `ı→I` (`lib/az_text`); rəqəmlər `1 200`, `4,5`.

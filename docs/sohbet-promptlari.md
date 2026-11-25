@@ -11,7 +11,7 @@ Müştəri məlumatı (səs profili, planlar, jurnal) **public repoya yazılmır
 
 ## 1. Montaj
 
-`montaj/YENI_SESSIYA_PROMPTU.md`-dəki mətn.
+`montaj/MONTAJ_QAYDALARI.md` — Drive linkini göndərmək kifayətdir.
 
 ---
 

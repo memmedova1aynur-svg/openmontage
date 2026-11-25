@@ -292,7 +292,7 @@ def test_variants_and_choose(tmp_path, monkeypatch):
     assert session.main(["variants", pid, str(a), str(b)]) == 0
     o = tmp_path / "out" / pid
     assert media.probe(o / "storyboard_variantlari.jpg")["height"] > 400
-    assert media.probe(o / "variant_B.mp4")["width"] == 540
+    assert media.probe(o / "variant_B.mp4")["width"] == 360, "standart: 360p proksi önizləmə (saniyələr); 540p video üçün --mp4"
     assert store.load(pid)["revision"] == rev, "önizləmə layihəni dəyişmir"
     assert session.main(["choose", pid, str(b)]) == 0
     p = store.load(pid)

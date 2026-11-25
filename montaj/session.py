@@ -2732,9 +2732,14 @@ def cmd_variants(a: argparse.Namespace) -> None:
         r = node_tl("applyStoryboard", node_tl("migrate", copy.deepcopy(base)), sbv,
                     {"frames": sbv.get("frames") or {}, "brand": base.get("brand")})
         q = apply_plan(a.pid, r["project"], plan, Path(plan_file).name)
-        q["width"], q["height"] = 540, int(round(540 * base["height"] / base["width"] / 2) * 2)
         mp4 = o / f"variant_{letter}.mp4"
-        render.render(q, store.project_dir(a.pid), mp4, lambda x: None, logo_path=_project_logo(q, a.pid))
+        if getattr(a, "mp4", False):  # köhnə: 540p səsli önizləmə videosu (≈1 dəq/variant)
+            q["width"], q["height"] = 540, int(round(540 * base["height"] / base["width"] / 2) * 2)
+            render.render(q, store.project_dir(a.pid), mp4, lambda x: None, logo_path=_project_logo(q, a.pid))
+        else:  # standart: 360p SDR proksi, səssiz — yalnız storyboard şəkli üçün (saniyələr)
+            from montaj import preflight
+
+            render.render(preflight.lowres_project(q, store.project_dir(a.pid)), store.project_dir(a.pid), mp4, lambda x: None)
         total = sum(c["srcOut"] - c["srcIn"] for c in node_tl("videoClips", q))
         lay_t = sorted({round(float(g.get("start", 0)) + min(1.0, (g["srcOut"] - g["srcIn"]) / 2), 2)
                         for g in q["clips"] if g["track"] == "t1"})
@@ -3050,6 +3055,7 @@ def main(argv: list[str] | None = None) -> int:
     vr = sub.add_parser("variants", help="2–3 storyboard variantının önizləməsi (layihə dəyişmir)")
     vr.add_argument("pid")
     vr.add_argument("plans", nargs="+")
+    vr.add_argument("--mp4", action="store_true", help="səsli 540p önizləmə videosu da hazırla (yavaş; standart: yalnız storyboard şəkli)")
     ch = sub.add_parser("choose", help="seçilmiş variantı tətbiq et (qaralama → apply → plan)")
     ch.add_argument("pid")
     ch.add_argument("plan", nargs="?")

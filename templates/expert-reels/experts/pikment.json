@@ -8,8 +8,7 @@
   "video_types": "mütəxəssis videoları, platforma və xidmət təqdimatları, motion, hərəkətli kartlar, uyğun seminar materialları",
   "cautions": [
     "Şəxsi brend deyil, şirkət kimi təqdim edilir.",
-    "Nilüfər Mehdiyeva ilə rəng ailəsi yaxındır: kimliklər ayrı saxlanılır.",
-    "Ümumi istifadəçi qaydası (2026-11-01, bütün müştərilər, soruşmadan): görüntü: universal Adaptive Image Enhancement (2026-11-25, montaj/IS_AXINI.md → 'Görüntü keyfiyyəti') — hazır rəng şablonu və müştəriyə bağlı sabit filtr YOX; yalnız ehtiyac olan parametr, orijinal rənglər/dəri tonu qorunur; rəng soruşulmur; brend rəngləri yalnız altyazı/qrafikaya aiddir. Musiqi: piano/yavaş YOX — uşaq inkişafı mövzusunda dinamik kids/kindergarten, təhsil reklamında educational/corporate (yalnız CC0). B-roll başı örtmür: bölünmüş ekran — danışan yuxarıda, B-roll sinədən aşağı (pip y≈0.70, tam en), həmin anda altyazı başın üstündə (y≈0.17). Arxa fon bulanıqlaşdırılmır və qaraldılmır (istifadəçi: hiss olunur, başın ətrafında iz qalır) — fon orijinal qalır. Pauzalar saniyə həddi ilə mexaniki kəsilmir — təbii ritm və nəfəs payı qalır, yalnız boş gözləmə/təkrar çıxır (yeniləndi 2026-11-25), söz kəsilmir; kəsimdən sonra söz təkrarı olmadığını yoxla. Güzgü çevirmə (hflip) yoxdur."
+    "Nilüfər Mehdiyeva ilə rəng ailəsi yaxındır: kimliklər ayrı saxlanılır."
   ],
   "theme_source": "derived from the colour family; brand colour = colour family (user rule 2026-10-31): nearby shades of the family are fine, no 'unconfirmed code' warning",
   "theme": {

@@ -12,12 +12,10 @@
   "İstifadəçi (2026-10-30): sözləri QƏTİYYƏN kəsmə; zəif eşidilən söz sonlarını da saxla. Pauzaları qısaltma (tighten.py işlətmə) - boşluqları istifadəçi CapCut-da musiqi qoyarkən özü kəsir. Yalnız təkrar cəhdləri və lazımsız hissələri çıxar; kəsim sərhədlərini səs enerjisinə görə geniş qoy.",
   "Sadə montaj: araya kadr/B-roll/cutaway yoxdur. Çəhrayı tonlar. Mövzuya uyğun kiçik ikon animasiyaları və uyğun səs effektləri olar.",
   "İlk video nümunədir: istifadəçi baxıb təsdiqləyəndən sonra qalanları soruşmadan eyni üslubda et.",
-  "Çəkilişlər güzgü görüntüdə gəlir (qol etiketi tərs oxunur): hər videonu soruşmadan hflip ilə çevir (2026-10-30).",
   "Fon bulanıqlaşdırılmır (istifadəçi bəyənmədi, 2026-10-30). Fonda insan keçirsə: həmin cümlə lazımsız/təkrardırsa çıxar, deyilsə saxla.",
   "Rakurs: Suranı ortala, əyriliyi düzəlt (şaquli xətlərə görə), başın üstündəki artıq boşluğu kəs (crop ~1.25 + yüngül unsharp). Yazılar hicabın üstündə qalsın.",
   "sura-01 nümunəsi təsdiqləndi (2026-10-30): qalan videoları soruşmadan et; hər video quruluşca fərqli olsun, insan montajı kimi.",
-  "Render-lər tək-tək getməlidir: Whisper + Remotion eyni anda 15 GB-ı aşır (2026-10-30). Checklist stikerləri çənəyə düşməsin deyə top >= 1000 və ya caption_shift istifadə et.",
-  "Ümumi istifadəçi qaydası (2026-11-01, bütün müştərilər, soruşmadan): görüntü: universal Adaptive Image Enhancement (2026-11-25, montaj/IS_AXINI.md → 'Görüntü keyfiyyəti') — hazır rəng şablonu və müştəriyə bağlı sabit filtr YOX; yalnız ehtiyac olan parametr, orijinal rənglər/dəri tonu qorunur; rəng soruşulmur; brend rəngləri yalnız altyazı/qrafikaya aiddir. Musiqi: piano/yavaş YOX — uşaq inkişafı mövzusunda dinamik kids/kindergarten, təhsil reklamında educational/corporate (yalnız CC0). B-roll başı örtmür: bölünmüş ekran — danışan yuxarıda, B-roll sinədən aşağı (pip y≈0.70, tam en), həmin anda altyazı başın üstündə (y≈0.17). Arxa fon bulanıqlaşdırılmır və qaraldılmır (istifadəçi: hiss olunur, başın ətrafında iz qalır) — fon orijinal qalır. Pauzalar saniyə həddi ilə mexaniki kəsilmir — təbii ritm və nəfəs payı qalır, yalnız boş gözləmə/təkrar çıxır (yeniləndi 2026-11-25), söz kəsilmir; kəsimdən sonra söz təkrarı olmadığını yoxla. Güzgü çevirmə (hflip) yoxdur."
+  "Render-lər tək-tək getməlidir: Whisper + Remotion eyni anda 15 GB-ı aşır (2026-10-30). Checklist stikerləri çənəyə düşməsin deyə top >= 1000 və ya caption_shift istifadə et."
  ],
  "theme_source": "pink theme chosen by us from the colour family and approved by the user on sura-01 (2026-10-30); brand colour = colour family (user rule 2026-10-31): nearby shades are fine, no 'unconfirmed code' warning",
  "theme": {
