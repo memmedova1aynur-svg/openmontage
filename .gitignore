@@ -131,3 +131,6 @@ xeyyam-plan/hazir/
 xeyyam-plan/variantlar/
 xeyyam-plan/storyboard_*.jpg
 .venv-watch/
+xeyyam-plan/planlar/prod/out/
+xeyyam-plan/planlar/prod/work/
+xeyyam-plan/planlar/prod/done/
