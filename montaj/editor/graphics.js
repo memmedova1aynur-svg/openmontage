@@ -134,7 +134,7 @@
       return e;
     };
     if (type === 'gcard') {  // süd şüşəsi kartı: damcı ikonu + (kicker) + mətn / nöqtəli sətirlər
-      const p = panel({ width: `${VW * (clip.w ?? 0.87)}px`, padding: `${fs * 0.7}px ${fs * 0.85}px`, borderRadius: `${fs * 0.95}px`, display: 'flex', alignItems: 'center', gap: `${fs * 0.55}px` });
+      const p = panel({ width: `${VW * (clip.w ?? 0.87)}px`, padding: `${fs * 0.7}px ${fs * 0.85}px`, borderRadius: `${fs * 0.95}px`, display: 'flex', alignItems: 'center', gap: `${fs * 0.55}px`, ...(clip.h ? { height: `${H * clip.h}px` } : {}) });  // clip.h: sabit hündürlük (mətnsiz şüşə panel — altyazı lövhəsi)
       if (clip.icon === 'drop' || clip.icon === 'book') p.append(dropSvg(fs * 1.15, pinkA, false));
       const col = node(doc, 'div', { display: 'flex', flexDirection: 'column', gap: `${fs * 0.12}px` });
       if (clip.kicker) col.append(txt({ fontSize: `${fs * 0.32}px`, fontWeight: '700', letterSpacing: '0.18em', textTransform: 'uppercase', opacity: '0.75' }, clip.kicker));
@@ -177,9 +177,9 @@
       return wrap;
     }
     if (type === 'pblur') {  // mütərəqqi bulanıqlıq: kadrın yuxarısı yuxarıdan aşağı sönən bulanıqlıq (maska qradiyent); özü yalnız çox yüngül tündləşmə
-      const h = H * (clip.h ?? 0.42), stops = [0, 0.2, 0.4, 0.6, 0.8, 1].map((k) => [k, Math.pow(1 - k, 1.5)]);
+      const h = H * (clip.h ?? 0.42), stops = [0, 0.2, 0.4, 0.6, 0.8, 1].map((k) => [k, Math.pow(1 - k, clip.pw ?? 1.5)]);
       const css = MASK ? stops.map(([k, a]) => `rgba(255,255,255,${a}) ${k * 100}%`).join(',') : stops.map(([k, a]) => `rgba(${clip.tint || '20,5,12'},${a * (clip.a ?? 0.16)}) ${k * 100}%`).join(',');
-      return node(doc, 'div', { width: `${VW}px`, height: `${h}px`, background: `linear-gradient(to bottom, ${css})` });
+      return node(doc, 'div', { width: `${VW}px`, height: `${h}px`, background: `linear-gradient(to ${clip.flip ? 'top' : 'bottom'}, ${css})` });  // flip: kadrın AŞAĞISINDAN yuxarı sönən bulanıqlıq (altyazı zonası); pw: sönmə əyrisi
     }
     if (type === 'veil') {  // yazının arxasında kadrın yuxarısında tam enli, çox yumşaq tünd keçid (kinoda "title-safe" qradiyent) — ləkə yox
       const a = Number(clip.a ?? 0.42);
