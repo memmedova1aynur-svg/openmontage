@@ -132,7 +132,7 @@ def find(query: str, avoid: list[str], min_dur: float, max_dur: float, n: int = 
         notes.append("FREESOUND_API_KEY yoxdur — yalnız Mixkit")
     if len(out) < n:
         try:
-            out += mixkit_search(query, avoid, min_dur, max_dur, n - len(out))
+            out += mixkit_search(query, avoid, min_dur, max(max_dur, 240), n - len(out))  # Mixkit treklərinin çoxu 90–200 s; video qısadırsa fade-out ilə kəsilir
         except Exception as e:  # noqa: BLE001
             notes.append(f"Mixkit işləmədi: {str(e)[:100]}")
     return out[:n], notes
