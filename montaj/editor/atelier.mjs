@@ -10,7 +10,7 @@ const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
 const cfg = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
 fs.mkdirSync(cfg.outDir, { recursive: true });
-const faces = (cfg.fonts || []).map((f) => `@font-face{font-family:"${f.family}";font-weight:${f.weight};src:url("${pathToFileURL(f.path)}") format("woff2");unicode-range:${f.range}}`).join('\n');
+const faces = (cfg.fonts || []).map((f) => `@font-face{font-family:"${f.family}";font-weight:${f.weight};src:url("${pathToFileURL(f.path)}") format("${f.fmt || 'woff2'}");unicode-range:${f.range}}`).join('\n');
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: cfg.W, height: cfg.H }, deviceScaleFactor: 1 });
 await page.addInitScript((ctx) => { window.ATELIER_CTX = ctx; }, { W: cfg.W, H: cfg.H, fps: cfg.fps, dur: cfg.dur, theme: cfg.theme || {} });

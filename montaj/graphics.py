@@ -15,12 +15,12 @@ from typing import Any
 from montaj import fonts
 
 TYPES = {"caption", "title", "section", "emphasis", "list", "card", "offer", "cta", "badge", "lower", "choice",
-         "type", "note", "block", "bars"}  # son 4 — üslub dəstləri (kits.py)
+         "type", "note", "block", "bars", "veil"}  # son 5 — üslub dəstləri (kits.py)
 DEFAULT_XY = {"caption": (0.5, 0.74), "title": (0.5, 0.14), "section": (0.5, 0.22), "emphasis": (0.5, 0.62),
               "list": (0.5, 0.42), "card": (0.5, 0.42),
               "offer": (0.5, 0.58), "cta": (0.5, 0.585), "badge": (0.5, 0.215),
               "lower": (0.24, 0.82), "choice": (0.5, 0.45),
-              "type": (0.5, 0.17), "note": (0.5, 0.17), "block": (0.5, 0.15), "bars": (0.5, 0.5)}  # graphics.js-dəki DEFAULT_XY ilə eyni
+              "type": (0.5, 0.17), "note": (0.5, 0.17), "block": (0.5, 0.15), "bars": (0.5, 0.5), "veil": (0.5, 0.2)}  # graphics.js-dəki DEFAULT_XY ilə eyni
 
 
 def pos(c: dict[str, Any]) -> tuple[float, float]:
@@ -75,7 +75,7 @@ def rasterize(items: list[tuple[str, dict[str, Any], float]], W: int, H: int, th
     if not items:
         return {}
     fl = [{"family": fam, "weight": w, "path": str(p), "range": fonts.RANGES[sub]}
-          for fam, w, sub, p in fonts.editor_font_files()]
+          for fam, w, sub, p in fonts.editor_font_files()] + fonts.extra_font_faces()
     cfg = {"W": W, "H": H, "theme": theme or {}, "fonts": fl,
            "jobs": [{"name": n, "clip": _inline_images(c), "tl": tl + 0.001} for n, c, tl in items]}
     jf = workdir / "raster_jobs.json"

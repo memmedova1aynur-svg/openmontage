@@ -53,18 +53,16 @@
     const color = clip.color || defaults(type, th).color;
     const base = { fontFamily: font, fontWeight: String(weight), fontSize: `${fs}px`, lineHeight: '1.18', color, whiteSpace: 'pre-wrap', textAlign: 'center', boxSizing: 'border-box' };
     const VW = (doc.defaultView && doc.defaultView.innerWidth) || H * 0.5625;  // kadr eni (px) — tam enli elementlər üçün
-    // scrim: açıq/qarışıq fon üzərində birbaşa yazının oxunması üçün yumşaq tünd işıq-kölgə (kənarsız, radial)
-    const scrimIt = (el, c, size) => {
-      const a = Number(c.scrim || 0);
-      if (!a) return;
-      el.style.padding = `${size * 0.9}px ${size * 1.3}px`;  // kənara qədər sönən yumşaq işıq-kölgə (düzbucaqlı iz qalmasın)
-      el.style.background = `radial-gradient(ellipse closest-side at 50% 50%, rgba(0,0,0,${a}) 0%, rgba(0,0,0,${a * 0.72}) 55%, rgba(0,0,0,0) 100%)`;
-    };
     const shown = (items) => (tl == null ? items.length : items.filter((it) => tl >= (it.at || 0)).length);
+    if (type === 'veil') {  // yazının arxasında kadrın yuxarısında tam enli, çox yumşaq tünd keçid (kinoda "title-safe" qradiyent) — ləkə yox
+      const a = Number(clip.a ?? 0.42);
+      return node(doc, 'div', { width: `${VW}px`, height: `${H * (clip.h ?? 0.4)}px`,
+        background: `linear-gradient(to bottom, rgba(0,0,0,${a}) 0%, rgba(0,0,0,${a * 0.62}) 35%, rgba(0,0,0,${a * 0.2}) 72%, rgba(0,0,0,0) 100%)` });
+    }
     if (type === 'type') {  // üslub dəsti: redaksiya tipoqrafiyası — kartsız böyük yazı, kicker, incə xətt, nömrəli sətirlər
-      const fam = clip.font === 'serif' ? '"DejaVu Serif", Georgia, serif' : font;
+      const fam = clip.font === 'serif' ? '"Lora", "DejaVu Serif", Georgia, serif' : font;
       const w = node(doc, 'div', { ...base, fontFamily: fam, width: `${VW * (clip.w ?? 0.9)}px`, textAlign: clip.align || 'left', lineHeight: '1.02',
-        textShadow: clip.shadow === false ? 'none' : '0 2px 16px rgba(0,0,0,0.5), 0 1px 3px rgba(0,0,0,0.5)' });
+        textShadow: clip.shadow === false ? 'none' : '0 1px 2px rgba(0,0,0,0.35), 0 4px 18px rgba(0,0,0,0.28)' });
       if (clip.kicker) w.append(node(doc, 'div', { fontFamily: font, fontSize: `${fs * 0.27}px`, fontWeight: '600', letterSpacing: '0.3em', textTransform: 'uppercase', marginBottom: `${fs * 0.16}px`, lineHeight: '1.2' }, clip.kicker));
       if (clip.rule !== false && clip.kicker) w.append(node(doc, 'div', { width: `${fs * 0.9}px`, height: `${Math.max(2, fs * 0.03)}px`, background: color, margin: `0 0 ${fs * 0.22}px 0`, opacity: '0.9' }));
       if (clip.items && clip.items.length) {
@@ -76,7 +74,6 @@
           w.append(row);
         });
       } else w.append(node(doc, 'div', {}, clip.text || ''));
-      scrimIt(w, clip, fs);
       return w;
     }
     if (type === 'note') {  // üslub dəsti: əl yazısı qeyd — Caveat, əyilmiş; altından xətt / dairə / ox / ✓ işarələri (SVG)
@@ -85,7 +82,7 @@
         Object.assign(e.style, { position: 'absolute', overflow: 'visible', pointerEvents: 'none', ...css }); e.innerHTML = inner; return e; };
       const stroke = `fill="none" stroke="${color}" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke"`;
       const w = node(doc, 'div', { ...base, fontFamily: '"Caveat","DejaVu Sans",cursive', fontWeight: '700', position: 'relative', padding: `${fs * 0.35}px ${fs * 0.5}px`, textAlign: clip.align || 'left',
-        transform: `rotate(${clip.rot ?? -3}deg)`, lineHeight: '1.05', textShadow: '0 0 3px rgba(0,0,0,0.85), 0 2px 10px rgba(0,0,0,0.5)' });
+        transform: `rotate(${clip.rot ?? -3}deg)`, lineHeight: '1.05', textShadow: '0 1px 2px rgba(0,0,0,0.5), 0 3px 14px rgba(0,0,0,0.3)' });
       if (clip.items && clip.items.length) {
         const n = shown(clip.items);
         clip.items.forEach((it, i) => {
@@ -95,9 +92,8 @@
           w.append(row);
         });
       } else w.append(node(doc, 'div', { position: 'relative' }, clip.text || ''));
-      scrimIt(w, clip, fs);
       const mark = clip.mark || 'none';
-      if (mark === 'underline') w.append(svg(`<path d="M2 60 C30 40 55 85 98 45" ${stroke}/>`, { left: `${clip.scrim ? fs * 1.3 : fs * 0.5}px`, width: `calc(100% - ${2 * (clip.scrim ? fs * 1.3 : fs * 0.5)}px)`, bottom: `${(clip.scrim ? fs * 0.9 : fs * 0.35) + fs * 0.02}px`, height: `${fs * 0.3}px` }));
+      if (mark === 'underline') w.append(svg(`<path d="M2 60 C30 40 55 85 98 45" ${stroke}/>`, { left: `${fs * 0.5}px`, width: `calc(100% - ${fs}px)`, bottom: `${fs * 0.37}px`, height: `${fs * 0.3}px` }));
       if (mark === 'circle') w.append(svg(`<ellipse cx="50" cy="50" rx="48" ry="46" ${stroke}/>`, { left: '0', top: '0', width: '100%', height: '100%' }));
       if (mark === 'arrow') w.append(svg(`<path d="M5 5 C30 10 60 40 85 85 M85 85 L62 78 M85 85 L88 60" ${stroke}/>`, { right: `${-fs * 1.2}px`, bottom: `${-fs * 1.3}px`, width: `${fs * 1.4}px`, height: `${fs * 1.4}px` }));
       return w;
@@ -256,6 +252,7 @@
       note: { size: 0.062, weight: 700, color: '#FFFFFF' },
       block: { size: 0.046, weight: 800, color: '#FFFFFF' },
       bars: { size: 0.05, weight: 800, color: '#FFFFFF' },
+      veil: { size: 0.03, weight: 400, color: '#FFFFFF' },
     })[type] || { size: 0.06, weight: 700, color: '#FFFFFF' };
   }
 
@@ -273,7 +270,7 @@
   // Standart yer (x, y mərkəz, 0..1) — render (graphics.py DEFAULT_XY) ilə eyni
   const DEFAULT_XY = { caption: [0.5, 0.74], title: [0.5, 0.14], section: [0.5, 0.22], emphasis: [0.5, 0.62], list: [0.5, 0.42], card: [0.5, 0.42],
     offer: [0.5, 0.58], cta: [0.5, 0.585], badge: [0.5, 0.215], lower: [0.24, 0.82], choice: [0.5, 0.45],
-    type: [0.5, 0.17], note: [0.5, 0.17], block: [0.5, 0.15], bars: [0.5, 0.5] };  // reklam kartları üzün altında
+    type: [0.5, 0.17], note: [0.5, 0.17], block: [0.5, 0.15], bars: [0.5, 0.5], veil: [0.5, 0.2] };  // reklam kartları üzün altında
   function pos(clip) { const d = DEFAULT_XY[clip.type] || [0.5, 0.5]; return [clip.x ?? d[0], clip.y ?? d[1]]; }
 
   root.MG = { ANIMS, animState, build, defaults, statePoints, rgba, pos, DEFAULT_XY };

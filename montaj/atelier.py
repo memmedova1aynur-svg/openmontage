@@ -36,7 +36,7 @@ def render(html: str | Path, dur: float, W: int, H: int, theme: dict[str, Any] |
     with tempfile.TemporaryDirectory(prefix="atelier_") as tmp:
         frames = Path(tmp) / "f"
         cfg = {"html": str(src), "outDir": str(frames), "W": W, "H": H, "fps": fps, "dur": dur, "theme": theme or {},
-               "fonts": [{"family": fam, "weight": w, "path": str(p), "range": fonts.RANGES[sub]} for fam, w, sub, p in fonts.editor_font_files()]}
+               "fonts": [{"family": fam, "weight": w, "path": str(p), "range": fonts.RANGES[sub]} for fam, w, sub, p in fonts.editor_font_files()] + fonts.extra_font_faces()}
         cf = Path(tmp) / "cfg.json"
         cf.write_text(json.dumps(cfg), encoding="utf-8")
         r = subprocess.run(["node", str(MJS), str(cf)], capture_output=True, text=True)

@@ -26,7 +26,7 @@ def test_every_kit_builds_from_spoken_content_only():
         blob = json.dumps(p["graphics"], ensure_ascii=False).lower()
         for must in ("televizor", "oyuncaq"):
             assert must in blob, f"{k}: nümunə danışıqdan götürülməlidir"
-        assert all(g["type"] in {"title", "list", "emphasis", "type", "block", "note", "bars"} for g in p["graphics"])
+        assert all(g["type"] in {"title", "list", "emphasis", "type", "block", "note", "bars", "veil"} for g in p["graphics"])
         assert all(z.get("scale", 1) <= 1.12 for z in p["zooms"]), "zoom hamar və ≤1.12"
 
 
@@ -136,7 +136,25 @@ def test_global_user_decisions_block_disliked_kits_and_prefer_liked():
     assert memory.check_plans({}, {"A": {"kit": "kinetic"}}), "variants rədd edilmiş dəsti dayandırır"
 
 
-def test_text_without_background_gets_scrim_in_kits():
+def test_text_without_background_gets_soft_veil_not_blob():
     for k in ("editorial", "handnote"):
         gs = kits.build(k, CONTENT)["graphics"]
-        assert gs and all(g.get("scrim") for g in gs), f"{k}: birbaşa video üzərindəki yazıya scrim lazımdır"
+        texts = [g for g in gs if g["type"] in ("type", "note")]
+        assert texts and not any("scrim" in g for g in gs), "ləkə (scrim) yoxdur — istifadəçi bəyənmədi"
+        for i, g in enumerate(gs):
+            if g["type"] in ("type", "note"):
+                v = gs[i - 1]
+                assert v["type"] == "veil" and v["bleed"] and v["start"] == g["start"] and v["dur"] == g["dur"], "hər yazının ALTINDA eyni vaxtda veil"
+                assert 0.25 <= v["a"] <= 0.5 and v["h"] <= 0.45
+
+
+def test_serif_font_has_all_azerbaijani_letters():
+    from fontTools.ttLib import TTFont
+
+    from montaj import fonts
+
+    faces = fonts.extra_font_faces()
+    assert faces and {f["family"] for f in faces} == {"Lora"}
+    for f in faces:
+        cm = TTFont(f["path"]).getBestCmap()
+        assert all(ord(c) in cm for c in "əƏğĞıİöÖüÜşŞçÇ"), f

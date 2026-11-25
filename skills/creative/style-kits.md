@@ -11,8 +11,8 @@ hərəkət, kart olub-olmaması, musiqi/SFX). Kod: `montaj/kits.py`; yoxlama: `m
 | handnote 👍 | ana-körpə, uşaq, şəxsi məsləhət | əl yazısı (Caveat), altından xətt/dairə/ox/✓, mono altyazı | həddindən artıq olarsa dağınıq |
 | kinetic ❌ | reklam, motivasiya, qısa/sürətli | sinema zolaqları, aşağıda bir böyük söz, yuxarıda irəliləyiş xətti | zolaqlar yuxarı 5% və aşağı 24%-i örtür |
 
-**İstifadəçi qərarı (2026-11-25, `montaj/kit_decisions.json`):** editorial yaxşıdır (fon üzərində yazı oxunmurdu → `scrim` əlavə olundu), handnote pis deyil; **colorblock və kinetic ümumiyyətlə bəyənilmədi** — təklif olunmur (`variants` onları dayandırır, `--force` yalnız istifadəçi istəsə).
-`scrim` = kartsız yazının arxasında yumşaq tünd işıq-kölgə; preflight açılışdakı yazının fon kontrastını ölçür (WCAG <3:1 → scrim avtomatik əlavə olunur).
+**İstifadəçi qərarı (2026-11-25, `montaj/kit_decisions.json`):** editorial yaxşıdır (fon üzərində yazı oxunmurdu; tünd ləkə (scrim) bəyənilmədi, premium deyil → yumşaq üst qradiyent `veil` + Lora serif şrifti), handnote pis deyil; **colorblock və kinetic ümumiyyətlə bəyənilmədi** — təklif olunmur (`variants` onları dayandırır, `--force` yalnız istifadəçi istəsə).
+`veil` = kadrın yuxarısında tam enli, çox yumşaq tünd qradiyent (kino başlıqlarındakı kimi, ləkə yox), hər kartsız yazının ALTINDA eyni vaxtda; preflight açılışdakı yazının fon kontrastını ölçür (WCAG <3:1 → veil avtomatik əlavə olunur). Serif başlıqlar: Lora (SIL OFL, Azərbaycan hərfləri tam).
 
 ## Seçim qaydası
 1. `storyboard` çıxışındakı təklif (son 2 videoda işlənmiş və rədd edilmiş dəstlər xaric) — bir-birindən ən uzaq 3 dəst.

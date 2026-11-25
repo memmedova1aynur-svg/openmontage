@@ -1587,3 +1587,20 @@ def test_kit_graphic_props_survive_apply_plan(tmp_path, monkeypatch):
         assert gs and any(key in g for g in gs), (kit, key, gs)
         if kit in ("colorblock", "kinetic"):
             assert all(g.get("bleed") for g in gs), "tam enli elementlər kənarsız yerləşir"
+
+
+def test_preflight_adds_veil_under_unreadable_text(tmp_path, monkeypatch):
+    """Kartsız yazı fon üzərində oxunmursa preflight onun ALTINA yumşaq üst qradiyent (veil) əlavə edir, ləkə yox."""
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import preflight, session, store
+
+    _draft_and_analysis(pid)
+    assert session.main(["apply", pid]) == 0
+    q = session.apply_plan(pid, store.load(pid), {"look": None, "graphics": [
+        {"type": "type", "font": "serif", "text": "Başlıq", "start": 0.2, "dur": 1.5, "y": 0.2},
+        {"type": "note", "text": "qeyd", "start": 2.0, "dur": 1.2, "y": 0.2}]})
+    q2, n = preflight.add_veils(q)
+    assert n == 2
+    order = [c["type"] for c in q2["clips"] if c["track"] == "t1" and c.get("type") in ("veil", "type", "note")]
+    assert order == ["veil", "type", "veil", "note"], "veil yazının altında (əvvəl) çəkilir"
+    assert preflight.add_veils(q2)[1] == 0, "təkrar əlavə olunmur"
