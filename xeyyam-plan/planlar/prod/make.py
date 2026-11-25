@@ -81,16 +81,24 @@ r = subprocess.run(['python3', 'talk.py', f'{HERE}/work/p{n}.json'], cwd=PRO, ca
 m = re.search(r'OK (\S+\.mp4)', r.stdout)
 if not m: print(r.stdout[-1500:], r.stderr[-1500:]); sys.exit(1)
 base_mp4 = m.group(1); final = f"{HERE}/done/{n}_{C['name']}.mp4"; os.makedirs('done', exist_ok=True)
-fx = C.get('fx', [])
-if fx:
+fx = C.get('fx', []); brolls = C.get('broll', []); wins = []; bwins = []
+if fx or brolls:
+    sys.path.insert(0, '/home/user/openmontage')
     wins = [{"l0": 0, "l1": 1, **f, "a": fin(f['a']), "b": (T + 0.3 if f.get('hold') else fin(f['b']))} for f in fx]
-    shutil.rmtree(f'work/fx{n}', ignore_errors=True)
-    subprocess.run(['node', 'fx_render.js', 'fx.html', f'work/fx{n}', json.dumps(wins)], check=True, capture_output=True)
-    cmd = ['ffmpeg', '-nostdin', '-y', '-loglevel', 'error', '-i', base_mp4]; fc = []; last = '0:v'
+    if wins:
+        shutil.rmtree(f'work/fx{n}', ignore_errors=True)
+        subprocess.run(['node', 'fx_render.js', 'fx.html', f'work/fx{n}', json.dumps(wins)], check=True, capture_output=True)
+    cmd = ['ffmpeg', '-nostdin', '-y', '-loglevel', 'error', '-i', base_mp4]; fc = []; last = '0:v'; idx = 1
+    from montaj import library as _lib  # B-roll: kitabxanadan (musiqi/B-roll kataloqu), üfüqi 1280x720 → 1080 en pəncərə, danışan səsi davam edir
+    for b in brolls:
+        a_, e_ = fin(b['a']), fin(b['b']); dur = e_ - a_; bwins.append({"a": a_, "b": e_})
+        cmd += ['-ss', str(b.get('ss', 1.0)), '-t', f'{dur:.2f}', '-i', str(_lib.get(b['id']))]
+        fc.append(f"[{idx}:v]scale=1080:608:flags=lanczos,format=yuva420p,fade=t=in:st=0:d=0.25:alpha=1,fade=t=out:st={max(0, dur - 0.25):.2f}:d=0.25:alpha=1,setpts=PTS-STARTPTS+{a_}/TB[b{idx}]")
+        fc.append(f"[{last}][b{idx}]overlay=0:{b.get('y', 440)}:enable='between(t,{a_},{e_})':eof_action=pass[bv{idx}]"); last = f'bv{idx}'; idx += 1
     for k, w in enumerate(wins):
         cmd += ['-itsoffset', str(w['a']), '-framerate', '30', '-i', f'work/fx{n}/w{k}/%04d.png']
         en = f"gte(t,{w['a']})" if w.get('hold') else f"between(t,{w['a']},{w['b']})"
-        fc.append(f"[{last}][{k + 1}:v]overlay=enable='{en}':eof_action={'repeat' if w.get('hold') else 'pass'}[v{k}]"); last = f'v{k}'
+        fc.append(f"[{last}][{idx}:v]overlay=enable='{en}':eof_action={'repeat' if w.get('hold') else 'pass'}[v{k}]"); last = f'v{k}'; idx += 1
     cmd += ['-filter_complex', ';'.join(fc), '-map', f'[{last}]', '-map', '0:a', '-c:a', 'copy', '-c:v', 'libx264', '-crf', '15', '-preset', 'medium',
             '-pix_fmt', 'yuv420p', '-r', '30', '-movflags', '+faststart', '-t', f'{T:.2f}', final]
     subprocess.run(cmd, check=True)
@@ -102,7 +110,7 @@ sel = '+'.join(f'eq(n,{int(d * 30 * k / 8) + 12})' for k in range(8))
 subprocess.run(['ffmpeg', '-nostdin', '-y', '-loglevel', 'error', '-i', final, '-vf', f"select='{sel}',scale=250:444,tile=8x1", '-frames:v', '1', '-vsync', '0', f'work/qc{n}.png'])
 sys.path.insert(0, '/home/user/openmontage'); os.chdir('/home/user/openmontage')
 from montaj import crystal as _cr
-_skip = [(w['a'], w['b']) for w in (wins if fx else [])] + [(fin(c[0]), fin(c[1])) for c in el.get('cards', [])]
+_skip = [(w['a'], w['b']) for w in wins + bwins] + [(fin(c[0]), fin(c[1])) for c in el.get('cards', [])]
 print('HİZALI YOXLAMA:', json.dumps(_cr.aligned_check(SRC, final, segs, cy=0.45, base=C.get('base'), exclude=[tuple(x) for x in C.get('qc_exclude', [(0, 0, 1, 0.27), (0, 0.60, 1, 0.78)])], skip=_skip), ensure_ascii=False))
 from tools.analysis.delivery_qc import DeliveryQC
 q = DeliveryQC().execute({"input_path": final, "loudness_profile": "social", "format": "short_form", "expected": {"width": 1080, "height": 1920, "fps": 30}}); q = getattr(q, 'data', q)
