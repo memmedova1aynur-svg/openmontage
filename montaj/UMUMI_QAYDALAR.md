@@ -5,8 +5,9 @@ Bu fayl yalnız ortaq qaydaları saxlayır; müştəri fayllarına kopyalanmır.
 
 ## 0. Prioritet (ziddiyyət olanda)
 **Müştəri profili / müştəri faylı > bu fayl > `IS_AXINI.md` standartları.**
+**İstisna:** texniki keyfiyyət (söz/heca kəsilməsi, səs və görüntü xətası) və məzmunun bütövlüyü/mənası müştəri qaydasından üstündür.
 Daimi qaydalar müştəri faylının "Təsdiqlənmiş düzəlişlər" hissəsindədir və təkrar soruşulmur.
-Birdəfəlik tapşırıq daimi qaydaya çevrilmir (yalnız istifadəçi "həmişə" deyəndə).
+Düzəliş o zaman daimi olur ki, istifadəçi onu daimi qayda kimi təsdiqləyib ("həmişə" sözü şərt deyil). Aydın deyilsə, bir qısa sual ver; birdəfəlik tapşırıq daimi qaydaya çevrilmir.
 
 ## 1. Əsas prinsip
 Eyni müştəri — fərqli videolar. Fərqli müştərilər — fərqli montaj kimlikləri. Bütün müştərilər — eyni yüksək peşəkarlıq standartı.
@@ -14,7 +15,7 @@ Hər video ayrıca yaradıcı layihədir; yaradıcılıq effekt çoxluğu deyil,
 
 ## 2. Rəng
 - HEX kodlarından istifadə et. Qrafik palitranı təbii görüntüyə məcburi tətbiq etmə.
-- Müştəri faylında sabit "look" göstərilibsə, o tətbiq olunur; göstərilməyibsə korreksiya məkan və işığa görə aparılır (eyni filtri hamıya vurma).
+- Müştəri faylındakı "look" brend bazasıdır; intensivliyi çəkilişin işığına və məkanına görə tənzimlənir. Look göstərilməyibsə korreksiya məkan və işığa görə aparılır. Eyni filtri mexaniki vurma.
 - Dərini ağartma, narıncılaşdırma, plastikləşdirmə. Yazılar fondan aydın seçilsin.
 
 ## 3. Yazı və altyazı
@@ -35,7 +36,7 @@ Hər video ayrıca yaradıcı layihədir; yaradıcılıq effekt çoxluğu deyil,
 
 ## 6. Montaj ritmi
 - Sözlərin əvvəli, sonu və hecaları kəsilməsin; danışığı süni sürətləndirmə.
-- **Pauzalar:** standart olaraq təbii nəfəs və fikir fasilələri qalır. Müştəri faylında "pauzalar ≥ X s kəsilir" yazılıbsa, o tətbiq olunur (söz kəsilmir).
+- **Pauzalar:** standart olaraq təbii nəfəs və fikir fasilələri qalır. Müştəri faylında "pauzalar ≥ X s kəsilir" yazılıbsa, o tətbiq olunur (söz kəsilmir). Mənalı/emosional pauza (vurğu sözündən əvvəl, düşündürücü cümlədən sonra) həddi keçsə də qorunur.
 - Mimika, intonasiya, jestləri nəzərə al. Ara kadrlar mövzuya uyğun olsun (süni AI və əlaqəsiz stokdan qaç).
 - Sabit saniyə intervalında effekt/ara kadr məcburi deyil. Məzmun hesabına müddəti qısaltma.
 - Video növünə görə: reklam — dinamik; maarifləndirici — balanslı; emosional — təbii fasilə; storytelling — dəyişkən ritm; sual-cavab — çevik; ekspert — ölçülü; praktik nümayiş — mərhələli.
@@ -59,7 +60,7 @@ Hər video ayrıca yaradıcı layihədir; yaradıcılıq effekt çoxluğu deyil,
 
 ## 10. Fərq testi (ölçülə bilən)
 Hər müştəri faylında 3 imza element yazılır. Təhvildən əvvəl:
-1. Bu 3 elementdən ən azı 2-si videoda varmı?
+1. Müştərinin imza elementlərindən mövzuya uyğun olan ən azı biri videoda varmı? (3-ünü məcbur etmə, imza hər videoda məcburi deyil, §5.)
 2. Başqa müştərinin son videosuna eyni kart/animasiya/musiqi təkrarı varmı? (olmamalıdır)
 3. Hazır şablon və ya süni AI təəssüratı yaradırmı? (yaratmamalıdır)
 4. Mövzuya uyğundurmu və ekspert imicini gücləndirirmi?

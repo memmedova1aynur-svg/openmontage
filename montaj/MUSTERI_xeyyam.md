@@ -54,3 +54,6 @@ Qeyd: 43 videonun 41-i look W, 2-si H; altyazı stroke 20, box 11; animasiya fad
 2. **Yazının yeri:** brifdə "hər videoda yazının yeri və animasiyası bir az dəyişir" yazılıb, kadraj qaydasında isə sabit yerlər (y ≈ 0.17–0.19 və 0.74). Dəyişmə yalnız bu iki yer arasında olsun?
 3. **Marker effekti** (imza 1) təsdiqlənirmi, yoxsa başqa imza hərəkət istəyirsən?
 4. **Brifdəki "Təxirəsalma/McCollough/Öyrənməyi öyrən" seriyası:** davam edir, yoxsa yeni mövzulara keçirik?
+5. **Danışan hissə maks. 6 s** bütün videolarda mexaniki görünə bilər: 4–8 s arasında dəyişsin?
+6. **Hər video üçün 6 kadrlıq storyboard + ayrıca təsdiq** prosesi ləngidir: storyboard yalnız yeni konsept üçün, eyni seriyada qısa mətn plan kifayət etsin?
+7. **Look seçimi** (C/H/W): vizual müqayisə (`looks` nümunə şəkli) görmədən seçilməsin; 1-ci suala cavabdan əvvəl `looks` ilə nümunə hazırlanacaq.
