@@ -101,14 +101,14 @@ def build(kit: str, content: dict[str, Any], theme: dict[str, Any] | None = None
     elif kit == "editorial":
         cap.update(style={"bg": "none", "align": "left", "x": 0.06, "weight": 600, "size": 0.04, "color": "#FFFFFF"})
         if hook:
-            g.append({"type": "type", "font": "serif", "kicker": hook.get("kicker"), "text": hook.get("short") or hook["text"], "size": 0.075, "x": 0.5, "y": 0.2,
+            g.append({"type": "type", "font": "serif", "kicker": hook.get("kicker"), "text": hook.get("short") or hook["text"], "size": 0.075, "x": 0.5, "y": 0.2, "scrim": 0.55,
                       "start": hs, "dur": hd, "anim": {"in": "fade", "d": 0.6, "out": "fade"}})
         if lst:
-            g.append({"type": "type", "font": "serif", "kicker": lst.get("heading"), "items": items(lst), "size": 0.045, "y": 0.18, "start": lst["start"], "dur": lst["dur"],
+            g.append({"type": "type", "font": "serif", "kicker": lst.get("heading"), "items": items(lst), "size": 0.045, "y": 0.18, "scrim": 0.55, "start": lst["start"], "dur": lst["dur"],
                       "anim": {"in": "fade", "d": 0.5}})
-        g += [{"type": "type", "font": "serif", "text": e["text"], "size": 0.05, "y": 0.2, "start": e["start"], "dur": e["dur"], "anim": {"in": "fade", "d": 0.5}} for e in emph]
+        g += [{"type": "type", "font": "serif", "text": e["text"], "size": 0.05, "y": 0.2, "scrim": 0.55, "start": e["start"], "dur": e["dur"], "anim": {"in": "fade", "d": 0.5}} for e in emph]
         if claim:
-            g.append({"type": "type", "font": "serif", "kicker": claim.get("kicker"), "text": claim["text"], "size": 0.07, "y": 0.2, "start": claim["start"], "dur": claim["dur"],
+            g.append({"type": "type", "font": "serif", "kicker": claim.get("kicker"), "text": claim["text"], "size": 0.07, "y": 0.2, "scrim": 0.55, "start": claim["start"], "dur": claim["dur"],
                       "anim": {"in": "fade", "d": 0.6}})
         hook_method = "typography-free"
     elif kit == "colorblock":
@@ -128,13 +128,13 @@ def build(kit: str, content: dict[str, Any], theme: dict[str, Any] | None = None
     elif kit == "handnote":
         cap.update(style={"font": "DejaVu Sans Mono", "bg": "#000000@0.62", "color": "#FFFFFF", "weight": 400, "size": 0.032, "align": "left", "x": 0.04, "radius": 0.1})
         if hook:
-            g.append({"type": "note", "text": hook.get("short") or hook["text"], "size": 0.13, "rot": 4, "mark": "underline", "y": 0.18, "start": hs, "dur": min(hd, 3.5),
+            g.append({"type": "note", "text": hook.get("short") or hook["text"], "size": 0.13, "rot": 4, "mark": "underline", "y": 0.18, "scrim": 0.45, "start": hs, "dur": min(hd, 3.5),
                       "anim": {"in": "pop", "out": "fade"}})
         if lst:
-            g.append({"type": "note", "items": items(lst), "size": 0.05, "rot": -2, "x": 0.68, "y": 0.17, "start": lst["start"], "dur": lst["dur"], "anim": {"in": "fade"}})
-        g += [{"type": "note", "text": e["text"], "size": 0.07, "rot": -3, "mark": "circle", "y": 0.2, "start": e["start"], "dur": e["dur"], "anim": {"in": "pop"}} for e in emph]
+            g.append({"type": "note", "items": items(lst), "size": 0.05, "rot": -2, "x": 0.68, "y": 0.17, "scrim": 0.45, "start": lst["start"], "dur": lst["dur"], "anim": {"in": "fade"}})
+        g += [{"type": "note", "text": e["text"], "size": 0.07, "rot": -3, "mark": "circle", "y": 0.2, "scrim": 0.45, "start": e["start"], "dur": e["dur"], "anim": {"in": "pop"}} for e in emph]
         if claim:
-            g.append({"type": "note", "text": claim["text"], "size": 0.075, "rot": -3, "mark": "arrow", "y": 0.19, "start": claim["start"], "dur": claim["dur"], "anim": {"in": "pop"}})
+            g.append({"type": "note", "text": claim["text"], "size": 0.075, "rot": -3, "mark": "arrow", "y": 0.19, "scrim": 0.45, "start": claim["start"], "dur": claim["dur"], "anim": {"in": "pop"}})
         hook_method = "handwritten-note"
     else:  # kinetic
         cap.update(style={"bg": "#000000@0.55", "color": "#FFFFFF", "weight": 600, "size": 0.03, "y": 0.9})

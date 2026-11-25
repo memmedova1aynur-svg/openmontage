@@ -6,9 +6,21 @@ Yalnız İSTİFADƏÇİNİN təsdiqlədiyi/rədd etdiyi qərarlar yazılır (`ch
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
 from typing import Any
 
 from montaj import difference, kits
+
+GLOBAL = Path(__file__).resolve().parent / "kit_decisions.json"  # istifadəçinin ÜMUMİ qərarları (müştəridən asılı olmayaraq)
+
+
+def global_decisions() -> dict[str, dict[str, str]]:
+    try:
+        d = json.loads(GLOBAL.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {"liked": {}, "rejected": {}}
+    return {"liked": d.get("liked") or {}, "rejected": d.get("rejected") or {}}
 
 RECENT_N = 2
 
@@ -29,15 +41,17 @@ def rejected_kits(profile: dict[str, Any] | None) -> list[str]:
 def blocked(profile: dict[str, Any] | None) -> dict[str, str]:
     out = {k: f"son {RECENT_N} videoda işlənib" for k in recent_kits(profile)}
     out.update({k: "istifadəçi rədd edib" for k in rejected_kits(profile)})
+    out.update({k: "istifadəçi ümumiyyətlə bəyənməyib" for k in global_decisions()["rejected"]})
     return out
 
 
 def suggest(profile: dict[str, Any] | None, n: int = 3, tags: list[str] | None = None) -> list[str]:
     """n dəst: bloklananlar xaric, bir-birindən oxlar üzrə ən uzaq (xəsis seçim); mövzu teqlərinə uyğun olan üstün."""
     bl = blocked(profile)
+    liked = global_decisions()["liked"]
     pool = [k for k in kits.KITS if k not in bl]
     tags = [t.lower() for t in tags or []]
-    score = lambda k: sum(any(t in s.lower() for s in kits.KITS[k]["suits"]) for t in tags)  # noqa: E731
+    score = lambda k: sum(any(t in s.lower() for s in kits.KITS[k]["suits"]) for t in tags) + (2 if k in liked else 0)  # noqa: E731
     pool.sort(key=lambda k: (-score(k), k))
     chosen: list[str] = []
     while pool and len(chosen) < n:

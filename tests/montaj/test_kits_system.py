@@ -49,7 +49,8 @@ def test_kit_axes_are_really_different_across_kits():
         assert d["pairs"][0]["diff"] >= 4, (a, b, d["pairs"])
 
 
-def test_memory_blocks_recent_and_rejected_and_suggests_spread():
+def test_memory_blocks_recent_and_rejected_and_suggests_spread(tmp_path, monkeypatch):
+    monkeypatch.setattr(memory, "GLOBAL", tmp_path / "yox.json")  # ümumi qərarlar bu testə təsir etməsin
     prof = {"history": [{"kit": "classic"}, {"kit": "editorial"}, {"kit": "handnote"}], "rejected": [{"kit": "kinetic"}]}
     assert memory.recent_kits(prof) == ["editorial", "handnote"]
     bl = memory.blocked(prof)
@@ -124,3 +125,18 @@ def test_reference_learning_extracts_rhythm_not_media(tmp_path, monkeypatch):
     assert refstyle.approved_targets()[0]["decisions"]["hook_method"].startswith("ilk")
     refstyle.decide("t1", {"typography": "böyük sans"})
     assert refstyle.approved_targets() == [], "dəyişən qərar yenidən təsdiq tələb edir"
+
+
+def test_global_user_decisions_block_disliked_kits_and_prefer_liked():
+    g = memory.global_decisions()
+    assert {"colorblock", "kinetic"} <= set(g["rejected"]), "istifadəçi 2 və 4-cü dəsti ümumiyyətlə bəyənməyib (2026-11-25)"
+    assert {"editorial", "handnote"} <= set(g["liked"])
+    sug = memory.suggest({}, 3)
+    assert not {"colorblock", "kinetic"} & set(sug) and sug[0] == "editorial"
+    assert memory.check_plans({}, {"A": {"kit": "kinetic"}}), "variants rədd edilmiş dəsti dayandırır"
+
+
+def test_text_without_background_gets_scrim_in_kits():
+    for k in ("editorial", "handnote"):
+        gs = kits.build(k, CONTENT)["graphics"]
+        assert gs and all(g.get("scrim") for g in gs), f"{k}: birbaşa video üzərindəki yazıya scrim lazımdır"

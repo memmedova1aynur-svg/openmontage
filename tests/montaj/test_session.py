@@ -1556,7 +1556,7 @@ def test_variants_require_different_kits_and_respect_client_memory(tmp_path, mon
     _draft_and_analysis(pid)
     content = {"hook": {"text": "Birinci sual?", "short": "SUAL", "kicker": "MÖVZU", "start": 0.2, "dur": 1.6}}
     plans = {}
-    for name, kit in (("A", "editorial"), ("B", "colorblock"), ("C", "editorial")):
+    for name, kit in (("A", "editorial"), ("B", "handnote"), ("C", "editorial")):
         pl = {**kits.build(kit, content, {"primary": "#C9577D"}), "title": f"{name}:{kit}", "look": None}
         pl["zooms"] = []
         f = tmp_path / f"{name}.json"
@@ -1579,7 +1579,7 @@ def test_kit_graphic_props_survive_apply_plan(tmp_path, monkeypatch):
     assert session.main(["apply", pid]) == 0
     content = {"hook": {"text": "Sual?", "short": "SUAL", "kicker": "MÖVZU", "start": 0.2, "dur": 1.6},
                "words": [{"w": "SUAL", "s": 0.2}, {"w": "CAVAB", "s": 0.9}], "duration": 5}
-    want = {"editorial": "kicker", "colorblock": "chip", "handnote": "mark", "kinetic": "seq"}
+    want = {"editorial": "kicker", "colorblock": "chip", "handnote": "mark", "kinetic": "seq"}  # rədd edilmiş dəstlər də texniki olaraq işləyir
     for kit, key in want.items():
         b = kits.build(kit, content, {"primary": "#C9577D"})
         q = session.apply_plan(pid, store.load(pid), {"look": None, "graphics": b["graphics"]})

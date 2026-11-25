@@ -53,6 +53,13 @@
     const color = clip.color || defaults(type, th).color;
     const base = { fontFamily: font, fontWeight: String(weight), fontSize: `${fs}px`, lineHeight: '1.18', color, whiteSpace: 'pre-wrap', textAlign: 'center', boxSizing: 'border-box' };
     const VW = (doc.defaultView && doc.defaultView.innerWidth) || H * 0.5625;  // kadr eni (px) — tam enli elementlər üçün
+    // scrim: açıq/qarışıq fon üzərində birbaşa yazının oxunması üçün yumşaq tünd işıq-kölgə (kənarsız, radial)
+    const scrimIt = (el, c, size) => {
+      const a = Number(c.scrim || 0);
+      if (!a) return;
+      el.style.padding = `${size * 0.9}px ${size * 1.3}px`;  // kənara qədər sönən yumşaq işıq-kölgə (düzbucaqlı iz qalmasın)
+      el.style.background = `radial-gradient(ellipse closest-side at 50% 50%, rgba(0,0,0,${a}) 0%, rgba(0,0,0,${a * 0.72}) 55%, rgba(0,0,0,0) 100%)`;
+    };
     const shown = (items) => (tl == null ? items.length : items.filter((it) => tl >= (it.at || 0)).length);
     if (type === 'type') {  // üslub dəsti: redaksiya tipoqrafiyası — kartsız böyük yazı, kicker, incə xətt, nömrəli sətirlər
       const fam = clip.font === 'serif' ? '"DejaVu Serif", Georgia, serif' : font;
@@ -69,6 +76,7 @@
           w.append(row);
         });
       } else w.append(node(doc, 'div', {}, clip.text || ''));
+      scrimIt(w, clip, fs);
       return w;
     }
     if (type === 'note') {  // üslub dəsti: əl yazısı qeyd — Caveat, əyilmiş; altından xətt / dairə / ox / ✓ işarələri (SVG)
@@ -87,8 +95,9 @@
           w.append(row);
         });
       } else w.append(node(doc, 'div', { position: 'relative' }, clip.text || ''));
+      scrimIt(w, clip, fs);
       const mark = clip.mark || 'none';
-      if (mark === 'underline') w.append(svg(`<path d="M2 60 C30 40 55 85 98 45" ${stroke}/>`, { left: '4%', width: '92%', bottom: `${fs * 0.05}px`, height: `${fs * 0.3}px` }));
+      if (mark === 'underline') w.append(svg(`<path d="M2 60 C30 40 55 85 98 45" ${stroke}/>`, { left: `${clip.scrim ? fs * 1.3 : fs * 0.5}px`, width: `calc(100% - ${2 * (clip.scrim ? fs * 1.3 : fs * 0.5)}px)`, bottom: `${(clip.scrim ? fs * 0.9 : fs * 0.35) + fs * 0.02}px`, height: `${fs * 0.3}px` }));
       if (mark === 'circle') w.append(svg(`<ellipse cx="50" cy="50" rx="48" ry="46" ${stroke}/>`, { left: '0', top: '0', width: '100%', height: '100%' }));
       if (mark === 'arrow') w.append(svg(`<path d="M5 5 C30 10 60 40 85 85 M85 85 L62 78 M85 85 L88 60" ${stroke}/>`, { right: `${-fs * 1.2}px`, bottom: `${-fs * 1.3}px`, width: `${fs * 1.4}px`, height: `${fs * 1.4}px` }));
       return w;

@@ -87,10 +87,11 @@ def moments(project: dict[str, Any]) -> list[dict[str, Any]]:
     pl = render_plan(project)
     total = pl["main"]
     caps = [t for t in pl["text"] if t["clip"].get("autoSub") or str(t["clip"].get("id", "")).startswith("sub_")]
-    gfx = [t for t in pl["text"] if t["clip"].get("type") in ("title", "emphasis", "section", "badge", "list", "card", "offer", "cta", "lower", "choice")]
+    gfx = [t for t in pl["text"] if t["clip"].get("type") in ("title", "emphasis", "section", "badge", "list", "card", "offer", "cta", "lower", "choice", "type", "note", "block", "bars")]
     out: list[dict[str, Any]] = []
     hook = next((g for g in sorted(gfx, key=lambda g: g["start"]) if g["start"] < 10), None)
-    out.append({"label": "açılış", "t": round(hook["start"] + min(0.8, (hook["end"] - hook["start"]) / 2), 2) if hook else 0.8})
+    out.append({"label": "açılış", "t": round(hook["start"] + min(0.8, (hook["end"] - hook["start"]) / 2), 2) if hook else 0.8,
+                **({"gfx": hook["clip"]} if hook else {})})
     if caps:
         c = max(caps, key=lambda t: len(str(t["clip"].get("text") or "")))
         out.append({"label": "ən uzun altyazı", "t": round((c["start"] + c["end"]) / 2, 2), "caption": c["clip"]})
@@ -245,6 +246,24 @@ def run(pid: str) -> dict[str, Any]:
                     fixed_box = caption_contrast(img, boxed)  # düzəlişdən sonrakı kontrast (eyni fon, yenidən render yoxdur)
                     info["caption_contrast_after_fix"] = fixed_box
             rep["moments"].append(info)
+        # kartsız (birbaşa video üzərində) yazılar: fon açıq/qarışıqdırsa oxunmur → scrim (yumşaq tünd işıq-kölgə)
+        from montaj.graphics import pos as _pos
+
+        for m, f in zip(mm, frames):
+            g = m.get("gfx")
+            if g and g.get("type") in ("type", "note") and not g.get("scrim"):
+                cc = caption_contrast(np.asarray(Image.open(f).convert("RGB")), {"color": g.get("color") or "#FFFFFF", "bg": "none"}, y=_pos(g)[1])
+                for info in rep["moments"]:
+                    if info["label"] == m["label"] and info["t"] == m["t"]:
+                        info["text_contrast"] = cc
+                if not cc["ok"]:
+                    n = 0
+                    for c in q["clips"]:
+                        if c.get("type") in ("type", "note") and not c.get("scrim"):
+                            c["scrim"] = 0.55
+                            n += 1
+                    rep["fixes"].append(f"birbaşa video üzərindəki yazı oxunmur (kontrast {cc['ratio']}): {n} elementə yumşaq tünd scrim əlavə olundu")
+                    break
         if bad:
             q = _fix_captions_to_box(q)
             rep["fixes"].append("altyazı: kontur → qutulu (fon üzərində kontrast zəif idi); kadr şəkli düzəlişdən əvvəlkidir")
@@ -271,6 +290,8 @@ def describe(rep: dict[str, Any]) -> list[str]:
         af = m.get("caption_contrast_after_fix")
         extra = f" — altyazı kontrastı {cc['ratio']} ({cc['mode']}{', zəif' if not cc['ok'] else ''})" if cc else ""
         extra += f" → düzəlişdən sonra {af['ratio']} ({af['mode']})" if af else ""
+        tc = m.get("text_contrast")
+        extra += f" — yazı kontrastı {tc['ratio']}{', zəif' if not tc['ok'] else ''}" if tc else ""
         out.append(f"  {m['t']:5.1f} s {m['label']}{extra}")
     out += [f"  düzəldildi: {x}" for x in rep["fixes"]]
     out += [f"  ! {x}" for x in rep["problems"]]

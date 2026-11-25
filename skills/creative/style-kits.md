@@ -6,10 +6,13 @@ hərəkət, kart olub-olmaması, musiqi/SFX). Kod: `montaj/kits.py`; yoxlama: `m
 | Dəst | Nə vaxt | Xüsusiyyət | Məhdudiyyət |
 |---|---|---|---|
 | classic | təhlükəsiz baza | brend rəngli kartlar, qutulu altyazı | ən tanış; fərqlənmək üçün yox |
-| editorial | psixologiya, ekspert fikri, hekayə | kartsız serif yazı başın üstündə, sola düzlənmiş altyazı | çox yazı sığmır; sakit |
-| colorblock | reklam, təlim, siyahı/addım | yuxarıda tam enli rəng paneli (anda rəng dəyişir), altyazı zolağı | panel yuxarı ~30%-i örtür |
-| handnote | ana-körpə, uşaq, şəxsi məsləhət | əl yazısı (Caveat), altından xətt/dairə/ox/✓, mono altyazı | həddindən artıq olarsa dağınıq |
-| kinetic | reklam, motivasiya, qısa/sürətli | sinema zolaqları, aşağıda bir böyük söz, yuxarıda irəliləyiş xətti | zolaqlar yuxarı 5% və aşağı 24%-i örtür |
+| editorial ✅ | psixologiya, ekspert fikri, hekayə | kartsız serif yazı başın üstündə, sola düzlənmiş altyazı | çox yazı sığmır; sakit |
+| colorblock ❌ | reklam, təlim, siyahı/addım | yuxarıda tam enli rəng paneli (anda rəng dəyişir), altyazı zolağı | panel yuxarı ~30%-i örtür |
+| handnote 👍 | ana-körpə, uşaq, şəxsi məsləhət | əl yazısı (Caveat), altından xətt/dairə/ox/✓, mono altyazı | həddindən artıq olarsa dağınıq |
+| kinetic ❌ | reklam, motivasiya, qısa/sürətli | sinema zolaqları, aşağıda bir böyük söz, yuxarıda irəliləyiş xətti | zolaqlar yuxarı 5% və aşağı 24%-i örtür |
+
+**İstifadəçi qərarı (2026-11-25, `montaj/kit_decisions.json`):** editorial yaxşıdır (fon üzərində yazı oxunmurdu → `scrim` əlavə olundu), handnote pis deyil; **colorblock və kinetic ümumiyyətlə bəyənilmədi** — təklif olunmur (`variants` onları dayandırır, `--force` yalnız istifadəçi istəsə).
+`scrim` = kartsız yazının arxasında yumşaq tünd işıq-kölgə; preflight açılışdakı yazının fon kontrastını ölçür (WCAG <3:1 → scrim avtomatik əlavə olunur).
 
 ## Seçim qaydası
 1. `storyboard` çıxışındakı təklif (son 2 videoda işlənmiş və rədd edilmiş dəstlər xaric) — bir-birindən ən uzaq 3 dəst.
