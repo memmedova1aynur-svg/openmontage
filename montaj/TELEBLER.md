@@ -13,7 +13,7 @@ Yoxlama əsası: `tests/montaj/` (Node 12, pytest 19) və brauzer testləri `e2e
 | # | Tələb | Status | Qeyd |
 |---|---|---|---|
 | 0.1 | Əlavə ödənişli xidmət aktivləşdirilmir (VPS, API, hosting, saxlama) | ✅ | Heç biri aktiv deyil |
-| 0.2 | Yalnız iPhone ilə bir videonu başdan sona hazırlamaq | 🟡 | Seçilən yol: Claude Code sessiyası + `montaj.session` CLI (`BUDCE_YOLU.md`). Real iPhone və real video ilə yoxlanılmayıb |
+| 0.2 | Yalnız iPhone ilə bir videonu başdan sona hazırlamaq | 🟡 | Seçilən yol: Claude Code sessiyası + `montaj.session` CLI (`MONTAJ_QAYDALARI.md`). Real iPhone və real video ilə yoxlanılmayıb |
 | 0.3 | Drive linkindən orijinal fayl (sessiyada) | 🟡 | Drive serverinə çıxış var; real paylaşımlı fayl ilə yoxlanılmayıb |
 | 0.4 | Sessiyada hazırlanmış plan panel layihə faylı kimi | ✅ | `export` panelin öz `montaj.json` formatını verir (test) |
 | 0.5 | Brauzerdə tam montaj paneli telefondan | ⛔ | Pulsuz daimi server yoxdur. Yerinə: telefon redaktoru (0.6) |
@@ -41,7 +41,7 @@ Yoxlama əsası: `tests/montaj/` (Node 12, pytest 19) və brauzer testləri `e2e
 | 1.4 | Giriş qorunur | ✅ | Parol + HMAC imzalı HttpOnly/Secure cookie; bütün API və media qorunur |
 | 1.5 | Müştəri videoları və açarlar açıq yayımlanmır | ✅ | Media yalnız girişlə; açarlar yalnız mühit dəyişəni; status yalnız “var/yox” göstərir |
 | 1.6 | Telefon kilidlənsə iş davam edir; yenidən açanda vəziyyət bərpa olunur | ✅ | İş diskdə (test: restart təqlidi); storyboard düzəlişi səhifəni yenidən açanda qalır (brauzer testi). Real iPhone kilidi ilə yoxlanılmayıb. İşlər diskdə saxlanılır, panel açılanda aktiv işləri göstərir. Server restartında yarımçıq iş “dayandı — yenidən başlat” kimi görünür |
-| 1.7 | Hesab/ödəniş maneəsi, xidmət və xərc göstərilir | 🟡 | `deploy/README.md` (VPS — hazırkı büdcəyə daxil deyil, aktivləşdirilməyib). Əlavə xərcsiz yol: `BUDCE_YOLU.md` |
+| 1.7 | Hesab/ödəniş maneəsi, xidmət və xərc göstərilir | 🟡 | `deploy/README.md` (VPS — hazırkı büdcəyə daxil deyil, aktivləşdirilməyib). Əlavə xərcsiz yol: `MONTAJ_QAYDALARI.md` |
 
 ## 2. Sadə istifadə axını
 | # | Tələb | Status | Qeyd |
@@ -242,7 +242,7 @@ real danışıqda səs sinxronu və görünən keyfiyyət, iPhone Safari, Instag
 | 29.2 | Danışıq kəsimində 12 ms səs keçidi (davamlı bölünmədə yox) | ✅ | Test |
 | 29.3 | `duo` keçidi J-cut üslubunda (yeni danışan başlamazdan 0.25 s əvvəl, əvvəlki bitəndən sonra) | ✅ | Test |
 | 29.4 | M09 plan ölçüsü (ümumi/orta/yaxın), eyni ölçü dalbadal gəlmir; kadrlar.jpg-də ölçü | ✅ | Test |
-| 29.5 | Montaj prinsipləri sənədi `KINO_DILI.md` (videoqrafiya bələdçisinin xülasəsi + sistemdə qarşılığı) | ✅ | Sənəd |
+| 29.5 | Montaj prinsipləri sənədi `MONTAJ_QAYDALARI.md` (videoqrafiya bələdçisinin xülasəsi + sistemdə qarşılığı) | ✅ | Sənəd |
 | 30.1 | Davamlılıq + müxtəliflik (`variation.py`): ailə daxilində tonlar (krem daxil), son videolardan fərqli ton/altyazı/animasiya təklifi, plan `"variation"`, tarixçəyə yazılır | ✅ | `test_style_variation`; Sura krem variantı vizual |
 | 30.2 | Düzəliş: plan qrafikası klip sərhədində (multicam/duo bölünməsi) kəsilmir — istənilən müddət (`want`) saxlanılır | ✅ | Test (bölünmədən sonra da 4.5 s) + node timeline 13 pass |
 | 30.3 | Sura Malik profili: sahə (ana-körpə, laktasiya, analıq məktəbi), rəng ailəsi çəhrayı + krem, davamlılıq qaydası | ✅ | Profil |

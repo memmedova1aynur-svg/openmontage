@@ -150,6 +150,34 @@ def _fix_captions_to_box(q: dict[str, Any]) -> dict[str, Any]:
 _ZONE_DY = {"yuxarı": 0.02, "aşağı": -0.02}
 
 
+MIN_SEG = 2.0   # element (B-roll/animasiya) və aralarındakı ekspert hissəsi ən azı ~2 s
+
+
+def check_segments(project: dict[str, Any]) -> list[str]:
+    """Çox qısa element/ekspert hissələri (0.1–1 s) və sıçrayışlı punch-in — xəbərdarlıq (avtomatik düzəliş yoxdur)."""
+    from montaj.render import render_plan
+
+    pl = render_plan(project)
+    out: list[str] = []
+    spans: list[tuple[float, float, str]] = []
+    for o in pl["overlay"]:
+        if o["clip"].get("mode") != "pip":
+            spans.append((o["start"], o["start"] + o["dur"], "overlay"))
+    for v in pl["video"]:
+        if v["clip"].get("broll"):
+            spans.append((v["start"], v["start"] + v["dur"], "insert"))
+    spans.sort()
+    for a, b, k in spans:
+        if b - a < MIN_SEG - 1e-6:
+            out.append(f"{a:.1f} s: element yalnız {b - a:.1f} s göstərilir (≥{MIN_SEG:.0f} s olmalıdır)")
+    for (a1, b1, _), (a2, _b2, _k2) in zip(spans, spans[1:]):
+        if 0 < a2 - b1 < MIN_SEG - 1e-6:
+            out.append(f"{b1:.1f} s: elementlər arasında ekspert yalnız {a2 - b1:.1f} s görünür (≥{MIN_SEG:.0f} s olmalıdır)")
+    if any((c.get("frame") or {}).get("planZoom") for c in project["clips"]):
+        out.append("punch-in (`zooms`) sıçrayışlıdır — hamar zoom üçün `multicam` calm istifadə et")
+    return out
+
+
 def fix_layout(q: dict[str, Any], root: Path, workdir: Path, tries: int = 3) -> tuple[dict[str, Any], list[str], list[dict[str, Any]]]:
     """layout_check səhvləri: zonaya düşən kart/başlıq y-ni 0.02 addımla zonadan çıxarır (üz örtülməsə).
     Qayıdır: (layihə, edilən düzəlişlər, qalan problemlər)."""
@@ -190,6 +218,7 @@ def run(pid: str) -> dict[str, Any]:
     with tempfile.TemporaryDirectory(prefix="pf_") as tmp:
         q, notes, left = fix_layout(copy.deepcopy(p), root, Path(tmp) / "lay")
         rep["fixes"] += notes
+        rep["problems"] += check_segments(q)
         rep["problems"] += [f"{x['t']:.1f} s {x['what']}" for x in left]
         lo = lowres_project(q, root)
         mp4 = Path(tmp) / "pf.mp4"

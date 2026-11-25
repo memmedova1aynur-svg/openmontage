@@ -1,6 +1,8 @@
 # Əsas iş axını: Drive linki → yekun MP4 (davamlı təlimat)
 
-Bu fayl istifadəçinin təsdiqlədiyi **əsas** iş axınıdır (sorğu → Drive linki → analiz → 3 storyboard → rəng/musiqi → MP4) və `SESSIYA_TELIMATI.md`-dən üstündür.
+> **Qayda mənbəyi `MONTAJ_QAYDALARI.md`-dir.** Bu fayl yalnız əmr istinadıdır; ziddiyyətdə `MONTAJ_QAYDALARI.md` keçərlidir.
+
+Bu fayl əmr istinadıdır (Drive linki → analiz → 3 storyboard → musiqi → MP4 addımlarının əmrləri və təfərrüatları).
 İstifadəçi yalnız **Drive linkini** verir — montajın hamısı Claude-da edilir və bir dəfəyə təhvil verilir. Redaktor paneli
 istifadə olunmur: linkini göndərmə, təklif etmə (yalnız istifadəçi açıq istəyəndə — faylın sonundakı "Redaktor paneli").
 
@@ -9,12 +11,11 @@ Hədəf: video ilk dəfədən hazır olsun, əlavə düzəliş tələb etməsin.
 nümunələri birlikdə göndərilir, istifadəçi bir cavabla seçir (məs. “B, musiqi 2”; rəng soruşulmur — "Görüntü keyfiyyəti"). Sonra yalnız **yekun MP4**.
 Ara düzəliş raundları təklif etmə.
 
-Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq, ritm, J/L-cut, etika): [`KINO_DILI.md`](KINO_DILI.md).
 Tək variant (qənaət rejimi) üçün qısa yol — storyboard/variants ötülür, preflight və nisbi səs balansı: [`SURETLI_YOL.md`](SURETLI_YOL.md).
 
 ## Addımlar
 
-1. **Əvvəl qısa sorğu — Drive linkindən ÖNCƏ.** İstifadəçi yeni video istəyəndə (və ya link sorğusuz gəlsə)
+1. **Qısa sorğu (ilkin sorğu məcburi deyil; yalnız müştəri adı bilinmirsə soruş — `MONTAJ_QAYDALARI.md` §1).** İstifadəçi yeni video istəyəndə (və ya link sorğusuz gəlsə)
    **bir** sorğu aç (`AskUserQuestion`): müştəri, video növü, məqsəd, arzu olunan müddət, xüsusi istək.
    Yalnız məlum olmayan sahələri soruş. **Növ sualları reyestrdən:** `python -m montaj.session types --survey` —
    əvvəl ailə (Danışıq / Reklam və rəy / Seminar, tədbir, dərs / Qrafika və animasiya), növ ailədən aydın deyilsə
@@ -237,7 +238,7 @@ Tək variant (qənaət rejimi) üçün qısa yol — storyboard/variants ötül�
    lazım olsa ortalama qismən olur). Nəticə qaralamaya yazılır, variantlar və yekun montaj onu işlədir;
    `kadraj.jpg` (orijinal / düzəldilmiş) qərar mesajına əlavə olunur. Ölçülə bilməyəni (xətt yoxdur, üz yoxdur)
    düzəldilmiş kimi təqdim etmə. Əl kamerasının titrəməsi/hərəkəti izlənmir (stabilizasiya yoxdur).
-4. **Vizual storyboard (standart 1 variant — "Qənaət rejimi"; 3 variant yalnız istifadəçi açıq istəyəndə).**
+4. **Vizual storyboard (hər video üçün 3 tamamilə fərqli variant — məcburi; `MONTAJ_QAYDALARI.md` §1).**
    `storyboard` çıxışının sonunda növün 3 variantı (A/B/C yanaşmaları), qaydaları və
    müştərinin son seçimləri (`history`) görünür — variantları buna görə qur, son videonun giriş/qutu/effekt ardıcıllığını
    təkrarlama. Hər planda `"approach": "M01+M02"` yaz (tarixçəyə düşür). Hər variant üçün `plan_A.json`, `plan_B.json`, `plan_C.json` yaz və
@@ -376,7 +377,6 @@ Tək variant (qənaət rejimi) üçün qısa yol — storyboard/variants ötül�
 ## Qənaət və ünsiyyət
 
 ### Qənaət rejimi (standart)
-- Storyboard: standart **1 variant**; istifadəçi açıq “3 variant” istəyəndə 3.
 - Videolar **ardıcıl** tamamlanır (paralel render/transkripsiya yox); keşlənmiş transkript və analiz təkrarlanmır.
 - Üslub: eyni müştərinin videoları kopya olmasın — brend ailəsi sabit, yanaşma mövzuya görə seçilir (`variation`,
   `history`). B-roll, animasiya, qrafika, effekt yalnız məzmuna xidmət edəndə; "hər videoda olmalıdır" qaydası yoxdur.
@@ -390,7 +390,22 @@ Tək variant (qənaət rejimi) üçün qısa yol — storyboard/variants ötül�
 - İstifadəçiyə uzun texniki hesabat yazma: yalnız seçimlər, vacib suallar, real maneələr və hazır nəticə.
 
 ## Redaktor paneli (yalnız istifadəçi açıq istəyəndə)
-Panel (`editor`, artifact) ehtiyatdadır. İstənəndə `SESSIYA_TELIMATI.md` 9-cu addım. Paneldə **Studiya** bölməsi var: rəng tonu
+Panel (`editor`, artifact) ehtiyatdadır. İstənəndə aşağıdakı addımlar: Paneldə **Studiya** bölməsi var: rəng tonu
 (müştərinin ailəsindən, dərhal görünür), altyazı qutu/kontur, arxa fon (orijinal / bulanıq / kitabxanadan şəkil), plan ölçüləri,
 J/L-cut (bir neçə kamera olanda), seçilmiş klipin 0.5x yavaşladılması (60 fps material). Bu seçimlər düzəlişin `requests`
 hissəsində gəlir — `apply-edits` onları icra edir, sonra `render`.
+
+### Panel əmr addımları
+9. **Əl düzəlişi üçün telefon redaktoru** (YALNIZ istifadəçi istəyəndə):
+   - `python -m montaj.session editor <pid>` → `out/<pid>/editor/index.html` + `preview_<mid>.mp4` (540p, yalnız baxış üçün).
+   - Artifact tool ilə `index.html`-i dərc et: `capabilities: {"db": {}, "assets": {}, "user": {}}`, `icon: "film"`. Şəxsi (yalnız sahibi açır).
+   - Bulud sessiyasında `publish_files`/`upload_asset` yalnız repo qovluğundakı faylları qəbul edir (`/tmp` və `/mnt/user-data` rədd olunur):
+     faylları gitignore-dakı `.montaj/` qovluğuna köçür. Capabilities `declare_capabilities` ilə verilir:
+     `{"db": {"rules": [{"path": "edits", "read": "owner", "write": "owner"}]}, "assets": {}, "user": {}}`.
+   - Şriftlər də asset kimi yüklənir və `--assets` JSON-da `"font:<fayl>.woff2": "/_blob/<id>"` açarı ilə verilir (`fonts.editor_font_files()`).
+   - Hər `preview_*.mp4`-ü `asset: true` ilə həmin artifact-a yüklə (fayl başına ≤15 MB); `{mid: "/_blob/<id>"}` JSON-u yaz.
+   - `editor <pid> --assets <json>` ilə yenidən qur və eyni fayl yolu ilə yenidən dərc et (URL dəyişmir).
+   - Linki istifadəçiyə ver. Önizləmə yüklənməsə, səhifə “Videonu telefondan seç” təklif edir (fayl telefonda qalır, müddət yoxlanır).
+10. İstifadəçi “düzəlişləri götür” deyəndə: `ArtifactData get` (collection `edits`, doc_id `<pid>`, `out_dir`) →
+    `python -m montaj.session apply-edits <pid> <fayl>` → `render <pid>`. Və ya istifadəçinin yapışdırdığı JSON-u fayla yaz.
+    Köhnə/yanlış layihə və başqa yerdə dəyişmiş elementlər avtomatik rədd olunur; təkrar tətbiq zərərsizdir.

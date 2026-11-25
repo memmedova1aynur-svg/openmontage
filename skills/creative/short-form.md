@@ -60,23 +60,6 @@ MAX SIZE:    500 MB (desktop), 287.6 MB (iOS), 72 MB (Android)
 
 **70%+ of TikTok users decide to scroll or stay within 3 seconds** (average decision point: 1.7 seconds). The hook must be immediate.
 
-### 3-Second Retention and Algorithmic Impact
-
-| 3-Second Retention | Algorithmic Effect | View Multiplier |
-|-------------------|-------------------|-----------------|
-| Below 60% | Minimal promotion | 1.0x (baseline) |
-| 60-70% | Average distribution | 1.6x |
-| 70-85% | Optimal reach | 2.2x |
-| 85%+ | Viral potential | 2.8x |
-
-### Retention Checkpoints
-
-| Timestamp | Target Retention |
-|-----------|-----------------|
-| 3 seconds | 70%+ |
-| 15 seconds | 60%+ |
-| 30 seconds | 50%+ |
-
 ### Hook Techniques
 
 | Technique | Example | When to Use |
@@ -96,18 +79,7 @@ MAX SIZE:    500 MB (desktop), 287.6 MB (iOS), 72 MB (Android)
 
 ## Pacing
 
-| Rule | Value | Why |
-|------|-------|-----|
-| Visual change frequency | Every 1-3 seconds | Mobile attention span |
-| Cuts per minute | 20-40 | 2-3x faster than long-form |
-| Text on screen | 2-4 seconds per text block | Fast reading pace |
-| No static holds | Max 3 seconds | Anything longer feels frozen |
-| Speed ramp | 1.2-1.5x for setup, 1.0x for payoff | Compress boring parts |
-
-**Impact of pacing on retention:**
-- Pattern interrupts every 2-4s: **58% average retention**
-- Static talking head (no interrupts): **41% average retention**
-- That's a **41% relative improvement** from pacing alone
+Ritm məzmundan gəlir (`montaj/MONTAJ_QAYDALARI.md`): mexaniki "hər N saniyə" qaydası və mənbəsiz statistika cədvəlləri silinib.
 
 ### Script Word Counts
 

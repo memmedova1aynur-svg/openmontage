@@ -21,8 +21,7 @@
     "CTA/son kartlar başın üstünə düşməməlidir: lazım olsa sinə səviyyəsinə endir (top ~1300), alt yazını kartın üstünə qaldır.",
     "Rəhimə 4: 2-ci çəkilişdə 'yanaşmalı' deyilib - sözləri digər çəkilişlə müqayisə et, tam deyilən variantı götür.",
     "Mənbəni güzgü effektinə görə yoxla (Rəhimə 5 güzgü çəkilmişdi - çevrildi).",
-    "Zəif/tez deyilən sözləri (məs. 'Hər səhvində') digər çəkilişlərlə müqayisə et; aydın olanı götür.",
-    "Ümumi istifadəçi qaydası (2026-11-01, bütün müştərilər, soruşmadan): görüntü: universal Adaptive Image Enhancement (2026-11-25, montaj/IS_AXINI.md → 'Görüntü keyfiyyəti') — hazır rəng şablonu və müştəriyə bağlı sabit filtr YOX; yalnız ehtiyac olan parametr, orijinal rənglər/dəri tonu qorunur; rəng soruşulmur; brend rəngləri yalnız altyazı/qrafikaya aiddir. Musiqi: piano/yavaş YOX — uşaq inkişafı mövzusunda dinamik kids/kindergarten, təhsil reklamında educational/corporate (yalnız CC0). B-roll başı örtmür: bölünmüş ekran — danışan yuxarıda, B-roll sinədən aşağı (pip y≈0.70, tam en), həmin anda altyazı başın üstündə (y≈0.17). Arxa fon bulanıqlaşdırılmır və qaraldılmır (istifadəçi: hiss olunur, başın ətrafında iz qalır) — fon orijinal qalır. Pauzalar saniyə həddi ilə mexaniki kəsilmir — təbii ritm və nəfəs payı qalır, yalnız boş gözləmə/təkrar çıxır (yeniləndi 2026-11-25), söz kəsilmir; kəsimdən sonra söz təkrarı olmadığını yoxla. Güzgü çevirmə (hflip) yoxdur."
+    "Zəif/tez deyilən sözləri (məs. 'Hər səhvində') digər çəkilişlərlə müqayisə et; aydın olanı götür."
   ],
   "theme_source": "colour family confirmed by the user (burnt orange / orange-cream); exact hex chosen by us",
   "theme": {

@@ -25,8 +25,7 @@
   "Aytənin telefonla (Edit) çəkdiyi videolar güzgü (mirror) ola bilər: əvvəl/sonra kadrı göstər, təsdiqdən sonra çevir.",
   "Kafe/restoran məkanında çəkilişlər: arxa fon səsi (çəngəl-bıçaq, musiqi) denoise.sh (DeepFilterNet) ilə təmizlənir; pauzalar tighten.py ilə ~0.25 s-ə qədər qısaldılır (istifadəçi 2026-10-27 istədi).",
   "Hər videonu təhvildən əvvəl hazır faylın səsini yenidən mətnə çevirib skriptlə müqayisə et (təkrar cümlə, yarımçıq söz); bir partiyadakı videolar ayrı skin/altyazı ilə fərqləndirilir.",
-  "Mikrofonla çəkilir: səs təmizləmə yalnız ehtiyac olanda (kafe, çəngəl-bıçaq). Göy köynəkli otaq çəkilişlərində təmizləmə yoxdur.",
-  "Ümumi istifadəçi qaydası (2026-11-01, bütün müştərilər, soruşmadan): görüntü: universal Adaptive Image Enhancement (2026-11-25, montaj/IS_AXINI.md → 'Görüntü keyfiyyəti') — hazır rəng şablonu və müştəriyə bağlı sabit filtr YOX; yalnız ehtiyac olan parametr, orijinal rənglər/dəri tonu qorunur; rəng soruşulmur; brend rəngləri yalnız altyazı/qrafikaya aiddir. Musiqi: piano/yavaş YOX — uşaq inkişafı mövzusunda dinamik kids/kindergarten, təhsil reklamında educational/corporate (yalnız CC0). B-roll başı örtmür: bölünmüş ekran — danışan yuxarıda, B-roll sinədən aşağı (pip y≈0.70, tam en), həmin anda altyazı başın üstündə (y≈0.17). Arxa fon bulanıqlaşdırılmır və qaraldılmır (istifadəçi: hiss olunur, başın ətrafında iz qalır) — fon orijinal qalır. Pauzalar saniyə həddi ilə mexaniki kəsilmir — təbii ritm və nəfəs payı qalır, yalnız boş gözləmə/təkrar çıxır (yeniləndi 2026-11-25), söz kəsilmir; kəsimdən sonra söz təkrarı olmadığını yoxla. Güzgü çevirmə (hflip) yoxdur."
+  "Mikrofonla çəkilir: səs təmizləmə yalnız ehtiyac olanda (kafe, çəngəl-bıçaq). Göy köynəkli otaq çəkilişlərində təmizləmə yoxdur."
  ],
  "theme_source": "approved in delivered videos",
  "theme": {
