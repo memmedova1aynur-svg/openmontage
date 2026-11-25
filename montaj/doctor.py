@@ -52,6 +52,8 @@ def check() -> tuple[list[str], list[str]]:
     if k["broll"] < 10 or k["music"] < 3: need.append("kitabxana kataloqu boşdur → `python -m montaj.library seed`")
     if not any(i.get("source") == "drive" for i in cat["items"]): tips.append("Drive kitabxanasında öz fayllarınız yoxdur (qovluq: OpenMontage Kitabxana; 'Linki olan hər kəs — Baxan' + `python -m montaj.library sync`)")
     if not _net("assets.mixkit.co"): tips.append("Mixkit-ə çıxış yoxdur (stok B-roll/musiqi endirilə bilməz; mühit şəbəkə siyahısını yoxlayın)")
+    if not (ROOT / ".venv-watch" / "bin" / "watch-skill").exists(): tips.append("watch-skill yoxdur (referans video linki analizi) → `bash scripts/cloud-setup.sh`")
+    elif not _net("www.youtube.com"): tips.append("YouTube/Instagram-a çıxış yoxdur (referans link analizi üçün mühit şəbəkə icazəsi)")
     if not os.environ.get("PIXABAY_API_KEY"): tips.append("PIXABAY_API_KEY yoxdur (isteğe bağlı: B-roll seçimi genişlənir)")
     if not os.environ.get("FREESOUND_API_KEY"): tips.append("FREESOUND_API_KEY yoxdur (isteğe bağlı: CC0 musiqi seçimi genişlənir; Mixkit işləyir)")
     return need, tips

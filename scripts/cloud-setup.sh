@@ -87,6 +87,12 @@ if command -v npm >/dev/null 2>&1 && [ -f remotion-composer/package-lock.json ];
   step "remotion-composer npm paketləri (montaj üçün məcburi deyil)" bash -c "cd remotion-composer && npm ci --no-audit --no-fund --loglevel=error"
 fi
 
+# Referans video analizi (YouTube/Instagram linki → səhnə kadrları, altyazı/transkript): watch-skill (üçüncü tərəf, MIT; third_party/watch-skill).
+# Ayrıca mühitdə (.venv-watch) — montajın opencv/numpy-ına toxunmasın. OCR modeli şəbəkədə bağlıdır, ona görə `ocr` extra-sı yoxdur.
+if [ -d third_party/watch-skill ] && [ ! -x .venv-watch/bin/watch-skill ]; then
+  step "watch-skill (referans video analizi, ayrıca mühit)" bash -c "python3 -m venv .venv-watch && .venv-watch/bin/pip install -q './third_party/watch-skill[perceive]' yt-dlp"
+fi
+
 if [ ${#FAILED[@]} -eq 0 ]; then
   echo "[setup] Hazırdır."
 else

@@ -84,3 +84,6 @@ Məhdudiyyət: Drive bağlantısı (MCP) bir fayl üçün **10 MB**-a qədər y�
 
 **Mənbə siyasəti (kitabxananı agent özü yığır):** Mixkit — bəli (pulsuz lisenziya, açar lazım deyil, birbaşa Mixkit-dən endirilir, Drive-a yüklənmir). Pexels/Pixabay — yalnız pulsuz API açarı və mühit şəbəkə icazəsi olduqda
 (açar istifadəçi tərəfindən mühitə verilir). **Pinterest — istifadə olunmur:** məzmun üçüncü tərəfin müəllif hüququ altındadır, lisenziya göstərilmir, avtomatik yükləmə şərtlərə ziddir; mühitin şəbəkəsində də bağlıdır.
+
+**Referans video linki (YouTube/Instagram):** `watch-skill` (üçüncü tərəf, MIT; `third_party/watch-skill`, ayrıca `.venv-watch`) — qaydalar `skills/meta/video-reference-analyst.md`-dədir.
+Məhdudiyyət: video baytları üçün dinamik CDN alt-domenlərinə (wildcard) mühit icazəsi lazımdır; yoxdursa yalnız altyazı/transkript.

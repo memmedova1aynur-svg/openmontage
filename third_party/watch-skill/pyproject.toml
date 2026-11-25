@@ -1,0 +1,93 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "watch-skill"
+version = "1.0.0"
+description = "Give any agent a video input: watch, index, ask, and iterate on video via MCP, CLI, REST, and Python."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "oxbshw" }]
+keywords = ["video", "agents", "mcp", "vision", "transcription", "ffmpeg", "yt-dlp"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Multimedia :: Video",
+]
+dependencies = [
+    "pydantic>=2.13,<3",
+    "pydantic-settings>=2.14,<3",
+    "typer>=0.26,<1",
+    # >=13.7 (not 15): crewai pins rich<15, and the whole suite runs on 14.x
+    "rich>=13.7,<16",
+    "httpx>=0.28,<1",
+]
+
+[project.optional-dependencies]
+perceive = [
+    "scenedetect>=0.7,<0.8",
+    "opencv-python-headless>=5.0,<6",
+    "imagehash>=4.3,<5",
+    "Pillow>=12.3,<13",
+]
+ocr = ["rapidocr>=3.9,<4", "onnxruntime>=1.27,<2", "python-bidi>=0.6,<1"]
+whisper = ["faster-whisper>=1.2,<2"]
+index = ["fastembed>=0.8,<0.9", "numpy>=2.4,<3"]
+mcp = ["fastmcp>=3.4,<4"]
+api = ["fastapi>=0.139,<1", "uvicorn>=0.50,<1"]
+loop = ["playwright>=1.61,<2"]
+diarize = ["pyannote.audio>=4.0,<5"]
+# framework adapters (each thin; see src/watch_skill/integrations/)
+langchain = ["langchain-core>=0.3,<2"]
+openai-agents = ["openai-agents>=0.1,<1"]
+crewai = ["crewai>=0.80"]
+llamaindex = ["llama-index-core>=0.12,<0.16"]
+autogen = ["autogen-core>=0.4,<0.8"]
+all = ["watch-skill[perceive,ocr,whisper,index,mcp,api,loop]"]
+
+[project.scripts]
+watch-skill = "watch_skill.surfaces.cli.main:app"
+
+[project.urls]
+Homepage = "https://github.com/oxbshw/watch-skill"
+Documentation = "https://github.com/oxbshw/watch-skill/tree/main/docs"
+Changelog = "https://github.com/oxbshw/watch-skill/blob/main/CHANGELOG.md"
+Issues = "https://github.com/oxbshw/watch-skill/issues"
+
+[dependency-groups]
+dev = ["pytest>=9.1,<10", "pytest-timeout>=2.4,<3", "ruff>=0.15,<0.16"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/watch_skill"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+timeout = 300
+markers = [
+    "network: hits the real network (excluded from CI's merge gate)",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests", "examples"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["watch_skill"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+ignore = [
+    "E501",  # long lines in docstrings/prompts are deliberate
+    "B008",  # typer.Option in defaults is the typer idiom
+]
+
+[tool.uv]
+package = true

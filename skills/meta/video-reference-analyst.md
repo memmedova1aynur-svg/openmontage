@@ -415,3 +415,15 @@ When the user provides multiple reference URLs:
 
 Never silently skip analysis steps. If something fails, tell the user what happened
 and what the impact is on the analysis quality.
+
+
+## Link referansı (YouTube/Instagram): watch-skill (2026-11-25)
+
+Referans video linkdirsə, əvvəl: `.venv-watch/bin/watch-skill watch "<link>" --no-whisper --no-index --out-dir <müvəqqəti qovluq>` (kadrlar `frames/` qovluğuna düşür — `Read` ilə bax;
+altyazı/transkript raporda gəlir). Nəticədən edit spesifikasiyasını çıxar: kəsim tempi, altyazı üslubu, ara kadr sıxlığı, kart/tipoqrafiya, hook.
+
+- **Şəbəkə:** YouTube altyazısı/transkripti işləyir (mühitdə `www.youtube.com` və s. açıqdır). **Görüntü kadrları** üçün videonun baytları lazımdır — YouTube `*.googlevideo.com`,
+  Instagram `*.cdninstagram.com` / `*.fbcdn.net` dinamik alt-domenlərindədir; mühit ayarlarında (Settings → Network → Allowed domains) wildcard icazəsi verilməyibsə video endirilmir, yalnız altyazı/transkript olur. Bunu gizlətmə, istifadəçiyə de.
+- **Instagram:** anonim çıxarma tez-tez bloklanır (giriş tələb olunur); alınmasa cookie/giriş istifadə etmə — istifadəçidən videonu fayl/Drive linki kimi istə.
+- **Qayda:** yalnız şəxsi analiz; endirilən videonu montaja, repoya və ya Drive-a qoyma, kadrlarını təkrar istifadə etmə (müəllif hüququ, platforma şərtləri). Müvəqqəti qovluğu sonda sil.
+- OCR bu mühitdə işləmir (model `modelscope.cn`-dən endirilir, şəbəkədə bağlıdır) — mətn üçün kadrlara özün bax.
