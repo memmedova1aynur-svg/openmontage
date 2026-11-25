@@ -43,6 +43,34 @@ KITS: dict[str, dict[str, Any]] = {
         "axes": {"layout": "framed-center", "form": "serif-centered", "caption": "plain-center", "motion": "fade", "card": "frame", "density": "low"},
         "music": "elegant warm acoustic", "sfx": [],
     },
+    "milkglass": {
+        "name": "Süd şüşəsi kartı",
+        "about": "Apple üslubu: yuxarıda süd rəngli şüşə kart (arxası real bulanıq), süd damcısı ikonu; yumşaq, ana südü/ana-körpə mövzusuna uyğun.",
+        "suits": ["ana-körpə", "uşaq", "ana südü", "premium", "maarifləndirmə", "yumşaq"],
+        "axes": {"layout": "top-card-glass", "form": "sans-glass", "caption": "plain-bottom", "motion": "fade", "card": "glass-card", "density": "low"},
+        "music": "warm gentle uplifting acoustic", "sfx": [],
+    },
+    "notification": {
+        "name": "Bildiriş bannerı",
+        "about": "Apple üslubu: iOS bildiriş bannerı (şüşə) — tətbiq ikonu, ad, 'indi', hook mətni; sosial şəbəkədə tanış və premium.",
+        "suits": ["hook-güclü", "premium", "sosial şəbəkə", "qısa məsləhət", "ana-körpə"],
+        "axes": {"layout": "top-banner", "form": "sans-notification", "caption": "plain-bottom", "motion": "fade", "card": "banner", "density": "low"},
+        "music": "light modern acoustic", "sfx": [],
+    },
+    "glasscaps": {
+        "name": "Şüşə kapsullar",
+        "about": "Apple 'liquid glass': hər nümunə ayrı yumşaq şüşə kapsul, əsas fikir böyük şüşə lövhədə.",
+        "suits": ["siyahı və nümunələr", "ana-körpə", "uşaq", "premium", "məsləhət"],
+        "axes": {"layout": "capsule-stack", "form": "sans-capsule", "caption": "plain-bottom", "motion": "fade", "card": "capsule", "density": "mid"},
+        "music": "warm playful acoustic", "sfx": [],
+    },
+    "pblur": {
+        "name": "Mütərəqqi bulanıqlıq",
+        "about": "Apple keynote: kadrın yuxarısı yavaş-yavaş bulanıqlaşır, üstündə iri qradiyentli Work Sans yazı; şüşə qutu yoxdur, ən təmiz.",
+        "suits": ["premium", "ekspert fikri", "psixologiya", "maarifləndirmə", "hekayə"],
+        "axes": {"layout": "progressive-blur-left", "form": "gradient-keynote", "caption": "plain-bottom", "motion": "fade", "card": "none", "density": "low"},
+        "music": "calm cinematic acoustic", "sfx": [],
+    },
     "intertitle": {
         "name": "İntertitle kartları",
         "about": "Fikir bitəndə 2–4 s tam kadr krem kart (ekspert görünmür, səsi davam edir): kicker, iri serif yazı və ya sıralanmış sətirlər; qalan vaxt ekspert. B-roll/animasiya əvəzi.",
@@ -93,6 +121,13 @@ def _theme(theme: dict[str, Any] | None) -> dict[str, str]:
 def veil(start: float, dur: float, a: float) -> dict[str, Any]:
     return {"type": "veil", "start": round(float(start), 3), "dur": round(float(dur), 3), "y": 0.21, "h": 0.42, "a": a, "bleed": True,
             "anim": {"in": "fade", "d": 0.5, "out": "fade", "dOut": 0.4}}
+
+
+def _ink(th: dict[str, str]) -> str:
+    """Şüşə üzərində mətn rəngi: müştəri tünd rəngindən 45% tündləşdirilmiş (oxunaqlı, brend ailəsində)."""
+    h = (th.get("deep") or "#9E3D5E").lstrip("#")
+    r, g_, b = (int(h[i:i + 2], 16) for i in (0, 2, 4))
+    return "#{:02X}{:02X}{:02X}".format(int(r * 0.55), int(g_ * 0.55), int(b * 0.55))
 
 
 def build(kit: str, content: dict[str, Any], theme: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -155,6 +190,52 @@ def build(kit: str, content: dict[str, Any], theme: dict[str, Any] | None = None
         if claim:
             g.append({"type": "note", "text": claim["text"], "size": 0.075, "rot": -3, "mark": "arrow", "y": 0.19, "start": claim["start"], "dur": claim["dur"], "anim": {"in": "pop"}})
         hook_method = "handwritten-note"
+    elif kit in ("milkglass", "notification", "glasscaps", "pblur"):
+        cap.update(style={"bg": "none", "weight": 600, "size": 0.04, "color": "#FFFFFF"})
+        tint = th["soft"] if th.get("soft") else "#FFFFFF"
+        G_ = {"tint": tint, "ink": _ink(th), "accent": th["accent"], "anim": {"in": "fade", "d": 0.4, "out": "fade", "dOut": 0.3}}
+        brand = content.get("brand_name") or (hook or {}).get("kicker") or ""
+        if kit == "milkglass":
+            if hook:
+                g.append({**G_, "type": "gcard", "icon": "drop", "text": hook["text"], "size": 0.04, "y": 0.17, "start": hs, "dur": hd})
+            if lst:
+                g.append({**G_, "type": "gcard", "kicker": lst.get("heading"), "items": items(lst), "size": 0.04, "y": 0.2, "start": lst["start"], "dur": lst["dur"]})
+            g += [{**G_, "type": "gcard", "text": e["text"], "size": 0.04, "y": 0.15, "start": e["start"], "dur": e["dur"]} for e in emph]
+            if claim:
+                g.append({**G_, "type": "gcard", "kicker": claim.get("kicker"), "text": claim["text"], "big": True, "size": 0.04, "y": 0.16, "start": claim["start"], "dur": claim["dur"]})
+            hook_method = "glass-card"
+        elif kit == "notification":
+            def ban(text, start, dur):
+                return {**G_, "type": "gbanner", "title": brand, "time": "indi", "text": text, "size": 0.03, "y": 0.145, "start": start, "dur": dur}
+            if hook:
+                g.append(ban(hook["text"], hs, hd))
+            if lst:
+                g.append(ban(" · ".join(i["text"] for i in items(lst)), lst["start"], lst["dur"]))
+            g += [ban(e["text"], e["start"], e["dur"]) for e in emph]
+            if claim:
+                g.append(ban(claim["text"], claim["start"], claim["dur"]))
+            hook_method = "notification"
+        elif kit == "glasscaps":
+            if hook:
+                g.append({**G_, "type": "gcaps", "text": hook["text"], "size": 0.032, "y": 0.13, "start": hs, "dur": hd})
+            if lst:
+                g.append({**G_, "type": "gcaps", "items": items(lst), "size": 0.034, "y": 0.18, "start": lst["start"], "dur": lst["dur"]})
+            g += [{**G_, "type": "gcaps", "text": e["text"], "size": 0.034, "y": 0.13, "start": e["start"], "dur": e["dur"]} for e in emph]
+            if claim:
+                g.append({**G_, "type": "gcaps", "big": True, "kicker": claim.get("kicker"), "text": claim["text"], "size": 0.04, "y": 0.16, "start": claim["start"], "dur": claim["dur"]})
+            hook_method = "capsule"
+        else:  # pblur: mütərəqqi bulanıqlıq zolağı + iri qradiyentli yazı
+            band = lambda s0, d0, h=0.42: {"type": "pblur", "bleed": True, "x": 0.5, "y": h / 2, "h": h, "start": s0, "dur": d0, "anim": {"in": "fade", "d": 0.5, "out": "fade", "dOut": 0.4}}  # noqa: E731
+            K = {"type": "type", "font": "Work Sans", "align": "left", "x": 0.5, "w": 0.9, "gradient": ["#FFFFFF", "#FFD6E4"], "anim": {"in": "fade", "d": 0.5, "out": "fade"}}
+            if hook:
+                g += [band(hs, hd), {**K, "kicker": hook.get("kicker"), "text": hook["text"], "size": 0.052, "y": 0.17, "start": hs, "dur": hd}]
+            if lst:
+                g += [band(lst["start"], lst["dur"], 0.46), {**K, "kicker": lst.get("heading"), "items": items(lst), "size": 0.044, "y": 0.2, "start": lst["start"], "dur": lst["dur"]}]
+            for e in emph:
+                g += [band(e["start"], e["dur"], 0.36), {**K, "text": e["text"], "size": 0.05, "y": 0.15, "start": e["start"], "dur": e["dur"]}]
+            if claim:
+                g += [band(claim["start"], claim["dur"], 0.46), {**K, "kicker": claim.get("kicker"), "text": claim["text"], "size": 0.066, "y": 0.19, "start": claim["start"], "dur": claim["dur"]}]
+            hook_method = "keynote"
     elif kit == "intertitle":
         cap.update(style={"bg": "none", "weight": 600, "size": 0.04, "color": "#FFFFFF"})
         S_ = {"type": "slate", "bleed": True, "x": 0.5, "y": 0.5, "bg": th["soft"], "accent": th["deep"], "anim": {"in": "fade", "d": 0.35, "out": "fade", "dOut": 0.3}}
@@ -174,8 +255,6 @@ def build(kit: str, content: dict[str, Any], theme: dict[str, Any] | None = None
         total = float(content.get("duration") or 60)
         g.append({"type": "frame", "bleed": True, "x": 0.5, "y": 0.5, "start": 0.0, "dur": total, "m": 0.04, "anim": {"in": "fade", "d": 0.8, "out": "fade", "dOut": 0.6}})
         T = {"type": "type", "font": "serif", "align": "center", "x": 0.5, "w": 0.86, "anim": {"in": "fade", "d": 0.6, "out": "fade"}}
-        if hook and hook.get("viewfinder"):  # maraqlı hook (kamera arxasından danışır kimi): vizör effekti — yalnız yuxarı künclərdə REC və taymkod, üzə toxunmur
-            g.append({"type": "viewfinder", "bleed": True, "x": 0.5, "y": 0.5, "m": 0.04, "start": hs, "dur": hd, "anim": {"in": "fade", "d": 0.3, "out": "fade", "dOut": 0.3}})
         if hook:
             g.append({**T, "kicker": hook.get("kicker"), "text": hook["text"], "size": 0.052, "y": 0.17, "start": hs, "dur": hd})
         if lst:
@@ -183,7 +262,7 @@ def build(kit: str, content: dict[str, Any], theme: dict[str, Any] | None = None
         g += [{**T, "text": e["text"], "size": 0.05, "y": 0.15, "start": e["start"], "dur": e["dur"]} for e in emph]
         if claim:
             g.append({**T, "kicker": claim.get("kicker"), "text": claim["text"], "size": 0.06, "y": 0.16, "start": claim["start"], "dur": claim["dur"]})
-        hook_method = "viewfinder" if hook and hook.get("viewfinder") else "typography-centered"
+        hook_method = "typography-centered"
     else:  # kinetic
         cap.update(style={"bg": "#000000@0.55", "color": "#FFFFFF", "weight": 600, "size": 0.03, "y": 0.9})
         total = float(content.get("duration") or 60)
@@ -213,11 +292,16 @@ def build(kit: str, content: dict[str, Any], theme: dict[str, Any] | None = None
     if kit in ("editorial", "handnote", "frame", "intertitle"):  # kartsız yazı: arxasında çox yumşaq tünd üst qradiyent (ləkə yox) — fon üzərində oxunaqlılıq
         a = {"editorial": 0.42, "handnote": 0.36, "frame": 0.40, "intertitle": 0.40}[kit]
         g = [y for x in g for y in ((veil(x["start"], x["dur"], a), x) if x["type"] in ("type", "note") else (x,))]
+    if hook and hook.get("viewfinder"):  # maraqlı hook (kamera arxasından danışır kimi) — HƏR dəstdə mümkündür; yalnız yuxarı künclərdə REC və taymkod, üzə toxunmur
+        g.append({"type": "viewfinder", "bleed": True, "x": 0.5, "y": 0.5, "m": 0.04, "start": hs, "dur": hd, "corners": kit != "frame",
+                  "anim": {"in": "fade", "d": 0.3, "out": "fade", "dOut": 0.3}})
+        hook_method = "viewfinder"
     g = [x for x in g if x["type"] != "viewfinder"] + [x for x in g if x["type"] == "viewfinder"]  # REC/taymkod hər şeyin üstündə (veil onu tündləşdirməsin)
     n_hard = len([x for x in g if x["type"] in ("block", "bars")])
     sfx = []
     for x in g:
-        kind = {"classic": "pop", "editorial": None, "frame": None, "intertitle": None, "colorblock": "whoosh", "handnote": "pop", "kinetic": "whoosh"}[kit]
+        kind = {"classic": "pop", "editorial": None, "frame": None, "intertitle": None, "colorblock": "whoosh", "handnote": "pop", "kinetic": "whoosh",
+                "milkglass": None, "notification": None, "glasscaps": None, "pblur": None}[kit]
         if kind:
             sfx.append({"kind": kind, "t": round(float(x["start"]) + 0.05, 2)})
     zooms = []

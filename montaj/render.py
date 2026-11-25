@@ -582,6 +582,8 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
             c = dict(t["clip"], _start=t["start"])
             for k, ptime in enumerate(G.state_points(c)):
                 items.append((f"{c['id']}__{k}", c, ptime))
+                if c["type"] in G.GLASS_TYPES:  # şüşə: eyni düzülüşdə yalnız siluet (maska) — arxanı bulanıqlaşdırmaq üçün
+                    items.append((f"{c['id']}__{k}__m", {**c, "_mask": True}, ptime))
             (caps if c["type"] == "caption" else others).append(c)
         rast = G.rasterize(items, W, H, theme, workdir)
         slates = [c for c in others if c["type"] == "slate"]  # intertitle: altyazıdan SONRA çəkilir (altyazını örtür, özünün `line` mətni var)
@@ -596,6 +598,13 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
                     a = c["_start"] + ptime
                     b = c["_start"] + (pts[k + 1] if k + 1 < len(pts) else dur)
                     info = rast[f"{c['id']}__{k}"]
+                    if c["type"] in G.GLASS_TYPES:  # backdrop: kadrın həmin bölgəsi bulanıqlaşdırılıb panelin altına qoyulur
+                        g = G.glass_prepare(c, info, rast[f"{c['id']}__{k}__m"], W, H, workdir, f"{c['id']}_{k}")
+                        args.extend(["-loop", "1", "-framerate", fps_str, "-t", f"{b - a + 0.2:.4f}", "-i", g["mask"]])
+                        gout = f"vgl{idx}"
+                        filters.append(G.glass_chain(c, k, len(pts), a, b, g, fps_str, idx, cur, gout))
+                        idx += 1
+                        cur = gout
                     args.extend(["-loop", "1", "-framerate", fps_str, "-t", f"{b - a + 0.1:.4f}", "-i", info["file"]])
                     nxt = f"vg{idx}"
                     filters.append(G.overlay_chain(c, k, len(pts), a, b, W, H, fps_str, idx, cur, nxt))

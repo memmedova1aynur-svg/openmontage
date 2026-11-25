@@ -94,9 +94,90 @@
       rec.append(node(doc, 'div', { width: `${fsz * 0.8}px`, height: `${fsz * 0.8}px`, borderRadius: '50%', background: '#E5484D', opacity: on ? '1' : '0.18', boxShadow: on ? '0 0 8px rgba(229,72,77,0.75)' : 'none' }));
       rec.append(node(doc, 'div', {}, 'REC'));
       const sec = Math.floor(t + (clip.tc0 || 0)), p2 = (n) => String(n).padStart(2, '0');
+      if (clip.corners) {  // dəstin öz çərçivəsi yoxdursa künc nişanları vizörün özündə
+        const NS = 'http://www.w3.org/2000/svg', sv = doc.createElementNS(NS, 'svg'), c = '#FFFFFF', sw = Math.max(1, VW * 0.0063);
+        sv.setAttribute('width', VW); sv.setAttribute('height', H); sv.setAttribute('viewBox', `0 0 ${VW} ${H}`); sv.style.position = 'absolute'; sv.style.left = '0'; sv.style.top = '0';
+        sv.innerHTML = [[m, m, 1, 1], [VW - m, m, -1, 1], [m, H - m, 1, -1], [VW - m, H - m, -1, -1]]
+          .map(([x, y, sx, sy]) => `<path d="M${x + sx * tick} ${y} L${x} ${y} L${x} ${y + sy * tick}" fill="none" stroke="${c}" stroke-opacity="0.8" stroke-width="${sw}" stroke-linecap="square"/>`).join('');
+        sv.style.filter = 'drop-shadow(0 1px 2px rgba(0,0,0,0.35))'; wrap.append(sv);
+      }
       wrap.append(rec, node(doc, 'div', { position: 'absolute', right: `${m + tick * 0.5}px`, top: `${m + tick * 0.5}px`, fontFamily: '"DejaVu Sans Mono",monospace', fontWeight: '700', fontSize: `${fsz}px`, letterSpacing: '0.06em' },
         `00:${p2(Math.floor(sec / 60))}:${p2(sec % 60)}`));
       return wrap;
+    }
+    // ---- ŞÜŞƏ dəstləri (Apple üslubu): panelin ARXASINI render (ffmpeg) bulanıqlaşdırır; JS yalnız panelin üzünü (rəng, kənar, kölgə, mətn) çəkir.
+    // clip._mask: yalnız siluet (ağ, mətn gizli) — render bu maska ilə kadrın həmin hissəsini bulanıqlaşdırır. Düzülüş EYNİDİR (visibility:hidden).
+    const MASK = !!clip._mask;
+    const tint = clip.tint || '#FFFFFF', ta = clip.ta ?? 0.42;
+    const ink = clip.ink || '#4A2434', pinkA = clip.accent || '#D6608A';
+    const panel = (css) => {
+      const p = node(doc, 'div', { boxSizing: 'border-box', position: 'relative', ...css });
+      if (MASK) { p.style.background = '#FFFFFF'; p.style.border = `${Math.max(1.5, H * 0.0016)}px solid #FFFFFF`; p.style.boxShadow = 'none'; p.style.backgroundImage = 'none'; }  // kənar qalınlığı saxlanır — düzülüş eyni
+      else {
+        p.style.background = `linear-gradient(to bottom, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 45%), ${rgba(tint + '@' + ta, 'rgba(255,255,255,0.42)')}`;
+        p.style.border = `${Math.max(1.5, H * 0.0016)}px solid rgba(255,255,255,0.78)`;
+        p.style.boxShadow = `0 ${H * 0.008}px ${H * 0.026}px rgba(40,10,25,0.22), inset 0 1px 0 rgba(255,255,255,0.55)`;
+      }
+      return p;
+    };
+    const txt = (css, text) => { const t = node(doc, 'div', { fontFamily: '"Work Sans","DejaVu Sans",sans-serif', color: ink, ...css }, text); if (MASK) t.style.visibility = 'hidden'; return t; };
+    const dropSvg = (size, fill, withBg) => {   // süd damcısı (ana südü mövzusu) — Sura profilinin süd damcısı motivi
+      const NS = 'http://www.w3.org/2000/svg', e = doc.createElementNS(NS, 'svg');
+      e.setAttribute('width', size); e.setAttribute('height', size); e.setAttribute('viewBox', '0 0 100 100');
+      e.innerHTML = `<defs><linearGradient id="dg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F2829E"/><stop offset="1" stop-color="#C94C78"/></linearGradient></defs>`
+        + (withBg ? `<rect x="0" y="0" width="100" height="100" rx="26" fill="url(#dg)"/>` : '')
+        + `<path d="M50 14 C50 14 24 46 24 62 C24 76 35 86 50 86 C65 86 76 76 76 62 C76 46 50 14 50 14 Z" fill="${fill}"/>`
+        + `<ellipse cx="41" cy="62" rx="5" ry="9" fill="rgba(255,255,255,0.55)" transform="rotate(18 41 62)"/>`;
+      e.style.flex = '0 0 auto'; if (MASK) e.style.visibility = 'hidden';
+      return e;
+    };
+    if (type === 'gcard') {  // süd şüşəsi kartı: damcı ikonu + (kicker) + mətn / nöqtəli sətirlər
+      const p = panel({ width: `${VW * (clip.w ?? 0.87)}px`, padding: `${fs * 0.7}px ${fs * 0.85}px`, borderRadius: `${fs * 0.95}px`, display: 'flex', alignItems: 'center', gap: `${fs * 0.55}px` });
+      if (clip.icon === 'drop') p.append(dropSvg(fs * 1.15, pinkA, false));
+      const col = node(doc, 'div', { display: 'flex', flexDirection: 'column', gap: `${fs * 0.12}px` });
+      if (clip.kicker) col.append(txt({ fontSize: `${fs * 0.32}px`, fontWeight: '700', letterSpacing: '0.18em', textTransform: 'uppercase', opacity: '0.75' }, clip.kicker));
+      if (clip.items && clip.items.length) {
+        const n = shown(clip.items);
+        clip.items.forEach((it, i) => {
+          const row = node(doc, 'div', { display: 'flex', alignItems: 'center', gap: `${fs * 0.4}px`, opacity: i < n ? '1' : '0', margin: `${fs * 0.08}px 0` });
+          row.append(node(doc, 'div', { width: `${fs * 0.34}px`, height: `${fs * 0.34}px`, borderRadius: '50%', background: MASK ? 'transparent' : pinkA, flex: '0 0 auto' }));
+          row.append(txt({ fontSize: `${fs * 0.78}px`, fontWeight: '700', lineHeight: '1.1' }, it.text || ''));
+          col.append(row);
+        });
+      } else col.append(txt({ fontSize: `${fs * (clip.big ? 1.15 : 0.95)}px`, fontWeight: '700', lineHeight: '1.08', whiteSpace: 'pre-wrap' }, clip.text || ''));
+      p.append(col); return p;
+    }
+    if (type === 'gbanner') {  // iOS bildiriş bannerı: tətbiq ikonu + başlıq + "indi" + mətn
+      const p = panel({ width: `${VW * (clip.w ?? 0.9)}px`, padding: `${fs * 0.55}px ${fs * 0.65}px`, borderRadius: `${fs * 0.8}px`, display: 'flex', alignItems: 'flex-start', gap: `${fs * 0.55}px` });
+      p.append(dropSvg(fs * 1.9, '#FFFFFF', true));
+      const col = node(doc, 'div', { flex: '1 1 auto', display: 'flex', flexDirection: 'column', gap: `${fs * 0.1}px`, minWidth: '0' });
+      const head = node(doc, 'div', { display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' });
+      head.append(txt({ fontSize: `${fs * 0.82}px`, fontWeight: '700' }, clip.title || ''), txt({ fontSize: `${fs * 0.62}px`, fontWeight: '400', opacity: '0.6' }, clip.time || ''));
+      col.append(head, txt({ fontSize: `${fs * 0.78}px`, fontWeight: '400', lineHeight: '1.14', whiteSpace: 'pre-wrap' }, clip.text || ''));
+      p.append(col); return p;
+    }
+    if (type === 'gcaps') {  // şüşə kapsullar: hər element ayrı kapsul; big — böyük şüşə lövhə
+      const wrap = node(doc, 'div', { display: 'flex', flexDirection: 'column', gap: `${fs * 0.38}px`, alignItems: 'flex-start', width: `${VW * (clip.w ?? 0.88)}px` });
+      if (clip.big) {
+        const p = panel({ padding: `${fs * 0.8}px ${fs * 1.0}px`, borderRadius: `${fs * 1.1}px`, display: 'flex', flexDirection: 'column', gap: `${fs * 0.12}px`, width: '100%' });
+        if (clip.kicker) p.append(txt({ fontSize: `${fs * 0.3}px`, fontWeight: '700', letterSpacing: '0.18em', textTransform: 'uppercase', opacity: '0.75' }, clip.kicker));
+        p.append(txt({ fontSize: `${fs * 1.2}px`, fontWeight: '700', lineHeight: '1.05', whiteSpace: 'pre-wrap' }, clip.text || ''));
+        wrap.append(p); return wrap;
+      }
+      const list = clip.items && clip.items.length ? clip.items : [{ text: clip.text || '', at: 0 }];
+      const n = shown(list);
+      list.forEach((it, i) => {
+        const p = panel({ display: 'inline-flex', alignItems: 'center', gap: `${fs * 0.4}px`, padding: `${fs * 0.5}px ${fs * 0.95}px`, borderRadius: '999px', opacity: i < n ? '1' : '0' });
+        p.append(node(doc, 'div', { width: `${fs * 0.34}px`, height: `${fs * 0.34}px`, borderRadius: '50%', background: MASK ? 'transparent' : pinkA, flex: '0 0 auto' }));
+        p.append(txt({ fontSize: `${fs * 0.8}px`, fontWeight: '700', whiteSpace: 'nowrap' }, it.text || ''));
+        wrap.append(p);
+      });
+      return wrap;
+    }
+    if (type === 'pblur') {  // mütərəqqi bulanıqlıq: kadrın yuxarısı yuxarıdan aşağı sönən bulanıqlıq (maska qradiyent); özü yalnız çox yüngül tündləşmə
+      const h = H * (clip.h ?? 0.42), stops = [0, 0.2, 0.4, 0.6, 0.8, 1].map((k) => [k, Math.pow(1 - k, 1.5)]);
+      const css = MASK ? stops.map(([k, a]) => `rgba(255,255,255,${a}) ${k * 100}%`).join(',') : stops.map(([k, a]) => `rgba(20,5,12,${a * (clip.a ?? 0.16)}) ${k * 100}%`).join(',');
+      return node(doc, 'div', { width: `${VW}px`, height: `${h}px`, background: `linear-gradient(to bottom, ${css})` });
     }
     if (type === 'veil') {  // yazının arxasında kadrın yuxarısında tam enli, çox yumşaq tünd keçid (kinoda "title-safe" qradiyent) — ləkə yox
       const a = Number(clip.a ?? 0.42);
@@ -126,7 +207,15 @@
           row.append(node(doc, 'div', {}, it.text || ''));
           w.append(row);
         });
-      } else w.append(node(doc, 'div', {}, clip.text || ''));
+      } else {
+        const mainEl = node(doc, 'div', {}, clip.text || '');
+        if (clip.gradient) {  // keynote tərzi: yazının içində yuxarıdan aşağı rəng keçidi (məs. ağ → solğun çəhrayı), yumşaq kölgə
+          mainEl.style.background = `linear-gradient(to bottom, ${clip.gradient[0]}, ${clip.gradient[1]})`;
+          mainEl.style.webkitBackgroundClip = 'text'; mainEl.style.backgroundClip = 'text'; mainEl.style.color = 'transparent'; mainEl.style.webkitTextFillColor = 'transparent';
+          w.style.textShadow = 'none'; w.style.filter = 'drop-shadow(0 3px 12px rgba(60,10,30,0.42))';
+        }
+        w.append(mainEl);
+      }
       return w;
     }
     if (type === 'note') {  // üslub dəsti: əl yazısı qeyd — Caveat, əyilmiş; altından xətt / dairə / ox / ✓ işarələri (SVG)
@@ -309,6 +398,10 @@
       frame: { size: 0.03, weight: 400, color: '#FFFFFF' },
       slate: { size: 0.06, weight: 700, color: '#3C262C' },
       viewfinder: { size: 0.03, weight: 700, color: '#FFFFFF' },
+      gcard: { size: 0.04, weight: 700, color: '#4A2434' },
+      gbanner: { size: 0.03, weight: 700, color: '#4A2434' },
+      gcaps: { size: 0.034, weight: 700, color: '#4A2434' },
+      pblur: { size: 0.03, weight: 400, color: '#FFFFFF' },
     })[type] || { size: 0.06, weight: 700, color: '#FFFFFF' };
   }
 
@@ -318,7 +411,7 @@
     if (clip.type === 'caption') return [0, ...(clip.words || []).map((w) => w.s)].filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b);
     if (clip.type === 'viewfinder') { const n = Math.floor((clip.srcOut - clip.srcIn) / 0.5); return Array.from({ length: n + 1 }, (_, i) => i * 0.5).filter((v) => v < clip.srcOut - clip.srcIn); }
     if (clip.type === 'bars' && clip.seq) return [0, ...clip.seq.map((w) => w.s || 0)].filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b);
-    if (['list', 'type', 'note', 'block', 'slate'].includes(clip.type) && clip.items) return [0, ...clip.items.map((it) => it.at || 0)].filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b);
+    if (['list', 'type', 'note', 'block', 'slate', 'gcard', 'gcaps'].includes(clip.type) && clip.items) return [0, ...clip.items.map((it) => it.at || 0)].filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b);
     if (clip.type === 'list') return [0, ...(clip.items || []).map((it) => it.at || 0)].filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b);
     if (clip.type === 'choice') return [0, clip.at ?? 1.5];
     return [0];
@@ -327,7 +420,7 @@
   // Standart yer (x, y mərkəz, 0..1) — render (graphics.py DEFAULT_XY) ilə eyni
   const DEFAULT_XY = { caption: [0.5, 0.74], title: [0.5, 0.14], section: [0.5, 0.22], emphasis: [0.5, 0.62], list: [0.5, 0.42], card: [0.5, 0.42],
     offer: [0.5, 0.58], cta: [0.5, 0.585], badge: [0.5, 0.215], lower: [0.24, 0.82], choice: [0.5, 0.45],
-    type: [0.5, 0.17], note: [0.5, 0.17], block: [0.5, 0.15], bars: [0.5, 0.5], veil: [0.5, 0.2], frame: [0.5, 0.5], slate: [0.5, 0.5], viewfinder: [0.5, 0.5] };  // reklam kartları üzün altında
+    type: [0.5, 0.17], note: [0.5, 0.17], block: [0.5, 0.15], bars: [0.5, 0.5], veil: [0.5, 0.2], frame: [0.5, 0.5], slate: [0.5, 0.5], viewfinder: [0.5, 0.5], gcard: [0.5, 0.17], gbanner: [0.5, 0.12], gcaps: [0.5, 0.15], pblur: [0.5, 0.21] };  // reklam kartları üzün altında
   function pos(clip) { const d = DEFAULT_XY[clip.type] || [0.5, 0.5]; return [clip.x ?? d[0], clip.y ?? d[1]]; }
 
   root.MG = { ANIMS, animState, build, defaults, statePoints, rgba, pos, DEFAULT_XY };

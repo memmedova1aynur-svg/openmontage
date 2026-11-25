@@ -30,7 +30,7 @@ for (const j of cfg.jobs) {
     const r = el.getBoundingClientRect();
     return { x: r.left, y: r.top, w: r.width, h: r.height };
   }, { clip: j.clip, tl: j.tl, H: cfg.H, theme: cfg.theme });
-  const m = Math.ceil(cfg.H * 0.012); // yazı konturu üçün ehtiyat
+  const m = Math.ceil(cfg.H * (j.clip.pad ?? 0.012)); // yazı konturu üçün ehtiyat (şüşə kölgəsi üçün daha çox: clip.pad)
   const clipRect = { x: Math.max(0, box.x - m), y: Math.max(0, box.y - m), width: Math.min(cfg.W, box.w + 2 * m), height: Math.min(cfg.H, box.h + 2 * m) };
   const out = path.join(outDir, `${j.name}.png`);
   await page.screenshot({ path: out, clip: clipRect, omitBackground: true });
