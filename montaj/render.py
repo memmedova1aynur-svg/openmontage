@@ -5,7 +5,8 @@ yuvarlaqlaşdırılır, bağlı səs həmin başlanğıcı götürür — sürü
 
 Klip parametrləri (hamısı istəyə bağlı, yalnız istifadəçi seçəndə):
   frame  — kadraj (reframe.py), rotate — dərəcə
-  adjust — {mirror, brightness, contrast, saturation, vibrance, depth, temperature, soften, sharpen, denoise, shadows}
+  adjust — {mirror, brightness, contrast, saturation, vibrance, depth, temperature, tint, soften, sharpen, denoise, shadows,
+           gamma, highlights}; "look": "auto" — quality.enhance_params-ın adaptiv dəyərləri
 Layihə parametrləri:
   aspect, mix {speech, music, sfx, voice, duck}, branding {logo, end}, mirrorAll
 """
@@ -272,6 +273,9 @@ def color_filters(adj: dict[str, Any]) -> list[str]:
     temp = float(adj.get("temperature") or 6500)
     if abs(temp - 6500) > 50:
         f.append(f"colortemperature=temperature={temp:.0f}")
+    tint = float(adj.get("tint") or 0)
+    if abs(tint) > 0.002:  # yaşıl (+) / bənövşəyi (−) çaların yüngül düzəlişi (adaptiv ağ balansı)
+        f.append(f"colorchannelmixer=gg={1 - max(-0.05, min(0.05, tint)):.4f}")
     return f
 
 

@@ -18,7 +18,7 @@ INITIAL_NAMES = [
     "Aynur Həkimova", "Aytən Cəlilova", "Günel Dəmirova", "Kənan Zərbiyev", "Lamiyə",
     "Murad Elxan", "Nərgiz Məmmədova", "Nilüfər Mehdiyeva", "Rəhimə Niyazlı", "Rəşad Rəşidov",
     "Səidə Əliyeva", "Sevinc Məhsimova", "Sura Malik", "Ülkər Rəşidova", "Xalidə Baycan",
-    "Aynur Məmmədova", "Xəyyam Hüseynov",
+    "Aynur Məmmədova", "Xəyyam Həsənov",
 ]
 FIELDS = ("name", "field", "colors", "font", "logo", "preferences")
 _HEX = re.compile(r"^#[0-9A-Fa-f]{6}$")

@@ -6,7 +6,7 @@ istifadə olunmur: linkini göndərmə, təklif etmə (yalnız istifadəçi aç�
 
 Hədəf: video ilk dəfədən hazır olsun, əlavə düzəliş tələb etməsin. İstifadəçi ilə yalnız **iki dəfə** əlaqə:
 (1) sorğu, (2) **bir qərar mesajı** — storyboard variantları + kadraj (əvvəl/sonra) + rəng variantları + musiqi
-nümunələri birlikdə göndərilir, istifadəçi bir cavabla seçir (məs. “B, rəng A, musiqi 2”). Sonra yalnız **yekun MP4**.
+nümunələri birlikdə göndərilir, istifadəçi bir cavabla seçir (məs. “B, musiqi 2”; rəng soruşulmur — "Görüntü keyfiyyəti"). Sonra yalnız **yekun MP4**.
 Ara düzəliş raundları təklif etmə.
 
 Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq, ritm, J/L-cut, etika): [`KINO_DILI.md`](KINO_DILI.md).
@@ -146,7 +146,7 @@ Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq,
      → inkişaf (xronoloji, hər kadrın ən kəskin/sakit hissəsi) → final (uzun son kadr). Kəsimlər vuruşlara düşür
      (±20 ms), musiqi vuruşdan başlayır, sonda 2 s sönür; görüntünün öz səsi söndürülür (`liveSound`).
    - `_review`-da real səs namizədləri (fondan yüksək — alqış/gülüş ola bilər): dinlə, saxlamaq üçün planda
-     `"liveSound": {"volume": 0, "keep": {"e5": 0.8}}` (kart id). Rəng üçün plana `"look"` əlavə et.
+     `"liveSound": {"volume": 0, "keep": {"e5": 0.8}}` (kart id). Rəng: standart `"look": "auto"` ("Görüntü keyfiyyəti").
    - `variants <pid> event_A.json event_B.json event_C.json` → qərar mesajı → `choose` → `render` → `verify`.
    - **Yavaşlatma:** material ≥50 fps-dirsə (60 fps çəkiliş) final kadr avtomatik 0.5x yavaşlayır (`--slowmo auto|on|off`) —
      yalnız real kadrlarla, kadr uydurulmur. 30 fps materialda hamar yavaşlatma yoxdur — istifadəçiyə de, növbəti dəfə 60 fps.
@@ -168,8 +168,8 @@ Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq,
    - **Kadr və keyfiyyət**: üfüqi çəkiliş (YouTube ölçüsü) — `new --type 15` (`--size` VERMƏ): çıxış mənbənin öz ölçüsü və
      keyfiyyətidir (4K mənbə → 3840x2160, kiçildilmir); render H.264 CRF 18 (gözlə fərqlənməz). 4K-da 15 dəqiqəlik render uzun çəkir —
      bölümləri tək-tək render et. Üfüqi çəkilişdə layout lazım deyil: qrafika kadrın boş tərəfinə (danışanın üzünü örtməsin —
-     `verify` yoxlayır), x-i özün ver. **Rəng korreksiyası məcburidir** (`looks` → variant seçimi; solğun qalmasın, kliplər arası
-     işıq bərabərləşir). Çəkiliş şaquli (telefon) olarsa — `--size 1920x1080` və planda
+     `verify` yoxlayır), x-i özün ver. **Görüntü keyfiyyəti** universal standartla (aşağıda 5-ci addım → "Görüntü keyfiyyəti";
+     variant seçimi yoxdur). Çəkiliş şaquli (telefon) olarsa — `--size 1920x1080` və planda
      `"layout": {"speaker": "left", "width": 0.42, "bg": "#rəng"}`: danışan solda paneldə, sağ sahə qrafika üçün (plan qrafikalarının
      `x`-i avtomatik boş tərəfin mərkəzidir); fon müştərinin sakit rəngi (və ya `"blur"`). Üfüqi çəkilişdə layout lazım deyil.
    - **Bölüm açılışı**: `{"type": "lower", "text": "<ad>", "sub": "<titul>", "start": 0.5, "dur": 5, "anim": {"in": "slide-left"}}`
@@ -207,7 +207,7 @@ Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq,
      seçilmir; bal və səbəb göstərilir. **Təklifdir** — transkripti oxu, istifadəçiyə 3–6 hissəni qısa izahla təklif et.
    - `extract <pid> <media>:<başla>-<son> --title ".."`: seçilən hissə ayrıca layihə olur (eyni orijinal — hard link, eyni analiz —
      təkrar transkripsiya yox, müştəri/rəng/format ana layihədən). Sonra hər hissəyə adi iş axını (retakes/cut, framefix,
-     voice-clean, looks, variants, render).
+     voice-clean, variants, render).
    - Kadrda bir neçə nəfər varsa `framefix` **danışan şəxsi** (ağız nahiyəsindəki hərəkət) tapıb kadrajı ona qurur; aydın deyilsə
      hamısını kadra salır və bunu deyir.
    - 16:9 çəkilişdən 9:16 kəsim kiçik ölçü verir (1080p → 608x1080). Standart: böyütmə yoxdur. İstifadəçi istəsə
@@ -236,7 +236,8 @@ Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq,
    lazım olsa ortalama qismən olur). Nəticə qaralamaya yazılır, variantlar və yekun montaj onu işlədir;
    `kadraj.jpg` (orijinal / düzəldilmiş) qərar mesajına əlavə olunur. Ölçülə bilməyəni (xətt yoxdur, üz yoxdur)
    düzəldilmiş kimi təqdim etmə. Əl kamerasının titrəməsi/hərəkəti izlənmir (stabilizasiya yoxdur).
-4. **Üç vizual storyboard.** `storyboard` çıxışının sonunda növün 3 variantı (A/B/C yanaşmaları), qaydaları və
+4. **Vizual storyboard (standart 1 variant — "Qənaət rejimi"; 3 variant yalnız istifadəçi açıq istəyəndə).**
+   `storyboard` çıxışının sonunda növün 3 variantı (A/B/C yanaşmaları), qaydaları və
    müştərinin son seçimləri (`history`) görünür — variantları buna görə qur, son videonun giriş/qutu/effekt ardıcıllığını
    təkrarlama. Hər planda `"approach": "M01+M02"` yaz (tarixçəyə düşür). Hər variant üçün `plan_A.json`, `plan_B.json`, `plan_C.json` yaz və
    `variants <pid> plan_A.json plan_B.json plan_C.json` → `storyboard_variantlari.jpg` (real kadrlar üzərində
@@ -268,17 +269,41 @@ Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq,
      “Kod təsdiqlənməyib” xəbərdarlığı vermə. Ailədən kənar rəng işlətmə; bir müştərinin rəngini başqasına keçirmə.
      Loqo yoxdursa loqo uydurma; istifadəçi loqo versə sonluqda/küncdə işlət.
    - **Storyboard təsdiqlənmədən yekun montaj qərarı tətbiq edilmir** (`variants` layihəni dəyişmir).
-5. **Rəng və musiqi — storyboard ilə EYNİ qərar mesajında.** Qərar mesajının tərkibi (hamısı bir mesajda, ayrıca sual yoxdur):
-   (1) `storyboard_variantlari.jpg` + hər variant 1–2 sətir; (2) `kadraj.jpg` əvvəl/sonra; (3) `reng_variantlari.jpg`;
-   (4) 2–3 musiqi nümunəsi; (5) arxa səs təmizlənibsə `ses_evvel_sonra.m4a`; (6) material yoxlamasının `!` qeydləri (bir cümlə);
-   (7) istifadəçi fon dəyişməsini istəyibsə `arxafon.jpg`. Yeni imkanları (davamlılıq tonu `variation`, plan ölçüləri `multicam`,
+5. **Musiqi — storyboard ilə EYNİ qərar mesajında.** Qərar mesajının tərkibi (hamısı bir mesajda, ayrıca sual yoxdur):
+   (1) `storyboard_variantlari.jpg` + hər variant 1–2 sətir; (2) `kadraj.jpg` əvvəl/sonra;
+   (3) 2–3 musiqi nümunəsi; (4) arxa səs təmizlənibsə `ses_evvel_sonra.m4a`; (5) material yoxlamasının `!` qeydləri (bir cümlə,
+   görüntü qüsurları daxil); (6) istifadəçi fon dəyişməsini istəyibsə `arxafon.jpg`. **Rəng variantları göndərilmir, rəng
+   soruşulmur.** Yeni imkanları (davamlılıq tonu `variation`, plan ölçüləri `multicam`,
    J/L, yavaşlatma) ayrıca soruşma — uyğun olanları storyboard variantlarının içinə qoy (məs. A — təklif olunan ton, B — plan
-   ölçüləri ilə), qalanını özün standart seç. Cavab bir sətir olsun: “B, rəng A, musiqi 2”.
-   - Rəng: `looks <pid>` → `reng_variantlari.jpg` (3 təmsilçi kadr × Orijinal, A təbii, B yumşaq-isti,
-     C təmiz-neytral; orta parlaqlıq aşağıdırsa avtomatik **D: zəif işıq** — dən azalır, kölgə açılır). Göndər, seçim gözlə. Seçim planda `"look": "A"|"B"|"C"` (`null` — düzəliş yoxdur).
-     Fərqli işıqlanan kliplər avtomatik yaxınlaşdırılır (`"matchExposure": true`, ±0.04).
-     Dəri rəngi və detal qorunur; güclü doyumluluq, kəskinləşdirmə, “4K effekti” yoxdur;
-     retuş/gözəlləşdirmə yalnız ayrıca istəklə.
+   ölçüləri ilə), qalanını özün standart seç. Cavab bir sətir olsun: “B, musiqi 2”.
+   - **Görüntü keyfiyyəti — Adaptive Image Enhancement (universal, daimi standart; istifadəçi qaydası 2026-11-25; bütün
+     əvvəlki rəng qaydalarını — "həmişə C", müştəriyə bağlı sabit `look`, `reng_variantlari.jpg` ilə seçim — əvəz edir):**
+     - Hədəf: təmiz, aydın, canlı, təbii, "güzgü kimi" görüntü; filtr tətbiq edildiyi **hiss olunmamalıdır**.
+     - Hazır şablonlar (A, B, C, D, E, F, G, H, W) **standart olaraq tətbiq olunmur**; müştəriyə görə sabit rəng filtri yoxdur.
+     - Hər video ayrıca qiymətləndirilir və **yalnız ehtiyac olan parametr** dəyişir: kəskinlik — təbii, bir qədər artır;
+       canlılıq — yalnız ehtiyac olduqda çox az; işıq, kontrast, ağ balansı, ekspozisiya — yalnız zərurət olduqda.
+       Orijinal kifayət qədər keyfiyyətlidirsə korreksiya edilmir.
+     - Orijinal rənglər, dəri tonu, geyim və məkan rəngləri qorunur. Qırmızılıq, sarılıq, solğunluq, həddindən artıq doyma,
+       süni kəskinlik **yaradılmır**. Üz hamarlaşdırma, dəri teksturasının dəyişməsi, gözəllik filtri **yoxdur**.
+     - **Brend rəngləri yalnız altyazı, qrafika və dizayn elementlərinə aiddir** — çəkilmiş görüntünün rənginə yox.
+     - İstifadəçidən rəng seçimi istənmir, çoxsaylı rəng variantı hazırlanmır, rəng üçün təkrar render edilmir.
+     - **Texniki icra — `"look": "auto"` (standart; planda `look` yazılmasa da auto).** `plan`/`choose` hər media faylını
+       (danışan, hər B-roll ayrıca) istifadə olunan hissələrinin 3 kadrında ölçür (`quality.enhance_params`) və yalnız
+       ehtiyac olanı sərt həddə verir; `plan` çıxışında "görüntü (<fayl>): …" sətri səbəbləri yazır:
+       - kəskinlik həmişə yüngül: 0.14–0.30 (yalnız parlaqlıq kanalı; qaranlıqda ≤0.15 — dən artmasın);
+       - az işıq: yalnız parlaq hissələr də zəifdirsə (orta < 0.36 və ən parlaq < 0.72) — kölgələr ≤0.7, parlaqlıq ≤+0.03;
+         üz/işıq düzgündürsə tünd fon və qara geyim (low-key) olduğu kimi qalır;
+       - yanmaya yaxın ağlar (>1.2%) — `highlights`; çox açıq kadr — parlaqlıq ≤−0.03;
+       - dar diapazon (solğun/dumanlı) — kontrast ≤1.06;
+       - ağ balansı yalnız neytral sahələrə (divar, ağ geyim) görə, aydın çalarda (|R−B|/G > 0.07) və **yarıya qədər**
+         (məkanın işığı qalır): temperatur 5800–7200 K; yaşıl/bənövşəyi çalar `tint` ≤0.03. Neytral istinad yoxdursa
+         (yaxın plan dəri, çox qaranlıq kadr) ağ balansına toxunulmur;
+       - canlılıq yalnız solğunluqda (orta xroma < 0.10), ≤0.06 (`vibrance` — doymuş rənglərə/dəriyə az təsir edir);
+       - **heç vaxt**: `saturation` artımı, denoise, yumşaltma, üz/dəri emalı.
+       Kliplər arası işıq fərqi `matchExposure` ilə (±0.04) bərabərləşir. Hazır şablonlar (`"look": "A"`…`"W"`) yalnız
+       istifadəçi açıq istəyəndə; `"look": null` — heç bir düzəliş. `looks <pid>` — yalnız diaqnostika (Orijinal + auto +
+       şablonlar), istifadəçiyə göndərilmir. Ölçülə bilməyən qüsuru (məs. qaranlıqda rəng çaları) qərar mesajında bir
+       cümlə ilə de.
    - **Musiqi — SORUŞMA, özün seç**: `music <pid>` → sorğu profil/növə görə avtomatik (profildə `music.query` varsa o; uşaq
      mövzusu — şən kids, reklam — corporate; piano/yavaş/kədərli/bayram mövzusu YOX), Freesound **yalnız CC0** + **Mixkit** (Stock Music
      Free License — kommersiya pulsuz, müəllif qeydi tələb etmir; açarsız; Freesound açarı yoxdursa da işləyir), 2–3 namizəd + `musiqi_N.m4a`
@@ -322,8 +347,15 @@ Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq,
 - Mənanı və təbii ritmi qoru; sözün başı/sonu, heca kəsilmir.
 - Kəsim nöqtəsi yalnız Whisper-ə əsaslanmır: `analysis` səssizliyi ffmpeg ilə (-35 dB) tapır, `cut` ən sakit
   10 ms çərçivəni seçir, `verify` yekunda yenidən ölçür.
-- Təbii nəfəs və pauzaların hamısını silmə (≥1,2 s sükut namizəddir, 0,25 s nəfəs payı qalır).
-- Şübhəli sərhəddə daha çox orijinal saxla. Whisper-in tanımadığı səs (musiqi, gülüş) avtomatik atılmır.
+- **Pauzalar mexaniki olaraq saniyə həddi ilə kəsilmir** (istifadəçi qaydası, 2026-11-25 — profillərdəki "≥0.45 s kəsilir"
+  qaydasını əvəz edir). Hər pauza məna və ritmə görə qərarlaşdırılır: vurğu, fikir keçidi, nəfəs pauzası qalır; yalnız
+  ritmi pozan boş gözləmə, alınmayan cəhd, təkrar çıxarılır. Uzun sükut (≥1,2 s) yalnız **namizəddir**; kəsilsə də
+  0,25 s nəfəs payı qalır.
+- Sözün son hecası itmir, söz təkrarlanmır, cümlə yarımçıq qalmır: kəsimdən sonra sərhəddəki sözləri `verify` və
+  transkriptlə yoxla; şübhədə daha çox orijinal saxla. Whisper-in tanımadığı səs (musiqi, gülüş) avtomatik atılmır.
+- **Səs balansı:** danışıq həmişə aydın və üstündür (`voice-clean` yalnız ehtiyac olanda), musiqi danışıqda azalır
+  (standart `volume` 0.12 — mövzuya görə aşağı/yuxarı), SFX danışığı örtmür, arxa fon səsi təbii qalır (tam boşluq yaratma);
+  yekunda −14 LUFS. Yekun MP4 `verify` olmadan təhvil verilmir.
 
 ## Keyfiyyət
 
@@ -344,6 +376,9 @@ Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq,
 
 ### Qənaət rejimi (standart)
 - Storyboard: standart **1 variant**; istifadəçi açıq “3 variant” istəyəndə 3.
+- Videolar **ardıcıl** tamamlanır (paralel render/transkripsiya yox); keşlənmiş transkript və analiz təkrarlanmır.
+- Üslub: eyni müştərinin videoları kopya olmasın — brend ailəsi sabit, yanaşma mövzuya görə seçilir (`variation`,
+  `history`). B-roll, animasiya, qrafika, effekt yalnız məzmuna xidmət edəndə; "hər videoda olmalıdır" qaydası yoxdur.
 - Sualları ilkin sorğuda bir dəfəyə topla; sonra təkrar soruşma.
 - Cavablar qısa: 1–3 cümlə, hesabat yazma. Düzəlişləri bir mesajda topla, yalnız dəyişən elementi tətbiq et.
 - Söhbət uzanıbsa (çox düzəliş/yazışma), istifadəçiyə növbəti video üçün **yeni sessiya** aç deyə xatırlat.

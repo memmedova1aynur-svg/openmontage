@@ -814,9 +814,13 @@ LOOK_LABELS = {"A": "orijinala yaxın, təbii", "B": "yumşaq və isti", "C": "t
                "E": "kəskin və kontrastlı", "F": "isti premium", "G": "sərin, kino tonu",
                "H": "təmiz işıqlı, sarılıqsız neytral",
                "W": "isti kitabxana tonu, təbii dəri, ağlar nəzarətdə"}
-LOOK_KEYS = ("brightness", "contrast", "saturation", "vibrance", "depth", "sharpen", "temperature", "denoise", "shadows", "gamma", "highlights")
+LOOK_KEYS = ("brightness", "contrast", "saturation", "vibrance", "depth", "sharpen", "temperature", "denoise", "shadows", "gamma",
+             "highlights", "tint")
 DARK_LUMA = 85  # 8-bit orta parlaqlıq bundan aşağıdırsa — zəif işıq (D variantı təklif olunur)
-DEFAULT_LOOK = "A"
+# Universal standart (IS_AXINI.md → "Görüntü keyfiyyəti"): hazır şablon standart tətbiq olunmur; "auto" — hər media faylı
+# ölçülür, yalnız ehtiyac olan parametr çox yüngül düzəlir (quality.enhance_params). Şablonlar (A–W) yalnız açıq seçimlə.
+AUTO_LOOK = "auto"
+DEFAULT_LOOK = AUTO_LOOK
 
 
 def _rep_frames(p: dict[str, Any], n: int = 3) -> list[tuple[dict[str, Any], float]]:
@@ -853,13 +857,20 @@ def cmd_looks(a: argparse.Namespace) -> None:
     lum = [quality.mean_luma(store.project_dir(a.pid) / m["file"], t) for m, t in frames]
     lum = [x for x in lum if x is not None]
     dark = bool(lum) and sum(lum) / len(lum) < DARK_LUMA
-    cols = ["orijinal", *[k for k in LOOKS if k != "D" or dark or a.all]]
+    cols = ["orijinal", AUTO_LOOK, *[k for k in LOOKS if k != "D" or dark or a.all]]
+    auto_adj: dict[str, dict[str, float]] = {}  # media → adaptiv düzəliş (plan ilə eyni ölçü)
+    for m, _ in frames:
+        if m["id"] not in auto_adj:
+            ts = [t for mm, t in frames if mm["id"] == m["id"]]
+            auto_adj[m["id"]], why = quality.auto_enhance(store.project_dir(a.pid), m, ts)
+            print(f"auto ({m.get('name')}): " + ("; ".join(why) if why else "düzəliş lazım deyil"))
     tiles: list[Path] = []
     for r, (m, t) in enumerate(frames):
         src = store.project_dir(a.pid) / m["file"]
         for name in cols:
-            label = "Orijinal" if name == "orijinal" else f"{name}: {LOOK_LABELS[name]}"
-            adj = {} if name == "orijinal" else LOOKS[name]
+            label = "Orijinal" if name == "orijinal" else "auto: adaptiv (standart)" if name == AUTO_LOOK \
+                else f"{name}: {LOOK_LABELS[name]}"
+            adj = {} if name == "orijinal" else auto_adj[m["id"]] if name == AUTO_LOOK else LOOKS[name]
             f = ([render.HDR_TO_SDR] if m.get("hdr") else []) + render.color_filters(adj) + render.sharpen_filter(adj)
             f.append("scale=360:-2:flags=lanczos")
             if font and r == 0:
@@ -1015,6 +1026,33 @@ def _pip_place(pid: str, q: dict[str, Any], at: float, dur: float, m: dict[str, 
     return best[2], best[3], note
 
 
+def _auto_looks(pid: str, q: dict[str, Any], clips: list[dict[str, Any]]) -> dict[str, dict[str, float]]:
+    """Adaptive Image Enhancement: hər media faylı (danışan, B-roll ayrıca) öz istifadə olunan hissələrində ölçülür."""
+    from montaj import quality
+
+    media = {m["id"]: m for m in q["media"]}
+    spans: dict[str, list[tuple[float, float]]] = {}
+    for c in clips:
+        m = media.get(c.get("media"))
+        if m and m.get("hasVideo"):
+            spans.setdefault(m["id"], []).append((float(c["srcIn"]), float(c["srcOut"])))
+    out: dict[str, dict[str, float]] = {}
+    for mid, sp in spans.items():
+        m = media[mid]
+        if m.get("isImage"):
+            times = [0.0]
+        else:
+            sp = sorted(sp, key=lambda s: -(s[1] - s[0]))[:3]
+            times = [a + (b - a) / 2 for a, b in sp]
+            if len(times) < 3:  # az klip — ən uzun hissənin içindən əlavə kadrlar
+                a, b = sp[0]
+                times = [a + (b - a) * k / 4 for k in (1, 2, 3)]
+        adj, why = quality.auto_enhance(store.project_dir(pid), m, times)
+        out[mid] = adj
+        print(f"görüntü ({m.get('name') or mid}): " + ("; ".join(why) if why else "düzəliş lazım deyil"))
+    return out
+
+
 def _apply_broll(pid: str, q: dict[str, Any], b: dict[str, Any]) -> dict[str, Any]:
     """Plan-ın bir B-roll elementi.
     mode="cover" (standart): əsas videonun üstündə, danışıq və altyazı davam edir;
@@ -1160,18 +1198,21 @@ def apply_plan(pid: str, p: dict[str, Any], plan: dict[str, Any], plan_name: str
 
     # rəng: plan şablonu ("look" işarəsi olan) yenilənir, əl ilə dəyişdirilmiş rəngə toxunulmur
     look_name = plan.get("look", DEFAULT_LOOK)
-    if look_name and look_name not in LOOKS:
-        raise UserError(f"Naməlum rəng şablonu: {look_name}", "Mövcud: " + ", ".join(LOOKS))
+    if look_name and look_name != AUTO_LOOK and look_name not in LOOKS:
+        raise UserError(f"Naməlum rəng şablonu: {look_name}", "Mövcud: auto, " + ", ".join(LOOKS))
     vids = [c for c in q["clips"] if c["track"] in ("v1", "v2")]
     owned = [c for c in vids if not any(k in (c.get("adjust") or {}) for k in LOOK_KEYS) or (c.get("adjust") or {}).get("look")]
     expo = quality.exposure_offsets([c for c in owned if c["track"] == "v1"], {m["id"]: m for m in q["media"]}, store.project_dir(pid)) \
         if look_name and plan.get("matchExposure", True) else {}
+    auto_by_media = _auto_looks(pid, q, owned) if look_name == AUTO_LOOK else {}
     for c in owned:
         adj = {k: v for k, v in (c.get("adjust") or {}).items() if k not in LOOK_KEYS and k != "look"}
-        if look_name:
+        if look_name == AUTO_LOOK:
+            adj.update(auto_by_media.get(c.get("media"), {}), look=AUTO_LOOK)
+        elif look_name:
             adj.update(LOOKS[look_name], look=look_name)
-            if c["id"] in expo:
-                adj["brightness"] = round(adj.get("brightness", 0) + expo[c["id"]], 3)
+        if look_name and c["id"] in expo:
+            adj["brightness"] = round(adj.get("brightness", 0) + expo[c["id"]], 3)
         if adj:
             c["adjust"] = adj
         else:
