@@ -66,7 +66,7 @@ altyazı, kart və başlıq bu sahələrə girməməlidir. Üzü, ağzı və vac
 
 **Kitabxana (musiqi, B-roll, SFX):** `montaj/library/catalog.json` (kiçik kataloq, repoda) + fayllar lazım olanda endirilir (`python -m montaj.library search|get|sync`).
 Mənbələr: Mixkit (pulsuz lisenziya, mühit şəbəkəsində açıq) və istifadəçinin Drive qovluğu **"OpenMontage Kitabxana"** (2026-11-25-dən yeni Drive hesabı; köhnə hesab bağlantısı kəsilib) (`musiqi/`, `broll/`; fayl adı `teq1_teq2_ad.ext`;
-qovluq "Linki olan hər kəs — Baxan" olmalıdır; sonra `sync`). Məhdudiyyət: Mixkit B-roll 1280×720 üfüqidir — tam ekran şaquli üçün yumşaq olur; kart/pəncərə içində işlədilir.
+qovluq "Linki olan hər kəs — Baxan" olmalıdır; sonra `sync`). Mixkit kataloqu avtomatik yığılıb (`python -m montaj.library seed` + `probe`): ~360 B-roll (çoxu üfüqi 1280×720 — pəncərə kimi; ~30 şaquli 720×1280 — `search --orient vertical`, tam ekran) və ~100 musiqi. İstifadəçi fayl yükləmir; kitabxananı agent özü genişləndirir. Drive qovluğu isteğe bağlıdır.
 Müştəriyə məxsus və ya məxfi material bu ortaq kitabxanaya qoyulmur.
 
 **Musiqi qaydası müştəri profilindədir** (`music_policy.use: true|false` + əhval/lisenziya). Qayda yazılmayıbsa — musiqisiz, soruşulmur.
@@ -81,3 +81,6 @@ düz edit yalnız əsaslandırılıb seçilir. Konsept 5–8 sətirdir; storyboa
 
 **Drive (2026-11-25):** bütün giriş materialı (video linkləri, kitabxana) və kitabxana yeni Drive hesabından götürülür. Hazır videolar üçün qovluq: **"OpenMontage Hazır videolar/<müştəri>"**.
 Məhdudiyyət: Drive bağlantısı (MCP) bir fayl üçün **10 MB**-a qədər yükləməyə icazə verir — tam keyfiyyətli MP4 (40–60 MB) bu yolla Drive-a yüklənə bilmir; hazır video söhbətə fayl kimi göndərilir.
+
+**Mənbə siyasəti (kitabxananı agent özü yığır):** Mixkit — bəli (pulsuz lisenziya, açar lazım deyil, birbaşa Mixkit-dən endirilir, Drive-a yüklənmir). Pexels/Pixabay — yalnız pulsuz API açarı və mühit şəbəkə icazəsi olduqda
+(açar istifadəçi tərəfindən mühitə verilir). **Pinterest — istifadə olunmur:** məzmun üçüncü tərəfin müəllif hüququ altındadır, lisenziya göstərilmir, avtomatik yükləmə şərtlərə ziddir; mühitin şəbəkəsində də bağlıdır.
