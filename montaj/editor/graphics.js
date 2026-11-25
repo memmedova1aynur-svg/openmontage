@@ -54,6 +54,18 @@
     const base = { fontFamily: font, fontWeight: String(weight), fontSize: `${fs}px`, lineHeight: '1.18', color, whiteSpace: 'pre-wrap', textAlign: 'center', boxSizing: 'border-box' };
     const VW = (doc.defaultView && doc.defaultView.innerWidth) || H * 0.5625;  // kadr eni (px) — tam enli elementlər üçün
     const shown = (items) => (tl == null ? items.length : items.filter((it) => tl >= (it.at || 0)).length);
+    if (type === 'frame') {  // üslub dəsti: nazik çərçivə + künc nişanları (tam kadr, şəffaf; bleed) — festival/sənədli görünüş
+      const NS = 'http://www.w3.org/2000/svg';
+      const m = VW * (clip.m ?? 0.04), tick = VW * 0.045, sw = Math.max(1, VW * 0.0035);
+      const e = doc.createElementNS(NS, 'svg');
+      e.setAttribute('width', VW); e.setAttribute('height', H); e.setAttribute('viewBox', `0 0 ${VW} ${H}`);
+      const c = clip.color || '#FFFFFF';
+      const corners = [[m, m, 1, 1], [VW - m, m, -1, 1], [m, H - m, 1, -1], [VW - m, H - m, -1, -1]]
+        .map(([x, y, sx, sy]) => `<path d="M${x + sx * tick} ${y} L${x} ${y} L${x} ${y + sy * tick}" fill="none" stroke="${c}" stroke-opacity="0.8" stroke-width="${sw * 1.8}" stroke-linecap="square"/>`).join('');
+      e.innerHTML = `<rect x="${m}" y="${m}" width="${VW - 2 * m}" height="${H - 2 * m}" fill="none" stroke="${c}" stroke-opacity="0.32" stroke-width="${sw}"/>${corners}`;
+      e.style.display = 'block'; e.style.filter = 'drop-shadow(0 1px 2px rgba(0,0,0,0.35))';
+      return e;
+    }
     if (type === 'veil') {  // yazının arxasında kadrın yuxarısında tam enli, çox yumşaq tünd keçid (kinoda "title-safe" qradiyent) — ləkə yox
       const a = Number(clip.a ?? 0.42);
       return node(doc, 'div', { width: `${VW}px`, height: `${H * (clip.h ?? 0.4)}px`,
@@ -64,8 +76,17 @@
       const w = node(doc, 'div', { ...base, fontFamily: fam, width: `${VW * (clip.w ?? 0.9)}px`, textAlign: clip.align || 'left', lineHeight: '1.02',
         textShadow: clip.shadow === false ? 'none' : '0 1px 2px rgba(0,0,0,0.35), 0 4px 18px rgba(0,0,0,0.28)' });
       if (clip.kicker) w.append(node(doc, 'div', { fontFamily: font, fontSize: `${fs * 0.27}px`, fontWeight: '600', letterSpacing: '0.3em', textTransform: 'uppercase', marginBottom: `${fs * 0.16}px`, lineHeight: '1.2' }, clip.kicker));
-      if (clip.rule !== false && clip.kicker) w.append(node(doc, 'div', { width: `${fs * 0.9}px`, height: `${Math.max(2, fs * 0.03)}px`, background: color, margin: `0 0 ${fs * 0.22}px 0`, opacity: '0.9' }));
-      if (clip.items && clip.items.length) {
+      if (clip.rule !== false && clip.kicker) w.append(node(doc, 'div', { width: `${fs * 0.9}px`, height: `${Math.max(2, fs * 0.03)}px`, background: color, margin: clip.align === 'center' ? `0 auto ${fs * 0.22}px auto` : `0 0 ${fs * 0.22}px 0`, opacity: '0.9' }));
+      if (clip.italic) w.style.fontStyle = 'italic';
+      if (clip.items && clip.items.length && clip.inline) {  // bir sətirdə, nöqtə ilə ayrılmış; hər söz `at` anında görünür
+        const n = shown(clip.items);
+        const line = node(doc, 'div', { display: 'flex', justifyContent: clip.align === 'center' ? 'center' : 'flex-start', flexWrap: 'wrap', gap: `0 ${fs * 0.5}px` });
+        clip.items.forEach((it, i) => {
+          if (i > 0) line.append(node(doc, 'span', { opacity: i < n ? '0.7' : '0' }, '·'));
+          line.append(node(doc, 'span', { opacity: i < n ? '1' : '0' }, it.text || ''));
+        });
+        w.append(line);
+      } else if (clip.items && clip.items.length) {
         const n = shown(clip.items);
         clip.items.forEach((it, i) => {
           const row = node(doc, 'div', { display: 'flex', alignItems: 'baseline', gap: `${fs * 0.35}px`, margin: `${fs * 0.1}px 0`, opacity: i < n ? '1' : '0', fontSize: `${fs * 0.82}px` });
@@ -253,6 +274,7 @@
       block: { size: 0.046, weight: 800, color: '#FFFFFF' },
       bars: { size: 0.05, weight: 800, color: '#FFFFFF' },
       veil: { size: 0.03, weight: 400, color: '#FFFFFF' },
+      frame: { size: 0.03, weight: 400, color: '#FFFFFF' },
     })[type] || { size: 0.06, weight: 700, color: '#FFFFFF' };
   }
 
@@ -270,7 +292,7 @@
   // Standart yer (x, y mərkəz, 0..1) — render (graphics.py DEFAULT_XY) ilə eyni
   const DEFAULT_XY = { caption: [0.5, 0.74], title: [0.5, 0.14], section: [0.5, 0.22], emphasis: [0.5, 0.62], list: [0.5, 0.42], card: [0.5, 0.42],
     offer: [0.5, 0.58], cta: [0.5, 0.585], badge: [0.5, 0.215], lower: [0.24, 0.82], choice: [0.5, 0.45],
-    type: [0.5, 0.17], note: [0.5, 0.17], block: [0.5, 0.15], bars: [0.5, 0.5], veil: [0.5, 0.2] };  // reklam kartları üzün altında
+    type: [0.5, 0.17], note: [0.5, 0.17], block: [0.5, 0.15], bars: [0.5, 0.5], veil: [0.5, 0.2], frame: [0.5, 0.5] };  // reklam kartları üzün altında
   function pos(clip) { const d = DEFAULT_XY[clip.type] || [0.5, 0.5]; return [clip.x ?? d[0], clip.y ?? d[1]]; }
 
   root.MG = { ANIMS, animState, build, defaults, statePoints, rgba, pos, DEFAULT_XY };

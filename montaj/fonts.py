@@ -16,12 +16,16 @@ FAMILIES = {
     "Caveat": {"slug": "caveat", "weights": [400, 700]},
 }
 EXTRA_TTF = {"Lora": {400: "lora/Lora-Regular.ttf", 700: "lora/Lora-Bold.ttf"}}  # SIL OFL; serif başlıqlar (Azərbaycan hərfləri tam)
+EXTRA_ITALIC = {"Lora": {400: "lora/Lora-Italic.ttf", 700: "lora/Lora-BoldItalic.ttf"}}
 
 
 def extra_font_faces() -> list[dict]:
     """Qrafika/atelier rasterizasiyası üçün əlavə TTF şriftlər (woff2 olmayan)."""
-    return [{"family": fam, "weight": w, "path": str(SRC / rel), "range": "U+0000-FFFF", "fmt": "truetype"}
-            for fam, ws in EXTRA_TTF.items() for w, rel in ws.items() if (SRC / rel).is_file()]
+    out = [{"family": fam, "weight": w, "path": str(SRC / rel), "range": "U+0000-FFFF", "fmt": "truetype"}
+           for fam, ws in EXTRA_TTF.items() for w, rel in ws.items() if (SRC / rel).is_file()]
+    out += [{"family": fam, "weight": w, "path": str(SRC / rel), "range": "U+0000-FFFF", "fmt": "truetype", "style": "italic"}
+            for fam, ws in EXTRA_ITALIC.items() for w, rel in ws.items() if (SRC / rel).is_file()]
+    return out
 
 
 SYSTEM = {"DejaVu Sans": {400: "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",

@@ -36,6 +36,13 @@ KITS: dict[str, dict[str, Any]] = {
         "axes": {"layout": "overlay-left", "form": "serif-free", "caption": "plain-left", "motion": "fade", "card": "none", "density": "low"},
         "music": "calm cinematic acoustic", "sfx": ["soft"],
     },
+    "frame": {
+        "name": "Çərçivə",
+        "about": "Nazik çərçivə + künc nişanları, mərkəzləşmiş serif (Lora) başlıq, kicker; premium festival/sənədli görünüş, ekspert tam açıq.",
+        "suits": ["maarifləndirmə", "psixologiya", "ekspert fikri", "hekayə", "premium"],
+        "axes": {"layout": "framed-center", "form": "serif-centered", "caption": "plain-center", "motion": "fade", "card": "frame", "density": "low"},
+        "music": "elegant warm acoustic", "sfx": [],
+    },
     "colorblock": {
         "name": "Rəng bloku",
         "about": "Yuxarıda tam enli rəngli panel (hər anda rəngi dəyişir), altda ekspert; bədən örtülmür, bloklar ritm verir.",
@@ -106,7 +113,7 @@ def build(kit: str, content: dict[str, Any], theme: dict[str, Any] | None = None
     elif kit == "editorial":
         cap.update(style={"bg": "none", "align": "left", "x": 0.06, "weight": 600, "size": 0.04, "color": "#FFFFFF"})
         if hook:
-            g.append({"type": "type", "font": "serif", "kicker": hook.get("kicker"), "text": hook.get("short") or hook["text"], "size": 0.075, "x": 0.5, "y": 0.2, 
+            g.append({"type": "type", "font": "serif", "kicker": hook.get("kicker"), "text": hook.get("short") or hook["text"], "size": 0.075 if len(hook.get("short") or hook["text"]) <= 12 else 0.05, "x": 0.5, "y": 0.2, 
                       "start": hs, "dur": hd, "anim": {"in": "fade", "d": 0.6, "out": "fade"}})
         if lst:
             g.append({"type": "type", "font": "serif", "kicker": lst.get("heading"), "items": items(lst), "size": 0.045, "y": 0.18, "start": lst["start"], "dur": lst["dur"],
@@ -141,6 +148,19 @@ def build(kit: str, content: dict[str, Any], theme: dict[str, Any] | None = None
         if claim:
             g.append({"type": "note", "text": claim["text"], "size": 0.075, "rot": -3, "mark": "arrow", "y": 0.19, "start": claim["start"], "dur": claim["dur"], "anim": {"in": "pop"}})
         hook_method = "handwritten-note"
+    elif kit == "frame":
+        cap.update(style={"bg": "none", "weight": 600, "size": 0.04, "color": "#FFFFFF"})
+        total = float(content.get("duration") or 60)
+        g.append({"type": "frame", "bleed": True, "x": 0.5, "y": 0.5, "start": 0.0, "dur": total, "m": 0.04, "anim": {"in": "fade", "d": 0.8, "out": "fade", "dOut": 0.6}})
+        T = {"type": "type", "font": "serif", "align": "center", "x": 0.5, "w": 0.86, "anim": {"in": "fade", "d": 0.6, "out": "fade"}}
+        if hook:
+            g.append({**T, "kicker": hook.get("kicker"), "text": hook["text"], "size": 0.052, "y": 0.17, "start": hs, "dur": hd})
+        if lst:
+            g.append({**T, "kicker": lst.get("heading"), "items": items(lst), "inline": True, "italic": True, "size": 0.03, "y": 0.15, "start": lst["start"], "dur": lst["dur"]})
+        g += [{**T, "text": e["text"], "size": 0.05, "y": 0.15, "start": e["start"], "dur": e["dur"]} for e in emph]
+        if claim:
+            g.append({**T, "kicker": claim.get("kicker"), "text": claim["text"], "size": 0.06, "y": 0.16, "start": claim["start"], "dur": claim["dur"]})
+        hook_method = "typography-centered"
     else:  # kinetic
         cap.update(style={"bg": "#000000@0.55", "color": "#FFFFFF", "weight": 600, "size": 0.03, "y": 0.9})
         total = float(content.get("duration") or 60)
@@ -167,13 +187,13 @@ def build(kit: str, content: dict[str, Any], theme: dict[str, Any] | None = None
             g.append(bars(text=claim["text"].upper(), start=claim["start"], dur=claim["dur"], sub=claim.get("kicker"), size=0.065))
         hook_method = "kinetic-word"
 
-    if kit in ("editorial", "handnote"):  # kartsız yazı: arxasında çox yumşaq tünd üst qradiyent (ləkə yox) — fon üzərində oxunaqlılıq
-        a = 0.42 if kit == "editorial" else 0.36
+    if kit in ("editorial", "handnote", "frame"):  # kartsız yazı: arxasında çox yumşaq tünd üst qradiyent (ləkə yox) — fon üzərində oxunaqlılıq
+        a = {"editorial": 0.42, "handnote": 0.36, "frame": 0.40}[kit]
         g = [y for x in g for y in ((veil(x["start"], x["dur"], a), x) if x["type"] in ("type", "note") else (x,))]
     n_hard = len([x for x in g if x["type"] in ("block", "bars")])
     sfx = []
     for x in g:
-        kind = {"classic": "pop", "editorial": None, "colorblock": "whoosh", "handnote": "pop", "kinetic": "whoosh"}[kit]
+        kind = {"classic": "pop", "editorial": None, "frame": None, "colorblock": "whoosh", "handnote": "pop", "kinetic": "whoosh"}[kit]
         if kind:
             sfx.append({"kind": kind, "t": round(float(x["start"]) + 0.05, 2)})
     zooms = []
