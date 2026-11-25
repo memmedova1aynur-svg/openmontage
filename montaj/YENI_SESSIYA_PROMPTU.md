@@ -39,12 +39,13 @@ Mən yalnız **Drive linkini** verirəm. Montajın hamısını sən edirsən və
    iki nəfər `duo` (danışana keçid / bölünmüş ekran), karusel `carousel-plan`/`carousel`, nağıl `tale-plan`,
    motion graphics `mg-scan` + `scenes`. B-roll-u özün hazırla (`scenes`, planda `broll[].make`); mətn yalnız danışıqdan.
 4. **Bir qərar mesajı** (hamısı bir mesajda):
-   3 storyboard variantı (`variants` → `storyboard_variantlari.jpg`, hər biri 1–2 sətir) + kadraj əvvəl/sonra +
-   rəng variantları (`looks`) + 2–3 musiqi nümunəsi (`music <pid>` — özün seç, necə qoyulacağını SORUŞMA; yalnız CC0) + səs əvvəl/sonra
+   1 storyboard variantı (qənaət rejimi; 3 — yalnız açıq istəsəm) (`variants` → `storyboard_variantlari.jpg`, 1–2 sətir) + kadraj əvvəl/sonra +
+   2–3 musiqi nümunəsi (`music <pid>` — özün seç, necə qoyulacağını SORUŞMA; yalnız CC0) + səs əvvəl/sonra
    (təmizlənibsə) + material qeydləri + (yalnız fon dəyişməsini istəmişəmsə) `bg --auto --preview` → `arxafon.jpg`.
    Yeni imkanları ayrıca soruşma — variantların içinə qoy: davamlılıq tonu (`storyboard` çıxışındakı “bu video üçün təklif” →
    planda `"variation"`), virtual multikamera (`"multicam"`, 4K materialda), J/L-cut (bir neçə kamera olanda `"jl"`).
-   Mən bir sətirlə cavab verirəm: “B, rəng A, musiqi 2”.
+   Mən bir sətirlə cavab verirəm: “B, musiqi 2”. Rəngi soruşma — universal standart (`IS_AXINI.md` → "Görüntü keyfiyyəti";
+   brend rəngləri yalnız altyazı/qrafika üçündür, çəkilmiş görüntüyə tətbiq olunmur).
 5. **Yekun MP4**: `choose` → `render` → `verify` (kəsimlər, səs/görüntü, qara/donmuş kadr, səs sıçrayışı, yazının oxunma
    müddəti, rəqəmlər) → `words` (şübhəli sözlər). `!` olan hər şeyi düzəlt, yalnız sonra MP4-ü göndər (fayl 40 MB-dan
    böyükdürsə `_ig.mp4`). Təhvildə qısa: nə edildi, şübhəli sözlər (varsa), yoxlanılmayan nə qaldı.

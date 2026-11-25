@@ -56,6 +56,6 @@ Token qənaəti (bu qaydalara əməl et):
   zooms, sfx) və `python -m montaj.session plan <pid> plan.json` ilə tətbiq et. Redaktor kodunu yenidən yaratma.
 - Qrafika həm önizləmədə, həm renderdə eyni `montaj/editor/graphics.js` ilə çəkilir.
 - Müştəri rənglərini yalnız həmin müştərinin brand.theme-dən götür; mənanı dəyişmə, fakt uydurma.
-- Rəng: hər video üçün storyboard ilə birlikdə `python -m montaj.session looks <pid>` → `reng_variantlari.jpg`-ni
-  (orijinal + A–D) istifadəçiyə göndər, seçimi gözlə; seçimi plan.json-da `"look": "A"|"B"|"C"|"D"` ilə ver (standart C,
-  `null` — rəng düzəlişi yoxdur). Daha güclü effekt vermə (istifadəçi güclü variantı rədd edib). Ölçü dəyişmir.
+- Rəng: universal "Adaptive Image Enhancement" standartı (`IS_AXINI.md` → "Görüntü keyfiyyəti"). Rəng variantı
+  göndərilmir, rəng soruşulmur, şablon standart tətbiq olunmur; plan.json-da `"look": "auto"` (standart — yazılmasa da auto; adaptiv, yalnız ehtiyac olan parametr).
+  Daha güclü effekt vermə. Ölçü dəyişmir.

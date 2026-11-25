@@ -280,6 +280,123 @@ def exposure_offsets(clips: list[dict[str, Any]], media: dict[str, dict[str, Any
 
 
 # ---------------------------------------------------------------------------
+# Adaptive Image Enhancement — hər video üçün yalnız ehtiyac olan, çox yüngül düzəliş
+# (IS_AXINI.md → "Görüntü keyfiyyəti"). Hazır şablon yox; orijinal rənglər və dəri tonu qorunur;
+# doyma (saturation) artırılmır, gözəllik/hamarlaşdırma/denoise yoxdur. Hər düzəliş sərt həddədir.
+# ---------------------------------------------------------------------------
+
+ENHANCE_WIDTH = 640  # ölçmə kadrının eni (kəskinlik ölçüsü bu enə görə kalibrlənib)
+
+
+def frame_rgb(src: Path, t: float, hdr: bool = False, width: int = ENHANCE_WIDTH) -> np.ndarray | None:
+    """Bir kadr: float32 RGB [0, 1], render ilə eyni HDR→SDR çevrilməsi ilə."""
+    from montaj.render import HDR_TO_SDR
+
+    vf = ([HDR_TO_SDR] if hdr else []) + [f"scale={width}:-2:flags=area", "format=rgb24"]
+    r = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{max(0.0, t):.3f}", "-i", str(src), "-frames:v", "1",
+                        "-vf", ",".join(vf), "-f", "rawvideo", "-"], capture_output=True)
+    w = width
+    if r.returncode or not r.stdout or len(r.stdout) % (w * 3):
+        return None
+    return np.frombuffer(r.stdout, np.uint8).reshape(-1, w, 3).astype(np.float32) / 255.0
+
+
+def _frame_stats(rgb: np.ndarray) -> dict[str, float]:
+    R, G, B = rgb[..., 0], rgb[..., 1], rgb[..., 2]
+    Y = 0.2126 * R + 0.7152 * G + 0.0722 * B
+    mx, mn = rgb.max(axis=2), rgb.min(axis=2)
+    chroma = mx - mn
+    st = {"mean": float(Y.mean()), "p2": float(np.percentile(Y, 2)), "p98": float(np.percentile(Y, 98)),
+          "clipHi": float((Y > 0.965).mean())}
+    mid = (Y > 0.08) & (Y < 0.95)
+    st["chroma"] = float(chroma[mid].mean()) if mid.any() else 0.0
+    # neytral sahələr (divar, ağ geyim): ağ balansı yalnız onlara görə ölçülür (dəri neytral deyil). Çalar varsa boz da
+    # rəngli görünür — ona görə hədd kadrın ən az rəngli dörddəbirinə görədir; o da çox rənglidirsə (neytral istinad yoxdur,
+    # məs. yaxın plan dəri) ölçülmür.
+    ratio = chroma / np.maximum(mx, 1e-3)
+    valid = (Y > 0.22) & (Y < 0.92)
+    thr = float(np.percentile(ratio[valid], 25)) if valid.mean() > 0.05 else 1.0
+    neu = valid & (ratio <= max(thr, 0.06))
+    st["neutralFrac"] = float(neu.mean())
+    if thr < 0.30 and neu.mean() > 0.03:
+        r, g, b = float(R[neu].mean()), float(G[neu].mean()), float(B[neu].mean())
+        st["castRB"] = (r - b) / max(g, 1e-3)               # + isti (sarı/qırmızı), − soyuq (göy)
+        st["castG"] = g / max((r + b) / 2, 1e-3) - 1         # + yaşıl, − bənövşəyi
+    lap = Y[1:-1, 1:-1] * 4 - Y[:-2, 1:-1] - Y[2:, 1:-1] - Y[1:-1, :-2] - Y[1:-1, 2:]
+    st["sharp"] = float(np.abs(lap).mean())
+    return st
+
+
+def enhance_params(frames: list[np.ndarray]) -> tuple[dict[str, float], list[str]]:
+    """Ölçülmüş kadrlardan minimal düzəliş (render.color_filters açarları) və səbəblər.
+
+    Prinsip: orijinal yaxşıdırsa yalnız çox yüngül kəskinlik; işıq, kontrast, ağ balansı, canlılıq yalnız ölçülən
+    ehtiyac olanda və həmişə qismən (ab-hava qorunur)."""
+    sts = [_frame_stats(f) for f in frames if f is not None and f.size]
+    if not sts:
+        return {}, []
+    med = lambda k: float(np.median([s[k] for s in sts if k in s]))  # noqa: E731
+    adj: dict[str, float] = {}
+    why: list[str] = []
+    mean, rng, clip_hi, p98 = med("mean"), med("p98") - med("p2"), med("clipHi"), med("p98")
+
+    # Az işıq yalnız parlaq hissələr də zəifdirsə düzəlir. Üz/işıq mənbəyi düzgün işıqlanıbsa (p98 yüksək), tünd fon və qara
+    # geyim qəsdən seçilmiş (low-key) sayılır — qaralar boza çəkilmir.
+    if mean < 0.36 and p98 < 0.72:
+        k = min(1.0, (0.72 - p98) / 0.3)
+        adj["shadows"] = round(min(0.7, (0.36 - mean) * 5) * k, 2)
+        adj["brightness"] = round(min(0.03, (0.40 - mean) * 0.25) * k, 3)
+        if adj["shadows"] < 0.05:
+            adj.pop("shadows")
+            adj.pop("brightness")
+        else:
+            why.append(f"az işıq (orta {mean:.2f}, ən parlaq {p98:.2f}) — kölgələr yumşaq açıldı")
+    elif mean < 0.36:
+        why.append(f"tünd səhnə (orta {mean:.2f}), amma parlaq hissələr düzgün ({p98:.2f}) — işığa toxunulmadı")
+    elif mean > 0.68 and clip_hi > 0.01:
+        adj["brightness"] = round(-min(0.03, (mean - 0.62) * 0.3), 3)
+        why.append(f"çox açıq (orta işıq {mean:.2f}) — azca endirildi")
+    if clip_hi > 0.012:  # ağ köynək, pəncərə yanmasın
+        adj["highlights"] = round(min(1.0, 0.3 + clip_hi * 20), 2)
+        why.append(f"parlaq hissələr ({clip_hi:.1%} yanmaya yaxın) — ağlar nəzarətdə")
+    if rng < 0.58:  # solğun/dumanlı görüntü — kontrast çox az
+        adj["contrast"] = round(1 + min(0.06, (0.62 - rng) * 0.25), 3)
+        why.append(f"dinamik diapazon dar ({rng:.2f}) — kontrast azca artdı")
+
+    if "castRB" in sts[0] or any("castRB" in s for s in sts):
+        cast = med("castRB")
+        if abs(cast) > 0.07:  # yalnız aydın çalar; yarıya qədər düzəldilir (məkanın işığı qalır)
+            corr = cast - (0.035 if cast > 0 else -0.035)
+            dk = float(np.clip(corr * 0.5 / 0.125 * 1000, -700, 700))
+            adj["temperature"] = int(round((6500 + dk) / 50) * 50)
+            why.append(("isti/sarı" if cast > 0 else "soyuq/göy") + f" çalar ({cast:+.2f}) — ağ balansı qismən düzəldi")
+        g = med("castG")
+        if abs(g) > 0.04:
+            adj["tint"] = round(float(np.clip((g - (0.015 if g > 0 else -0.015)) * 0.5, -0.03, 0.03)), 3)
+            why.append(("yaşıl" if g > 0 else "bənövşəyi") + f" çalar ({g:+.2f}) — qismən düzəldi")
+
+    chroma = med("chroma")
+    if chroma < 0.10:  # solğun — çox az canlılıq (vibrance artıq doymuş rənglərə/dəriyə az təsir edir)
+        adj["vibrance"] = round(min(0.06, (0.12 - chroma) * 0.8), 3)
+        why.append(f"rənglər solğun ({chroma:.2f}) — çox az canlılıq")
+
+    sharp = med("sharp")  # bir qədər kəskinlik həmişə; yumşaq görüntüdə bir az çox, qaranlıqda (dən) az
+    s = 0.3 if sharp < 0.012 else 0.22 if sharp < 0.03 else 0.14
+    if mean < 0.3:
+        s = min(s, 0.15)
+    adj["sharpen"] = s
+    why.append(f"təbii kəskinlik {s:.2f}")
+    return adj, why
+
+
+def auto_enhance(project_dir: Path, media: dict[str, Any], times: list[float]) -> tuple[dict[str, float], list[str]]:
+    """Bir media faylı üçün adaptiv düzəliş (bir neçə təmsilçi kadrda ölçülür)."""
+    src = project_dir / media["file"]
+    frames = [frame_rgb(src, t, bool(media.get("hdr"))) for t in times]
+    return enhance_params([f for f in frames if f is not None])
+
+
+# ---------------------------------------------------------------------------
 # Musiqi dinləmə nümunəsi
 # ---------------------------------------------------------------------------
 

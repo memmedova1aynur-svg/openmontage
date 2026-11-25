@@ -36,8 +36,8 @@ video kimi çəkilib, əsas hissə ayrıca.
 ## 4. Mərhələ 2 — üslub (ilk bölümdə bir dəfə, bir qərar mesajında)
 Videolar üfüqi (YouTube ölçüsü) çəkilib — kadr və ölçü olduğu kimi qalır, keyfiyyət dəyişmir (4K-dırsa 4K təhvil verilir,
 kiçildilmir; layout lazım deyil). İlk bölüm üçün 2–3 variant göstər (`variants`): ad-titul lövhəsi, sadə altyazı, kadrın boş
-tərəfində qrafika nümunəsi (Suranın üzünü örtməsin), **rəng korreksiyası** (`looks` — məcburidir, video solğun qalmasın; kliplər
-arası işıq bərabərləşsin), səs təmizləmə əvvəl/sonra. Mən bir sətirlə seçirəm. Seçilən planı `kurs_sablon.json` kimi saxla — bütün
+tərəfində qrafika nümunəsi (Suranın üzünü örtməsin), görüntü keyfiyyəti universal standartla
+(`IS_AXINI.md` → "Görüntü keyfiyyəti"; rəng variantı göstərilmir), səs təmizləmə əvvəl/sonra. Mən bir sətirlə seçirəm. Seçilən planı `kurs_sablon.json` kimi saxla — bütün
 bölümlər ondan başlayır, kurs boyu eyni görünüş.
 
 ## 5. Mərhələ 3 — hər bölümün montajı (ara sual yoxdur)

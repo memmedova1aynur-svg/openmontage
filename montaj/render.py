@@ -5,7 +5,8 @@ yuvarlaqlaşdırılır, bağlı səs həmin başlanğıcı götürür — sürü
 
 Klip parametrləri (hamısı istəyə bağlı, yalnız istifadəçi seçəndə):
   frame  — kadraj (reframe.py), rotate — dərəcə
-  adjust — {mirror, brightness, contrast, saturation, vibrance, depth, temperature, soften, sharpen, denoise, shadows}
+  adjust — {mirror, brightness, contrast, saturation, vibrance, depth, temperature, tint, soften, sharpen, denoise, shadows,
+           gamma, highlights}; "look": "auto" — quality.enhance_params-ın adaptiv dəyərləri
 Layihə parametrləri:
   aspect, mix {speech, music, sfx, voice, duck}, branding {logo, end}, mirrorAll
 """
@@ -272,6 +273,9 @@ def color_filters(adj: dict[str, Any]) -> list[str]:
     temp = float(adj.get("temperature") or 6500)
     if abs(temp - 6500) > 50:
         f.append(f"colortemperature=temperature={temp:.0f}")
+    tint = float(adj.get("tint") or 0)
+    if abs(tint) > 0.002:  # yaşıl (+) / bənövşəyi (−) çaların yüngül düzəlişi (adaptiv ağ balansı)
+        f.append(f"colorchannelmixer=gg={1 - max(-0.05, min(0.05, tint)):.4f}")
     return f
 
 
@@ -431,10 +435,16 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
 
     bgs = project.get("background") or {}
 
+    fxr = project.get("fxRender") or {}
+
     def with_bg(m: dict[str, Any]) -> dict[str, Any]:
         b = bgs.get(m["id"])  # arxa fonu dəyişdirilmiş törəmə video (orijinal dəyişmir, səs orijinaldan)
-        if b and b.get("file") and (media_root / b["file"]).is_file():
-            return {**m, "file": b["file"], "hdr": False, "isImage": False}
+        base = b["file"] if b and b.get("file") and (media_root / b["file"]).is_file() else m["file"]
+        x = fxr.get(m["id"])  # dərinlik effektləri (depthfx) — yalnız indiki mənbə üzərində hazırlanıbsa
+        if x and x.get("base") == base and (media_root / x["file"]).is_file():
+            return {**m, "file": x["file"], "hdr": False, "isImage": False}
+        if base != m["file"]:
+            return {**m, "file": base, "hdr": False, "isImage": False}
         return m
 
     vlabels = []
