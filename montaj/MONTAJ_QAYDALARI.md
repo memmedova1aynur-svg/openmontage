@@ -14,6 +14,7 @@ ad/titul, lüğət və müştərinin öz məhdudiyyətləri (məs. animasiya/ara
    Variantı ən keyfiyyətli, ən maraqlı və izləyicini sona qədər saxlayan formada qur — **render vaxtına görə sadələşdirmə**. Hər variantın yanında:
    **təxmini montaj müddəti** və bu video üçün **niyə** seçilib (reklamda — hansı daha çox geri dönüş gətirər). Qərar istifadəçinindir.
    `variants <pid> A.json B.json C.json` → `storyboard_variantlari.jpg` (360p proksidən, saniyələr; video önizləmə üçün `--mp4`).
+   **Hər təklif həm yazılı, həm şəkilli göndərilir** (heç vaxt yalnız mətn). `fx` (arxada yazı, sticker və s.) olan variantda onun şəkli ayrıca: `fx <pid> --preview --spec '{...}'` → `effektler.jpg` (~7 s); `variants` önizləməsi `fx`-i göstərmir.
    Göndər: storyboard şəkli + variant izahları + 2–3 musiqi nümunəsi + `kadraj.jpg` + material qeydləri. İstifadəçi ilə birlikdə seçilir.
 4. Seçimdən sonra: `choose <pid> <plan.json>` → `render <pid>` (preflight daxildir) → `verify <pid>` → yekun `_ig.mp4` + 2–4 sətir.
 5. İstifadəçi təsdiq edəndən sonra: `choose <pid> --remember` (profilin `history`-sinə yazır; təsdiqsiz heç nə yazılmır).
