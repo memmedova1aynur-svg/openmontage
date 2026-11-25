@@ -814,11 +814,14 @@ LOOK_LABELS = {"A": "orijinala yaxın, təbii", "B": "yumşaq və isti", "C": "t
                "E": "kəskin və kontrastlı", "F": "isti premium", "G": "sərin, kino tonu",
                "H": "təmiz işıqlı, sarılıqsız neytral",
                "W": "isti kitabxana tonu, təbii dəri, ağlar nəzarətdə"}
-LOOK_KEYS = ("brightness", "contrast", "saturation", "vibrance", "depth", "sharpen", "temperature", "denoise", "shadows", "gamma", "highlights", "crystal")
-ADAPTIVE_LOOKS = ("CRYSTAL",)  # hər video üçün ölçüyə görə hesablanır (montaj/crystal.py); standart
+LOOK_KEYS = ("brightness", "contrast", "saturation", "vibrance", "depth", "sharpen", "temperature", "denoise", "shadows", "gamma",
+             "highlights", "tint", "crystal")
 DARK_LUMA = 85  # 8-bit orta parlaqlıq bundan aşağıdırsa — zəif işıq (D variantı təklif olunur)
-DEFAULT_LOOK = "CRYSTAL"  # Adaptive Crystal Clear Natural Look; A–W şablonları yalnız əl ilə seçiləndə (`looks` müqayisəsi)
-
+# Universal standart (IS_AXINI.md → "Görüntü keyfiyyəti"): hazır şablon standart tətbiq olunmur; "auto" — hər media faylı
+# ölçülür, yalnız ehtiyac olan parametr çox yüngül düzəlir (quality.enhance_params). Şablonlar (A–W) yalnız açıq seçimlə.
+AUTO_LOOK = "auto"
+DEFAULT_LOOK = AUTO_LOOK
+ADAPTIVE_LOOKS = ("CRYSTAL",)  # açıq seçimlə: Adaptive Crystal Clear (montaj/crystal.py); standart "auto"-dur
 
 _CRYSTAL_MEMO: dict[tuple[str, str], dict[str, float]] = {}
 
@@ -869,13 +872,20 @@ def cmd_looks(a: argparse.Namespace) -> None:
     lum = [quality.mean_luma(store.project_dir(a.pid) / m["file"], t) for m, t in frames]
     lum = [x for x in lum if x is not None]
     dark = bool(lum) and sum(lum) / len(lum) < DARK_LUMA
-    cols = ["orijinal", *[k for k in LOOKS if k != "D" or dark or a.all]]
+    cols = ["orijinal", AUTO_LOOK, *[k for k in LOOKS if k != "D" or dark or a.all]]
+    auto_adj: dict[str, dict[str, float]] = {}  # media → adaptiv düzəliş (plan ilə eyni ölçü)
+    for m, _ in frames:
+        if m["id"] not in auto_adj:
+            ts = [t for mm, t in frames if mm["id"] == m["id"]]
+            auto_adj[m["id"]], why = quality.auto_enhance(store.project_dir(a.pid), m, ts)
+            print(f"auto ({m.get('name')}): " + ("; ".join(why) if why else "düzəliş lazım deyil"))
     tiles: list[Path] = []
     for r, (m, t) in enumerate(frames):
         src = store.project_dir(a.pid) / m["file"]
         for name in cols:
-            label = "Orijinal" if name == "orijinal" else f"{name}: {LOOK_LABELS[name]}"
-            adj = {} if name == "orijinal" else LOOKS[name]
+            label = "Orijinal" if name == "orijinal" else "auto: adaptiv (standart)" if name == AUTO_LOOK \
+                else f"{name}: {LOOK_LABELS[name]}"
+            adj = {} if name == "orijinal" else auto_adj[m["id"]] if name == AUTO_LOOK else LOOKS[name]
             f = ([render.HDR_TO_SDR] if m.get("hdr") else []) + render.color_filters(adj) + render.sharpen_filter(adj)
             f.append("scale=360:-2:flags=lanczos")
             if font and r == 0:
@@ -1031,6 +1041,33 @@ def _pip_place(pid: str, q: dict[str, Any], at: float, dur: float, m: dict[str, 
     return best[2], best[3], note
 
 
+def _auto_looks(pid: str, q: dict[str, Any], clips: list[dict[str, Any]]) -> dict[str, dict[str, float]]:
+    """Adaptive Image Enhancement: hər media faylı (danışan, B-roll ayrıca) öz istifadə olunan hissələrində ölçülür."""
+    from montaj import quality
+
+    media = {m["id"]: m for m in q["media"]}
+    spans: dict[str, list[tuple[float, float]]] = {}
+    for c in clips:
+        m = media.get(c.get("media"))
+        if m and m.get("hasVideo"):
+            spans.setdefault(m["id"], []).append((float(c["srcIn"]), float(c["srcOut"])))
+    out: dict[str, dict[str, float]] = {}
+    for mid, sp in spans.items():
+        m = media[mid]
+        if m.get("isImage"):
+            times = [0.0]
+        else:
+            sp = sorted(sp, key=lambda s: -(s[1] - s[0]))[:3]
+            times = [a + (b - a) / 2 for a, b in sp]
+            if len(times) < 3:  # az klip — ən uzun hissənin içindən əlavə kadrlar
+                a, b = sp[0]
+                times = [a + (b - a) * k / 4 for k in (1, 2, 3)]
+        adj, why = quality.auto_enhance(store.project_dir(pid), m, times)
+        out[mid] = adj
+        print(f"görüntü ({m.get('name') or mid}): " + ("; ".join(why) if why else "düzəliş lazım deyil"))
+    return out
+
+
 def _apply_broll(pid: str, q: dict[str, Any], b: dict[str, Any]) -> dict[str, Any]:
     """Plan-ın bir B-roll elementi.
     mode="cover" (standart): əsas videonun üstündə, danışıq və altyazı davam edir;
@@ -1176,20 +1213,23 @@ def apply_plan(pid: str, p: dict[str, Any], plan: dict[str, Any], plan_name: str
 
     # rəng: plan şablonu ("look" işarəsi olan) yenilənir, əl ilə dəyişdirilmiş rəngə toxunulmur
     look_name = plan.get("look", DEFAULT_LOOK)
-    if look_name and look_name not in LOOKS and look_name not in ADAPTIVE_LOOKS:
-        raise UserError(f"Naməlum rəng şablonu: {look_name}", "Mövcud: " + ", ".join([*ADAPTIVE_LOOKS, *LOOKS]))
+    if look_name and look_name != AUTO_LOOK and look_name not in LOOKS and look_name not in ADAPTIVE_LOOKS:
+        raise UserError(f"Naməlum rəng şablonu: {look_name}", "Mövcud: auto, " + ", ".join([*ADAPTIVE_LOOKS, *LOOKS]))
     vids = [c for c in q["clips"] if c["track"] in ("v1", "v2")]
     owned = [c for c in vids if not any(k in (c.get("adjust") or {}) for k in LOOK_KEYS) or (c.get("adjust") or {}).get("look")]
     expo = quality.exposure_offsets([c for c in owned if c["track"] == "v1"], {m["id"]: m for m in q["media"]}, store.project_dir(pid)) \
         if look_name and plan.get("matchExposure", True) else {}
+    auto_by_media = _auto_looks(pid, q, owned) if look_name == AUTO_LOOK else {}
     for c in owned:
         adj = {k: v for k, v in (c.get("adjust") or {}).items() if k not in LOOK_KEYS and k != "look"}
-        if look_name in ADAPTIVE_LOOKS:
+        if look_name == AUTO_LOOK:
+            adj.update(auto_by_media.get(c.get("media"), {}), look=AUTO_LOOK)
+        elif look_name in ADAPTIVE_LOOKS:
             adj.update(crystal=_crystal_for(pid, q, c), look=look_name)
         elif look_name:
             adj.update(LOOKS[look_name], look=look_name)
-            if c["id"] in expo:
-                adj["brightness"] = round(adj.get("brightness", 0) + expo[c["id"]], 3)
+        if look_name and c["id"] in expo:
+            adj["brightness"] = round(adj.get("brightness", 0) + expo[c["id"]], 3)
         if adj:
             c["adjust"] = adj
         else:
@@ -2034,6 +2074,165 @@ def _bg_analysis(pid: str, p: dict[str, Any], m: dict[str, Any]) -> dict[str, An
     return an
 
 
+def _fx_spans(p: dict[str, Any], mid: str) -> list[tuple[float, float, float]]:
+    """Bu medianın danışıq klipləri: (srcIn, srcOut, zaman xəttində başlanğıc)."""
+    from montaj import model
+
+    lay = model.layout(p)
+    return [(float(c["srcIn"]), float(c["srcOut"]), lay[c["id"]][0]) for c in p["clips"]
+            if c["track"] == "v1" and c.get("media") == mid and not c.get("broll") and c["id"] in lay]
+
+
+def _fx_base(p: dict[str, Any], m: dict[str, Any]) -> str:
+    """Effektin mənbəyi: fon dəyişdirilibsə o törəmə, yoxsa orijinal (nisbi yol)."""
+    b = (p.get("background") or {}).get(m["id"]) or {}
+    if b.get("file") and (store.project_dir(p["id"]) / b["file"]).is_file():
+        return b["file"]
+    return m["file"]
+
+
+def _fx_at(p: dict[str, Any], tl: float) -> tuple[dict[str, Any], float] | None:
+    """Zaman xəttindəki an → (media, mənbə vaxtı)."""
+    media = {m["id"]: m for m in p["media"]}
+    for m in _bg_targets(p):
+        for a, b, s in _fx_spans(p, m["id"]):
+            if s - 1e-6 <= tl < s + (b - a):
+                return media[m["id"]], a + (tl - s)
+    return None
+
+
+def _fx_sfx(pid: str, fx: list[dict[str, Any]]) -> int:
+    """Effektlərin səsləri (whoosh, zərbə, pop…) s1 trekinə; əvvəlki effekt səsləri (origin "fx") əvəzlənir.
+    earshot yoxdursa — səssiz (xəbərdarlıqla)."""
+    from montaj import depthfx
+    from montaj.config import REPO_ROOT
+
+    exe = shutil.which("earshot") or next((str(p) for p in [REPO_ROOT / ".venv-earshot" / "bin" / "earshot"] if p.is_file()), None)
+    q = store.load(pid)
+    q["clips"] = [c for c in q["clips"] if c.get("origin") != "fx"]
+    if not exe or not fx:
+        if fx:
+            print("xəbərdarlıq: earshot yoxdur — effektlər səssiz (`bash .claude/skills/earshot/scripts/install.sh`)")
+        store.save(pid, q, q["revision"])
+        return 0
+    peaks = depthfx.make_sfx(data_dir() / "sfx", exe)
+    cues = depthfx.sfx_cues(fx, peaks)
+    for s in cues:
+        _sfx_media(pid, s["kind"])
+    q = store.load(pid)
+    q["clips"] = [c for c in q["clips"] if c.get("origin") != "fx"]
+    for s in cues:
+        med = next(x for x in store.load(pid)["media"] if x["id"] == f"sfx_{s['kind']}")
+        if not any(x["id"] == med["id"] for x in q["media"]):
+            q["media"].append(med)
+        q = node_tl("addMedia", {**q, "media": [x for x in q["media"] if x["id"] != med["id"]]}, med,
+                    {"targetTrack": "s1", "at": s["t"]})
+        q["clips"][-1].update(volume=s["vol"], origin="fx")
+    store.save(pid, q, q["revision"])
+    return len(cues)
+
+
+def cmd_fx(a: argparse.Namespace) -> None:
+    """Dərinlik effektləri: yazı insanın arxasında, 3D yazı, stiker kəsik, fon effekti, 2.5D kamera, çərçivədən çıxmaq."""
+    from PIL import Image, ImageDraw, ImageFont
+
+    from montaj import depthfx
+
+    p = store.load(a.pid)
+    p.setdefault("id", a.pid)
+    th = _project_theme(p)
+    fx = list(p.get("fx") or [])
+    changed = False
+    if a.clear:
+        fx, changed = [], True
+    if a.remove is not None:
+        if not 0 <= a.remove < len(fx):
+            raise UserError(f"effekt #{a.remove} yoxdur (0..{len(fx) - 1}).", "`fx <pid> --list`")
+        fx.pop(a.remove)
+        changed = True
+    for raw in a.add or []:
+        try:
+            fx.append(depthfx.normalize(json.loads(raw), th))
+        except (ValueError, json.JSONDecodeError) as e:
+            raise UserError(f"effekt səhvdir: {e}", "Nümunə: --add '{\"type\":\"behind\",\"text\":\"SİRR\",\"start\":2,\"dur\":3}'") from None
+        changed = True
+    if changed:
+        cur = store.load(a.pid)
+        cur["fx"] = fx
+        if not fx:
+            cur.pop("fxRender", None)
+            cur["clips"] = [c for c in cur["clips"] if c.get("origin") != "fx"]
+        saved = store.save(a.pid, cur, cur["revision"])
+        print(f"effektlər saxlandı ({len(fx)}); versiya {saved['revision']} — `fx {a.pid} --preview`, sonra `--apply`")
+        p = cur
+    if a.list or not (changed or a.preview or a.apply):
+        for i, e in enumerate(fx):
+            extra = f" «{e['text']}»" if e.get("text") else ""
+            print(f"  #{i} {e['type']:<8} {e['start']:6.2f}–{e['start'] + e['dur']:6.2f} s{extra}")
+        if not fx:
+            print("effekt yoxdur — `fx <pid> --add '{...}'` (növlər: " + ", ".join(depthfx.TYPES) + ")")
+    root = store.project_dir(a.pid)
+    if a.preview:
+        specs = [depthfx.normalize(json.loads(s), th) for s in (a.spec or [])] or fx
+        if not specs:
+            raise UserError("Önizləmə üçün effekt yoxdur.", "--add və ya --spec verin.")
+        rows = []
+        for e in specs:
+            ts_list = [e["start"] + min(e["dur"] - 0.05, e["fadeIn"] + 0.35), e["start"] + e["dur"] * 0.55,
+                       e["start"] + max(0.05, e["dur"] - e["fadeOut"] - 0.1)]
+            tiles = []
+            for tl in ts_list:
+                hit = _fx_at(p, tl)
+                if not hit:
+                    continue
+                m, ts = hit
+                tiles.append(depthfx.still(root / _fx_base(p, m), ts, [e], tl, 300))
+            if tiles:
+                rows.append((f"{e['type']} {e['start']:.1f}s" + (f" «{e['text']}»" if e.get("text") else ""), tiles))
+        if not rows:
+            raise UserError("Effektlərin vaxtı montajın danışıq hissəsinə düşmür.", "start/dur-u yoxlayın (zaman xəttində).")
+        th_, tw = rows[0][1][0].shape[:2]
+        cols = max(len(t) for _, t in rows)
+        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 18)
+        sheet = Image.new("RGB", (cols * (tw + 6) + 6, len(rows) * (th_ + 36) + 6), (20, 22, 26))
+        d = ImageDraw.Draw(sheet)
+        for r, (label, tiles) in enumerate(rows):
+            y = 6 + r * (th_ + 36)
+            d.text((8, y), label, font=font, fill=(235, 236, 240))
+            for k, im in enumerate(tiles):
+                sheet.paste(Image.fromarray(im), (6 + k * (tw + 6), y + 28))
+        f = out_dir(a.pid) / "effektler.jpg"
+        sheet.save(f, quality=88)
+        print(f)
+    if a.apply:
+        if not fx:
+            raise UserError("Tətbiq üçün effekt yoxdur.", "`fx <pid> --add '{...}'`")
+        targets = _bg_targets(p, a.media)
+        if not targets:
+            raise UserError("Montajda danışıq videosu yoxdur.", "Əvvəl storyboard-u tətbiq edin (choose/apply).")
+        out: dict[str, Any] = {}
+        for m in targets:
+            spans = _fx_spans(p, m["id"])
+            if not any(any(depthfx.envelope(e, s + x) > 0 for x in np.arange(0, b - a_, 0.1)) for e in fx for a_, b, s in spans):
+                continue
+            base = _fx_base(p, m)
+            key = depthfx.effects_key([*fx, {"spans": spans}], root / base)
+            rel = f"media/derived/fx_{m['id']}_{key}.mp4"
+            if not (root / rel).is_file():
+                print(f"{m['name']}: effektlər emal olunur ({len(fx)})…")
+                info = depthfx.process(root / base, root / rel, fx, spans)
+                print(f"{m['name']}: hazır — {info['touched']} kadr emal olundu")
+            out[m["id"]] = {"file": rel, "base": base, "key": key}
+        cur = store.load(a.pid)
+        cur["fxRender"] = out
+        store.save(a.pid, cur, cur["revision"])
+        n = _fx_sfx(a.pid, fx if not a.no_sfx else [])
+        if n:
+            print(f"səs effektləri: {n} (whoosh / zərbə / pop — effektlərin anlarına, s1 trekində)")
+        saved = store.load(a.pid)
+        print(f"saxlandı: versiya {saved['revision']} — render <pid> (orijinal dəyişmir; `fx <pid> --clear` effektləri silir)")
+
+
 def cmd_bg_lib(a: argparse.Namespace) -> None:
     """Fon kitabxanası (repoda: montaj/backgrounds; teqlər: ayaqüstə / oturan / studiya / interyer)."""
     from montaj import background
@@ -2725,6 +2924,17 @@ def main(argv: list[str] | None = None) -> int:
     bg.add_argument("--auto", action="store_true", help="kitabxanadan otaq işığına ən uyğun fonlar")
     bg.add_argument("--top", type=int, default=3)
     bg.add_argument("--tag", action="append")
+    fxp = sub.add_parser("fx", help="dərinlik effektləri: behind | text3d | sticker | focus | parallax | popout")
+    fxp.add_argument("pid")
+    fxp.add_argument("--add", action="append", help="JSON effekt (bir neçə dəfə)")
+    fxp.add_argument("--spec", action="append", help="yalnız önizləmə üçün JSON (layihəyə yazılmır)")
+    fxp.add_argument("--remove", type=int)
+    fxp.add_argument("--clear", action="store_true")
+    fxp.add_argument("--list", action="store_true")
+    fxp.add_argument("--preview", action="store_true")
+    fxp.add_argument("--apply", action="store_true")
+    fxp.add_argument("--media")
+    fxp.add_argument("--no-sfx", action="store_true", help="effektlərə səs qoyma")
     bl = sub.add_parser("bg-lib", help="fon kitabxanası: add <fayllar> | list")
     bl.add_argument("action", choices=["add", "list"])
     bl.add_argument("files", nargs="*")
@@ -2837,7 +3047,7 @@ def main(argv: list[str] | None = None) -> int:
         {"new": cmd_new, "storyboard": cmd_storyboard, "edit": cmd_edit, "apply": cmd_apply,
          "render": cmd_render, "export": cmd_export, "editor": cmd_editor,
          "apply-edits": cmd_apply_edits, "set-client": cmd_set_client, "plan": cmd_plan, "looks": cmd_looks,
-         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "highlights": cmd_highlights, "extract": cmd_extract, "mg-scan": cmd_mg_scan, "tale-plan": cmd_tale_plan, "carousel-plan": cmd_carousel_plan, "types": cmd_types, "event-scan": cmd_event_scan, "event-plan": cmd_event_plan, "qa-plan": cmd_qa_plan, "duo": cmd_duo, "multicam": cmd_multicam, "slowmo": cmd_slowmo, "bg": cmd_bg, "captions-file": cmd_captions_file, "music": cmd_music, "stock": cmd_stock, "intake": cmd_intake, "bg-lib": cmd_bg_lib, "set-type": cmd_set_type, "carousel": cmd_carousel, "fix-word": cmd_fix_word,
+         "cut": cmd_cut, "framefix": cmd_framefix, "add-broll": cmd_add_broll, "voice-clean": cmd_voice_clean, "scenes": cmd_scenes, "make-broll": cmd_make_broll, "verify": cmd_verify, "words": cmd_words, "retakes": cmd_retakes, "save": cmd_save, "restore": cmd_restore, "ad-scan": cmd_ad_scan, "ad-plan": cmd_ad_plan, "highlights": cmd_highlights, "extract": cmd_extract, "mg-scan": cmd_mg_scan, "tale-plan": cmd_tale_plan, "carousel-plan": cmd_carousel_plan, "types": cmd_types, "event-scan": cmd_event_scan, "event-plan": cmd_event_plan, "qa-plan": cmd_qa_plan, "duo": cmd_duo, "multicam": cmd_multicam, "slowmo": cmd_slowmo, "bg": cmd_bg, "fx": cmd_fx, "captions-file": cmd_captions_file, "music": cmd_music, "stock": cmd_stock, "intake": cmd_intake, "bg-lib": cmd_bg_lib, "set-type": cmd_set_type, "carousel": cmd_carousel, "fix-word": cmd_fix_word,
          "variants": cmd_variants, "choose": cmd_choose, "music-preview": cmd_music_preview}[a.cmd](a)
     except UserError as err:
         print(f"XƏTA: {err.message}\nNƏ ETMƏLİ: {err.hint}", file=sys.stderr)

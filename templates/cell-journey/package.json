@@ -1,0 +1,6 @@
+{
+  "name": "cell-journey",
+  "private": true,
+  "type": "module",
+  "dependencies": { "three": "0.160.0", "@fontsource/lora": "5.0.16" }
+}

@@ -17,7 +17,7 @@
   "Rakurs: Suranı ortala, əyriliyi düzəlt (şaquli xətlərə görə), başın üstündəki artıq boşluğu kəs (crop ~1.25 + yüngül unsharp). Yazılar hicabın üstündə qalsın.",
   "sura-01 nümunəsi təsdiqləndi (2026-10-30): qalan videoları soruşmadan et; hər video quruluşca fərqli olsun, insan montajı kimi.",
   "Render-lər tək-tək getməlidir: Whisper + Remotion eyni anda 15 GB-ı aşır (2026-10-30). Checklist stikerləri çənəyə düşməsin deyə top >= 1000 və ya caption_shift istifadə et.",
-  "Ümumi istifadəçi qaydası (2026-11-01, bütün müştərilər, soruşmadan): rəng həmişə looks C (təmiz-neytral). Musiqi: piano/yavaş YOX — uşaq inkişafı mövzusunda dinamik kids/kindergarten, təhsil reklamında educational/corporate (yalnız CC0). B-roll başı örtmür: bölünmüş ekran — danışan yuxarıda, B-roll sinədən aşağı (pip y≈0.70, tam en), həmin anda altyazı başın üstündə (y≈0.17). Arxa fon bulanıqlaşdırılmır və qaraldılmır (istifadəçi: hiss olunur, başın ətrafında iz qalır) — fon orijinal qalır. Danışılmayan boş saniyələr (pauzalar ≥0.45 s) kəsilir, söz kəsilmir; kəsimdən sonra söz təkrarı olmadığını yoxla. Güzgü çevirmə (hflip) yoxdur."
+  "Ümumi istifadəçi qaydası (2026-11-01, bütün müştərilər, soruşmadan): görüntü: universal Adaptive Image Enhancement (2026-11-25, montaj/IS_AXINI.md → 'Görüntü keyfiyyəti') — hazır rəng şablonu və müştəriyə bağlı sabit filtr YOX; yalnız ehtiyac olan parametr, orijinal rənglər/dəri tonu qorunur; rəng soruşulmur; brend rəngləri yalnız altyazı/qrafikaya aiddir. Musiqi: piano/yavaş YOX — uşaq inkişafı mövzusunda dinamik kids/kindergarten, təhsil reklamında educational/corporate (yalnız CC0). B-roll başı örtmür: bölünmüş ekran — danışan yuxarıda, B-roll sinədən aşağı (pip y≈0.70, tam en), həmin anda altyazı başın üstündə (y≈0.17). Arxa fon bulanıqlaşdırılmır və qaraldılmır (istifadəçi: hiss olunur, başın ətrafında iz qalır) — fon orijinal qalır. Pauzalar saniyə həddi ilə mexaniki kəsilmir — təbii ritm və nəfəs payı qalır, yalnız boş gözləmə/təkrar çıxır (yeniləndi 2026-11-25), söz kəsilmir; kəsimdən sonra söz təkrarı olmadığını yoxla. Güzgü çevirmə (hflip) yoxdur."
  ],
  "theme_source": "pink theme chosen by us from the colour family and approved by the user on sura-01 (2026-10-30); brand colour = colour family (user rule 2026-10-31): nearby shades are fine, no 'unconfirmed code' warning",
  "theme": {
@@ -160,6 +160,21 @@
    },
    "theme_primary": "#B04A6F",
    "notes": "güzgü -> hflip; söz kəsilmədi, boşluqlar saxlandı; blur yox; SARILIQ VARSA / HƏR ŞEY QAYDASINDADIRSA pill-ləri, 'Oyatmaq lazımdır' checklist"
+  },
+  {
+   "video": "sura-ana-sudu (sınaq): Ana südünün faydası — 'Bir damcının səyahəti' (3D animasiya, danışıqsız)",
+   "file": "projects/cell-journey-sura-ana-sudu/final_ig.mp4",
+   "template": "templates/cell-journey (story: stories/sura-ana-sudu.json)",
+   "style": {
+    "type": "3d-animation",
+    "look": "B: isti-yumşaq (krem fon, pastel çəhrayı), damar səhnəsi tünd gül",
+    "font": "Lora italic + Inter",
+    "music": "earshot CC0 notları: kalimba/arfa/selesta/pad, 100 BPM",
+    "sfx": "yumşaq (damcı, whoosh, ding, parıltı), --no-duck"
+   },
+   "theme_primary": "#C9577D",
+   "approved": "2026-11-24",
+   "notes": "İstifadəçi bəyəndi: 'çox qəşəngdi'. Damcı → damar → qalxan → neyronlar → ürək. Tibbi mətnlər sınaq üçün yumşaq yazılıb (antikor, beyin inkişafı) — real yayımdan əvvəl Sura təsdiqləsin; titul dəqiqləşdirilsin. Bu üslub maarifləndirici animasiyalar üçün təsdiqlənmiş istiqamətdir."
   }
  ]
 }

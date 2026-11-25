@@ -1,0 +1,13 @@
+{"cues": [
+ {"t": 1.55,  "file": "sfx/drip.wav",        "anchor": "onset", "gain_db": -15, "note": "drop lands"},
+ {"t": 3.92,  "file": "sfx/whoosh_deep.wav", "anchor": "peak",  "gain_db": -17, "note": "dive into the drop"},
+ {"t": 9.10,  "file": "sfx/whoosh_soft.wav", "anchor": "peak",  "gain_db": -19, "note": "-> shield"},
+ {"t": 11.45, "file": "sfx/shield.wav",      "anchor": "onset", "gain_db": -16, "note": "shield formed"},
+ {"t": 11.75, "file": "sfx/tink.wav",        "anchor": "onset", "gain_db": -21, "note": "intruder bounces"},
+ {"t": 12.19, "file": "sfx/tink.wav",        "anchor": "onset", "gain_db": -23},
+ {"t": 12.63, "file": "sfx/tink.wav",        "anchor": "onset", "gain_db": -24},
+ {"t": 14.10, "file": "sfx/whoosh_soft.wav", "anchor": "peak",  "gain_db": -19, "note": "-> neurons"},
+ {"t": 15.40, "file": "sfx/twinkle.wav",     "anchor": "onset", "gain_db": -20, "note": "neurons light"},
+ {"t": 17.20, "file": "sfx/twinkle.wav",     "anchor": "onset", "gain_db": -21},
+ {"t": 20.20, "file": "sfx/riser.wav",       "anchor": "peak",  "gain_db": -20, "note": "into the heart morph"}
+]}

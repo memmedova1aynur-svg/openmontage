@@ -56,5 +56,6 @@ Token qənaəti (bu qaydalara əməl et):
   zooms, sfx) və `python -m montaj.session plan <pid> plan.json` ilə tətbiq et. Redaktor kodunu yenidən yaratma.
 - Qrafika həm önizləmədə, həm renderdə eyni `montaj/editor/graphics.js` ilə çəkilir.
 - Müştəri rənglərini yalnız həmin müştərinin brand.theme-dən götür; mənanı dəyişmə, fakt uydurma.
-- Rəng: avtomatik (standart `"look": "CRYSTAL"` — Adaptive Crystal Clear Natural Look, `montaj/crystal.py`, `UMUMI_QAYDALAR.md`);
-  rəng variantı göndərmə, təsdiq soruşma. `looks` yalnız istifadəçi müqayisə istəyəndə. Güclü effekt vermə. Ölçü dəyişmir.
+- Rəng: universal "Adaptive Image Enhancement" standartı (`IS_AXINI.md` → "Görüntü keyfiyyəti"). Rəng variantı
+  göndərilmir, rəng soruşulmur, şablon standart tətbiq olunmur; plan.json-da `"look": "auto"` (standart — yazılmasa da auto; adaptiv, yalnız ehtiyac olan parametr).
+  Daha güclü effekt vermə. Ölçü dəyişmir.

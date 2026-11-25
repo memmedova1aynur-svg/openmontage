@@ -1,0 +1,126 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:transparent;overflow:hidden}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
+</head><body><script type="module">
+// 3D ikonlar (prosedur, şəffaf fon) — montaj/depthfx `icon3d` effekti üçün. window.renderAt(t, dur) deterministikdir.
+import * as THREE from "three";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+
+const q = new URLSearchParams(location.search);
+const KIND = q.get("kind") || "brain", SIZE = +(q.get("size") || 600), COLOR = q.get("color") || "";
+const DEF = { brain: "#EE7F9E", books: "#C9577D", bulb: "#FFD166", heart: "#E5486B", star: "#FFC53D", check: "#2FB67C" };
+const col = new THREE.Color(COLOR ? "#" + COLOR.replace("#", "") : DEF[KIND] || "#C9577D");
+const shade = (c, k) => c.clone().multiplyScalar(k);
+const tint = (c, h) => { const o = c.clone(); const hsl = {}; o.getHSL(hsl); o.setHSL((hsl.h + h + 1) % 1, hsl.s, hsl.l); return o; };
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1); renderer.setSize(SIZE, SIZE); renderer.setClearColor(0x000000, 0);
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+try { scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture; } catch (e) { console.error("env", e.message); }
+const cam = new THREE.PerspectiveCamera(30, 1, 0.1, 50); cam.position.set(0, 0.15, 6); cam.lookAt(0, 0, 0);
+const key = new THREE.DirectionalLight(0xffffff, 2.2); key.position.set(-3, 4, 5); scene.add(key);
+const rim = new THREE.DirectionalLight(col.clone().lerp(new THREE.Color(0xffffff), 0.5), 1.6); rim.position.set(4, 1.5, -3); scene.add(rim);
+scene.add(new THREE.AmbientLight(0xffffff, 0.25));
+
+const phys = (c, o = {}) => new THREE.MeshPhysicalMaterial({ color: c, roughness: 0.42, clearcoat: 0.55, clearcoatRoughness: 0.3, ...o });
+const sm = x => { x = Math.min(1, Math.max(0, x)); return x * x * (3 - 2 * x); };
+
+function brain() {
+  const g = new THREE.Group(), mat = phys(col, { sheen: 0.5, sheenColor: new THREE.Color(0xffffff) });
+  for (const side of [-1, 1]) {
+    const geo = new THREE.SphereGeometry(1, 128, 96), p = geo.attributes.position, v = new THREE.Vector3();
+    for (let i = 0; i < p.count; i++) {
+      v.fromBufferAttribute(p, i).normalize();
+      const f = 6.5, x = v.x * f + side * 1.7, y = v.y * f, z = v.z * f, f2 = 11;
+      let gy = Math.sin(x) * Math.cos(y) + Math.sin(y) * Math.cos(z) + Math.sin(z) * Math.cos(x);   // giroid — qırışlar
+      gy += 0.35 * (Math.sin(v.x * f2 + 1) * Math.cos(v.y * f2) + Math.sin(v.y * f2) * Math.cos(v.z * f2 + 2) + Math.sin(v.z * f2) * Math.cos(v.x * f2));
+      const r = 1 + 0.085 * (sm(Math.abs(gy) / 0.55) - 1);
+      let X = v.x * r * 0.6, Y = v.y * r * 0.8, Z = v.z * r * 1.03;
+      if (X * side < 0) X *= 0.42;            // daxili (medial) üz yastıdır
+      if (Y < 0) Y *= 0.78;                   // alt hissə yastı
+      X *= 1 - 0.12 * sm((Z + 0.2) / 1.2);    // ön tərəf azca dar
+      p.setXYZ(i, X + side * 0.31, Y, Z);
+    }
+    geo.computeVertexNormals(); g.add(new THREE.Mesh(geo, mat));
+  }
+  const cg = new THREE.SphereGeometry(0.42, 64, 48), cp = cg.attributes.position;     // beyincik
+  for (let i = 0; i < cp.count; i++) { const y = cp.getY(i), k = 1 + 0.035 * Math.sin(y * 46); cp.setXYZ(i, cp.getX(i) * k * 1.55, y * 0.72, cp.getZ(i) * k * 0.95); }
+  cg.computeVertexNormals();
+  const cer = new THREE.Mesh(cg, phys(shade(col, 0.82))); cer.position.set(0, -0.52, -0.6); g.add(cer);
+  const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.1, 0.55, 24), phys(shade(col, 0.75))); stem.position.set(0, -0.82, -0.28); stem.rotation.x = -0.25; g.add(stem);
+  g.rotation.set(0.12, 0.75, 0); g.scale.setScalar(1.02); g.position.y = 0.12;
+  return g;
+}
+
+function book(c, w = 1.55, h = 0.3, d = 1.08) {
+  const g = new THREE.Group(), cover = phys(c, { roughness: 0.55, clearcoat: 0.25 }), t = 0.04;
+  const top = new THREE.Mesh(new THREE.BoxGeometry(w, t, d), cover); top.position.y = h / 2 - t / 2;
+  const bot = top.clone(); bot.position.y = -h / 2 + t / 2;
+  const spine = new THREE.Mesh(new THREE.BoxGeometry(t, h, d), cover); spine.position.x = -w / 2 + t / 2;
+  const pages = new THREE.Mesh(new THREE.BoxGeometry(w - 0.1, h - 2 * t, d - 0.1), new THREE.MeshStandardMaterial({ color: 0xf6efe2, roughness: 0.9 })); pages.position.x = -0.01;
+  const band = new THREE.Mesh(new THREE.BoxGeometry(t + 0.004, h * 0.5, 0.12), phys(new THREE.Color(0xffe2a8), { metalness: 0.6, roughness: 0.3 })); band.position.set(-w / 2 + t / 2, 0, d * 0.22);
+  g.add(top, bot, spine, pages, band); return g;
+}
+function books() {
+  const g = new THREE.Group();
+  const cs = [col, tint(col, 0.52).lerp(new THREE.Color(0x2c6e8f), 0.5), shade(col, 0.62)];
+  [[0, -0.36, 0.1, 1.0], [0.06, -0.04, -0.22, 0.92], [-0.05, 0.27, 0.16, 0.84]].forEach(([x, y, ry, s], i) => {
+    const b = book(cs[i], 1.55 * s, 0.3, 1.08 * s); b.position.set(x, y, 0); b.rotation.y = ry; g.add(b);
+  });
+  const lean = book(tint(col, 0.08).lerp(new THREE.Color(0xf2b84b), 0.6), 1.25, 0.24, 0.9); lean.position.set(0.2, 0.66, 0); lean.rotation.set(0, -0.4, 0.13); g.add(lean);
+  g.rotation.set(0.42, -0.5, 0); g.scale.setScalar(1.12); g.position.y = -0.1;
+  return g;
+}
+
+function bulb() {
+  const g = new THREE.Group();
+  const glass = new THREE.Mesh(new THREE.SphereGeometry(0.72, 64, 48), new THREE.MeshPhysicalMaterial({ color: col, emissive: col, emissiveIntensity: 0.75, roughness: 0.12, clearcoat: 1 }));
+  glass.position.y = 0.3; g.add(glass);
+  const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.3, 0.42, 48), glass.material); neck.position.y = -0.42; g.add(neck);
+  const metal = phys(new THREE.Color(0x9aa3ad), { metalness: 0.9, roughness: 0.3, clearcoat: 0 });
+  for (let i = 0; i < 3; i++) { const r = new THREE.Mesh(new THREE.TorusGeometry(0.27 - i * 0.02, 0.055, 16, 48), metal); r.rotation.x = Math.PI / 2; r.position.y = -0.68 - i * 0.1; g.add(r); }
+  const cap = new THREE.Mesh(new THREE.SphereGeometry(0.16, 24, 16), phys(new THREE.Color(0x3a3f45), { metalness: 0.6 })); cap.position.y = -0.98; g.add(cap);
+  const rayM = new THREE.MeshBasicMaterial({ color: col.clone().lerp(new THREE.Color(0xffffff), 0.35) });
+  for (let i = 0; i < 7; i++) { const a = Math.PI * (-0.15 + i * 1.3 / 6), r = new THREE.Mesh(new THREE.CapsuleGeometry(0.035, 0.2, 4, 12), rayM);
+    r.position.set(Math.cos(a) * 1.08, 0.3 + Math.sin(a) * 1.08, 0); r.rotation.z = a - Math.PI / 2; g.add(r); }
+  g.scale.setScalar(0.95); g.position.y = 0.1; return g;
+}
+
+function extrude(shape, depth, bevel, mat) {
+  const geo = new THREE.ExtrudeGeometry(shape, { depth, bevelEnabled: true, bevelThickness: bevel, bevelSize: bevel, bevelSegments: 10, curveSegments: 48 });
+  geo.center(); return new THREE.Mesh(geo, mat);
+}
+function heart() {
+  const s = new THREE.Shape(); s.moveTo(0, -0.95);
+  s.bezierCurveTo(-0.55, -0.45, -1.15, 0.0, -1.15, 0.55); s.bezierCurveTo(-1.15, 1.2, -0.3, 1.3, 0, 0.72);
+  s.bezierCurveTo(0.3, 1.3, 1.15, 1.2, 1.15, 0.55); s.bezierCurveTo(1.15, 0.0, 0.55, -0.45, 0, -0.95);
+  const m = extrude(s, 0.3, 0.2, phys(col, { roughness: 0.25, clearcoat: 1 })); m.scale.setScalar(0.82); return m;
+}
+function star() {
+  const s = new THREE.Shape();
+  for (let i = 0; i < 10; i++) { const a = Math.PI / 2 + i * Math.PI / 5, r = i % 2 ? 0.5 : 1.12; i ? s.lineTo(Math.cos(a) * r, Math.sin(a) * r) : s.moveTo(Math.cos(a) * r, Math.sin(a) * r); }
+  s.closePath(); return extrude(s, 0.22, 0.14, phys(col, { metalness: 0.55, roughness: 0.28, clearcoat: 1 }));
+}
+function check() {
+  const g = new THREE.Group();
+  const disc = new THREE.Mesh(new THREE.CylinderGeometry(1.05, 1.05, 0.3, 96), phys(col, { roughness: 0.3, clearcoat: 1 })); disc.rotation.x = Math.PI / 2; g.add(disc);
+  const s = new THREE.Shape(); s.moveTo(-0.58, 0.02); s.lineTo(-0.36, 0.24); s.lineTo(-0.12, 0.0); s.lineTo(0.42, 0.54); s.lineTo(0.64, 0.32); s.lineTo(-0.12, -0.44); s.closePath();
+  const ck = extrude(s, 0.1, 0.04, phys(new THREE.Color(0xffffff), { roughness: 0.3 })); ck.position.set(0, -0.02, 0.2); g.add(ck); return g;
+}
+
+const obj = new THREE.Group(); obj.add(({ brain, books, bulb, heart, star, check }[KIND] || brain)()); scene.add(obj);
+const eBack = (x, k = 1.9) => { x = Math.min(1, Math.max(0, x)) - 1; return 1 + (k + 1) * x * x * x + k * x * x; };
+const eOut = x => 1 - Math.pow(1 - Math.min(1, Math.max(0, x)), 3);
+window.renderAt = (t, dur) => {
+  const s = eBack(t / 0.55) * sm((dur - t) / 0.3);
+  obj.scale.setScalar(Math.max(1e-4, s));
+  obj.rotation.y = -(1 - eOut(t / 0.9)) * 2.6 + Math.sin(t * 1.1) * 0.42 + (1 - sm((dur - t) / 0.3)) * 1.6;
+  obj.rotation.x = Math.sin(t * 0.9) * 0.07;
+  obj.position.y = Math.sin(t * 1.6) * 0.05;
+  renderer.render(scene, cam); return true;
+};
+window.ready = true;
+</script></body></html>

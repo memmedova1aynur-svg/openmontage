@@ -3,7 +3,7 @@
 İstifadə:
   python3 ingest.py batch.json
 batch.json:
-  {"client": "Xəyyam Hüseynov", "prefix": "xeyyam-video", "start": 9,
+  {"client": "Xəyyam Həsənov", "prefix": "xeyyam-video", "start": 9,
    "videos": [{"link": "https://drive.google.com/...", "type": "talk|ad", "title": "Təxirəsalma", "script": "(istəyə görə)"}]}
 
 Hər video üçün: endir → ASR + storyboard → kadraj (framefix) → <PRO_WORK>/vN.json qaralama

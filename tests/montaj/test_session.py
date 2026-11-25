@@ -139,7 +139,8 @@ def _draft_and_analysis(pid):
 
 
 def test_plan_look_choice_and_manual_color_kept(tmp_path, monkeypatch):
-    """Rəng: standart Adaptive Crystal Clear; əl ilə seçilən şablon (C) render filtrinə düşür; əl ilə rəngə toxunulmur; "look": null götürür."""
+    """Rəng: standart adaptiv ("auto", şablon yox); seçilən şablon (C) render filtrinə düşür; əl ilə rəngə toxunulmur;
+    "look": null götürür."""
     pid = _fixture(tmp_path, monkeypatch)
     from montaj import render, session, store
 
@@ -147,7 +148,9 @@ def test_plan_look_choice_and_manual_color_kept(tmp_path, monkeypatch):
     plan.write_text(json.dumps({"captions": {"enabled": True, "style": {"type": "caption"}}}))
     assert session.main(["plan", pid, str(plan)]) == 0
     vids = [c for c in store.load(pid)["clips"] if c["track"] == "v1"]
-    assert vids and all(c["adjust"]["look"] == "CRYSTAL" and "crystal" in c["adjust"] for c in vids), "standart: adaptiv Crystal Clear"
+    assert vids and all(c["adjust"]["look"] == "auto" for c in vids), "standart: adaptiv (hazır şablon yox)"
+    assert all(0 < c["adjust"]["sharpen"] <= 0.3 and c["adjust"].get("saturation", 1) == 1 for c in vids), \
+        "yalnız yüngül kəskinlik, doyma artmır"
     plan.write_text(json.dumps({"look": "C"}))
     assert session.main(["plan", pid, str(plan)]) == 0
     v = next(c for c in store.load(pid)["clips"] if c["track"] == "v1")
@@ -175,9 +178,53 @@ def test_looks_sheet(tmp_path, monkeypatch):
     assert session.main(["looks", pid]) == 0
     sheet = tmp_path / "out" / pid / "reng_variantlari.jpg"
     info = media.probe(sheet)
-    cols = 1 + len([k for k in session.LOOKS if k != "D"])  # orijinal + şablonlar (D yalnız qaranlıq kadrda)
+    cols = 2 + len([k for k in session.LOOKS if k != "D"])  # orijinal + auto + şablonlar (D yalnız qaranlıq kadrda)
     assert info["width"] == cols * 360 and info["height"] == 3 * 202, "3 sətir (640x360 mənbə → 360x202)"
     assert not list((tmp_path / "out" / pid).glob("reng_*.png"))
+
+
+def test_adaptive_enhance_only_what_is_needed():
+    """Adaptive Image Enhancement: yaxşı kadrda yalnız yüngül kəskinlik; qaranlıq, solğun, rəng çaları, yanan ağlar
+    ölçülüb qismən düzəlir; doyma heç vaxt artmır, denoise/yumşaltma yoxdur; hədlər sərtdir."""
+    import numpy as np
+
+    from montaj import quality, render
+
+    rng = np.random.default_rng(0)
+    h, w = 360, 640
+    yy, xx = np.mgrid[0:h, 0:w] / np.array([h, w])[:, None, None]
+
+    def scene(gain=1.0, cast=(1.0, 1.0, 1.0), sat=1.0, offset=0.0, scale=1.0):
+        gray = 0.08 + 0.84 * (xx + yy) / 2 + 0.03 * rng.standard_normal((h, w))  # tam diapazonlu səhnə + toxuma
+        col = np.stack([gray * 1.35, gray, gray * 0.7], -1)                      # dəri/geyim kimi rəngli hissə
+        img = np.where((xx > 0.55)[..., None], col, gray[..., None].repeat(3, -1))  # sol yarı neytral (divar)
+        img = gray[..., None] + (img - gray[..., None]) * sat
+        img = (img * scale + offset) * gain * np.array(cast)
+        return np.clip(img, 0, 1).astype(np.float32)
+
+    good, why = quality.enhance_params([scene()])
+    assert set(good) == {"sharpen"} and 0.1 <= good["sharpen"] <= 0.3, (good, why)
+
+    dark, _ = quality.enhance_params([scene(gain=0.45)])
+    assert dark.get("shadows", 0) > 0 and 0 < dark.get("brightness", 0) <= 0.03 and dark["sharpen"] <= 0.15
+
+    warm, _ = quality.enhance_params([scene(cast=(1.12, 1.0, 0.86))])
+    assert 6500 < warm["temperature"] <= 7200, warm       # isti çalar → qismən soyudulur
+    cool, _ = quality.enhance_params([scene(cast=(0.88, 1.0, 1.14))])
+    assert 5800 <= cool["temperature"] < 6500, cool
+    green, _ = quality.enhance_params([scene(cast=(0.95, 1.06, 0.95))])
+    assert 0 < green["tint"] <= 0.03
+
+    pale, _ = quality.enhance_params([scene(sat=0.25, scale=0.45, offset=0.3)])
+    assert 0 < pale["vibrance"] <= 0.06 and 1 < pale["contrast"] <= 1.06
+
+    blown, _ = quality.enhance_params([scene(gain=1.6)])
+    assert blown.get("highlights", 0) > 0 and blown.get("brightness", 0) <= 0
+
+    for adj in (good, dark, warm, cool, green, pale, blown):
+        assert "saturation" not in adj and "denoise" not in adj and "soften" not in adj
+        chain = ",".join(render.color_filters(adj))
+        assert "hqdn3d" not in chain and "smartblur" not in chain
 
 
 def test_cut_safe_boundary_keeps_words(tmp_path, monkeypatch, capsys):
@@ -1424,3 +1471,51 @@ def test_music_mixkit_fallback(monkeypatch):
     monkeypatch.setattr(music, "mixkit_search", lambda *a, **k: [{"id": "mixkit-9", "source": "mixkit"}])
     tracks, notes = music.find("kids", music.AVOID, 20, 200, 3)
     assert tracks == [{"id": "mixkit-9", "source": "mixkit"}] and any("yalnız Mixkit" in x for x in notes)
+
+
+def test_depth_fx_cli(tmp_path, monkeypatch, capsys):
+    """fx: effekt əlavə et → önizləmə (layihə dəyişmir) → tətbiq (törəmə video, kadr sayı eyni, səs effektləri s1-də)
+    → render törəməni götürür → --clear hamısını geri qaytarır."""
+    import subprocess
+
+    import numpy as np
+
+    from montaj import background
+
+    try:
+        background.model_path("accurate")
+    except Exception:  # noqa: BLE001
+        pytest.skip("seqmentasiya modeli endirilmədi (şəbəkə)")
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import session, store
+
+    monkeypatch.setattr(session, "data_dir", lambda: tmp_path / "data")
+    capsys.readouterr()
+    assert session.main(["fx", pid, "--add", '{"type":"behind","start":0.5,"dur":1}']) != 0  # text yoxdur
+    assert session.main(["fx", pid, "--add", '{"type":"behind","text":"SİRR","start":0.4,"dur":1.6,"color":"#FF2020","y":0.45}']) == 0
+    assert store.load(pid)["fx"][0]["anim"] == "stagger"
+    assert session.main(["fx", pid, "--preview"]) == 0
+    assert (tmp_path / "out" / pid / "effektler.jpg").stat().st_size > 5000
+    assert not store.load(pid).get("fxRender"), "önizləmə layihəni dəyişmir"
+    assert session.main(["fx", pid, "--apply"]) == 0
+    q = store.load(pid)
+    mid = q["media"][0]["id"]
+    der = store.project_dir(pid) / q["fxRender"][mid]["file"]
+    cnt = lambda f: int(subprocess.run(["ffprobe", "-v", "error", "-count_frames", "-select_streams", "v:0", "-show_entries",
+                                        "stream=nb_read_frames", "-of", "csv=p=0", str(f)], capture_output=True, text=True).stdout.strip())
+    assert abs(cnt(der) - cnt(store.project_dir(pid) / q["media"][0]["file"])) <= 1
+    fx_clips = [c for c in q["clips"] if c.get("origin") == "fx"]
+    from montaj.config import REPO_ROOT
+    if (REPO_ROOT / ".venv-earshot" / "bin" / "earshot").is_file():
+        assert fx_clips and all(c["track"] == "s1" for c in fx_clips), "effektin səsi s1 trekində"
+    assert session.main(["render", pid]) == 0
+    mp4 = sorted((tmp_path / "out" / pid).glob(f"{pid}_r*.mp4"))[-1]
+    W, H = q["width"], q["height"]
+    raw = subprocess.run(["ffmpeg", "-v", "error", "-ss", "1.5", "-i", str(mp4), "-frames:v", "1", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
+                         capture_output=True, check=True).stdout
+    px = np.frombuffer(raw, np.uint8).reshape(H, W, 3).astype(int)
+    red = ((px[..., 0] > 150) & (px[..., 1] < 90) & (px[..., 2] < 90)).sum()
+    assert red > 300, "render effektli törəməni götürür (qırmızı yazı görünür)"
+    assert session.main(["fx", pid, "--clear"]) == 0
+    q = store.load(pid)
+    assert not q.get("fx") and not q.get("fxRender") and not [c for c in q["clips"] if c.get("origin") == "fx"]
