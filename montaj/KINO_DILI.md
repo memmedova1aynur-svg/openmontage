@@ -33,7 +33,7 @@ Qaydalar mütləq deyil: kontekst, səhnənin məqsədi və nəticə həlledicid
 ## 6. Rəng, qrafika, effekt
 - Rəng düzəlişi (işıq, ağ balansı, planların uyğunluğu) yaradıcı görünüşdən əvvəldir. Dəri tonu təbii qalsın.
 - Yazı: oxunaqlı, iyerarxiyalı, kifayət qədər ekranda (~3 söz/s). Effekt zəif quruluşu xilas etmir.
-- Sistemdə: `looks` (A–D, işıq bərabərləşdirmə), qrafika qatı, `verify` oxunma müddəti yoxlaması, təbii fon (`bg`).
+- Sistemdə: universal "Görüntü keyfiyyəti" standartı (`IS_AXINI.md`; şablon standart tətbiq olunmur), qrafika qatı, `verify` oxunma müddəti yoxlaması, təbii fon (`bg`).
 
 ## 7. Etik montaj
 - Danışığı qısaldanda fikri dəyişmə; reaksiyanı başqa hadisəyə bağlama; demədiyi nəticəni yaratma.
