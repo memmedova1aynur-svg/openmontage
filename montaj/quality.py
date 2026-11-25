@@ -523,6 +523,8 @@ def layout_check(project: dict[str, Any], project_dir: Path, workdir: Path) -> l
         c = t["clip"]
         if not G.is_graphic(c):
             continue
+        if c.get("bleed"):  # tam enli panel/zolaq (üslub dəsti) — dizayn elementidir, interfeys zonası/üz yoxlanmır
+            continue
         if c["type"] == "caption":
             caps += 1
             if caps > 3:  # altyazılar eyni yerdədir — bir neçə nümunə kifayətdir

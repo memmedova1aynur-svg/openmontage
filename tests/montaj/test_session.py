@@ -289,7 +289,8 @@ def test_variants_and_choose(tmp_path, monkeypatch):
     a.write_text(json.dumps({"title": "Sakit", "look": "A", "graphics": [{"type": "title", "text": "Başlıq A", "start": 0.2, "dur": 2}]}))
     b.write_text(json.dumps({"title": "Dinamik", "look": "C", "storyboard": {"order": [2, 1]},
                              "graphics": [{"type": "card", "heading": "Kart", "text": "B", "start": 1, "dur": 2}]}))
-    assert session.main(["variants", pid, str(a), str(b)]) == 0
+    assert session.main(["variants", pid, str(a), str(b)]) != 0, "dəstsiz (köhnə) iki plan eyni dəst sayılır — fərq yoxlaması rədd edir"
+    assert session.main(["variants", pid, str(a), str(b), "--force"]) == 0
     o = tmp_path / "out" / pid
     assert media.probe(o / "storyboard_variantlari.jpg")["height"] > 400
     assert media.probe(o / "variant_B.mp4")["width"] == 360, "standart: 360p proksi önizləmə (saniyələr); 540p video üçün --mp4"
@@ -1545,3 +1546,44 @@ def test_smooth_zoom_ramp_vs_step(tmp_path, monkeypatch):
     assert media.probe(out)["duration"] > 1.5
     q2 = session.apply_plan(pid, p, {"look": None, "zooms": [{**z, "smooth": False}]})
     assert any((c.get("frame") or {}).get("planZoom") for c in node_tl("videoClips", q2)), "köhnə sıçrayış rejimi qalır"
+
+
+def test_variants_require_different_kits_and_respect_client_memory(tmp_path, monkeypatch, capsys):
+    """variants: eyni dəstdən iki plan rədd olunur; fərqli dəstlər keçir və yeni qrafika növləri (block/type) proksi render olunur."""
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import kits, media, session
+
+    _draft_and_analysis(pid)
+    content = {"hook": {"text": "Birinci sual?", "short": "SUAL", "kicker": "MÖVZU", "start": 0.2, "dur": 1.6}}
+    plans = {}
+    for name, kit in (("A", "editorial"), ("B", "colorblock"), ("C", "editorial")):
+        pl = {**kits.build(kit, content, {"primary": "#C9577D"}), "title": f"{name}:{kit}", "look": None}
+        pl["zooms"] = []
+        f = tmp_path / f"{name}.json"
+        f.write_text(json.dumps(pl))
+        plans[name] = f
+    assert session.main(["variants", pid, str(plans["A"]), str(plans["C"])]) != 0, "eyni dəst — fərqsiz variantlar rədd olunur"
+    assert "eyni üslub dəstindədir" in capsys.readouterr().out
+    assert session.main(["variants", pid, str(plans["A"]), str(plans["B"])]) == 0
+    o = tmp_path / "out" / pid
+    assert media.probe(o / "storyboard_variantlari.jpg")["height"] > 400
+    assert session.main(["variants", pid, str(plans["A"]), str(plans["C"]), "--force"]) == 0, "--force yoxlamanı keçir"
+
+
+def test_kit_graphic_props_survive_apply_plan(tmp_path, monkeypatch):
+    """Üslub dəstlərinin sahələri (kicker, chip, mark, seq, bleed, h…) addGraphic-də itmir (əvvəl whitelist onları atırdı)."""
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import kits, session, store
+
+    _draft_and_analysis(pid)
+    assert session.main(["apply", pid]) == 0
+    content = {"hook": {"text": "Sual?", "short": "SUAL", "kicker": "MÖVZU", "start": 0.2, "dur": 1.6},
+               "words": [{"w": "SUAL", "s": 0.2}, {"w": "CAVAB", "s": 0.9}], "duration": 5}
+    want = {"editorial": "kicker", "colorblock": "chip", "handnote": "mark", "kinetic": "seq"}
+    for kit, key in want.items():
+        b = kits.build(kit, content, {"primary": "#C9577D"})
+        q = session.apply_plan(pid, store.load(pid), {"look": None, "graphics": b["graphics"]})
+        gs = [c for c in q["clips"] if c["track"] == "t1" and c.get("type") in ("type", "block", "note", "bars")]
+        assert gs and any(key in g for g in gs), (kit, key, gs)
+        if kit in ("colorblock", "kinetic"):
+            assert all(g.get("bleed") for g in gs), "tam enli elementlər kənarsız yerləşir"

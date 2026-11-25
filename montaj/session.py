@@ -220,7 +220,7 @@ def _type_hints(project: dict[str, Any]) -> list[str]:
     return out
 
 
-def _remember_choice(pid: str, plan: dict[str, Any], plan_name: str, remember: bool = True) -> None:
+def _remember_choice(pid: str, plan: dict[str, Any], plan_name: str, remember: bool = True, rejected: list[str] | None = None) -> None:
     """Seçilən variant: layihənin növ qeydinə yanaşma, müştəri profilinin tarixçəsinə qısa qeyd.
     remember=False (sınaq/təsdiqsiz seçim): profil FAYLINA YAZILMIR — qeyd layihədə `pendingHistory` kimi qalır;
     istifadəçi təsdiq edəndən sonra `choose <pid> --remember` onu profilə yazır."""
@@ -241,7 +241,8 @@ def _remember_choice(pid: str, plan: dict[str, Any], plan_name: str, remember: b
              "type": vt and vt["type"], "approach": "+".join(aps) or None, "variant": plan.get("title") or plan_name,
              "look": plan.get("look"), "captions": (plan.get("variation") or {}).get("captions")
              or ((plan.get("captions") or {}).get("style") or {}).get("type"),
-             "tone": (plan.get("variation") or {}).get("primary"), "anim": (plan.get("variation") or {}).get("anim")}
+             "tone": (plan.get("variation") or {}).get("primary"), "anim": (plan.get("variation") or {}).get("anim"),
+             "kit": plan.get("kit"), "hook": (plan.get("axes") or {}).get("hook")}
     entry = {k: v for k, v in entry.items() if v}
     if not remember:
         p = store.load(pid)
@@ -249,12 +250,15 @@ def _remember_choice(pid: str, plan: dict[str, Any], plan_name: str, remember: b
         store.save(pid, p, p["revision"])
         print(f"tarixçəyə yazılmadı (təsdiq gözlənilir): qeyd layihədə saxlandı; təsdiqdən sonra `choose {pid} --remember`")
         return
+    from montaj import memory
+
     prof.setdefault("history", []).append(entry)
+    memory.apply(prof, entry, rejected, entry.get("date") or datetime.date.today().isoformat())
     f.write_text(json.dumps(prof, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
-    print(f"müştəri tarixçəsinə yazıldı: {f.name} → history")
+    print(f"müştəri tarixçəsinə yazıldı: {f.name} → history" + (f"; rədd edilən dəstlər: {', '.join(rejected)}" if rejected else ""))
 
 
-def _commit_pending_history(pid: str) -> None:
+def _commit_pending_history(pid: str, rejected: list[str] | None = None) -> None:
     """Təsdiqlənmiş seçim: layihədəki `pendingHistory` müştəri profilinin tarixçəsinə yazılır."""
     p = store.load(pid)
     entry = p.get("pendingHistory")
@@ -262,7 +266,10 @@ def _commit_pending_history(pid: str) -> None:
     if not entry or not f:
         raise UserError("Yazılacaq gözləyən seçim yoxdur.", "Əvvəl `choose <pid> <plan>`.")
     prof = json.loads(f.read_text(encoding="utf-8"))
+    from montaj import memory
+
     prof.setdefault("history", []).append(entry)
+    memory.apply(prof, entry, rejected, entry.get("date") or "")
     f.write_text(json.dumps(prof, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     p["pendingHistory"] = None
     store.save(pid, p, p["revision"])
@@ -387,6 +394,16 @@ def cmd_storyboard(a: argparse.Namespace) -> None:
         print(f"material yoxlaması alınmadı: {str(e)[:120]}")
     for line in _type_hints(project):
         print(line)
+    try:  # üslub dəstləri: müştərinin son/rədd edilmiş dəstləri xaric, bir-birindən uzaq 3 təklif
+        from montaj import kits, memory
+
+        prof = expert_profile((project.get("brand") or {}).get("name")) if (project.get("brand") or {}).get("name") else None
+        sug = memory.suggest(prof, 3, ((project.get("videoType") or {}).get("name") or "").split())
+        bl = memory.blocked(prof)
+        print("üslub dəstləri (variantlar fərqli dəstlərdən qurulur): " + ", ".join(f"{k} ({kits.KITS[k]['name']})" for k in sug)
+              + (f" | bloklu: {', '.join(f'{k} — {v}' for k, v in bl.items())}" if bl else ""))
+    except Exception as e:  # noqa: BLE001
+        print(f"dəst təklifi alınmadı: {str(e)[:100]}")
 
 
 def _parse_nums(s: str | None) -> list[int]:
@@ -1366,7 +1383,12 @@ def _make_broll_media(pid: str, p: dict[str, Any], spec: dict[str, Any], dur: fl
     kind = spec["kind"]
     props = spec.get("props") or {}
     d = float(spec.get("dur", dur))
-    clip = sceneclip.render(kind, props, d, spec.get("theme") or _project_theme(p), out_dir(pid) / "scenes", spec.get("style"))
+    if kind == "atelier":  # bəzək rejimi: hero video üçün əl ilə yazılmış HTML səhnə (montaj/atelier.py)
+        from montaj import atelier
+
+        clip = atelier.render(props["html"], d, int(p["width"]), int(p["height"]), spec.get("theme") or _project_theme(p), out_dir(pid) / "scenes")
+    else:
+        clip = sceneclip.render(kind, props, d, spec.get("theme") or _project_theme(p), out_dir(pid) / "scenes", spec.get("style"))
     have = next((m for m in store.load(pid)["media"] if (m.get("source") or {}).get("file") == clip.name), None)
     if have:
         return have
@@ -2734,6 +2756,16 @@ def cmd_variants(a: argparse.Namespace) -> None:
     font = render._font()
     o = out_dir(a.pid)
     rows = []
+    from montaj import difference, memory
+
+    plans_by = {"ABCDEF"[k]: json.loads(Path(f).read_text(encoding="utf-8")) for k, f in enumerate(a.plans)}
+    prof = expert_profile((base.get("brand") or {}).get("name")) if (base.get("brand") or {}).get("name") else None
+    probs = (difference.check(plans_by)["problems"] if len(plans_by) > 1 else []) + memory.check_plans(prof, plans_by)
+    for x in probs:
+        print("!", x)
+    if probs and not getattr(a, "force", False):
+        raise UserError("Variantlar kifayət qədər fərqli deyil və ya müştərinin son/rədd edilmiş dəstlərini təkrarlayır.",
+                        "Fərqli üslub dəstlərindən qur (`python -m montaj.kits list`); bilərəkdən istəyirsənsə `--force`.")
     for k, plan_file in enumerate(a.plans):
         letter = "ABCDEF"[k]
         plan = json.loads(Path(plan_file).read_text(encoding="utf-8"))
@@ -2794,18 +2826,22 @@ def cmd_variants(a: argparse.Namespace) -> None:
     print(sheet)
 
 
+def _kit_list(s: str | None) -> list[str]:
+    return [x.strip() for x in (s or "").split(",") if x.strip()]
+
+
 def cmd_choose(a: argparse.Namespace) -> None:
     """İstifadəçinin seçdiyi storyboard variantını tətbiq edir: qaralama düzəlişləri → apply → plan."""
     if not a.plan:  # `choose <pid> --remember`: əvvəl təsdiqsiz seçilmiş variantı profilə yaz
         if not a.remember:
             raise UserError("Plan faylı verilməyib.", "`choose <pid> <plan.json>` və ya təsdiqdən sonra `choose <pid> --remember`.")
-        return _commit_pending_history(a.pid)
+        return _commit_pending_history(a.pid, _kit_list(a.rejected))
     plan = json.loads(Path(a.plan).read_text(encoding="utf-8"))
     sb = _sb_override(_load_draft(a.pid), plan.get("storyboard") or {})
     _save_draft(a.pid, sb)
     cmd_apply(argparse.Namespace(pid=a.pid))
     cmd_plan(argparse.Namespace(pid=a.pid, plan=a.plan))
-    _remember_choice(a.pid, plan, Path(a.plan).stem, remember=bool(a.remember))
+    _remember_choice(a.pid, plan, Path(a.plan).stem, remember=bool(a.remember), rejected=_kit_list(a.rejected))
 
 
 def cmd_music(a: argparse.Namespace) -> None:
@@ -3064,10 +3100,12 @@ def main(argv: list[str] | None = None) -> int:
     vr = sub.add_parser("variants", help="2–3 storyboard variantının önizləməsi (layihə dəyişmir)")
     vr.add_argument("pid")
     vr.add_argument("plans", nargs="+")
+    vr.add_argument("--force", action="store_true", help="fərq/yaddaş yoxlamasını keç (yalnız istifadəçi bilərəkdən istəyəndə)")
     vr.add_argument("--mp4", action="store_true", help="səsli 540p önizləmə videosu da hazırla (yavaş; standart: yalnız storyboard şəkli)")
     ch = sub.add_parser("choose", help="seçilmiş variantı tətbiq et (qaralama → apply → plan)")
     ch.add_argument("pid")
     ch.add_argument("plan", nargs="?")
+    ch.add_argument("--rejected", help="istifadəçinin rədd etdiyi üslub dəstləri (vergüllə, məs. kinetic,handnote) — yalnız --remember ilə yazılır")
     ch.add_argument("--remember", action="store_true",
                     help="seçimi müştəri profilinin tarixçəsinə yaz (YALNIZ istifadəçi təsdiq edəndən sonra; planla birlikdə və ya təkbaşına)")
     mp = sub.add_parser("music-preview", help="musiqi dinləmə nümunələri")

@@ -340,3 +340,6 @@ Claude Code accesses them via symlinks in `.claude/skills/`.
 - `skills/creative/caption-typography.md` — 4 tipoqrafik rol, Azərbaycan hərfləri, safe zone
 - `skills/creative/broll-function.md` — hər B-roll üçün məcburi funksiya və izah etdiyi fikir
 Yalnız lazım olan mərhələdə yüklə; hamısını eyni anda oxuma.
+- `skills/creative/style-kits.md` — üslub dəstləri (classic, editorial, colorblock, handnote, kinetic), fərq yoxlayıcısı, təkrar əleyhinə yaddaş
+- `skills/creative/atelier-scenes.md` — bəzək rejimi: hero video üçün sıfırdan yazılmış HTML səhnə
+- `skills/creative/reference-learning.md` — referans videodan qərar çıxarma (kopyalamadan)

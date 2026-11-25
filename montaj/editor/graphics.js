@@ -52,6 +52,77 @@
     const weight = clip.weight || defaults(type).weight;
     const color = clip.color || defaults(type, th).color;
     const base = { fontFamily: font, fontWeight: String(weight), fontSize: `${fs}px`, lineHeight: '1.18', color, whiteSpace: 'pre-wrap', textAlign: 'center', boxSizing: 'border-box' };
+    const VW = (doc.defaultView && doc.defaultView.innerWidth) || H * 0.5625;  // kadr eni (px) — tam enli elementlər üçün
+    const shown = (items) => (tl == null ? items.length : items.filter((it) => tl >= (it.at || 0)).length);
+    if (type === 'type') {  // üslub dəsti: redaksiya tipoqrafiyası — kartsız böyük yazı, kicker, incə xətt, nömrəli sətirlər
+      const fam = clip.font === 'serif' ? '"DejaVu Serif", Georgia, serif' : font;
+      const w = node(doc, 'div', { ...base, fontFamily: fam, width: `${VW * (clip.w ?? 0.9)}px`, textAlign: clip.align || 'left', lineHeight: '1.02',
+        textShadow: clip.shadow === false ? 'none' : '0 2px 16px rgba(0,0,0,0.5), 0 1px 3px rgba(0,0,0,0.5)' });
+      if (clip.kicker) w.append(node(doc, 'div', { fontFamily: font, fontSize: `${fs * 0.27}px`, fontWeight: '600', letterSpacing: '0.3em', textTransform: 'uppercase', marginBottom: `${fs * 0.16}px`, lineHeight: '1.2' }, clip.kicker));
+      if (clip.rule !== false && clip.kicker) w.append(node(doc, 'div', { width: `${fs * 0.9}px`, height: `${Math.max(2, fs * 0.03)}px`, background: color, margin: `0 0 ${fs * 0.22}px 0`, opacity: '0.9' }));
+      if (clip.items && clip.items.length) {
+        const n = shown(clip.items);
+        clip.items.forEach((it, i) => {
+          const row = node(doc, 'div', { display: 'flex', alignItems: 'baseline', gap: `${fs * 0.35}px`, margin: `${fs * 0.1}px 0`, opacity: i < n ? '1' : '0', fontSize: `${fs * 0.82}px` });
+          row.append(node(doc, 'div', { fontFamily: font, fontSize: `${fs * 0.3}px`, fontWeight: '600', opacity: '0.85' }, String(i + 1).padStart(2, '0')));
+          row.append(node(doc, 'div', {}, it.text || ''));
+          w.append(row);
+        });
+      } else w.append(node(doc, 'div', {}, clip.text || ''));
+      return w;
+    }
+    if (type === 'note') {  // üslub dəsti: əl yazısı qeyd — Caveat, əyilmiş; altından xətt / dairə / ox / ✓ işarələri (SVG)
+      const NS = 'http://www.w3.org/2000/svg';
+      const svg = (inner, css) => { const e = doc.createElementNS(NS, 'svg'); e.setAttribute('viewBox', '0 0 100 100'); e.setAttribute('preserveAspectRatio', 'none');
+        Object.assign(e.style, { position: 'absolute', overflow: 'visible', pointerEvents: 'none', ...css }); e.innerHTML = inner; return e; };
+      const stroke = `fill="none" stroke="${color}" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke"`;
+      const w = node(doc, 'div', { ...base, fontFamily: '"Caveat","DejaVu Sans",cursive', fontWeight: '700', position: 'relative', padding: `${fs * 0.35}px ${fs * 0.5}px`, textAlign: clip.align || 'left',
+        transform: `rotate(${clip.rot ?? -3}deg)`, lineHeight: '1.05', textShadow: '0 0 3px rgba(0,0,0,0.85), 0 2px 10px rgba(0,0,0,0.5)' });
+      if (clip.items && clip.items.length) {
+        const n = shown(clip.items);
+        clip.items.forEach((it, i) => {
+          const row = node(doc, 'div', { display: 'flex', alignItems: 'center', gap: `${fs * 0.3}px`, opacity: i < n ? '1' : '0', margin: `${fs * 0.05}px 0` });
+          row.append(svg(`<path d="M10 55 L38 85 L92 15" ${stroke}/>`, { position: 'relative', width: `${fs * 0.7}px`, height: `${fs * 0.7}px`, flex: '0 0 auto' }));
+          row.append(node(doc, 'div', {}, it.text || ''));
+          w.append(row);
+        });
+      } else w.append(node(doc, 'div', { position: 'relative' }, clip.text || ''));
+      const mark = clip.mark || 'none';
+      if (mark === 'underline') w.append(svg(`<path d="M2 60 C30 40 55 85 98 45" ${stroke}/>`, { left: '4%', width: '92%', bottom: `${fs * 0.05}px`, height: `${fs * 0.3}px` }));
+      if (mark === 'circle') w.append(svg(`<ellipse cx="50" cy="50" rx="48" ry="46" ${stroke}/>`, { left: '0', top: '0', width: '100%', height: '100%' }));
+      if (mark === 'arrow') w.append(svg(`<path d="M5 5 C30 10 60 40 85 85 M85 85 L62 78 M85 85 L88 60" ${stroke}/>`, { right: `${-fs * 1.2}px`, bottom: `${-fs * 1.3}px`, width: `${fs * 1.4}px`, height: `${fs * 1.4}px` }));
+      return w;
+    }
+    if (type === 'block') {  // üslub dəsti: rəng bloku — kadrın yuxarısında tam enli rəngli panel (mətn, çip, nömrəli çiplər)
+      const bh = H * (clip.h ?? 0.3);
+      const b = node(doc, 'div', { ...base, width: `${VW}px`, height: `${bh}px`, background: rgba(clip.bg, th.primary || '#C9577D'), color: clip.color || '#FFFFFF',
+        display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', padding: `0 ${VW * 0.07}px`, textAlign: 'left', lineHeight: '1.08', gap: `${fs * 0.22}px` });
+      if (clip.chip) b.append(node(doc, 'div', { fontSize: `${fs * 0.42}px`, fontWeight: '800', letterSpacing: '0.12em', padding: `${fs * 0.12}px ${fs * 0.5}px`, borderRadius: '999px', background: rgba(clip.chipBg, th.accentSoft || '#F2E4D6'), color: clip.chipColor || th.primaryDeep || '#9E3D5E' }, clip.chip));
+      if (clip.items && clip.items.length) {
+        const n = shown(clip.items);
+        clip.items.forEach((it, i) => {
+          const row = node(doc, 'div', { display: 'flex', alignItems: 'center', gap: `${fs * 0.4}px`, opacity: i < n ? '1' : '0', fontSize: `${fs * 0.9}px` });
+          row.append(node(doc, 'div', { width: `${fs * 1.2}px`, height: `${fs * 1.2}px`, borderRadius: '50%', background: rgba(clip.chipBg, th.primaryDeep || '#9E3D5E'), color: '#FFFFFF', fontSize: `${fs * 0.7}px`, display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }, String(i + 1)));
+          row.append(node(doc, 'div', {}, it.text || ''));
+          b.append(row);
+        });
+      } else b.append(node(doc, 'div', {}, clip.text || ''));
+      return b;
+    }
+    if (type === 'bars') {  // üslub dəsti: sinema zolaqları — yuxarı/aşağı qara zolaq; aşağıda bir böyük söz (söz-söz), yuxarıda irəliləyiş xətti
+      const wrap = node(doc, 'div', { width: `${VW}px`, height: `${H}px`, position: 'relative', fontFamily: font, boxSizing: 'border-box' });
+      const topH = H * (clip.top ?? 0.05), botH = H * (clip.bottom ?? 0.24), ink = clip.barColor || '#0A0A0C';
+      const top = node(doc, 'div', { position: 'absolute', left: '0', top: '0', width: '100%', height: `${topH}px`, background: ink });
+      top.append(node(doc, 'div', { position: 'absolute', left: `${VW * 0.045}px`, right: `${VW * 0.045}px`, top: `${topH * 0.45}px`, height: `${Math.max(3, H * 0.003)}px`, background: 'rgba(255,255,255,0.18)' }));
+      top.append(node(doc, 'div', { position: 'absolute', left: `${VW * 0.045}px`, width: `${(VW * 0.91) * (clip.progress ?? 0)}px`, top: `${topH * 0.45}px`, height: `${Math.max(3, H * 0.003)}px`, background: clip.accent || th.accent || '#C9577D' }));
+      const bot = node(doc, 'div', { position: 'absolute', left: '0', bottom: '0', width: '100%', height: `${botH}px`, background: ink, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: `${fs * 0.1}px`, textAlign: 'center' });
+      let word = clip.text || '';
+      if (clip.seq && clip.seq.length) { const cur = clip.seq.filter((x) => tl == null || tl >= (x.s || 0)); word = (cur[cur.length - 1] || clip.seq[0]).w; }
+      bot.append(node(doc, 'div', { fontSize: `${fs}px`, fontWeight: '800', color: clip.color || '#FFFFFF', lineHeight: '1', letterSpacing: '0.01em' }, word));
+      if (clip.sub) bot.append(node(doc, 'div', { fontSize: `${fs * 0.42}px`, fontWeight: '700', color: clip.accent || th.accent || '#C9577D' }, clip.sub));
+      wrap.append(top, bot);
+      return wrap;
+    }
     if (type === 'caption') {
       const wrap = node(doc, 'div', { ...base, maxWidth: `${H * (clip.maxW ?? 0.52)}px`, padding: `${fs * 0.15}px ${fs * 0.3}px`,
         borderRadius: `${fs * (clip.radius ?? 0.3)}px`, background: rgba(clip.bg, 'transparent'), textAlign: clip.align === 'left' ? 'left' : 'center' });
@@ -172,6 +243,10 @@
       badge: { size: 0.022, weight: 800, color: th.text || '#FFFFFF' },
       lower: { size: 0.034, weight: 800, color: th.primaryDeep || '#222222' },
       choice: { size: 0.045, weight: 700, color: '#222222' },
+      type: { size: 0.056, weight: 800, color: '#FFFFFF' },
+      note: { size: 0.062, weight: 700, color: '#FFFFFF' },
+      block: { size: 0.046, weight: 800, color: '#FFFFFF' },
+      bars: { size: 0.05, weight: 800, color: '#FFFFFF' },
     })[type] || { size: 0.06, weight: 700, color: '#FFFFFF' };
   }
 
@@ -179,6 +254,8 @@
   function statePoints(clip) {
     if (clip.type === 'caption' && clip.plain) return [0];
     if (clip.type === 'caption') return [0, ...(clip.words || []).map((w) => w.s)].filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b);
+    if (clip.type === 'bars' && clip.seq) return [0, ...clip.seq.map((w) => w.s || 0)].filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b);
+    if (['list', 'type', 'note', 'block'].includes(clip.type) && clip.items) return [0, ...clip.items.map((it) => it.at || 0)].filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b);
     if (clip.type === 'list') return [0, ...(clip.items || []).map((it) => it.at || 0)].filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b);
     if (clip.type === 'choice') return [0, clip.at ?? 1.5];
     return [0];
@@ -186,7 +263,8 @@
 
   // Standart yer (x, y mərkəz, 0..1) — render (graphics.py DEFAULT_XY) ilə eyni
   const DEFAULT_XY = { caption: [0.5, 0.74], title: [0.5, 0.14], section: [0.5, 0.22], emphasis: [0.5, 0.62], list: [0.5, 0.42], card: [0.5, 0.42],
-    offer: [0.5, 0.58], cta: [0.5, 0.585], badge: [0.5, 0.215], lower: [0.24, 0.82], choice: [0.5, 0.45] };  // reklam kartları üzün altında
+    offer: [0.5, 0.58], cta: [0.5, 0.585], badge: [0.5, 0.215], lower: [0.24, 0.82], choice: [0.5, 0.45],
+    type: [0.5, 0.17], note: [0.5, 0.17], block: [0.5, 0.15], bars: [0.5, 0.5] };  // reklam kartları üzün altında
   function pos(clip) { const d = DEFAULT_XY[clip.type] || [0.5, 0.5]; return [clip.x ?? d[0], clip.y ?? d[1]]; }
 
   root.MG = { ANIMS, animState, build, defaults, statePoints, rgba, pos, DEFAULT_XY };
