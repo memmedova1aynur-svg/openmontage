@@ -1556,7 +1556,7 @@ def test_variants_require_different_kits_and_respect_client_memory(tmp_path, mon
     _draft_and_analysis(pid)
     content = {"hook": {"text": "Birinci sual?", "short": "SUAL", "kicker": "MÖVZU", "start": 0.2, "dur": 1.6}}
     plans = {}
-    for name, kit in (("A", "editorial"), ("B", "handnote"), ("C", "editorial")):
+    for name, kit in (("A", "editorial"), ("B", "classic"), ("C", "editorial")):
         pl = {**kits.build(kit, content, {"primary": "#C9577D"}), "title": f"{name}:{kit}", "look": None}
         pl["zooms"] = []
         f = tmp_path / f"{name}.json"

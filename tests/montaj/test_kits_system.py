@@ -129,10 +129,10 @@ def test_reference_learning_extracts_rhythm_not_media(tmp_path, monkeypatch):
 
 def test_global_user_decisions_block_disliked_kits_and_prefer_liked():
     g = memory.global_decisions()
-    assert {"colorblock", "kinetic"} <= set(g["rejected"]), "istifadəçi 2 və 4-cü dəsti ümumiyyətlə bəyənməyib (2026-11-25)"
-    assert {"editorial", "handnote"} <= set(g["liked"])
+    assert {"colorblock", "kinetic", "handnote"} <= set(g["rejected"]), "istifadəçi bu üç dəsti bəyənməyib (2026-11-25)"
+    assert "editorial" in g["liked"]
     sug = memory.suggest({}, 3)
-    assert not {"colorblock", "kinetic"} & set(sug) and sug[0] == "editorial"
+    assert not {"colorblock", "kinetic", "handnote"} & set(sug) and sug[0] == "editorial"
     assert memory.check_plans({}, {"A": {"kit": "kinetic"}}), "variants rədd edilmiş dəsti dayandırır"
 
 
