@@ -249,3 +249,43 @@ def test_api_flow_upload_propose_render(tmp_projects, tmp_path):
 def test_timeline_js_node_suite():
     r = subprocess.run(["node", "--test", str(REPO / "tests/montaj/timeline.test.mjs")], capture_output=True, text=True)
     assert r.returncode == 0, r.stdout[-2000:] + r.stderr[-2000:]
+
+
+def test_dissolve_blends_cut_and_keeps_duration(tmp_path):
+    from montaj.media import probe
+    from montaj.render import render
+
+    src = tmp_path / "rb.mp4"
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-f", "lavfi", "-i", f"color=c=red:s=320x180:r={FPS}:d=4",
+                    "-f", "lavfi", "-i", f"color=c=blue:s=320x180:r={FPS}:d=4", "-f", "lavfi", "-i", "anullsrc=r=48000:cl=stereo",
+                    "-filter_complex", "[0:v][1:v]concat=n=2:v=1:a=0[v]", "-map", "[v]", "-map", "2:a", "-t", "8",
+                    "-c:v", "libx264", "-pix_fmt", "yuv420p", "-g", "30", "-c:a", "aac", str(src)], check=True)
+    m = {"id": "S", "name": "rb.mp4", "file": "rb.mp4", **probe(src)}
+
+    def project(dis):
+        p = base_project([m])
+        p["width"], p["height"] = 320, 180
+        p["clips"] = [
+            {"id": "v1a", "track": "v1", "media": "S", "srcIn": 1.0, "srcOut": 3.0, "order": 0},
+            {"id": "a1a", "track": "a1", "media": "S", "srcIn": 1.0, "srcOut": 3.0, "linkedTo": "v1a", "volume": 1},
+            {"id": "v1b", "track": "v1", "media": "S", "srcIn": 5.0, "srcOut": 7.0, "order": 1},
+            {"id": "a1b", "track": "a1", "media": "S", "srcIn": 5.0, "srcOut": 7.0, "linkedTo": "v1b", "volume": 1},
+        ]
+        if dis:
+            p["dissolve"] = {"at": {"v1b": 0.4}}
+        return p
+
+    def px(path, t):
+        raw = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{t}", "-i", str(path), "-frames:v", "1", "-vf", "scale=4:4", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
+                             capture_output=True, check=True).stdout
+        a = np.frombuffer(raw, dtype=np.uint8).reshape(-1, 3).mean(axis=0)
+        return a  # r,g,b
+
+    a = render(project(False), tmp_path, tmp_path / "cut.mp4")
+    b = render(project(True), tmp_path, tmp_path / "dis.mp4")
+    assert abs(probe(a)["duration"] - probe(b)["duration"]) < 0.08
+    # kəsim: 2.0 s-də sərt; dissolve: 2.0 s-də qarışıq, 1.7 s qırmızı, 2.3 s mavi
+    assert px(a, 1.95)[0] > 150 and px(a, 2.05)[2] > 150
+    mid = px(b, 2.0)
+    assert mid[0] > 60 and mid[2] > 60, mid
+    assert px(b, 1.7)[0] > 150 and px(b, 2.3)[2] > 150

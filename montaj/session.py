@@ -1237,6 +1237,8 @@ def apply_plan(pid: str, p: dict[str, Any], plan: dict[str, Any], plan_name: str
         q["layout"] = plan["layout"] or None
     if plan.get("jl") is not None:  # J/L-cut (render-də): {"auto": true, "lead": 0.25, "cuts": {...}}
         q["jl"] = plan["jl"]
+    if plan.get("dissolve") is not None:  # yumşaq video keçidi: {"auto": "broll"|"all", "dur": 0.2, "at": {"<növbəti klip id>": 0.3}}
+        q["dissolve"] = plan["dissolve"] or {}
     if plan.get("multicam"):  # virtual multikamera (plan ölçüləri) — punch-in əvəzinə
         q, rep = _apply_multicam(pid, q, plan["multicam"])
         q["multicamReport"] = {k: v for k, v in rep.items() if k != "plans"}
