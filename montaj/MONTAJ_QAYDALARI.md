@@ -28,6 +28,7 @@ ad/titul, lüğət və müştərinin istifadəçi tərəfindən təsdiqlənmiş 
    Göndər: storyboard şəkli + variant izahları + 2–3 musiqi nümunəsi + `kadraj.jpg` + material qeydləri. İstifadəçi ilə birlikdə seçilir.
 4. Seçimdən sonra: `choose <pid> <plan.json>` → `render <pid>` (preflight daxildir) → `verify <pid>` → yekun `_ig.mp4` + 2–4 sətir.
 5. İstifadəçi təsdiq edəndən sonra: `choose <pid> --remember [--rejected kit1,kit2]` (profilin `history`, `approved`, `rejected` sahələrinə yazır; təsdiqsiz və fərziyyə heç nə yazılmır). Son 2 videoda işlənmiş və rədd edilmiş dəst təklif olunmur.
+5a. **Preflight 4 avtomatik yoxlama edir (`montaj/checks.py`, əl ilə yoxlama lazım deyil):** (1) kəsim sərhədləri — söz yarımçıq kəsilirsə/son hecası riskdədirsə xəbərdarlıq; (2) danışıq səsi — `voice-clean` səsi boğursa (2–8 kHz −3.5 dB-dən çox azalıb) avtomatik orijinal səsə qayıdır; (3) kadraj — üz mərkəzdən ±4%-dən çox sapırsa avtomatik mərkəzləşdirir; baş üstü boşluq/üz ölçüsü rəqəmlə yoxlanır; (4) rəng — dəri tonunda qırmızılıq/sarılıq/solğunluq, klipler arası işıq fərqi və `look` hədləri. "bad" qalanı render-dən əvvəl düzəlt, "warn" olanı nəzərdən keç.
 6. **Tam render bir dəfə.** Səhvlər renderdən əvvəl (variants, preflight) tutulur. `verify` yalnız yekun faylda, bir dəfə.
 
 ## 2. Hər videoda məcburi

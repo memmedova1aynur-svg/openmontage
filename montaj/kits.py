@@ -194,10 +194,13 @@ def build(kit: str, content: dict[str, Any], theme: dict[str, Any] | None = None
         cap.update(style={"bg": "none", "weight": 600, "size": 0.04, "color": "#FFFFFF"})
         tint = th["soft"] if th.get("soft") else "#FFFFFF"
         G_ = {"tint": tint, "ink": _ink(th), "accent": th["accent"], "anim": {"in": "fade", "d": 0.4, "out": "fade", "dOut": 0.3}}
+        gl = content.get("glass") or {}  # müştəri şüşə üslubu (profil `kit_preferences.glass`): tünd şüşə (tint/ta/ink/accent) və ikon (drop|book)
+        G_.update({k: gl[k] for k in ("tint", "ta", "ink", "accent") if gl.get(k) is not None})
+        icon = gl.get("icon") or "drop"
         brand = content.get("brand_name") or (hook or {}).get("kicker") or ""
         if kit == "milkglass":
             if hook:
-                g.append({**G_, "type": "gcard", "icon": "drop", "text": hook["text"], "size": 0.04, "y": 0.17, "start": hs, "dur": hd})
+                g.append({**G_, "type": "gcard", "icon": icon, "text": hook["text"], "size": 0.04, "y": 0.17, "start": hs, "dur": hd})
             if lst:
                 g.append({**G_, "type": "gcard", "kicker": lst.get("heading"), "items": items(lst), "size": 0.04, "y": 0.2, "start": lst["start"], "dur": lst["dur"]})
             g += [{**G_, "type": "gcard", "text": e["text"], "size": 0.04, "y": 0.15, "start": e["start"], "dur": e["dur"]} for e in emph]
@@ -206,7 +209,7 @@ def build(kit: str, content: dict[str, Any], theme: dict[str, Any] | None = None
             hook_method = "glass-card"
         elif kit == "notification":
             def ban(text, start, dur):
-                return {**G_, "type": "gbanner", "title": brand, "time": "indi", "text": text, "size": 0.03, "y": 0.145, "start": start, "dur": dur}
+                return {**G_, "type": "gbanner", "icon": icon, "title": brand, "time": "indi", "text": text, "size": 0.03, "y": 0.145, "start": start, "dur": dur}
             if hook:
                 g.append(ban(hook["text"], hs, hd))
             if lst:
