@@ -214,7 +214,15 @@ def glass_chain(c: dict[str, Any], k: int, n_states: int, a: float, b: float, g:
         fl.append(f"fade=t=in:st=0:d={d:.3f}:alpha=1")
     if out_fade and (b - a) > dout:
         fl.append(f"fade=t=out:st={b - a - dout:.3f}:d={dout:.3f}:alpha=1")
-    fl.append(f"setpts=PTS+{a:.4f}/TB[glt{n}]")
-    chain.append(",".join(fl))
+    # Qat anda başlayırsa əvvəlinə şəffaf kadrlar (color mənbəyi + concat) qoyulur: yoxsa overlay ilk kadr gələnə qədər əsas axının [0,a] saniyəsini
+    # (1080p ≈ 6 MB/kadr, çox şüşə elementində onlarla GB) yaddaşda yığır və render yaddaş çatışmazlığından dayanır
+    if a > 0.05:
+        fl.append(f"setsar=1[glx{n}]")
+        chain.append(",".join(fl))
+        chain.append(f"color=c=black@0.0:s={rw}x{rh}:r={fps_str}:d={a:.4f},format=rgba,setsar=1[gpd{n}]")
+        chain.append(f"[gpd{n}][glx{n}]concat=n=2:v=1:a=0,setpts=PTS-STARTPTS[glt{n}]")
+    else:
+        fl.append(f"setpts=PTS+{a:.4f}/TB[glt{n}]")
+        chain.append(",".join(fl))
     chain.append(f"[ga{n}][glt{n}]overlay=x={rx}:y={ry}:eof_action=pass:enable='between(t,{a:.4f},{b:.4f})'[{out}]")
     return ";".join(chain)
