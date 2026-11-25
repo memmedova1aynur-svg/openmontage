@@ -55,6 +55,8 @@ This is a first-class workflow in OpenMontage.
 
 If a model misses this distinction, it will often fall back to plain search + guesswork. That is incorrect for OpenMontage.
 
+**Instagram Reel linki (yalnız analiz):** `skills/meta/video-reference-analyst.md` → "Instagram referansı" (xərcsiz; analiz mühiti və ya fayl/Drive linki).
+
 ## Rule Zero — All Production Goes Through a Pipeline
 
 **Every video production request MUST go through the pipeline system. No exceptions.**

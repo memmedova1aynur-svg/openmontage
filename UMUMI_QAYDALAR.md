@@ -87,3 +87,5 @@ Məhdudiyyət: Drive bağlantısı (MCP) bir fayl üçün **10 MB**-a qədər y�
 
 **Referans video linki (Instagram):** `watch-skill` (üçüncü tərəf, MIT; `third_party/watch-skill`, ayrıca `.venv-watch`) — qaydalar `skills/meta/video-reference-analyst.md`-dədir.
 Standart XƏRCSİZdir: Instagram linki tək başına video vermir — istifadəçi videonu fayl/Drive linki kimi verir. Apify (`montaj.reference --allow-cost`) yalnız açıq xərc razılığı ilə. Mühit ayarı dəyişmir.
+
+**Mühitlər (2026-11-25):** `openmontage` — montaj (Instagram-a çıxış yoxdur); **"Video analizi (Instagram)"** — yalnız referans analizi (Instagram hostları + CDN wildcard-ları istifadəçi tərəfindən Settings-də). Hər biri öz söhbətində açılır.

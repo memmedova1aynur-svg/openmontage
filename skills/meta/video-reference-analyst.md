@@ -417,13 +417,15 @@ Never silently skip analysis steps. If something fails, tell the user what happe
 and what the impact is on the analysis quality.
 
 
-## Instagram referansı — XƏRCSİZ standart (2026-11-25)
+## Instagram referansı (2026-11-25)
 
-İstifadəçi Instagram linki göndərəndə **xərc çıxmasın**. Linkdən video baytlarını xərcsiz almaq mümkün deyil (CDN mühitdə bağlıdır; mühit ayarı dəyişməz; səhifəni brauzer kimi görünüb oxumaq / giriş divarını aşmaq edilmir).
-Xərcsiz yol:
-1. İstifadəçidən videonu **söhbətə fayl kimi əlavə etməsini** və ya **Drive linki** verməsini istə (qısa: "Reel-i yükləyib bura atın, analiz edim"). Fayl gələndən sonra:
-2. `.venv-watch/bin/watch-skill watch <mp4> --no-whisper --no-index --out-dir <müvəqqəti qovluq>` — səhnə kadrları `frames/`-də, `Read` ilə bax; transkripti öz Whisper-lə (montaj analizi) çıxar.
-3. Analiz: kəsim tempi, altyazı üslubu, ara kadr sıxlığı, kart/tipoqrafiya, hook, nə üçün işləyir, bizim müştəri üçün necə uyğunlaşdırmaq. Qısa yaz.
-- **Apify yolu (`python -m montaj.reference --allow-cost`) yalnız istifadəçi xərcə açıq razılıq verəndə** (hər Reel üçün bir neçə sent, tavan 0.10 $). Özbaşına işlətmə.
+**İki mühit:** əsas montaj mühiti (`openmontage`) Instagram-a çıxmır. Referans analizi üçün ayrıca **"Video analizi (Instagram)"** mühiti var (yalnız analiz; `www.instagram.com`, `i.instagram.com` +
+istifadəçinin Settings-də əlavə etdiyi CDN wildcard-ları `*.cdninstagram.com`, `*.fbcdn.net`). Analiz həmin mühitdə açılan söhbətdə aparılır; montaj əsas mühitdə.
+
+**Analiz mühitində (xərcsiz):** `openmontage/.venv-watch/bin/watch-skill watch "<reel linki>" --no-whisper --no-index --out-dir <müvəqqəti qovluq>` → kadrlar `frames/`-də (`Read` ilə bax), altyazı/transkript raporda.
+Nəticədən edit spesifikasiyası: kəsim tempi, altyazı üslubu, ara kadr sıxlığı, kart/tipoqrafiya, hook, niyə işləyir, müştəriyə necə uyğunlaşdırmaq. Qısa yaz.
+- **Alınmasa** (post şəxsi/silinib, Instagram anonim girişi bloklayıb, CDN icazəsi yoxdur): cookie/giriş istifadə etmə, səhifəni brauzer kimi görünüb oxuma — istifadəçidən videonu fayl (söhbətə əlavə) və ya Drive linki kimi istə.
+- **Əsas mühitdə** link tək başına video vermir — eyni qayda: fayl/Drive linki.
+- **Apify yolu (`python -m montaj.reference --allow-cost`) yalnız istifadəçi xərcə açıq razılıq verəndə** (bir neçə sent/Reel, tavan 0.10 $). Özbaşına işlətmə.
 - **Qayda:** yalnız şəxsi analiz; videonu montaja, repoya və ya Drive-a qoyma, kadrlarını təkrar istifadə etmə (müəllif hüququ, platforma şərtləri); işdən sonra müvəqqəti qovluğu sil.
-- OCR bu mühitdə işləmir — kadrlardakı mətnə özün bax.
+- OCR bu mühitdə işləmir (modeli `modelscope.cn`-dən endirir) — kadrlardakı mətnə özün bax.
