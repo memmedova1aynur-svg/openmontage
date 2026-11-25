@@ -25,7 +25,7 @@ Fayl yoxdursa: işi dayandırma, ehtiyatlı defolt götür, sonda nəyin çatı�
 | Brend strategiyası, mövqe | `personal-brand`, `brand-positioning`, `brand-messaging`, `brand-story`, `brand-identity`, `brand-guidelines`, `competitor-branding` |
 | Aylıq / həftəlik plan | `ig-month`, `ig-week`, `ig-plan`, `social`, `marketing-plan` |
 | Reels ssenarisi | `ig-reel` (ekspert danışıq: sakit, izahedici), `social` |
-| Video montaj (Drive linki, danışıq, reklam) | `reels-pro`, `ffmpeg`, `video-edit`, `remotion-video-edit-az` |
+| Video montaj (Drive linki, danışıq, reklam) | `montaj/MONTAJ_QAYDALARI.md` (montaj paneli), `ffmpeg`, `video-edit`, `remotion-video-edit-az` |
 | Post, karusel, poster, hərəkətli post | `post-studio` (+ `canvas-design`, `theme-factory`, `frontend-design`, `ig-carousel`) |
 | Animasiya keyfiyyəti | `animate`, `choreograph`, `emil-design-eng` |
 | Dizayn yoxlaması | `impeccable` (critique/polish), `taste-skill` |

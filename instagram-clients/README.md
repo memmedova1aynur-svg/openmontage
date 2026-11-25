@@ -26,7 +26,7 @@ instagram-clients/
 
 Bütün müştəri işləri `.claude/skills/marketinq-sistemi` skill-indən keçir:
 müştərini müəyyən edir, `brand.md` → `voice.md` → `context.md` oxuyur,
-tapşırığı uyğun skill-ə yönləndirir (ig-*, post-studio, reels-pro, brand-*,
+tapşırığı uyğun skill-ə yönləndirir (ig-*, post-studio, brand-*,
 copywriting, impeccable və s.), keyfiyyət yoxlamasını və təhvil qaydalarını
 tətbiq edir, sonda rəyi `context.md`-yə yazır.
 

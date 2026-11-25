@@ -232,6 +232,13 @@ def fix_layout(q: dict[str, Any], root: Path, workdir: Path, tries: int = 3) -> 
     return q, notes, probs
 
 
+def render_plan_video(q: dict[str, Any], t: float) -> list[str]:
+    """t anında görünən əsas (B-roll olmayan) videonun media id-si."""
+    from montaj.render import render_plan
+
+    return [v["clip"].get("media") for v in render_plan(q)["video"] if v["start"] <= t < v["start"] + v["dur"] and not v["clip"].get("broll")][:1]
+
+
 def run(pid: str) -> dict[str, Any]:
     """Preflight: düzəlişlər layihəyə yazılır. Qayıdır hesabat (kadrlar `out/<pid>/preflight.jpg`)."""
     from montaj import store
@@ -246,6 +253,30 @@ def run(pid: str) -> dict[str, Any]:
         q, notes, left = fix_layout(copy.deepcopy(p), root, Path(tmp) / "lay")
         rep["fixes"] += notes
         rep["problems"] += check_segments(q)
+        rep["checks"] = []
+        from montaj import analysis, checks
+
+        def _chk(r):
+            rep["checks"].append(r)
+            if r["status"] in ("bad", "warn"):
+                rep["problems"].append(f"{r['name']}: {r['msg']}")
+            if r["status"] == "fixed":
+                rep["fixes"].append(f"{r['name']}: {r['msg']}")
+
+        ans = {}
+        for m in q["media"]:
+            f = analysis.analysis_path(root, m["id"])
+            if f.is_file():
+                ans[m["id"]] = json.loads(f.read_text(encoding="utf-8"))
+        try:
+            _chk(checks.cut_boundaries(q, ans))
+        except Exception as e:  # yoxlama montajı dayandırmasın
+            rep["checks"].append({"name": "kəsim sərhədləri", "status": "skip", "msg": f"yoxlanmadı: {e}", "items": []})
+        try:
+            r, q = checks.voice_integrity(q, root)
+            _chk(r)
+        except Exception as e:
+            rep["checks"].append({"name": "danışıq səsi", "status": "skip", "msg": f"yoxlanmadı: {e}", "items": []})
         rep["problems"] += [f"{x['t']:.1f} s {x['what']}" for x in left]
         lo = lowres_project(q, root)
         mp4 = Path(tmp) / "pf.mp4"
@@ -259,6 +290,24 @@ def run(pid: str) -> dict[str, Any]:
         from PIL import Image
 
         bad, fixed_box = False, None
+        try:
+            imgs = [np.asarray(Image.open(f).convert("RGB")) for f in frames]
+            faces = checks._detect(imgs)
+            labs = [f"{m['t']:.1f} s {m['label']}" for m in mm]
+            fr = checks.framing(faces, labs)
+            if fr["status"] == "bad" and abs(fr.get("mean_dx", 0)) > checks.CENTER_TOL:
+                q2 = checks.recenter(q, -fr["mean_dx"])
+                if q2 != q:
+                    q = q2
+                    fr["status"], fr["msg"] = "fixed", f"üz mərkəzdən {100 * fr['mean_dx']:+.1f}% kənarda idi — kadraj avtomatik mərkəzləndi"
+            _chk(fr)
+            mids = []
+            for m in mm:
+                c = next((c for c in render_plan_video(q, m["t"])), None)
+                mids.append(c)
+            _chk(checks.color(imgs, faces, mids, labs, q))
+        except Exception as e:
+            rep["checks"].append({"name": "kadraj/rəng", "status": "skip", "msg": f"yoxlanmadı: {e}", "items": []})
         for m, f in zip(mm, frames):
             info = {"label": m["label"], "t": m["t"]}
             if m.get("caption") and q.get("subtitles", {}).get("enabled", True):
@@ -315,6 +364,8 @@ def describe(rep: dict[str, Any]) -> list[str]:
         tc = m.get("text_contrast")
         extra += f" — yazı kontrastı {tc['ratio']}{', zəif' if not tc['ok'] else ''}" if tc else ""
         out.append(f"  {m['t']:5.1f} s {m['label']}{extra}")
+    for c in rep.get("checks") or []:
+        out.append(f"  yoxlama [{c['status']}] {c['name']}: {c['msg']}")
     out += [f"  düzəldildi: {x}" for x in rep["fixes"]]
     out += [f"  ! {x}" for x in rep["problems"]]
     return out

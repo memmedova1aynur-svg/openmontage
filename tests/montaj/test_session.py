@@ -798,7 +798,7 @@ def test_video_type_registry(tmp_path, monkeypatch, capsys):
     _draft_and_analysis(pid)
     plan = tmp_path / "A.json"
     plan.write_text(json.dumps({"title": "Təmiz + vurğu", "approach": "M04 + punch-in", "look": None}), encoding="utf-8")
-    assert session.main(["choose", pid, str(plan)]) == 0
+    assert session.main(["choose", pid, str(plan), "--remember"]) == 0
     h = json.loads(prof.read_text(encoding="utf-8"))["history"][-1]
     assert h["type"] == 3 and h["approach"] == "M04" and h["variant"] == "Təmiz + vurğu" and h["engine"] == "montaj"
     assert store.load(pid)["videoType"]["approaches"] == ["M04"]

@@ -36,7 +36,7 @@ python3 .claude/skills/musteri-onboarding/scripts/build_doc.py .claude/skills/mu
 
 ## D. İş rejiminə keçid
 - `context.md`-yə yaz: anket tarixi, paket versiyası, təsdiq statusu, çatışmayanlar.
-- `plan_status.md` yarat: 30 günlük təqvim → həftəlik istehsal (`ig-week`, `post-studio`, `reels-pro`).
+- `plan_status.md` yarat: 30 günlük təqvim → həftəlik istehsal (`ig-week`, `post-studio`; montaj: `montaj/MONTAJ_QAYDALARI.md`).
 - Hər ayın sonunda: `ig-audit` + paketin "3 aylıq yol xəritəsi" ilə müqayisə → növbəti ay.
 
 ## Keyfiyyət
