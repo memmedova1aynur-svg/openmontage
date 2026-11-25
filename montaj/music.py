@@ -162,6 +162,6 @@ def placement(vtype: int | None, total: float) -> list[dict[str, Any]]:
     """Standart yerləşmə (plan `music` siyahısı üçün şablon, `file` əlavə olunur)."""
     if int(vtype or 0) == 15:  # kurs dərsi: dərs boyu musiqi yoxdur — açılış və sonluq, çox yumşaq
         end = max(0.0, total - 5.0)
-        return [{"start": 0.0, "dur": 7.0, "volume": 0.06, "fadeIn": 0.5, "fadeOut": 2.5, "duck": True},
-                {"start": round(end, 2), "dur": 5.0, "volume": 0.06, "fadeIn": 1.5, "fadeOut": 2.0, "duck": True}]
-    return [{"start": 0.0, "volume": 0.12, "fadeIn": 1.2, "fadeOut": 2.0, "duck": True}]
+        return [{"start": 0.0, "dur": 7.0, "volume": "auto", "under": 22, "fadeIn": 0.5, "fadeOut": 2.5, "duck": True},
+                {"start": round(end, 2), "dur": 5.0, "volume": "auto", "under": 22, "fadeIn": 1.5, "fadeOut": 2.0, "duck": True}]
+    return [{"start": 0.0, "volume": "auto", "fadeIn": 1.2, "fadeOut": 2.0, "duck": True}]

@@ -1435,8 +1435,8 @@ def test_music_auto_cc0_and_course_placement(tmp_path, monkeypatch):
     assert [s["id"] for s in got] == [3], "yalnız CC0, piano atılır"
     assert "Creative+Commons+0" in seen["url"] or "Creative%20Commons%200" in seen["url"] or "Creative Commons 0" in seen["url"]
     pl = music.placement(15, 300)
-    assert len(pl) == 2 and pl[0]["dur"] == 7.0 and pl[1]["start"] == 295.0 and all(x["volume"] <= 0.08 for x in pl)
-    assert music.placement(1, 40) == [{"start": 0.0, "volume": 0.12, "fadeIn": 1.2, "fadeOut": 2.0, "duck": True}]
+    assert len(pl) == 2 and pl[0]["dur"] == 7.0 and pl[1]["start"] == 295.0 and all(x["volume"] == "auto" and x["under"] >= 20 for x in pl)  # səviyyə danışığa görə (premix), dərsdə daha yumşaq
+    assert music.placement(1, 40) == [{"start": 0.0, "volume": "auto", "fadeIn": 1.2, "fadeOut": 2.0, "duck": True}]
 
     pid = _fixture(tmp_path, monkeypatch)
     from montaj import session, store
