@@ -44,16 +44,20 @@ Ortaq qaydalar: `UMUMI_QAYDALAR.md`. Bu fayl ortaq qaydadan üstündür.
 | 2026-11-03 | Təhsil brifi: tünd yaşıl fon, Montserrat qalın, 6 kadrlıq axın, sakit premium hərəkət | Xəyyam |
 | 2026-11-04 | Laym qadağan; vurğu `#6CC57E`, fon tünd yaşıl və ya təmiz ağ (krem yox) | Xəyyam |
 
-## D. Video tarixçəsi (özet; 43 qeyd = 8 video üzrə render/variantlar, 2026-11-03/04)
-| Variant | Say | Look | Altyazı | Animasiya |
+## D. Video tarixçəsi (yalnız son/yekun render, 2026-11-04)
+Profildə 43 render/variant qeydi var, amma bunlar **8 real videoya** aiddir. Gündəlik iş üçün hər videonun son qeydi saxlanır; "yekun təsdiqlənib" deyə yoxlanmayıb ⚠.
+| Video | Variant (son qeyd) | Look | Altyazı | Animasiya |
 |---|---|---|---|---|
-| Sözlər yadınıza düşmür — premium | 13 | W | stroke/box | fade/pop |
-| Təxirəsalma (sürətli v3: 6, PRO: 5, sinematik: 3, öz storyboardu: 2 — H) | 16 | W (2-si H) | box/stroke | pop/fade |
-| McCollough (PRO: 4, effekti: 1) | 5 | W | — | — |
-| Öyrənməyi öyrən (REKLAM PRO: 3, adi: 1) | 4 | W | — | — |
-| Digər (Başlığı suala çevir 2, Oxu-xatırla-yoxla 1, Bu yaşda yadda saxlayım 1, Fasiləli təkrar 1) | 5 | W | — | — |
+| 1 | Oxu, xatırla, yoxla | W | stroke | fade |
+| 2 | 02 McCollough — PRO | W | — | — |
+| 3 | 03 Öyrənməyi öyrən — REKLAM PRO | W | — | — |
+| 4 | Bu yaşda yadda saxlayım? | W | stroke | fade |
+| 5 | Sözlər yadınıza düşmür — premium | W | stroke | fade |
+| 6 | Başlığı suala çevir | W | stroke | fade |
+| 7 | Fasiləli təkrar | W | stroke | fade |
+| 8 | 01 Təxirəsalma — PRO | W | — | — |
 
-Qeyd: 43 qeyd yalnız **8 real videoya** (Xeyyam video 1–8) aiddir, qalanı eyni videonun yenidən render/variantlarıdır. 43 qeydin 41-i look W, 2-si H; altyazı stroke 20, box 11; animasiya fade 20, pop 11. Eyni üslub təkrarlanma riski yüksəkdir — ortaq qaydanın 10-cu bəndinə (fərq testi) uyğun olaraq növbəti videolarda imza elementlərindən ən azı biri dəyişdirilməlidir.
+Müşahidə: 8 videonun hamısı look W; 5-i eyni altyazı/animasiya (stroke + fade). İmza elementinin **özü sabit** qala bilər, amma onun tətbiq forması (yer, vaxt, kadr tipi) dəyişməlidir ki, videolar kopya kimi görünməsin.
 
 ## Açıq suallar (istifadəçi cavab verməlidir)
 1. **Look hərfi:** profildə üç fərqli qayda var: "həmişə C" (11-01), "H" (11-03), tarixçədə isə faktiki "W" istifadə olunub. Hansı qüvvədədir?

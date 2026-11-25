@@ -43,6 +43,7 @@ Hər rəydən sonra daimi olanı bura tarixlə əlavə et; təkrar soruşulmur.
 |  |  |  |
 
 ## D. Video tarixçəsi (təkrar nəzarəti)
-| Video | Tarix | İstifadə olunan imza elementləri | Musiqi | Qeyd |
-|---|---|---|---|---|
-|  |  |  |  |  |
+Yalnız **yekun versiyanın** xülasəsi yazılır (hər real video üçün 1 sətir), render/variantlar yox. Son 10 video saxlanır; köhnələri bir sətirlik say qeydinə çevir.
+| Video | Tarix | Yekun variant | İmza elementləri | Musiqi | Qeyd |
+|---|---|---|---|---|---|
+|  |  |  |  |  |  |

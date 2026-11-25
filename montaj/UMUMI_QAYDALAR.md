@@ -1,7 +1,8 @@
-# Ümumi montaj qaydaları (bütün müştərilər üçün, bir dəfə oxunur)
+# Ümumi montaj qaydaları (bütün müştərilər üçün)
 
 Müştəriyə xas parametrlər (rəng, şrift, imza, musiqi, qadağalar) müştərinin öz faylındadır (`MUSTERI_SABLONU.md` əsasında).
 Bu fayl yalnız ortaq qaydaları saxlayır; müştəri fayllarına kopyalanmır.
+**Oxunma:** hər sessiyada işə başlamazdan əvvəl bir dəfə oxu; sessiyada bu fayla çıxış yoxdursa və ya kontekst sıfırlanıbsa (uzun söhbət, yeni sessiya) yenidən oxu.
 
 ## 0. Prioritet (ziddiyyət olanda)
 **Müştəri profili / müştəri faylı > bu fayl > `IS_AXINI.md` standartları.**
@@ -60,8 +61,8 @@ Hər video ayrıca yaradıcı layihədir; yaradıcılıq effekt çoxluğu deyil,
 
 ## 10. Fərq testi (ölçülə bilən)
 Hər müştəri faylında 3 imza element yazılır. Təhvildən əvvəl:
-1. Müştərinin imza elementlərindən mövzuya uyğun olan ən azı biri videoda varmı? (3-ünü məcbur etmə, imza hər videoda məcburi deyil, §5.)
-2. Başqa müştərinin son videosuna eyni kart/animasiya/musiqi təkrarı varmı? (olmamalıdır)
+1. Müştərinin imza elementləri brend tanınması üçündür; **heç biri hər videoda məcburi deyil** və minimum say tələbi yoxdur. İmza elementi sabit qala bilər, tətbiq forması dəyişə bilər; istifadə olunmasa da brend kimliyi (rəng, şrift, ton) qorunur.
+2. Başqa müştərinin bütöv montaj kimliyi (kart + animasiya + musiqi + ritm birlikdə) təkrarlanmasın. Ayrı-ayrı element oxşarlığı problem deyil.
 3. Hazır şablon və ya süni AI təəssüratı yaradırmı? (yaratmamalıdır)
 4. Mövzuya uyğundurmu və ekspert imicini gücləndirirmi?
 Yoxlama qısa aparılır; yalnız problemli hissə düzəldilir.
