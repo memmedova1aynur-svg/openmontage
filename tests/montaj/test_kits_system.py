@@ -308,3 +308,25 @@ def test_glass_kits_use_profile_name_and_do_not_invent_text():
     blob = json.dumps(ban, ensure_ascii=False).lower()
     assert "televizor" in blob and "psixoloji" in blob
     assert {"milkglass", "notification", "glasscaps", "pblur"} <= set(memory.global_decisions()["liked"])
+
+
+def test_client_kit_preferences_restrict_suggestions_and_drive_glass_style():
+    import json as _j
+    from pathlib import Path
+
+    prof = _j.loads((Path(__file__).resolve().parents[2] / "templates" / "expert-reels" / "experts" / "xeyyam-huseynov.json").read_text(encoding="utf-8"))
+    pref = prof["kit_preferences"]
+    assert pref["only"] and set(pref["preferred"]) == {"milkglass", "glasscaps", "pblur", "notification"}
+    sug = memory.suggest(prof, 5)
+    assert set(sug) <= set(pref["preferred"]) and len(sug) == 4, "Xəyyam üçün yalnız seçdiyi dəstlər (eskiz 1 və 4)"
+    gl = memory.glass_defaults(prof)
+    assert gl["tint"] == "#0F3B2E" and gl["ink"] == "#FFFFFF" and gl["accent"] == "#6CC57E" and gl["icon"] == "book"
+    assert len(prof["cautions"]) == 1 and "laym" in prof["cautions"][0].lower(), "köhnə qaydalar silinib; yalnız 11-04 rəng qərarı"
+    b = kits.build("milkglass", {**CONTENT, "glass": gl}, {"primaryDeep": "#0F3B2E"})
+    g0 = [g for g in b["graphics"] if g["type"] == "gcard"][0]
+    assert g0["tint"] == "#0F3B2E" and g0["ink"] == "#FFFFFF" and g0["icon"] == "book" and g0["ta"] == 0.6
+    n = kits.build("notification", {**CONTENT, "glass": gl, "brand_name": "Xəyyam Həsənov"})
+    assert all(g["icon"] == "book" and g["title"] == "Xəyyam Həsənov" for g in n["graphics"] if g["type"] == "gbanner")
+    # 4 seçilmiş dəst bir-birindən fərqli variantlar verir
+    built = {k: kits.build(k, {**CONTENT, "glass": gl, "brand_name": "Xəyyam Həsənov"}) for k in sug}
+    assert difference.check(built)["ok"]

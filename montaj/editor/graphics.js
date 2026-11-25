@@ -121,19 +121,21 @@
       return p;
     };
     const txt = (css, text) => { const t = node(doc, 'div', { fontFamily: '"Work Sans","DejaVu Sans",sans-serif', color: ink, ...css }, text); if (MASK) t.style.visibility = 'hidden'; return t; };
-    const dropSvg = (size, fill, withBg) => {   // süd damcısı (ana südü mövzusu) — Sura profilinin süd damcısı motivi
-      const NS = 'http://www.w3.org/2000/svg', e = doc.createElementNS(NS, 'svg');
+    const dropSvg = (size, fill, withBg) => {   // ikon: süd damcısı (ana südü/ana-körpə) və ya kitab (təhsil/öyrənmə) — clip.icon; fon qradiyenti clip.accent-dən
+      const NS = 'http://www.w3.org/2000/svg', e = doc.createElementNS(NS, 'svg'), book = clip.icon === 'book';
       e.setAttribute('width', size); e.setAttribute('height', size); e.setAttribute('viewBox', '0 0 100 100');
-      e.innerHTML = `<defs><linearGradient id="dg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F2829E"/><stop offset="1" stop-color="#C94C78"/></linearGradient></defs>`
+      const g0 = book ? '#6CC57E' : '#F2829E', g1 = book ? '#3E9E57' : '#C94C78';
+      e.innerHTML = `<defs><linearGradient id="dg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${g0}"/><stop offset="1" stop-color="${g1}"/></linearGradient></defs>`
         + (withBg ? `<rect x="0" y="0" width="100" height="100" rx="26" fill="url(#dg)"/>` : '')
-        + `<path d="M50 14 C50 14 24 46 24 62 C24 76 35 86 50 86 C65 86 76 76 76 62 C76 46 50 14 50 14 Z" fill="${fill}"/>`
-        + `<ellipse cx="41" cy="62" rx="5" ry="9" fill="rgba(255,255,255,0.55)" transform="rotate(18 41 62)"/>`;
+        + (book ? `<path d="M50 30 L22 24 L22 72 L50 78 Z" fill="${fill}"/><path d="M50 30 L78 24 L78 72 L50 78 Z" fill="${fill}" fill-opacity="0.82"/>`
+          : `<path d="M50 14 C50 14 24 46 24 62 C24 76 35 86 50 86 C65 86 76 76 76 62 C76 46 50 14 50 14 Z" fill="${fill}"/>`
+            + `<ellipse cx="41" cy="62" rx="5" ry="9" fill="rgba(255,255,255,0.55)" transform="rotate(18 41 62)"/>`);
       e.style.flex = '0 0 auto'; if (MASK) e.style.visibility = 'hidden';
       return e;
     };
     if (type === 'gcard') {  // süd şüşəsi kartı: damcı ikonu + (kicker) + mətn / nöqtəli sətirlər
       const p = panel({ width: `${VW * (clip.w ?? 0.87)}px`, padding: `${fs * 0.7}px ${fs * 0.85}px`, borderRadius: `${fs * 0.95}px`, display: 'flex', alignItems: 'center', gap: `${fs * 0.55}px` });
-      if (clip.icon === 'drop') p.append(dropSvg(fs * 1.15, pinkA, false));
+      if (clip.icon === 'drop' || clip.icon === 'book') p.append(dropSvg(fs * 1.15, pinkA, false));
       const col = node(doc, 'div', { display: 'flex', flexDirection: 'column', gap: `${fs * 0.12}px` });
       if (clip.kicker) col.append(txt({ fontSize: `${fs * 0.32}px`, fontWeight: '700', letterSpacing: '0.18em', textTransform: 'uppercase', opacity: '0.75' }, clip.kicker));
       if (clip.items && clip.items.length) {

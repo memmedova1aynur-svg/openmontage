@@ -19,6 +19,13 @@
     "cardAlpha": 0.95
   },
   "style": {},
+  "kit_preferences": {
+    "_note": "İstifadəçi seçimi 2026-11-25: Xəyyam üçün eskiz 1 (Zümrüd şüşə) və 4 (iOS bildiriş). Tünd yaşıl şüşə, yarpaq yaşılı vurğu, kitab ikonu; real B-roll tam kadr.",
+    "preferred": ["milkglass", "glasscaps", "pblur", "notification"],
+    "only": true,
+    "glass": {"tint": "#0F3B2E", "ta": 0.6, "ink": "#FFFFFF", "accent": "#6CC57E", "icon": "book"},
+    "broll": "real stok (Mixkit/CC0), tam kadr, mövzuya uyğun; ≥2 s"
+  },
   "history": [
     {
       "video": "Xeyyam video 8",

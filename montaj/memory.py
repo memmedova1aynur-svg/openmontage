@@ -38,6 +38,11 @@ def rejected_kits(profile: dict[str, Any] | None) -> list[str]:
     return [r["kit"] if isinstance(r, dict) else str(r) for r in ((profile or {}).get("rejected") or [])]
 
 
+def glass_defaults(profile: dict[str, Any] | None) -> dict[str, Any]:
+    """Müştərinin təsdiqlədiyi şüşə üslubu (tünd/açıq tint, mətn və vurğu rəngi, ikon) — `content["glass"]` kimi verilir."""
+    return dict(((profile or {}).get("kit_preferences") or {}).get("glass") or {})
+
+
 def blocked(profile: dict[str, Any] | None) -> dict[str, str]:
     out = {k: f"son {RECENT_N} videoda işlənib" for k in recent_kits(profile)}
     out.update({k: "istifadəçi rədd edib" for k in rejected_kits(profile)})
@@ -49,9 +54,11 @@ def suggest(profile: dict[str, Any] | None, n: int = 3, tags: list[str] | None =
     """n dəst: bloklananlar xaric, bir-birindən oxlar üzrə ən uzaq (xəsis seçim); mövzu teqlərinə uyğun olan üstün."""
     bl = blocked(profile)
     liked = global_decisions()["liked"]
-    pool = [k for k in kits.KITS if k not in bl]
+    kp = (profile or {}).get("kit_preferences") or {}
+    pref = [k for k in (kp.get("preferred") or []) if k in kits.KITS]
+    pool = [k for k in kits.KITS if k not in bl and (not pref or not kp.get("only") or k in pref)]
     tags = [t.lower() for t in tags or []]
-    score = lambda k: sum(any(t in s.lower() for s in kits.KITS[k]["suits"]) for t in tags) + (2 if k in liked else 0)  # noqa: E731
+    score = lambda k: sum(any(t in s.lower() for s in kits.KITS[k]["suits"]) for t in tags) + (2 if k in liked else 0) + (3 if k in pref else 0)  # noqa: E731
     pool.sort(key=lambda k: (-score(k), k))
     chosen: list[str] = []
     while pool and len(chosen) < n:
