@@ -1189,8 +1189,9 @@ def apply_plan(pid: str, p: dict[str, Any], plan: dict[str, Any], plan_name: str
     for c in [*fixes, *(plan.get("corrections") or [])]:  # müştəri lüğəti + plan düzəlişləri
         if q.get("subtitles"):
             q = node_tl("replaceEverywhere", q, c["from"], c["to"])["project"]
-    for z in plan.get("zooms") or []:  # punch-in: klip zaman xəttində bölünür, ortadakı hissə yaxınlaşdırılır
-        for t in (z["to"], z["from"]):
+    for z in plan.get("zooms") or []:  # zoom: klip zaman xəttində bölünür, ortadakı hissə yaxınlaşdırılır
+        smooth = z.get("smooth", True)  # hamar (standart): smoothstep yaxınlaşma + 0.7 s hamar geri çəkilmə; smooth:false — köhnə sıçrayış
+        for t in ((z["to"] + 0.7, z["to"], z["from"]) if smooth else (z["to"], z["from"])):
             seg = next((c for c in node_tl("videoClips", q)
                         if _start(q, c["id"]) + 0.15 < t < _start(q, c["id"]) + c["srcOut"] - c["srcIn"] - 0.15), None)
             if seg:
@@ -1200,13 +1201,21 @@ def apply_plan(pid: str, p: dict[str, Any], plan: dict[str, Any], plan_name: str
         cur = mid.get("frame") or {}  # avtomatik kadraj düzəlişi (fırlatma, ortalama) punch-in-də də qalır
         base_s = float(cur.get("s") or 1) if cur.get("mode") in ("auto", "manual") else 1.0
         k0 = (cur.get("keys") or [{}])[0] if cur.get("mode") in ("auto", "manual") else {}
-        fr = {"aspect": q.get("aspect") or "source", "mode": "auto", "s": round(base_s / float(z.get("scale", 1.12)), 4),
+        sc = float(z.get("scale", 1.12))
+        fr = {"aspect": q.get("aspect") or "source", "mode": "auto", "s": round(base_s if smooth else base_s / sc, 4),
               "baseW": cur.get("baseW", 1) if k0 else 1, "baseH": cur.get("baseH", 1) if k0 else 1,
               "keys": [{"t": mid["srcIn"], "cx": z.get("cx", k0.get("cx", 0.5)), "cy": z.get("cy", k0.get("cy", 0.45))}],
-              "rotate": cur.get("rotate", 0), "warnings": [], "planZoom": True}
+              "rotate": cur.get("rotate", 0), "warnings": [], "planZoom": not smooth, "smoothZoom": smooth}
+        if smooth:  # 1 → sc (smoothstep) klip boyu; sonra gələn qısa hissə sc → 1 (hamar geri çəkilmə) — sıçrayış yoxdur
+            fr.update(push=sc, ease=True)
         if m.get("width") and q.get("width") and abs(m["width"] / m["height"] - q["width"] / q["height"]) > 0.02:
             raise UserError("Punch-in yalnız eyni ölçülü kadrda avtomatik qurulur.", "Kadrajı redaktorda əl ilə edin.")
         q = node_tl("setFrame", q, mid["id"], fr, {"manual": False})
+        if smooth:
+            tail = next((c for c in node_tl("videoClips", q) if abs(_start(q, c["id"]) - z["to"]) < 0.05), None)
+            if tail:
+                q = node_tl("setFrame", q, tail["id"], {**fr, "push": None, "pull": sc, "keys": [dict(fr["keys"][0], t=tail["srcIn"])]},
+                            {"manual": False})
     if plan.get("layout") is not None:  # dərs kadrı: danışan paneldə, qalan sahə qrafika üçün (render.LAYOUT_DEFAULT)
         q["layout"] = plan["layout"] or None
     if plan.get("jl") is not None:  # J/L-cut (render-də): {"auto": true, "lead": 0.25, "cuts": {...}}

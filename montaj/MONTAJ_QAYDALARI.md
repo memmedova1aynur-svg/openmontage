@@ -9,9 +9,10 @@ ad/titul, lüğət və müştərinin öz məhdudiyyətləri (məs. animasiya/ara
 1. Link gələndə ilkin sorğu yoxdur. Yalnız müştəri adı bilinmirsə onu soruş. Qovluqda bir neçə video varsa — **ardıcıl**, hər biri ayrı.
 2. `new --title "<ad>" --link "<link>" --client "<Profil adı>" --type <N>` → `storyboard <pid> --quick` → `framefix` → `voice-clean`
    → transkripti oxu (`retakes` köməkçidir) → `music`.
-3. **Hər video üçün 3 storyboard variantı (məcburi).** Üç variant bir-birindən tamamilə fərqli montaj üslubu olmalıdır
+3. **Hər video üçün 3 storyboard variantı (məcburi; mövzu imkan verirsə 5-ə qədər).** Variantlar bir-birindən tamamilə fərqli montaj üslubu olmalıdır
    (montaj növü, animasiya ilə cümləyə bağlı və ya birbaşa kadr dəyişmə, hook üsulu, ritm, tipoqrafiya, musiqi) — yalnız rəng/mətn fərqi yox.
-   Hər variantın yanında 1–2 cümlə: bu video üçün **niyə** seçilib (reklamda — hansı daha çox geri dönüş gətirər).
+   Variantı ən keyfiyyətli, ən maraqlı və izləyicini sona qədər saxlayan formada qur — **render vaxtına görə sadələşdirmə**. Hər variantın yanında:
+   **təxmini montaj müddəti** və bu video üçün **niyə** seçilib (reklamda — hansı daha çox geri dönüş gətirər). Qərar istifadəçinindir.
    `variants <pid> A.json B.json C.json` → `storyboard_variantlari.jpg` (360p proksidən, saniyələr; video önizləmə üçün `--mp4`).
    Göndər: storyboard şəkli + variant izahları + 2–3 musiqi nümunəsi + `kadraj.jpg` + material qeydləri. İstifadəçi ilə birlikdə seçilir.
 4. Seçimdən sonra: `choose <pid> <plan.json>` → `render <pid>` (preflight daxildir) → `verify <pid>` → yekun `_ig.mp4` + 2–4 sətir.
@@ -36,7 +37,7 @@ Video başdan sona izləyicini saxlamalı, dinamik olmalıdır — mexaniki "hə
 **Kəsim və pauza.** Yalnız təkrar, alınmayan cəhd və kənar söhbət çıxır. Söz və heca kəsilmir. Vurğu yaradan və ya fikri anlamağa vaxt
 verən pauza qalır; saniyə həddi ilə mexaniki kəsim yoxdur. Arxa səs kəsiləndə/təmizlənəndə ekspertin səsi dəyişmir (`voice-clean`).
 
-**Zoom və keçidlər (MƏCBURİ — icra statusu §4; icra olunana qədər də qayda qüvvədədir, §4-dəki əvəzi tətbiq olunur).** Zoom yalnız hamar və yumşaq olur (`multicam` calm və ya yavaş yaxınlaşma). `zooms` (punch-in) qadağandır — sıçrayışdır.
+**Zoom və keçidlər (MƏCBURİ — icra statusu §4; icra olunana qədər də qayda qüvvədədir, §4-dəki əvəzi tətbiq olunur).** Zoom yalnız hamar və yumşaq olur: planda `zooms` standart olaraq hamardır (smoothstep yaxınlaşma + qısa hamar geri çəkilmə, `scale` ≤1.12), `multicam` calm da hamardır. `smooth:false` (sıçrayış) işlədilmir.
 Kəsimdə keçid hiss edilməməlidir: kəsim cümlə sərhədində, səsin ən sakit yerində, 12 ms səs keçidi, lazım olsa J/L-cut. Sərt sıçrayış yoxdur.
 
 **Altyazı.** `skills/creative/caption-typography.md`: 4 rol ayrıdır (altyazı, hook, vurğu, CTA); Azərbaycan hərfləri düzgün; ≤2 sətir;
@@ -62,7 +63,7 @@ Güzgü çevirmə (`hflip`), arxa fonu bulanıqlaşdırma/dəyişmə, ödənişl
 
 ## 4. Hazırda sistemdə YOXDUR (əvəzi)
 Bunlar qaydadan azad etmir: §2-dəki qaydalar məcburidir, kod isə ayrıca işdir. İcra olunana qədər aşağıdakı əvəzi tətbiq olunur və təhvildə bunun hələ tam hamar olmadığı açıq yazılır.
-- **Hamar zoom və hiss edilməyən video keçidi (MƏCBURİ qayda, icra gözlənilir):** punch-in sıçrayışdır, videoda dissolve yoxdur → `multicam` calm + cümlə sərhədində kəsim; əsl hamar zoom (animasiyalı kadr) və yumşaq video keçidi hələ icra olunmayıb.
+- **Hiss edilməyən video keçidi (MƏCBURİ qayda, icra gözlənilir):** videoda dissolve/crossfade yoxdur → cümlə sərhədində, səsin ən sakit yerində kəsim + 12 ms səs keçidi + J/L-cut; yumşaq video keçidi hələ icra olunmayıb. (Hamar zoom artıq var.)
 - **Bədən örtülməsi yoxlaması:** `verify`/preflight yalnız üzü yoxlayır → vizual kadrda özün yoxla, kart bədəni örtərsə kadrı böl.
 - **Element ≥2 s qaydası:** preflight xəbərdarlıq edir, avtomatik düzəltmir → planda vaxtları özün düzəlt.
 

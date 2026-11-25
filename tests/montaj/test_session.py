@@ -1519,3 +1519,29 @@ def test_depth_fx_cli(tmp_path, monkeypatch, capsys):
     assert session.main(["fx", pid, "--clear"]) == 0
     q = store.load(pid)
     assert not q.get("fx") and not q.get("fxRender") and not [c for c in q["clips"] if c.get("origin") == "fx"]
+
+
+def test_smooth_zoom_ramp_vs_step(tmp_path, monkeypatch):
+    """zooms standart olaraq HAMARDIR: ortadakı hissə smoothstep push, ardınca qısa hamar pull; smooth:false — köhnə sıçrayış."""
+    pid = _fixture(tmp_path, monkeypatch)
+    from montaj import media, render, session, store
+    from montaj.session import node_tl
+
+    _draft_and_analysis(pid)
+    assert session.main(["apply", pid]) == 0
+    p = store.load(pid)
+    m0 = p["media"][0]
+    p.update(aspect="source", width=m0["width"], height=m0["height"])  # zoom yalnız mənbə ilə eyni ölçülü kadrda qurulur
+    total = sum(c["srcOut"] - c["srcIn"] for c in node_tl("videoClips", p))
+    z = {"from": 1.0, "to": min(2.6, total - 0.5), "scale": 1.12}
+    q = session.apply_plan(pid, p, {"look": None, "zooms": [z]})
+    frs = [c.get("frame") or {} for c in node_tl("videoClips", q)]
+    assert any(f.get("push") == 1.12 and f.get("ease") for f in frs), "yaxınlaşma smoothstep ilə"
+    assert any(f.get("pull") == 1.12 and f.get("ease") for f in frs), "hamar geri çəkilmə"
+    assert not any(f.get("planZoom") for f in frs)
+    out = tmp_path / "z.mp4"
+    q["width"], q["height"] = 270, int(round(270 * m0["height"] / m0["width"] / 2) * 2)
+    render.render(q, store.project_dir(pid), out, lambda x: None)  # filtr zənciri etibarlıdır
+    assert media.probe(out)["duration"] > 1.5
+    q2 = session.apply_plan(pid, p, {"look": None, "zooms": [{**z, "smooth": False}]})
+    assert any((c.get("frame") or {}).get("planZoom") for c in node_tl("videoClips", q2)), "köhnə sıçrayış rejimi qalır"
