@@ -46,11 +46,12 @@ def test_chain_has_no_forbidden_filters():
 
 
 def test_check_flags_shift_and_sharpening():
-    b = {"mean_luma": 100, "skin_rg": 1.4, "cast_bg": 1.0, "sat": 0.2, "clip_hi": 0, "sharp": 6, "noise": 0.6}
+    b = {"mean_luma": 100, "skin_rg": 1.4, "cast_bg": 1.0, "sat": 0.2, "clip_hi": 0, "sharp": 6, "noise": 0.6, "p1": 5.0, "p99": 230.0}
     assert crystal.check(b, dict(b)) == []
     assert "lift" in crystal.check(b, {**b, "mean_luma": 110})
     assert "sharpen" in crystal.check(b, {**b, "sharp": 9})
     assert "vibrance" in crystal.check(b, {**b, "skin_rg": 1.5})
+    assert "lift" in crystal.check(b, {**b, "p1": 12.0}) and "lift" in crystal.check(b, {**b, "p99": 220.0})  # bulanıq qara / solğun ağ
 
 
 def test_measure_and_apply_on_synthetic_frame():
@@ -74,3 +75,18 @@ def test_aligned_check_identity_and_flags_shift(tmp_path):
     assert ok["nəticə"] == "KEÇDİ" and abs(ok["işıq_sürüşməsi_orta"]) < 1.5
     bad = crystal.aligned_check(src, bright, segs, n=4)
     assert bad["nəticə"].startswith("PROBLEM") and bad["işıq_sürüşməsi_orta"] > 6
+
+
+def test_seat_window_math_and_library_search():
+    """Oturma xəttinə görə pəncərə (başın üstü ~10%, alt omba+6%, yaxınlaşma həddi) və kitabxana axtarışı (AZ sinonim)."""
+    from montaj import framefix, library
+    s, cx, cy, need = framefix.seat_window(0.5, 0.25, 0.60)
+    assert 0.6 <= s <= 1.0 and abs(cy - s / 2 - (0.25 - 0.10 * s)) < 0.02 and 0 < cx <= 1
+    assert framefix.seat_window(0.5, 0.25, 0.35)[0] == round(1 / framefix.SEAT_ZOOM, 4)  # həddən çox yaxınlaşma tələbi → limit
+    assert library.search("kitabxana", "broll", 2) and library.search("sakit ilham", "music", 2)
+
+
+def test_doctor_runs_and_reports():
+    from montaj import doctor
+    need, tips = doctor.check()
+    assert isinstance(need, list) and isinstance(tips, list)

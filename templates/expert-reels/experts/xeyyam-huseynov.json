@@ -252,5 +252,9 @@
       "variant": "03 Öyrənməyi öyrən — REKLAM PRO",
       "look": "W"
     }
-  ]
+  ],
+  "music_policy": {
+    "use": null,
+    "note": "Müştəri qaydası yazılmayıb → musiqisiz (soruşulmur). use: true/false + mood/lisenziya qaydası istifadəçi tərəfindən yazılır."
+  }
 }

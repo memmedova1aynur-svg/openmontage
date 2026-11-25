@@ -22,8 +22,22 @@
     {
       "video": "coaching-consultation (reference build)",
       "date": "2026-10-26",
-      "style": { "captions": "stroke", "pills": "top-card", "backdrop": "dots", "pipShape": "circle", "pipCorner": "br" },
-      "scenes": ["timeline", "phone", "comment"]
+      "style": {
+        "captions": "stroke",
+        "pills": "top-card",
+        "backdrop": "dots",
+        "pipShape": "circle",
+        "pipCorner": "br"
+      },
+      "scenes": [
+        "timeline",
+        "phone",
+        "comment"
+      ]
     }
-  ]
+  ],
+  "music_policy": {
+    "use": null,
+    "note": "Müştəri qaydası yazılmayıb → musiqisiz (soruşulmur). use: true/false + mood/lisenziya qaydası istifadəçi tərəfindən yazılır."
+  }
 }

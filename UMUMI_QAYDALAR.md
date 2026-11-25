@@ -58,3 +58,23 @@ barmaq izi (`params.json`: parlaqlıq, kəskinlik, səs-küy, doyma, dəri R/G) 
 altyazı, kart və başlıq bu sahələrə girməməlidir. Üzü, ağzı və vacib jestləri örtmə.
 
 **Müştəri tarixçəsi:** profilin `history` hissəsində yalnız real videoların **yekun** versiyası saxlanır; render variantları və aralıq versiyalar `templates/expert-reels/experts/_arxiv/` altında arxivləşdirilir.
+
+## Hazır studiya: sessiya, kitabxana, rejissor, kadraj (2026-11-25)
+
+**Sessiya başlanğıcı (soruşma, "yoxdur" demə):** `python -m montaj.doctor` — bir əmr: yoxlayır, çatışanı `--fix` ilə özü qurur, bir sətir nəticə verir. Mühitin quraşdırma skripti
+(`scripts/cloud-setup.sh`) təzə konteynerdə asılılıqları qurur; fərdi açarlar (Pixabay/Freesound) isteğe bağlıdır.
+
+**Kitabxana (musiqi, B-roll, SFX):** `montaj/library/catalog.json` (kiçik kataloq, repoda) + fayllar lazım olanda endirilir (`python -m montaj.library search|get|sync`).
+Mənbələr: Mixkit (pulsuz lisenziya, mühit şəbəkəsində açıq) və istifadəçinin Drive qovluğu **"OpenMontage Kitabxana"** (`musiqi/`, `broll/`; fayl adı `teq1_teq2_ad.ext`;
+qovluq "Linki olan hər kəs — Baxan" olmalıdır; sonra `sync`). Məhdudiyyət: Mixkit B-roll 1280×720 üfüqidir — tam ekran şaquli üçün yumşaq olur; kart/pəncərə içində işlədilir.
+Müştəriyə məxsus və ya məxfi material bu ortaq kitabxanaya qoyulmur.
+
+**Musiqi qaydası müştəri profilindədir** (`music_policy.use: true|false` + əhval/lisenziya). Qayda yazılmayıbsa — musiqisiz, soruşulmur.
+
+**Rejissor:** hər video üçün montajdan əvvəl konsept seçilir (`skills/meta/edit-director.md`, `python -m montaj.director brief`). "Oturub danışır, düz edit" avtomatizmi yoxdur;
+düz edit yalnız əsaslandırılıb seçilir. Konsept 5–8 sətirdir; storyboard/alternativ/uzun hesabat yoxdur (müştəri profili tələb edənə qədər).
+
+**Kadraj standartı (`montaj/framefix.py`):** əyrilik düzəlir; oturduğu xəttdən kəsilir (ayaq/diz kadrda görünürsə omba+6%, yaxınlaşma həddi 1.6×); omba masa/kadr tərəfindən örtülürsə kəsmə yoxdur
+(masa aşağıda görünə bilər); başın üstündə ~10% boşluq (müştəri profili kart üçün artıra bilər). Əl kamerası hərəkəti izlənmir (sabit kamera fərziyyəsi).
+
+**Rəngdə ağ/qara nöqtə:** nümunə və yekun yoxlama qara nöqtənin 3-dən çox qalxmasını (bulanıq qara) və ağ nöqtənin 4-dən çox enməsini (solğun ağ) problem sayır.

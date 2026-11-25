@@ -42,7 +42,7 @@ REF = {"mean_luma": 118.0, "sharp": None, "noise": None, "sat": None}  # sharp/n
 REF_FILE = Path(__file__).parent / "references" / "crystal_clear_v3" / "params.json"
 
 # Qoruyucu hədlər (nümunə kadr yoxlaması): bunlardan kənara çıxırsa müvafiq parametr azaldılır
-LIMITS = {"luma_shift": 6.0, "skin_rg": 0.025, "neutral_cast": 0.015, "sat_rel": 0.12, "clip_pp": 0.5, "sharp_ratio": 1.4, "noise_ratio": 3.2}  # noise_ratio: V3 özü ölçülən yüksək tezliyi 2.3× artırır (kəskinlik təsiri) → hədd V3×1.4
+LIMITS = {"black_pt": 3.0, "white_pt": 4.0, "luma_shift": 6.0, "skin_rg": 0.025, "neutral_cast": 0.015, "sat_rel": 0.12, "clip_pp": 0.5, "sharp_ratio": 1.4, "noise_ratio": 3.2}  # noise_ratio: V3 özü ölçülən yüksək tezliyi 2.3× artırır (kəskinlik təsiri) → hədd V3×1.4
 GOOD = {"sharp_factor": 1.6, "sat_hi": 0.40, "sat_lo": 0.07, "noise_quiet": 0.45, "mid_target": 135.0, "wb_tol": 0.06}
 
 
@@ -219,6 +219,8 @@ def check(before: dict[str, float], after: dict[str, float]) -> list[str]:
     if "cast_bg" in before and "cast_bg" in after and abs(after["cast_bg"] - before["cast_bg"]) > LIMITS["neutral_cast"]: pr += ["vibrance", "lift"]
     if before["sat"] > 0 and abs(after["sat"] / before["sat"] - 1) > LIMITS["sat_rel"]: pr.append("vibrance")
     if after["clip_hi"] - before["clip_hi"] > LIMITS["clip_pp"]: pr += ["lift", "micro"]
+    if after["p1"] - before["p1"] > LIMITS["black_pt"]: pr.append("lift")      # qara qara qalsın (süd-bulanıq qara yoxdur)
+    if before["p99"] - after["p99"] > LIMITS["white_pt"]: pr.append("lift")    # ağ ağ qalsın (solğun ağ yoxdur)
     if after["sharp"] / max(before["sharp"], 1e-6) > LIMITS["sharp_ratio"]: pr += ["sharpen", "micro"]
     if after["noise"] / max(before["noise"], 1e-6) > LIMITS["noise_ratio"]: pr += ["sharpen", "micro"]
     return sorted(set(pr))
@@ -351,7 +353,7 @@ def aligned_check(src: Path | str, out: Path | str, segs: list[list[float]], cy:
             a = fr.astype(np.float32); y = _luma(a); g = np.abs(np.diff(y, axis=1))[:-1] + np.abs(np.diff(y, axis=0))[:, :-1]; rg = roi[:-1, :-1]
             mx, mn = a.max(-1), a.min(-1); sat = np.where(mx > 0, (mx - mn) / np.maximum(mx, 1), 0)
             d: dict[str, float] = {"luma": float(y[roi].mean()), "r": float(a[..., 0][roi].mean()), "g": float(a[..., 1][roi].mean()), "b": float(a[..., 2][roi].mean()),
-                                   "sat": float(sat[roi].mean()), "sharp": float(np.percentile(g[rg], 99) / max(np.percentile(g[rg], 75), 0.5))}
+                                   "sat": float(sat[roi].mean()), "p1": float(np.percentile(y[roi], 1)), "p99": float(np.percentile(y[roi], 99)), "sharp": float(np.percentile(g[rg], 99) / max(np.percentile(g[rg], 75), 0.5))}
             if skin.sum() > 200: d["skin"] = float(a[..., 0][skin].mean() / max(a[..., 1][skin].mean(), 1))
             if neut.sum() > 200: d["cast"] = float(a[..., 2][neut].mean() / max(a[..., 1][neut].mean(), 1))
             return d
@@ -362,6 +364,7 @@ def aligned_check(src: Path | str, out: Path | str, segs: list[list[float]], cy:
                            "rəng_sürüşməsi_RGB": [round(float(x), 2) for x in dr.mean(0)], "rəng_dalğalanma": round(float(dr.std(0).max()), 2),
                            "doyma_nisbəti": round(float(np.mean([o["sat"] / max(e["sat"], 1e-6) for e, o in rows])), 3),
                            "kəskinlik_nisbəti": round(float(np.mean([o["sharp"] / max(e["sharp"], 1e-6) for e, o in rows])), 2)}
+    res["qara_nöqtə_sürüşməsi"] = round(float(np.mean([o["p1"] - e["p1"] for e, o in rows])), 2); res["ağ_nöqtə_sürüşməsi"] = round(float(np.mean([o["p99"] - e["p99"] for e, o in rows])), 2)
     if sk: res["dəri_R/G_dəyişmə_%"] = round(float(np.mean(sk)) * 100, 2)
     if ca: res["ağ_balans_B/G_sürüşməsi"] = round(float(np.mean(ca)), 3)
     bad = []
@@ -370,6 +373,8 @@ def aligned_check(src: Path | str, out: Path | str, segs: list[list[float]], cy:
     if abs(res.get("dəri_R/G_dəyişmə_%", 0)) > LIMITS["skin_rg"] * 100: bad.append("dəri tonu dəyişib")
     if abs(res.get("ağ_balans_B/G_sürüşməsi", 0)) > LIMITS["neutral_cast"]: bad.append("ağ balans sürüşüb")
     if abs(res["doyma_nisbəti"] - 1) > LIMITS["sat_rel"]: bad.append("doyma dəyişib")
+    if res["qara_nöqtə_sürüşməsi"] > LIMITS["black_pt"]: bad.append("qara qalxıb (bulanıq qara)")
+    if -res["ağ_nöqtə_sürüşməsi"] > LIMITS["white_pt"]: bad.append("ağ solub")
     if res["kəskinlik_nisbəti"] > LIMITS["sharp_ratio"]: bad.append("həddindən artıq kəskinlik")
     res["nəticə"] = "KEÇDİ" if not bad else "PROBLEM: " + ", ".join(bad)
     return res

@@ -88,6 +88,11 @@ Every production, in every pipeline, is edited and finished to a professional ed
 Rəng/görüntü optimallaşdırması üçün **[`UMUMI_QAYDALAR.md`](UMUMI_QAYDALAR.md)** — Adaptive Crystal Clear Natural Look (`montaj/crystal.py`): avtomatik, adaptiv,
 rəng variantı və təsdiq soruşulmur. Müştəri profillərində təkrarlanmır.
 
+## Montaj sessiyasının başlanğıcı və rejissor
+
+Hər yeni montaj sessiyasında əvvəl `python -m montaj.doctor` (çatışanı `--fix` ilə özün qur, istifadəçidən soruşma). Hər video üçün montajdan əvvəl rejissor qaydası:
+[`skills/meta/edit-director.md`](skills/meta/edit-director.md) — mövzuya uyğun edit konsepti, düz edit avtomatizmi yoxdur. Kitabxana: `python -m montaj.library` ([`UMUMI_QAYDALAR.md`](UMUMI_QAYDALAR.md)).
+
 ## What OpenMontage Is
 
 OpenMontage is an instruction-driven video production system. The AI agent IS the intelligence — it reads instructions (pipeline manifests + stage director skills + meta skills) and drives the pipeline using tools.
