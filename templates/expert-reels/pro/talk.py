@@ -247,8 +247,23 @@ T_MONTAJ = T_ANALIZ - T_TRANSKRIPT
 bc = B.get("base")
 pre = ("hflip," if B.get("hflip") else "")
 if bc: pre += f"crop=iw*{bc['s']}:ih*{bc['s']}:iw*{bc['cx'] - bc['s'] / 2:.4f}:ih*{bc['cy'] - bc['s'] / 2:.4f},scale=1080:1920:flags=lanczos,"
-sys.path.insert(0, str(Path(__file__).resolve().parents[3])); from montaj import crystal  # Adaptive Crystal Clear Natural Look (UMUMI_QAYDALAR.md)
-COLOR = B.get("color") or crystal.chain_for(SRC)  # açıq "color" (üslub/əl ilə) varsa o; yoxsa videoya görə adaptiv, toxunulmaz hissələr 0
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+
+
+def _auto_color(src):
+    """Standart (main, PR #61): Adaptive Image Enhancement — look "auto" (montaj/quality.enhance_params); hər video ölçülür, yalnız ehtiyac olan parametr."""
+    from montaj import quality, render
+    d = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", src], capture_output=True, text=True).stdout or 0)
+    fr = [quality.frame_rgb(Path(src), d * k) for k in (0.2, 0.4, 0.6, 0.8)]
+    adj, why = quality.enhance_params([f for f in fr if f is not None])
+    print("görüntü [auto]:", "; ".join(why) or "korreksiya yoxdur (orijinal yaxşıdır)", adj, file=sys.stderr)
+    return ",".join(render.color_filters(adj) + render.sharpen_filter(adj)) or "null"
+
+
+if B.get("color"): COLOR = B["color"]  # açıq "color" (üslub/əl ilə)
+elif B.get("look") == "CRYSTAL":  # yalnız açıq seçimlə (UMUMI_QAYDALAR.md)
+    from montaj import crystal; COLOR = crystal.chain_for(SRC)
+else: COLOR = _auto_color(SRC)
 fc, cat, INP = [], "", []
 for i, (a, b, z) in enumerate(segs):
     INP += ["-ss", f"{a:.3f}", "-t", f"{b - a:.3f}", "-i", SRC]

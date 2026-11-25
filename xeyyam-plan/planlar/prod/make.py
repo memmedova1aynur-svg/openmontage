@@ -9,7 +9,7 @@ A = json.load(open(glob.glob(os.path.expanduser(f'~/montaj-data/projects/xeyyam-
 SRC = glob.glob(os.path.expanduser(f'~/montaj-data/projects/xeyyam-yeni-{n}/media/originals/*'))[0]
 _sd = subprocess.run(['ffmpeg', '-nostdin', '-i', SRC, '-af', f"highpass=f=100,silencedetect=noise={C.get('noise', -42)}dB:d=0.4", '-vn', '-f', 'null', '-'], capture_output=True, text=True).stderr
 _v = [float(x) for x in re.findall(r'silence_(?:start|end): ([0-9.]+)', _sd)]
-sil0 = [(x, y) for x, y in zip(_v[0::2], _v[1::2]) if y - x >= 0.42]  # səs səviyyəsinə uyğun hədd (montaj detektoru zəif səsdə sözü udur)
+sil0 = [(x, y) for x, y in zip(_v[0::2], _v[1::2]) if y - x >= C.get('pause_min', 0.42)]  # yeni standart: təbii pauza qorunur (pause_min ↑ = daha az kəsim)  # səs səviyyəsinə uyğun hədd (montaj detektoru zəif səsdə sözü udur)
 # sözün sonu səssizliyin içinə düşürsə (zəif səs), kəsimi sözün sonundan sonraya çək — son heca kəsilməsin
 sil = []
 for x, y in sil0:
@@ -80,7 +80,7 @@ if len(sys.argv) > 2 and sys.argv[2] == 'plan':
 r = subprocess.run(['python3', 'talk.py', f'{HERE}/work/p{n}.json'], cwd=PRO, capture_output=True, text=True)
 m = re.search(r'OK (\S+\.mp4)', r.stdout)
 if not m: print(r.stdout[-1500:], r.stderr[-1500:]); sys.exit(1)
-base_mp4 = m.group(1); final = f"{HERE}/done/{n}_{C['name']}.mp4"; os.makedirs('done', exist_ok=True)
+base_mp4 = m.group(1); final = f"{HERE}/done/{n}_{C['name']}{C.get('ver', '')}.mp4"; os.makedirs('done', exist_ok=True)
 fx = C.get('fx', []); brolls = C.get('broll', []); wins = []; bwins = []
 if fx or brolls:
     sys.path.insert(0, '/home/user/openmontage')

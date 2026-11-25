@@ -1,0 +1,97 @@
+{
+ "src": "/root/montaj-data/projects/xeyyam-yeni-01/media/originals/m_a75cadfea2.mov",
+ "words": "w01.json",
+ "segs": [
+  [
+   0,
+   4.2,
+   1.0
+  ],
+  [
+   4.2,
+   11.58,
+   1.12
+  ],
+  [
+   11.58,
+   17.18,
+   1.154
+  ],
+  [
+   17.18,
+   22.42,
+   1.0
+  ],
+  [
+   22.42,
+   30.06,
+   1.12
+  ],
+  [
+   30.06,
+   34.91,
+   1.154
+  ],
+  [
+   34.91,
+   39.21,
+   1.12
+  ],
+  [
+   39.21,
+   44.15,
+   1.154
+  ],
+  [
+   44.15,
+   48.16,
+   1.12
+  ],
+  [
+   48.16,
+   55.6,
+   1.0
+  ]
+ ],
+ "fix": {
+  "olubmı": "olubmu",
+  "Bugün": "Bu gün",
+  "tez": "tez-tez",
+  "Tez": "Tez-tez",
+  "-tez": "",
+  "bəs": "bəhs",
+  "təşrarladığımız": "təkrarladığımız",
+  "Təşrarlamadığımız": "Təkrarlamadığımız",
+  "neyi": "niyə",
+  "öyrənmək@49.60": "«Öyrənməyi",
+  "-öyrən": "öyrən»"
+ },
+ "cap_first": true,
+ "accent": "#6CC57E",
+ "style": "dinamik",
+ "out": "../out/01_SozDilininUcunda.mp4",
+ "sub_card": {
+  "x": 64,
+  "y": 1190,
+  "w": 896,
+  "h": 280,
+  "color": "#0F3B2E",
+  "alpha": "10"
+ },
+ "word_color": "#FFFFFF",
+ "word_size": 96,
+ "word_mv": 540,
+ "word_outline": 0,
+ "word_shadow": 0,
+ "max_chars": 13,
+ "q_bg": "#0F3B2E",
+ "q_size": 58,
+ "q_mv": 285,
+ "questions": [
+  [
+   0.2,
+   3.6,
+   "Söz dilinin ucuna gəlir,\\Namma xatırlamırsan?"
+  ]
+ ]
+}
