@@ -139,7 +139,8 @@ def _draft_and_analysis(pid):
 
 
 def test_plan_look_choice_and_manual_color_kept(tmp_path, monkeypatch):
-    """Rəng: standart A; seçilən şablon (C) render filtrinə düşür; əl ilə rəngə toxunulmur; "look": null götürür."""
+    """Rəng: standart adaptiv ("auto", şablon yox); seçilən şablon (C) render filtrinə düşür; əl ilə rəngə toxunulmur;
+    "look": null götürür."""
     pid = _fixture(tmp_path, monkeypatch)
     from montaj import render, session, store
 
@@ -147,7 +148,9 @@ def test_plan_look_choice_and_manual_color_kept(tmp_path, monkeypatch):
     plan.write_text(json.dumps({"captions": {"enabled": True, "style": {"type": "caption"}}}))
     assert session.main(["plan", pid, str(plan)]) == 0
     vids = [c for c in store.load(pid)["clips"] if c["track"] == "v1"]
-    assert vids and all(c["adjust"]["look"] == "A" for c in vids), "standart: A (təbii)"
+    assert vids and all(c["adjust"]["look"] == "auto" for c in vids), "standart: adaptiv (hazır şablon yox)"
+    assert all(0 < c["adjust"]["sharpen"] <= 0.3 and c["adjust"].get("saturation", 1) == 1 for c in vids), \
+        "yalnız yüngül kəskinlik, doyma artmır"
     plan.write_text(json.dumps({"look": "C"}))
     assert session.main(["plan", pid, str(plan)]) == 0
     v = next(c for c in store.load(pid)["clips"] if c["track"] == "v1")
@@ -175,9 +178,53 @@ def test_looks_sheet(tmp_path, monkeypatch):
     assert session.main(["looks", pid]) == 0
     sheet = tmp_path / "out" / pid / "reng_variantlari.jpg"
     info = media.probe(sheet)
-    cols = 1 + len([k for k in session.LOOKS if k != "D"])  # orijinal + şablonlar (D yalnız qaranlıq kadrda)
+    cols = 2 + len([k for k in session.LOOKS if k != "D"])  # orijinal + auto + şablonlar (D yalnız qaranlıq kadrda)
     assert info["width"] == cols * 360 and info["height"] == 3 * 202, "3 sətir (640x360 mənbə → 360x202)"
     assert not list((tmp_path / "out" / pid).glob("reng_*.png"))
+
+
+def test_adaptive_enhance_only_what_is_needed():
+    """Adaptive Image Enhancement: yaxşı kadrda yalnız yüngül kəskinlik; qaranlıq, solğun, rəng çaları, yanan ağlar
+    ölçülüb qismən düzəlir; doyma heç vaxt artmır, denoise/yumşaltma yoxdur; hədlər sərtdir."""
+    import numpy as np
+
+    from montaj import quality, render
+
+    rng = np.random.default_rng(0)
+    h, w = 360, 640
+    yy, xx = np.mgrid[0:h, 0:w] / np.array([h, w])[:, None, None]
+
+    def scene(gain=1.0, cast=(1.0, 1.0, 1.0), sat=1.0, offset=0.0, scale=1.0):
+        gray = 0.08 + 0.84 * (xx + yy) / 2 + 0.03 * rng.standard_normal((h, w))  # tam diapazonlu səhnə + toxuma
+        col = np.stack([gray * 1.35, gray, gray * 0.7], -1)                      # dəri/geyim kimi rəngli hissə
+        img = np.where((xx > 0.55)[..., None], col, gray[..., None].repeat(3, -1))  # sol yarı neytral (divar)
+        img = gray[..., None] + (img - gray[..., None]) * sat
+        img = (img * scale + offset) * gain * np.array(cast)
+        return np.clip(img, 0, 1).astype(np.float32)
+
+    good, why = quality.enhance_params([scene()])
+    assert set(good) == {"sharpen"} and 0.1 <= good["sharpen"] <= 0.3, (good, why)
+
+    dark, _ = quality.enhance_params([scene(gain=0.45)])
+    assert dark.get("shadows", 0) > 0 and 0 < dark.get("brightness", 0) <= 0.03 and dark["sharpen"] <= 0.15
+
+    warm, _ = quality.enhance_params([scene(cast=(1.12, 1.0, 0.86))])
+    assert 6500 < warm["temperature"] <= 7200, warm       # isti çalar → qismən soyudulur
+    cool, _ = quality.enhance_params([scene(cast=(0.88, 1.0, 1.14))])
+    assert 5800 <= cool["temperature"] < 6500, cool
+    green, _ = quality.enhance_params([scene(cast=(0.95, 1.06, 0.95))])
+    assert 0 < green["tint"] <= 0.03
+
+    pale, _ = quality.enhance_params([scene(sat=0.25, scale=0.45, offset=0.3)])
+    assert 0 < pale["vibrance"] <= 0.06 and 1 < pale["contrast"] <= 1.06
+
+    blown, _ = quality.enhance_params([scene(gain=1.6)])
+    assert blown.get("highlights", 0) > 0 and blown.get("brightness", 0) <= 0
+
+    for adj in (good, dark, warm, cool, green, pale, blown):
+        assert "saturation" not in adj and "denoise" not in adj and "soften" not in adj
+        chain = ",".join(render.color_filters(adj))
+        assert "hqdn3d" not in chain and "smartblur" not in chain
 
 
 def test_cut_safe_boundary_keeps_words(tmp_path, monkeypatch, capsys):

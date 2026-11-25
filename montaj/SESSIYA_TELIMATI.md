@@ -57,5 +57,5 @@ Token qənaəti (bu qaydalara əməl et):
 - Qrafika həm önizləmədə, həm renderdə eyni `montaj/editor/graphics.js` ilə çəkilir.
 - Müştəri rənglərini yalnız həmin müştərinin brand.theme-dən götür; mənanı dəyişmə, fakt uydurma.
 - Rəng: universal "Adaptive Image Enhancement" standartı (`IS_AXINI.md` → "Görüntü keyfiyyəti"). Rəng variantı
-  göndərilmir, rəng soruşulmur, şablon standart tətbiq olunmur; kod yenilənənə qədər plan.json-da `"look": null`.
+  göndərilmir, rəng soruşulmur, şablon standart tətbiq olunmur; plan.json-da `"look": "auto"` (standart — yazılmasa da auto; adaptiv, yalnız ehtiyac olan parametr).
   Daha güclü effekt vermə. Ölçü dəyişmir.

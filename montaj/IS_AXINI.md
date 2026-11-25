@@ -146,7 +146,7 @@ Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq,
      → inkişaf (xronoloji, hər kadrın ən kəskin/sakit hissəsi) → final (uzun son kadr). Kəsimlər vuruşlara düşür
      (±20 ms), musiqi vuruşdan başlayır, sonda 2 s sönür; görüntünün öz səsi söndürülür (`liveSound`).
    - `_review`-da real səs namizədləri (fondan yüksək — alqış/gülüş ola bilər): dinlə, saxlamaq üçün planda
-     `"liveSound": {"volume": 0, "keep": {"e5": 0.8}}` (kart id). Rəng: planda `"look": null` ("Görüntü keyfiyyəti").
+     `"liveSound": {"volume": 0, "keep": {"e5": 0.8}}` (kart id). Rəng: standart `"look": "auto"` ("Görüntü keyfiyyəti").
    - `variants <pid> event_A.json event_B.json event_C.json` → qərar mesajı → `choose` → `render` → `verify`.
    - **Yavaşlatma:** material ≥50 fps-dirsə (60 fps çəkiliş) final kadr avtomatik 0.5x yavaşlayır (`--slowmo auto|on|off`) —
      yalnız real kadrlarla, kadr uydurulmur. 30 fps materialda hamar yavaşlatma yoxdur — istifadəçiyə de, növbəti dəfə 60 fps.
@@ -287,12 +287,23 @@ Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq,
        süni kəskinlik **yaradılmır**. Üz hamarlaşdırma, dəri teksturasının dəyişməsi, gözəllik filtri **yoxdur**.
      - **Brend rəngləri yalnız altyazı, qrafika və dizayn elementlərinə aiddir** — çəkilmiş görüntünün rənginə yox.
      - İstifadəçidən rəng seçimi istənmir, çoxsaylı rəng variantı hazırlanmır, rəng üçün təkrar render edilmir.
-     - **Hazırkı texniki vəziyyət (kod dəyişikliyi gözlənilir):** sistemdə videonu ölçüb lazımi parametrləri avtomatik təyin
-       edən funksiya yoxdur; plan `"look"` yalnız hazır şablon adını qəbul edir, yazılmasa kod `A` tətbiq edir. Ona görə
-       kod yenilənənə qədər planda **həmişə `"look": null`** (orijinal görüntü) yazılır və heç bir şablon seçilmir.
-       `intake`/storyboard kadrlarında aydın görüntü qüsuru (qaranlıq, güclü rəng çaları, solğunluq, kliplər arası işıq fərqi)
-       varsa, düzəldilmədiyi qərar mesajında bir cümlə ilə deyilir — şablonla "düzəltmə" edilmir. `looks` əmri yalnız
-       diaqnostika üçündür. `"matchExposure"` `"look": null` ilə işləmir.
+     - **Texniki icra — `"look": "auto"` (standart; planda `look` yazılmasa da auto).** `plan`/`choose` hər media faylını
+       (danışan, hər B-roll ayrıca) istifadə olunan hissələrinin 3 kadrında ölçür (`quality.enhance_params`) və yalnız
+       ehtiyac olanı sərt həddə verir; `plan` çıxışında "görüntü (<fayl>): …" sətri səbəbləri yazır:
+       - kəskinlik həmişə yüngül: 0.14–0.30 (yalnız parlaqlıq kanalı; qaranlıqda ≤0.15 — dən artmasın);
+       - az işıq: yalnız parlaq hissələr də zəifdirsə (orta < 0.36 və ən parlaq < 0.72) — kölgələr ≤0.7, parlaqlıq ≤+0.03;
+         üz/işıq düzgündürsə tünd fon və qara geyim (low-key) olduğu kimi qalır;
+       - yanmaya yaxın ağlar (>1.2%) — `highlights`; çox açıq kadr — parlaqlıq ≤−0.03;
+       - dar diapazon (solğun/dumanlı) — kontrast ≤1.06;
+       - ağ balansı yalnız neytral sahələrə (divar, ağ geyim) görə, aydın çalarda (|R−B|/G > 0.07) və **yarıya qədər**
+         (məkanın işığı qalır): temperatur 5800–7200 K; yaşıl/bənövşəyi çalar `tint` ≤0.03. Neytral istinad yoxdursa
+         (yaxın plan dəri, çox qaranlıq kadr) ağ balansına toxunulmur;
+       - canlılıq yalnız solğunluqda (orta xroma < 0.10), ≤0.06 (`vibrance` — doymuş rənglərə/dəriyə az təsir edir);
+       - **heç vaxt**: `saturation` artımı, denoise, yumşaltma, üz/dəri emalı.
+       Kliplər arası işıq fərqi `matchExposure` ilə (±0.04) bərabərləşir. Hazır şablonlar (`"look": "A"`…`"W"`) yalnız
+       istifadəçi açıq istəyəndə; `"look": null` — heç bir düzəliş. `looks <pid>` — yalnız diaqnostika (Orijinal + auto +
+       şablonlar), istifadəçiyə göndərilmir. Ölçülə bilməyən qüsuru (məs. qaranlıqda rəng çaları) qərar mesajında bir
+       cümlə ilə de.
    - **Musiqi — SORUŞMA, özün seç**: `music <pid>` → sorğu profil/növə görə avtomatik (profildə `music.query` varsa o; uşaq
      mövzusu — şən kids, reklam — corporate; piano/yavaş/kədərli/bayram mövzusu YOX), Freesound **yalnız CC0** + **Mixkit** (Stock Music
      Free License — kommersiya pulsuz, müəllif qeydi tələb etmir; açarsız; Freesound açarı yoxdursa da işləyir), 2–3 namizəd + `musiqi_N.m4a`
