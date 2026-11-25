@@ -36,7 +36,7 @@ Video başdan sona izləyicini saxlamalı, dinamik olmalıdır — mexaniki "hə
 **Kəsim və pauza.** Yalnız təkrar, alınmayan cəhd və kənar söhbət çıxır. Söz və heca kəsilmir. Vurğu yaradan və ya fikri anlamağa vaxt
 verən pauza qalır; saniyə həddi ilə mexaniki kəsim yoxdur. Arxa səs kəsiləndə/təmizlənəndə ekspertin səsi dəyişmir (`voice-clean`).
 
-**Zoom və keçidlər.** Zoom yalnız hamar və yumşaq olur (`multicam` calm və ya yavaş yaxınlaşma). `zooms` (punch-in) qadağandır — sıçrayışdır.
+**Zoom və keçidlər (MƏCBURİ — icra statusu §4; icra olunana qədər də qayda qüvvədədir, §4-dəki əvəzi tətbiq olunur).** Zoom yalnız hamar və yumşaq olur (`multicam` calm və ya yavaş yaxınlaşma). `zooms` (punch-in) qadağandır — sıçrayışdır.
 Kəsimdə keçid hiss edilməməlidir: kəsim cümlə sərhədində, səsin ən sakit yerində, 12 ms səs keçidi, lazım olsa J/L-cut. Sərt sıçrayış yoxdur.
 
 **Altyazı.** `skills/creative/caption-typography.md`: 4 rol ayrıdır (altyazı, hook, vurğu, CTA); Azərbaycan hərfləri düzgün; ≤2 sətir;
@@ -61,7 +61,8 @@ Müştəri mediası, transkript və şəxsi məlumat GitHub-a yüklənmir.
 Güzgü çevirmə (`hflip`), arxa fonu bulanıqlaşdırma/dəyişmə, ödənişli xidmət və API, hazır rəng şablonu.
 
 ## 4. Hazırda sistemdə YOXDUR (əvəzi)
-- **Hamar zoom və hiss edilməyən video keçidi:** punch-in sıçrayışdır, videoda dissolve yoxdur → `multicam` calm + cümlə sərhədində kəsim; əsl hamar zoom və yumşaq keçid hələ icra olunmayıb.
+Bunlar qaydadan azad etmir: §2-dəki qaydalar məcburidir, kod isə ayrıca işdir. İcra olunana qədər aşağıdakı əvəzi tətbiq olunur və təhvildə bunun hələ tam hamar olmadığı açıq yazılır.
+- **Hamar zoom və hiss edilməyən video keçidi (MƏCBURİ qayda, icra gözlənilir):** punch-in sıçrayışdır, videoda dissolve yoxdur → `multicam` calm + cümlə sərhədində kəsim; əsl hamar zoom (animasiyalı kadr) və yumşaq video keçidi hələ icra olunmayıb.
 - **Bədən örtülməsi yoxlaması:** `verify`/preflight yalnız üzü yoxlayır → vizual kadrda özün yoxla, kart bədəni örtərsə kadrı böl.
 - **Element ≥2 s qaydası:** preflight xəbərdarlıq edir, avtomatik düzəltmir → planda vaxtları özün düzəlt.
 
