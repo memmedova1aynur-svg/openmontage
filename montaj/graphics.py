@@ -15,12 +15,12 @@ from typing import Any
 from montaj import fonts
 
 TYPES = {"caption", "title", "section", "emphasis", "list", "card", "offer", "cta", "badge", "lower", "choice",
-         "type", "note", "block", "bars", "veil", "frame"}  # son 6 — üslub dəstləri (kits.py)
+         "type", "note", "block", "bars", "veil", "frame", "slate"}  # son 7 — üslub dəstləri (kits.py)
 DEFAULT_XY = {"caption": (0.5, 0.74), "title": (0.5, 0.14), "section": (0.5, 0.22), "emphasis": (0.5, 0.62),
               "list": (0.5, 0.42), "card": (0.5, 0.42),
               "offer": (0.5, 0.58), "cta": (0.5, 0.585), "badge": (0.5, 0.215),
               "lower": (0.24, 0.82), "choice": (0.5, 0.45),
-              "type": (0.5, 0.17), "note": (0.5, 0.17), "block": (0.5, 0.15), "bars": (0.5, 0.5), "veil": (0.5, 0.2), "frame": (0.5, 0.5)}  # graphics.js-dəki DEFAULT_XY ilə eyni
+              "type": (0.5, 0.17), "note": (0.5, 0.17), "block": (0.5, 0.15), "bars": (0.5, 0.5), "veil": (0.5, 0.2), "frame": (0.5, 0.5), "slate": (0.5, 0.5)}  # graphics.js-dəki DEFAULT_XY ilə eyni
 
 
 def pos(c: dict[str, Any]) -> tuple[float, float]:
@@ -41,7 +41,7 @@ def state_points(c: dict[str, Any]) -> list[float]:
         pts = [0.0] + [float(w["s"]) for w in c.get("words") or []]
     elif c.get("type") == "bars" and c.get("seq"):
         pts = [0.0] + [float(w.get("s") or 0) for w in c["seq"]]
-    elif c.get("type") in ("list", "type", "note", "block") and c.get("items"):
+    elif c.get("type") in ("list", "type", "note", "block", "slate") and c.get("items"):
         pts = [0.0] + [float(it.get("at") or 0) for it in c.get("items") or []]
     elif c.get("type") == "choice":
         pts = [0.0, float(c.get("at", 1.5))]

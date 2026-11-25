@@ -43,6 +43,13 @@ KITS: dict[str, dict[str, Any]] = {
         "axes": {"layout": "framed-center", "form": "serif-centered", "caption": "plain-center", "motion": "fade", "card": "frame", "density": "low"},
         "music": "elegant warm acoustic", "sfx": [],
     },
+    "intertitle": {
+        "name": "İntertitle kartları",
+        "about": "Fikir bitəndə 2–4 s tam kadr krem kart (ekspert görünmür, səsi davam edir): kicker, iri serif yazı və ya sıralanmış sətirlər; qalan vaxt ekspert. B-roll/animasiya əvəzi.",
+        "suits": ["maarifləndirmə", "siyahı və nümunələr", "əsas fikir", "sənədli", "premium"],
+        "axes": {"layout": "fullframe-cards", "form": "serif-slate", "caption": "hidden-on-slate", "motion": "cut-fade", "card": "slate", "density": "mid"},
+        "music": "calm elegant acoustic", "sfx": [],
+    },
     "colorblock": {
         "name": "Rəng bloku",
         "about": "Yuxarıda tam enli rəngli panel (hər anda rəngi dəyişir), altda ekspert; bədən örtülmür, bloklar ritm verir.",
@@ -148,6 +155,20 @@ def build(kit: str, content: dict[str, Any], theme: dict[str, Any] | None = None
         if claim:
             g.append({"type": "note", "text": claim["text"], "size": 0.075, "rot": -3, "mark": "arrow", "y": 0.19, "start": claim["start"], "dur": claim["dur"], "anim": {"in": "pop"}})
         hook_method = "handwritten-note"
+    elif kit == "intertitle":
+        cap.update(style={"bg": "none", "weight": 600, "size": 0.04, "color": "#FFFFFF"})
+        S_ = {"type": "slate", "bleed": True, "x": 0.5, "y": 0.5, "bg": th["soft"], "accent": th["deep"], "anim": {"in": "fade", "d": 0.35, "out": "fade", "dOut": 0.3}}
+        if hook:  # açılışda ekspert görünür: yalnız yuxarıda sakit mərkəzləşmiş başlıq (kart yox)
+            g.append({"type": "type", "font": "serif", "align": "center", "x": 0.5, "w": 0.86, "kicker": hook.get("kicker"), "text": hook["text"], "size": 0.048, "y": 0.16,
+                      "start": hs, "dur": hd, "anim": {"in": "fade", "d": 0.6, "out": "fade"}})
+        if lst:
+            g.append({**S_, "kicker": lst.get("heading"), "items": items(lst), "size": 0.06, "line": lst.get("line"), "start": lst["start"], "dur": lst["dur"]})
+        for e in emph:  # vurğu: ekspert kadrda qalır, kicker-siz sakit yuxarı yazı
+            g.append({"type": "type", "font": "serif", "align": "center", "x": 0.5, "w": 0.86, "text": e["text"], "size": 0.048, "y": 0.15, "start": e["start"], "dur": e["dur"],
+                      "anim": {"in": "fade", "d": 0.5, "out": "fade"}})
+        if claim:
+            g.append({**S_, "kicker": claim.get("kicker"), "text": claim["text"], "big": True, "size": 0.06, "line": claim.get("line"), "start": claim["start"], "dur": claim["dur"]})
+        hook_method = "typography-top"
     elif kit == "frame":
         cap.update(style={"bg": "none", "weight": 600, "size": 0.04, "color": "#FFFFFF"})
         total = float(content.get("duration") or 60)
@@ -187,17 +208,17 @@ def build(kit: str, content: dict[str, Any], theme: dict[str, Any] | None = None
             g.append(bars(text=claim["text"].upper(), start=claim["start"], dur=claim["dur"], sub=claim.get("kicker"), size=0.065))
         hook_method = "kinetic-word"
 
-    if kit in ("editorial", "handnote", "frame"):  # kartsız yazı: arxasında çox yumşaq tünd üst qradiyent (ləkə yox) — fon üzərində oxunaqlılıq
-        a = {"editorial": 0.42, "handnote": 0.36, "frame": 0.40}[kit]
+    if kit in ("editorial", "handnote", "frame", "intertitle"):  # kartsız yazı: arxasında çox yumşaq tünd üst qradiyent (ləkə yox) — fon üzərində oxunaqlılıq
+        a = {"editorial": 0.42, "handnote": 0.36, "frame": 0.40, "intertitle": 0.40}[kit]
         g = [y for x in g for y in ((veil(x["start"], x["dur"], a), x) if x["type"] in ("type", "note") else (x,))]
     n_hard = len([x for x in g if x["type"] in ("block", "bars")])
     sfx = []
     for x in g:
-        kind = {"classic": "pop", "editorial": None, "frame": None, "colorblock": "whoosh", "handnote": "pop", "kinetic": "whoosh"}[kit]
+        kind = {"classic": "pop", "editorial": None, "frame": None, "intertitle": None, "colorblock": "whoosh", "handnote": "pop", "kinetic": "whoosh"}[kit]
         if kind:
             sfx.append({"kind": kind, "t": round(float(x["start"]) + 0.05, 2)})
     zooms = []
-    if claim:
+    if claim and kit != "intertitle":  # intertitle-da iddia kartdadır (ekspert görünmür) — zoom mənasızdır
         zooms.append({"from": float(claim["start"]) - 0.4, "to": float(claim["start"]) + float(claim["dur"]) * 0.8, **SMOOTH})
     meta = KITS[kit]
     return {"kit": kit, "axes": dict(meta["axes"], hook=hook_method), "graphics": g, "captions": cap, "sfx": sfx[:6], "zooms": zooms,

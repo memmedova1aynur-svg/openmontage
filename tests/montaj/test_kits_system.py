@@ -26,7 +26,7 @@ def test_every_kit_builds_from_spoken_content_only():
         blob = json.dumps(p["graphics"], ensure_ascii=False).lower()
         for must in ("televizor", "oyuncaq"):
             assert must in blob, f"{k}: nümunə danışıqdan götürülməlidir"
-        assert all(g["type"] in {"title", "list", "emphasis", "type", "block", "note", "bars", "veil", "frame"} for g in p["graphics"])
+        assert all(g["type"] in {"title", "list", "emphasis", "type", "block", "note", "bars", "veil", "frame", "slate"} for g in p["graphics"])
         assert all(z.get("scale", 1) <= 1.12 for z in p["zooms"]), "zoom hamar və ≤1.12"
 
 
@@ -75,7 +75,7 @@ def test_new_graphic_types_rasterize_full_bleed(tmp_path):
     W, H = 360, 640
     theme = {"primary": "#C9577D", "primaryDeep": "#9E3D5E", "accentSoft": "#F2E4D6", "accent": "#C9577D", "text": "#FFFFFF"}
     items = []
-    for n, k in enumerate(("editorial", "frame", "colorblock", "handnote", "kinetic")):
+    for n, k in enumerate(("editorial", "frame", "intertitle", "colorblock", "handnote", "kinetic")):
         for j, g in enumerate(kits.build(k, CONTENT, theme)["graphics"]):
             c = dict(g, id=f"{k}{j}", srcIn=0, srcOut=float(g["dur"]))
             items.append((f"{k}_{j}", c, min(1.0, float(g["dur"]) - 0.1)))
@@ -87,6 +87,8 @@ def test_new_graphic_types_rasterize_full_bleed(tmp_path):
             assert info["w"] >= W - 4, "rəng bloku tam enlidir"
         if name.startswith("kinetic"):
             assert info["h"] >= H - 4, "sinema zolaqları tam kadrdır"
+        if name.startswith("intertitle") and "slate" in json.dumps(info) or (name.startswith("intertitle") and info["w"] >= W - 4 and info["h"] >= H - 4):
+            assert info["w"] >= W - 4 and info["h"] >= H - 4, "intertitle kartı tam kadrdır"
         if name.startswith("frame_0"):
             assert info["w"] >= W - 4 and info["h"] >= H - 4, "çərçivə tam kadrdır"
 
@@ -172,7 +174,7 @@ def test_frame_kit_is_framed_centered_serif_and_differs_from_editorial():
     d = difference.check({"A": kits.build("editorial", CONTENT), "B": b})
     assert d["ok"] and d["pairs"][0]["diff"] >= 4
     assert "frame" in memory.global_decisions()["liked"], "istifadəçi seçdi (2026-11-25)"
-    assert memory.suggest({}, 3)[:2] == ["editorial", "frame"] or "frame" in memory.suggest({}, 3)
+    assert "frame" not in memory.blocked({}) and "intertitle" not in memory.blocked({})
 
 
 def test_editorial_scales_long_hook_instead_of_overflowing():
@@ -181,3 +183,16 @@ def test_editorial_scales_long_hook_instead_of_overflowing():
     s_long = [g for g in kits.build("editorial", long)["graphics"] if g["type"] == "type"][0]["size"]
     s_big = [g for g in kits.build("editorial", big)["graphics"] if g["type"] == "type"][0]["size"]
     assert s_long < s_big
+
+
+def test_intertitle_kit_full_frame_cards_only_at_idea_boundaries():
+    b = kits.build("intertitle", CONTENT, {"primary": "#C9577D", "primaryDeep": "#9E3D5E", "accentSoft": "#F2E4D6"})
+    slates = [g for g in b["graphics"] if g["type"] == "slate"]
+    assert len(slates) == 2 and all(g["bleed"] and g["dur"] >= 2.0 for g in slates), "kart ≥2 s və tam kadr (bleed)"
+    assert not b["zooms"], "ekspert görünmədiyi kartda zoom yoxdur"
+    assert slates[0]["items"] and slates[1]["big"] and slates[1]["bg"] == "#F2E4D6"
+    # hook-da ekspert görünür (kart yox): yuxarıda mərkəzləşmiş yazı
+    assert any(g["type"] == "type" and g["align"] == "center" for g in b["graphics"])
+    for other in ("editorial", "frame", "classic"):
+        d = difference.check({"A": b, "B": kits.build(other, CONTENT)})
+        assert d["ok"] and d["pairs"][0]["diff"] >= 4, other

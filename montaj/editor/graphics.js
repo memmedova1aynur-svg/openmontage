@@ -66,6 +66,26 @@
       e.style.display = 'block'; e.style.filter = 'drop-shadow(0 1px 2px rgba(0,0,0,0.35))';
       return e;
     }
+    if (type === 'slate') {  // üslub dəsti: intertitle — tam kadr krem kart (ekspert görünmür, səsi davam edir): kicker, iri serif yazı və ya sıralanmış sətirlər
+      const bg = rgba(clip.bg, th.accentSoft || '#F2E4D6'), ink = clip.ink || '#3C262C', acc = clip.accent || th.primaryDeep || '#9E3D5E';
+      const s = node(doc, 'div', { width: `${VW}px`, height: `${H}px`, background: bg, position: 'relative', fontFamily: '"Lora","DejaVu Serif",Georgia,serif', color: ink, boxSizing: 'border-box' });
+      const rule = Math.max(2, H * 0.0021), mt = H * 0.088;
+      [mt, H - mt].forEach((y) => s.append(node(doc, 'div', { position: 'absolute', left: `${VW * 0.1}px`, right: `${VW * 0.1}px`, top: `${y}px`, height: `${rule}px`, background: acc })));
+      if (clip.kicker) s.append(node(doc, 'div', { position: 'absolute', left: '0', right: '0', top: `${H * 0.15}px`, textAlign: 'center', fontFamily: font, fontWeight: '700',
+        fontSize: `${H * 0.0187}px`, letterSpacing: '0.3em', textTransform: 'uppercase', color: acc }, clip.kicker));
+      const body = node(doc, 'div', { position: 'absolute', left: `${VW * 0.08}px`, right: `${VW * 0.08}px`, top: `${H * 0.24}px`, bottom: `${H * 0.22}px`, display: 'flex', flexDirection: 'column',
+        justifyContent: 'center', alignItems: 'center', textAlign: 'center', gap: `${fs * 0.5}px` });
+      if (clip.items && clip.items.length) {
+        const n = shown(clip.items);
+        clip.items.forEach((it, i) => {
+          if (i > 0) body.append(node(doc, 'div', { width: `${fs * 0.5}px`, height: `${Math.max(2, fs * 0.05)}px`, background: acc, opacity: i < n ? '0.7' : '0' }));
+          body.append(node(doc, 'div', { fontWeight: '700', fontSize: `${fs}px`, lineHeight: '1.1', opacity: i < n ? '1' : '0' }, it.text || ''));
+        });
+      } else body.append(node(doc, 'div', { fontWeight: '700', fontSize: `${fs * (clip.big ? 1.5 : 1)}px`, lineHeight: '1.08', color: clip.big ? acc : ink }, clip.text || ''));
+      s.append(body);
+      if (clip.line) s.append(node(doc, 'div', { position: 'absolute', left: `${VW * 0.1}px`, right: `${VW * 0.1}px`, bottom: `${H * 0.125}px`, textAlign: 'center', fontStyle: 'italic', fontSize: `${H * 0.0156}px`, color: ink }, clip.line));
+      return s;
+    }
     if (type === 'veil') {  // yazının arxasında kadrın yuxarısında tam enli, çox yumşaq tünd keçid (kinoda "title-safe" qradiyent) — ləkə yox
       const a = Number(clip.a ?? 0.42);
       return node(doc, 'div', { width: `${VW}px`, height: `${H * (clip.h ?? 0.4)}px`,
@@ -275,6 +295,7 @@
       bars: { size: 0.05, weight: 800, color: '#FFFFFF' },
       veil: { size: 0.03, weight: 400, color: '#FFFFFF' },
       frame: { size: 0.03, weight: 400, color: '#FFFFFF' },
+      slate: { size: 0.06, weight: 700, color: '#3C262C' },
     })[type] || { size: 0.06, weight: 700, color: '#FFFFFF' };
   }
 
@@ -283,7 +304,7 @@
     if (clip.type === 'caption' && clip.plain) return [0];
     if (clip.type === 'caption') return [0, ...(clip.words || []).map((w) => w.s)].filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b);
     if (clip.type === 'bars' && clip.seq) return [0, ...clip.seq.map((w) => w.s || 0)].filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b);
-    if (['list', 'type', 'note', 'block'].includes(clip.type) && clip.items) return [0, ...clip.items.map((it) => it.at || 0)].filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b);
+    if (['list', 'type', 'note', 'block', 'slate'].includes(clip.type) && clip.items) return [0, ...clip.items.map((it) => it.at || 0)].filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b);
     if (clip.type === 'list') return [0, ...(clip.items || []).map((it) => it.at || 0)].filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b);
     if (clip.type === 'choice') return [0, clip.at ?? 1.5];
     return [0];
@@ -292,7 +313,7 @@
   // Standart yer (x, y mərkəz, 0..1) — render (graphics.py DEFAULT_XY) ilə eyni
   const DEFAULT_XY = { caption: [0.5, 0.74], title: [0.5, 0.14], section: [0.5, 0.22], emphasis: [0.5, 0.62], list: [0.5, 0.42], card: [0.5, 0.42],
     offer: [0.5, 0.58], cta: [0.5, 0.585], badge: [0.5, 0.215], lower: [0.24, 0.82], choice: [0.5, 0.45],
-    type: [0.5, 0.17], note: [0.5, 0.17], block: [0.5, 0.15], bars: [0.5, 0.5], veil: [0.5, 0.2], frame: [0.5, 0.5] };  // reklam kartları üzün altında
+    type: [0.5, 0.17], note: [0.5, 0.17], block: [0.5, 0.15], bars: [0.5, 0.5], veil: [0.5, 0.2], frame: [0.5, 0.5], slate: [0.5, 0.5] };  // reklam kartları üzün altında
   function pos(clip) { const d = DEFAULT_XY[clip.type] || [0.5, 0.5]; return [clip.x ?? d[0], clip.y ?? d[1]]; }
 
   root.MG = { ANIMS, animState, build, defaults, statePoints, rgba, pos, DEFAULT_XY };

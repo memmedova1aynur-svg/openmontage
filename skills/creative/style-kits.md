@@ -7,6 +7,7 @@ hərəkət, kart olub-olmaması, musiqi/SFX). Kod: `montaj/kits.py`; yoxlama: `m
 |---|---|---|---|
 | classic | təhlükəsiz baza | brend rəngli kartlar, qutulu altyazı | ən tanış; fərqlənmək üçün yox |
 | frame ✅ | premium, psixologiya, ekspert fikri | nazik çərçivə + künc nişanları, mərkəzləşmiş Lora başlıq, inline kursiv nümunələr (`frame` + `type` + `veil`) | çərçivə bütün video boyu görünür |
+| intertitle ✅ | siyahı/nümunələr, əsas fikir, sənədli, premium | fikir bitəndə 2–4 s tam kadr krem kart (`slate`): kicker, iri serif yazı/sətirlər; ekspert görünmür, səsi davam edir; altyazını örtür; hook və vurğu yuxarıda sakit yazı | ekspertin ekranda olma müddətini azaldır; kart ≥2 s, aralarında ekspert ≥2 s |
 | editorial ✅ | psixologiya, ekspert fikri, hekayə | kartsız serif yazı başın üstündə, sola düzlənmiş altyazı | çox yazı sığmır; sakit |
 | colorblock ❌ | reklam, təlim, siyahı/addım | yuxarıda tam enli rəng paneli (anda rəng dəyişir), altyazı zolağı | panel yuxarı ~30%-i örtür |
 | handnote 👍 | ana-körpə, uşaq, şəxsi məsləhət | əl yazısı (Caveat), altından xətt/dairə/ox/✓, mono altyazı | həddindən artıq olarsa dağınıq |

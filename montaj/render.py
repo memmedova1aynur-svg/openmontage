@@ -584,24 +584,32 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
                 items.append((f"{c['id']}__{k}", c, ptime))
             (caps if c["type"] == "caption" else others).append(c)
         rast = G.rasterize(items, W, H, theme, workdir)
-        for c in others:  # kartlar, başlıqlar, vurğular — animasiya ilə
-            pts = G.state_points(c)
-            dur = float(c["srcOut"]) - float(c["srcIn"])
-            for k, ptime in enumerate(pts):
-                a = c["_start"] + ptime
-                b = c["_start"] + (pts[k + 1] if k + 1 < len(pts) else dur)
-                info = rast[f"{c['id']}__{k}"]
-                args.extend(["-loop", "1", "-framerate", fps_str, "-t", f"{b - a + 0.1:.4f}", "-i", info["file"]])
-                nxt = f"vg{idx}"
-                filters.append(G.overlay_chain(c, k, len(pts), a, b, W, H, fps_str, idx, cur, nxt))
-                idx += 1
-                cur = nxt
+        slates = [c for c in others if c["type"] == "slate"]  # intertitle: altyazıdan SONRA çəkilir (altyazını örtür, özünün `line` mətni var)
+        others = [c for c in others if c["type"] != "slate"]
+
+        def emit(group):
+            nonlocal idx, cur
+            for c in group:  # kartlar, başlıqlar, vurğular — animasiya ilə
+                pts = G.state_points(c)
+                dur = float(c["srcOut"]) - float(c["srcIn"])
+                for k, ptime in enumerate(pts):
+                    a = c["_start"] + ptime
+                    b = c["_start"] + (pts[k + 1] if k + 1 < len(pts) else dur)
+                    info = rast[f"{c['id']}__{k}"]
+                    args.extend(["-loop", "1", "-framerate", fps_str, "-t", f"{b - a + 0.1:.4f}", "-i", info["file"]])
+                    nxt = f"vg{idx}"
+                    filters.append(G.overlay_chain(c, k, len(pts), a, b, W, H, fps_str, idx, cur, nxt))
+                    idx += 1
+                    cur = nxt
+
+        emit(others)
         track = G.caption_track(caps, W, H, fps, main, rast, workdir)
         if track:
             args.extend(["-i", str(track)])
             filters.append(f"[{idx}:v]format=rgba[capt];[{cur}][capt]overlay=0:0:eof_action=pass:ts_sync_mode=nearest[vcap]")
             idx += 1
             cur = "vcap"
+        emit(slates)
 
     logo = ((project.get("branding") or {}).get("logo") or {})
     if logo.get("enabled") and logo_path and logo_path.is_file():
