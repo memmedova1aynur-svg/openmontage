@@ -86,6 +86,18 @@
       if (clip.line) s.append(node(doc, 'div', { position: 'absolute', left: `${VW * 0.1}px`, right: `${VW * 0.1}px`, bottom: `${H * 0.125}px`, textAlign: 'center', fontStyle: 'italic', fontSize: `${H * 0.0156}px`, color: ink }, clip.line));
       return s;
     }
+    if (type === 'viewfinder') {  // kamera vizör effekti: yuxarı küncdə ● REC (yanıb-sönür) və taymkod; YALNIZ yuxarı küncləri tutur, üzə/mərkəzə toxunmur
+      const m = VW * (clip.m ?? 0.04), tick = VW * 0.045, t = tl == null ? 0 : tl, fsz = H * 0.0172;
+      const wrap = node(doc, 'div', { width: `${VW}px`, height: `${H}px`, position: 'relative', fontFamily: font, color: '#FFFFFF', textShadow: '0 1px 3px rgba(0,0,0,0.55)' });
+      const rec = node(doc, 'div', { position: 'absolute', left: `${m + tick * 0.5}px`, top: `${m + tick * 0.5}px`, display: 'flex', alignItems: 'center', gap: `${fsz * 0.5}px`, fontWeight: '700', fontSize: `${fsz}px`, letterSpacing: '0.16em' });
+      const on = Math.floor(t / 0.5) % 2 === 0;
+      rec.append(node(doc, 'div', { width: `${fsz * 0.8}px`, height: `${fsz * 0.8}px`, borderRadius: '50%', background: '#E5484D', opacity: on ? '1' : '0.18', boxShadow: on ? '0 0 8px rgba(229,72,77,0.75)' : 'none' }));
+      rec.append(node(doc, 'div', {}, 'REC'));
+      const sec = Math.floor(t + (clip.tc0 || 0)), p2 = (n) => String(n).padStart(2, '0');
+      wrap.append(rec, node(doc, 'div', { position: 'absolute', right: `${m + tick * 0.5}px`, top: `${m + tick * 0.5}px`, fontFamily: '"DejaVu Sans Mono",monospace', fontWeight: '700', fontSize: `${fsz}px`, letterSpacing: '0.06em' },
+        `00:${p2(Math.floor(sec / 60))}:${p2(sec % 60)}`));
+      return wrap;
+    }
     if (type === 'veil') {  // yazının arxasında kadrın yuxarısında tam enli, çox yumşaq tünd keçid (kinoda "title-safe" qradiyent) — ləkə yox
       const a = Number(clip.a ?? 0.42);
       return node(doc, 'div', { width: `${VW}px`, height: `${H * (clip.h ?? 0.4)}px`,
@@ -296,6 +308,7 @@
       veil: { size: 0.03, weight: 400, color: '#FFFFFF' },
       frame: { size: 0.03, weight: 400, color: '#FFFFFF' },
       slate: { size: 0.06, weight: 700, color: '#3C262C' },
+      viewfinder: { size: 0.03, weight: 700, color: '#FFFFFF' },
     })[type] || { size: 0.06, weight: 700, color: '#FFFFFF' };
   }
 
@@ -303,6 +316,7 @@
   function statePoints(clip) {
     if (clip.type === 'caption' && clip.plain) return [0];
     if (clip.type === 'caption') return [0, ...(clip.words || []).map((w) => w.s)].filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b);
+    if (clip.type === 'viewfinder') { const n = Math.floor((clip.srcOut - clip.srcIn) / 0.5); return Array.from({ length: n + 1 }, (_, i) => i * 0.5).filter((v) => v < clip.srcOut - clip.srcIn); }
     if (clip.type === 'bars' && clip.seq) return [0, ...clip.seq.map((w) => w.s || 0)].filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b);
     if (['list', 'type', 'note', 'block', 'slate'].includes(clip.type) && clip.items) return [0, ...clip.items.map((it) => it.at || 0)].filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b);
     if (clip.type === 'list') return [0, ...(clip.items || []).map((it) => it.at || 0)].filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b);
@@ -313,7 +327,7 @@
   // Standart yer (x, y mərkəz, 0..1) — render (graphics.py DEFAULT_XY) ilə eyni
   const DEFAULT_XY = { caption: [0.5, 0.74], title: [0.5, 0.14], section: [0.5, 0.22], emphasis: [0.5, 0.62], list: [0.5, 0.42], card: [0.5, 0.42],
     offer: [0.5, 0.58], cta: [0.5, 0.585], badge: [0.5, 0.215], lower: [0.24, 0.82], choice: [0.5, 0.45],
-    type: [0.5, 0.17], note: [0.5, 0.17], block: [0.5, 0.15], bars: [0.5, 0.5], veil: [0.5, 0.2], frame: [0.5, 0.5], slate: [0.5, 0.5] };  // reklam kartları üzün altında
+    type: [0.5, 0.17], note: [0.5, 0.17], block: [0.5, 0.15], bars: [0.5, 0.5], veil: [0.5, 0.2], frame: [0.5, 0.5], slate: [0.5, 0.5], viewfinder: [0.5, 0.5] };  // reklam kartları üzün altında
   function pos(clip) { const d = DEFAULT_XY[clip.type] || [0.5, 0.5]; return [clip.x ?? d[0], clip.y ?? d[1]]; }
 
   root.MG = { ANIMS, animState, build, defaults, statePoints, rgba, pos, DEFAULT_XY };

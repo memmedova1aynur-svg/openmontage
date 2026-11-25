@@ -18,6 +18,7 @@
 | 8 | Mətn–görüntü sinxronu | söz və hərəkət eyni anda düşür | sinxron tutulmur | söz vaxtı ilə yazı girişi (±1 kadr) |
 | 9 | Pattern interrupt | monoton başlanğıc riski | video artıq dinamikdir | gözlənilməz, amma mövzuya aid kadr; təsadüfi flaş YOX |
 | 10 | Vizual sual | mövzu sualdır | cavab ilk saniyədə verilir | sual yazısı + cavabın gecikməsi |
+| 12 | Kamera vizörü (REC + taymkod) | ekspert 'kamera arxasından' danışır kimi, etiraf/sirr/arxa plan hook-u | adi məlumat hook-u, sakit dərs | `frame` dəsti, `hook.viewfinder=true`; yalnız yuxarı künclər, üzə toxunmur |
 | 11 | Dinamik kadr başlanğıcı | enerjili reklam/hekayə | sakit ekspert/dərs (M14) | ilk kadr ən güclü anla başlayır |
 
 ## Seçim alqoritmi (≤ 30 saniyə)

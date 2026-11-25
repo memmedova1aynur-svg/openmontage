@@ -174,6 +174,8 @@ def build(kit: str, content: dict[str, Any], theme: dict[str, Any] | None = None
         total = float(content.get("duration") or 60)
         g.append({"type": "frame", "bleed": True, "x": 0.5, "y": 0.5, "start": 0.0, "dur": total, "m": 0.04, "anim": {"in": "fade", "d": 0.8, "out": "fade", "dOut": 0.6}})
         T = {"type": "type", "font": "serif", "align": "center", "x": 0.5, "w": 0.86, "anim": {"in": "fade", "d": 0.6, "out": "fade"}}
+        if hook and hook.get("viewfinder"):  # maraqlı hook (kamera arxasından danışır kimi): vizör effekti — yalnız yuxarı künclərdə REC və taymkod, üzə toxunmur
+            g.append({"type": "viewfinder", "bleed": True, "x": 0.5, "y": 0.5, "m": 0.04, "start": hs, "dur": hd, "anim": {"in": "fade", "d": 0.3, "out": "fade", "dOut": 0.3}})
         if hook:
             g.append({**T, "kicker": hook.get("kicker"), "text": hook["text"], "size": 0.052, "y": 0.17, "start": hs, "dur": hd})
         if lst:
@@ -181,7 +183,7 @@ def build(kit: str, content: dict[str, Any], theme: dict[str, Any] | None = None
         g += [{**T, "text": e["text"], "size": 0.05, "y": 0.15, "start": e["start"], "dur": e["dur"]} for e in emph]
         if claim:
             g.append({**T, "kicker": claim.get("kicker"), "text": claim["text"], "size": 0.06, "y": 0.16, "start": claim["start"], "dur": claim["dur"]})
-        hook_method = "typography-centered"
+        hook_method = "viewfinder" if hook and hook.get("viewfinder") else "typography-centered"
     else:  # kinetic
         cap.update(style={"bg": "#000000@0.55", "color": "#FFFFFF", "weight": 600, "size": 0.03, "y": 0.9})
         total = float(content.get("duration") or 60)
@@ -211,6 +213,7 @@ def build(kit: str, content: dict[str, Any], theme: dict[str, Any] | None = None
     if kit in ("editorial", "handnote", "frame", "intertitle"):  # kartsız yazı: arxasında çox yumşaq tünd üst qradiyent (ləkə yox) — fon üzərində oxunaqlılıq
         a = {"editorial": 0.42, "handnote": 0.36, "frame": 0.40, "intertitle": 0.40}[kit]
         g = [y for x in g for y in ((veil(x["start"], x["dur"], a), x) if x["type"] in ("type", "note") else (x,))]
+    g = [x for x in g if x["type"] != "viewfinder"] + [x for x in g if x["type"] == "viewfinder"]  # REC/taymkod hər şeyin üstündə (veil onu tündləşdirməsin)
     n_hard = len([x for x in g if x["type"] in ("block", "bars")])
     sfx = []
     for x in g:

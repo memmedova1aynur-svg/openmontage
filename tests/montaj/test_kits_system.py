@@ -196,3 +196,34 @@ def test_intertitle_kit_full_frame_cards_only_at_idea_boundaries():
     for other in ("editorial", "frame", "classic"):
         d = difference.check({"A": b, "B": kits.build(other, CONTENT)})
         assert d["ok"] and d["pairs"][0]["diff"] >= 4, other
+
+
+def test_viewfinder_hook_only_touches_top_corners_never_the_face(tmp_path):
+    """Kamera vizörü (REC + taymkod): yalnız yuxarı küncləri tutur; mərkəzə/üzə toxunmur; REC yanıb-sönür, taymkod sayır."""
+    if not (shutil.which("ffmpeg") and shutil.which("node")):
+        pytest.skip("node yoxdur")
+    import numpy as np
+    from PIL import Image
+
+    from montaj import graphics as G
+
+    c = {**CONTENT, "hook": {**CONTENT["hook"], "viewfinder": True}}
+    b = kits.build("frame", c)
+    vf = [g for g in b["graphics"] if g["type"] == "viewfinder"]
+    assert len(vf) == 1 and vf[0]["bleed"] and b["axes"]["hook"] == "viewfinder"
+    clip = dict(vf[0], id="vf", srcIn=0, srcOut=float(vf[0]["dur"]))
+    pts = G.state_points(clip)
+    assert pts[:3] == [0.0, 0.5, 1.0] and pts[-1] < clip["srcOut"]
+    W, H = 360, 640
+    rast = G.rasterize([("vf0", clip, 0.1), ("vf1", clip, 0.6), ("vf2", clip, 3.2)], W, H, {}, tmp_path)
+    boxes = []
+    for n in ("vf0", "vf1", "vf2"):
+        a = np.asarray(Image.open(rast[n]["file"]).convert("RGBA"))[..., 3]
+        ys, xs = np.where(a > 12)
+        assert len(ys), n
+        boxes.append((xs.min() / a.shape[1], ys.min() / a.shape[0], xs.max() / a.shape[1], ys.max() / a.shape[0]))
+        assert ys.max() / a.shape[0] < 0.14, f"{n}: yalnız yuxarı zolaq (üz/mərkəz toxunulmaz)"
+        mid = a[:, int(a.shape[1] * 0.3): int(a.shape[1] * 0.7)]
+        assert not (mid > 12).any(), f"{n}: orta hissə boşdur (üz üçün)"
+    assert Image.open(rast["vf0"]["file"]).tobytes() != Image.open(rast["vf1"]["file"]).tobytes(), "REC yanıb-sönür"
+    assert Image.open(rast["vf0"]["file"]).tobytes() != Image.open(rast["vf2"]["file"]).tobytes(), "taymkod sayır"

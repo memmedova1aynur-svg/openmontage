@@ -16,6 +16,9 @@ hərəkət, kart olub-olmaması, musiqi/SFX). Kod: `montaj/kits.py`; yoxlama: `m
 **İstifadəçi qərarı (2026-11-25, `montaj/kit_decisions.json`):** editorial yaxşıdır (fon üzərində yazı oxunmurdu; tünd ləkə (scrim) bəyənilmədi, premium deyil → yumşaq üst qradiyent `veil` + Lora serif şrifti), handnote pis deyil; **colorblock və kinetic ümumiyyətlə bəyənilmədi** — təklif olunmur (`variants` onları dayandırır, `--force` yalnız istifadəçi istəsə).
 `veil` = kadrın yuxarısında tam enli, çox yumşaq tünd qradiyent (kino başlıqlarındakı kimi, ləkə yox), hər kartsız yazının ALTINDA eyni vaxtda; preflight açılışdakı yazının fon kontrastını ölçür (WCAG <3:1 → veil avtomatik əlavə olunur). Serif başlıqlar: Lora (SIL OFL, Azərbaycan hərfləri tam).
 
+## Kamera vizörü (hook üçün, `frame` dəstində)
+Maraqlı hook olanda və ekspert sanki kamera arxasından danışırmış kimi görünməlidirsə: `content.hook.viewfinder = true` → yuxarı künclərdə ● REC (yanıb-sönür) və saniyə sayan taymkod, çərçivə künc nişanları ilə birlikdə. Yalnız yuxarı künclər tutulur, mərkəz və üz toxunulmazdır (test yoxlayır). Hər hook üçün yox, yalnız mövzuya uyğun olanda (arxa plan, "kamera arxası", etiraf, sirr); standart sual hook-u sadə qalır. Uydurma məlumat yoxdur (REC/taymkod dekorativ vizördür).
+
 ## Seçim qaydası
 1. `storyboard` çıxışındakı təklif (son 2 videoda işlənmiş və rədd edilmiş dəstlər xaric) — bir-birindən ən uzaq 3 dəst.
 2. Mövzuya/məqsədə görə uyğunluğu yoxla (cədvəl); reklamda hansının daha çox geri dönüş gətirəcəyini səbəbi ilə yaz.
