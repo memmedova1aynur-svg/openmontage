@@ -417,14 +417,13 @@ Never silently skip analysis steps. If something fails, tell the user what happe
 and what the impact is on the analysis quality.
 
 
-## Link referansı (Instagram): Apify + watch-skill (2026-11-25)
+## Instagram referansı — XƏRCSİZ standart (2026-11-25)
 
-Mühit ayarına toxunmadan, hər yeni sessiyada: Reel linki → `python -m montaj.reference "<reel linki>" --out <müvəqqəti qovluq>` (Apify actor videonu öz yaddaşına re-host edir, `api.apify.com` mühitdə
-artıq icazəlidir; xərc tavanı 0.10 $, açıq Reel/post; giriş/cookie yox) → yerli `reference.mp4`. Sonra `.venv-watch/bin/watch-skill watch <mp4> --no-whisper --no-index --out-dir <qovluq>`:
-səhnə kadrları `frames/` qovluğunda — `Read` ilə bax. Nəticədən edit spesifikasiyası çıxar: kəsim tempi, altyazı üslubu, ara kadr sıxlığı, kart/tipoqrafiya, hook.
-
-- **Alına bilməyəndə** (post şəxsi/silinib, actor nəticə vermir, re-host host-u bağlıdır): istifadəçidən videonu fayl/Drive linki kimi istə; uydurma analiz etmə. Yalnız mətn məlumatı üçün `ig-analiz` skill-i (caption, hashtag, baxış).
-- **Xərc:** hər Reel üçün bir neçə sent (pay-per-event); tavan aşılmır. Çoxlu video üçün əvvəl istifadəçiyə say/xərc de.
+İstifadəçi Instagram linki göndərəndə **xərc çıxmasın**. Linkdən video baytlarını xərcsiz almaq mümkün deyil (CDN mühitdə bağlıdır; mühit ayarı dəyişməz; səhifəni brauzer kimi görünüb oxumaq / giriş divarını aşmaq edilmir).
+Xərcsiz yol:
+1. İstifadəçidən videonu **söhbətə fayl kimi əlavə etməsini** və ya **Drive linki** verməsini istə (qısa: "Reel-i yükləyib bura atın, analiz edim"). Fayl gələndən sonra:
+2. `.venv-watch/bin/watch-skill watch <mp4> --no-whisper --no-index --out-dir <müvəqqəti qovluq>` — səhnə kadrları `frames/`-də, `Read` ilə bax; transkripti öz Whisper-lə (montaj analizi) çıxar.
+3. Analiz: kəsim tempi, altyazı üslubu, ara kadr sıxlığı, kart/tipoqrafiya, hook, nə üçün işləyir, bizim müştəri üçün necə uyğunlaşdırmaq. Qısa yaz.
+- **Apify yolu (`python -m montaj.reference --allow-cost`) yalnız istifadəçi xərcə açıq razılıq verəndə** (hər Reel üçün bir neçə sent, tavan 0.10 $). Özbaşına işlətmə.
 - **Qayda:** yalnız şəxsi analiz; videonu montaja, repoya və ya Drive-a qoyma, kadrlarını təkrar istifadə etmə (müəllif hüququ, platforma şərtləri); işdən sonra müvəqqəti qovluğu sil.
-- OCR bu mühitdə işləmir (model `modelscope.cn`-dən endirilir, şəbəkədə bağlıdır) — mətn üçün kadrlara özün bax.
-- Şəbəkə: `*.cdninstagram.com`/`*.fbcdn.net` mühitdə bağlı olaraq qalır (birbaşa yükləmə işləmir); Apify yolu bunu tələb etmir.
+- OCR bu mühitdə işləmir — kadrlardakı mətnə özün bax.

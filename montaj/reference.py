@@ -1,4 +1,7 @@
-"""Instagram Reel referansı → yerli MP4 (mühit şəbəkə ayarını dəyişmədən): Apify ilə.
+"""Instagram Reel referansı → yerli MP4: XƏRCLİ yol (Apify) — yalnız istifadəçi açıq razılıq verəndə (`--allow-cost`). Standart: xərcsiz.
+
+Xərcsiz yol (standart): istifadəçi videonu söhbətə fayl kimi əlavə edir və ya Drive linki verir; sonra yerli faylı analiz et (watch-skill). Yalnız linkdən xərcsiz video alınmır
+(video baytları mühitdə bağlı CDN-dədir; səhifəni brauzer kimi görünüb oxumaq/giriş divarını aşmaq da edilmir).
 
 Niyə: Instagram videosunun baytları `*.cdninstagram.com`/`*.fbcdn.net` alt-domenlərindədir və mühitdə bağlıdır; mühit ayarına toxunmaq istənilmir.
 Apify (api.apify.com) mühitdə artıq icazəlidir və açar mühitin network secret-indədir (söhbətə yazılmır). Actor videonu öz yaddaşına re-host edir, biz oradan endiririk.
@@ -68,7 +71,11 @@ def fetch_video(url: str, out_dir: Path, max_usd: float = 0.10, actor: str = ACT
 
 def main() -> None:
     ap = argparse.ArgumentParser(prog="python -m montaj.reference"); ap.add_argument("url"); ap.add_argument("--out", default="/tmp/reference"); ap.add_argument("--max-usd", type=float, default=0.10)
-    a = ap.parse_args(); print(fetch_video(a.url, Path(a.out), a.max_usd))
+    ap.add_argument("--allow-cost", action="store_true", help="Apify xərcini istifadəçi açıq təsdiq edib")
+    a = ap.parse_args()
+    if not a.allow_cost:
+        raise SystemExit("Xərcsiz rejim: linkdən video alınmır. İstifadəçidən videonu fayl (söhbətə əlavə) və ya Drive linki kimi istə. Apify yolu yalnız istifadəçi xərcə razılıq verəndə: --allow-cost.")
+    print(fetch_video(a.url, Path(a.out), a.max_usd))
 
 
 if __name__ == "__main__":
