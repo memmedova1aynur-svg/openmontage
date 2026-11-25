@@ -27,8 +27,11 @@ from pathlib import Path
 from typing import Any
 
 CATALOG = Path(__file__).parent / "library" / "catalog.json"
-DRIVE_ROOT_ID = "1f21ppLqz1tmdH_mq9AOUPCAejEVDg-wy"  # "OpenMontage Kitabxana" (Drive); alt qovluqlar: musiqi, broll, sfx
-DRIVE_SUB = {"music": "18-CgDrFhlW-1xIywUDoQZ2yRUZaEUXUN", "broll": "1FcDF1LtNAK7NtskY7p1by_vt6W8dJ6Rb"}
+DRIVE_ROOT_ID = "1KxLir8Y0FEf4HOC1HQ8KkWVS4U-gMG21"  # "OpenMontage Kitabxana" (Drive, 2026-11-25-dən yeni hesab); alt qovluqlar: musiqi, broll, sfx
+DRIVE_SUB = {"music": "17aahDHsPYiEMT-y6P73qEW3QzAOMw7aV", "broll": "1WunrdEDYxcNY6l2G3AaZVgrD2mrF7EG5", "sfx": "1P7_R4h0RzJcYfM-WF2WMuN_QP9zQZeOT"}
+# Hazır videolar (çıxış) qovluğu: "OpenMontage Hazır videolar/<müştəri>" — müştəri alt qovluğu: DRIVE_OUT_CLIENTS
+DRIVE_OUT_ID = "1UCL6Gki_-UmXwctPW4uAu0ZH6GUTfiDB"
+DRIVE_OUT_CLIENTS = {"xeyyam-huseynov": "1VlZsbIKazsv7c3qf56DwpcsQInB4BWKC"}
 KINDS = ("music", "broll", "sfx")
 # Azərbaycanca → ingiliscə axtarış sinonimləri (kataloq teqləri ingiliscədir)
 SYN = {"kitab": "book library", "kitabxana": "library books", "beyin": "brain mind", "yaddaş": "memory", "yuxu": "sleep night", "telefon": "phone smartphone",

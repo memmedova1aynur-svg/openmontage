@@ -65,7 +65,7 @@ altyazı, kart və başlıq bu sahələrə girməməlidir. Üzü, ağzı və vac
 (`scripts/cloud-setup.sh`) təzə konteynerdə asılılıqları qurur; fərdi açarlar (Pixabay/Freesound) isteğe bağlıdır.
 
 **Kitabxana (musiqi, B-roll, SFX):** `montaj/library/catalog.json` (kiçik kataloq, repoda) + fayllar lazım olanda endirilir (`python -m montaj.library search|get|sync`).
-Mənbələr: Mixkit (pulsuz lisenziya, mühit şəbəkəsində açıq) və istifadəçinin Drive qovluğu **"OpenMontage Kitabxana"** (`musiqi/`, `broll/`; fayl adı `teq1_teq2_ad.ext`;
+Mənbələr: Mixkit (pulsuz lisenziya, mühit şəbəkəsində açıq) və istifadəçinin Drive qovluğu **"OpenMontage Kitabxana"** (2026-11-25-dən yeni Drive hesabı; köhnə hesab bağlantısı kəsilib) (`musiqi/`, `broll/`; fayl adı `teq1_teq2_ad.ext`;
 qovluq "Linki olan hər kəs — Baxan" olmalıdır; sonra `sync`). Məhdudiyyət: Mixkit B-roll 1280×720 üfüqidir — tam ekran şaquli üçün yumşaq olur; kart/pəncərə içində işlədilir.
 Müştəriyə məxsus və ya məxfi material bu ortaq kitabxanaya qoyulmur.
 
@@ -78,3 +78,6 @@ düz edit yalnız əsaslandırılıb seçilir. Konsept 5–8 sətirdir; storyboa
 (masa aşağıda görünə bilər); başın üstündə ~10% boşluq (müştəri profili kart üçün artıra bilər). Əl kamerası hərəkəti izlənmir (sabit kamera fərziyyəsi).
 
 **Rəngdə ağ/qara nöqtə:** nümunə və yekun yoxlama qara nöqtənin 3-dən çox qalxmasını (bulanıq qara) və ağ nöqtənin 4-dən çox enməsini (solğun ağ) problem sayır.
+
+**Drive (2026-11-25):** bütün giriş materialı (video linkləri, kitabxana) və kitabxana yeni Drive hesabından götürülür. Hazır videolar üçün qovluq: **"OpenMontage Hazır videolar/<müştəri>"**.
+Məhdudiyyət: Drive bağlantısı (MCP) bir fayl üçün **10 MB**-a qədər yükləməyə icazə verir — tam keyfiyyətli MP4 (40–60 MB) bu yolla Drive-a yüklənə bilmir; hazır video söhbətə fayl kimi göndərilir.
