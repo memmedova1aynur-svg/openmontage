@@ -7,13 +7,13 @@ hərəkət, kart olub-olmaması, musiqi/SFX). Kod: `montaj/kits.py`; yoxlama: `m
 |---|---|---|---|
 | classic | təhlükəsiz baza | brend rəngli kartlar, qutulu altyazı | ən tanış; fərqlənmək üçün yox |
 | frame ✅ | premium, psixologiya, ekspert fikri | nazik çərçivə + künc nişanları, mərkəzləşmiş Lora başlıq, inline kursiv nümunələr (`frame` + `type` + `veil`) | çərçivə bütün video boyu görünür |
-| intertitle ✅ | siyahı/nümunələr, əsas fikir, sənədli, premium | fikir bitəndə 2–4 s tam kadr krem kart (`slate`): kicker, iri serif yazı/sətirlər; ekspert görünmür, səsi davam edir; altyazını örtür; hook və vurğu yuxarıda sakit yazı | ekspertin ekranda olma müddətini azaldır; kart ≥2 s, aralarında ekspert ≥2 s |
+| intertitle ❌ | siyahı/nümunələr, əsas fikir, sənədli, premium | fikir bitəndə 2–4 s tam kadr krem kart (`slate`): kicker, iri serif yazı/sətirlər; ekspert görünmür, səsi davam edir; altyazını örtür; hook və vurğu yuxarıda sakit yazı | ekspertin ekranda olma müddətini azaldır; kart ≥2 s, aralarında ekspert ≥2 s |
 | editorial ✅ | psixologiya, ekspert fikri, hekayə | kartsız serif yazı başın üstündə, sola düzlənmiş altyazı | çox yazı sığmır; sakit |
 | colorblock ❌ | reklam, təlim, siyahı/addım | yuxarıda tam enli rəng paneli (anda rəng dəyişir), altyazı zolağı | panel yuxarı ~30%-i örtür |
 | handnote 👍 | ana-körpə, uşaq, şəxsi məsləhət | əl yazısı (Caveat), altından xətt/dairə/ox/✓, mono altyazı | həddindən artıq olarsa dağınıq |
 | kinetic ❌ | reklam, motivasiya, qısa/sürətli | sinema zolaqları, aşağıda bir böyük söz, yuxarıda irəliləyiş xətti | zolaqlar yuxarı 5% və aşağı 24%-i örtür |
 
-**İstifadəçi qərarı (2026-11-25, `montaj/kit_decisions.json`):** editorial yaxşıdır (fon üzərində yazı oxunmurdu; tünd ləkə (scrim) bəyənilmədi, premium deyil → yumşaq üst qradiyent `veil` + Lora serif şrifti), handnote pis deyil; **colorblock və kinetic ümumiyyətlə bəyənilmədi** — təklif olunmur (`variants` onları dayandırır, `--force` yalnız istifadəçi istəsə).
+**İstifadəçi qərarı (2026-11-25, `montaj/kit_decisions.json`):** editorial yaxşıdır (fon üzərində yazı oxunmurdu; tünd ləkə (scrim) bəyənilmədi, premium deyil → yumşaq üst qradiyent `veil` + Lora serif şrifti), handnote pis deyil; **colorblock, kinetic və intertitle ümumiyyətlə bəyənilmədi (intertitle: qeyri-peşəkar, premium deyil)** — təklif olunmur (`variants` onları dayandırır, `--force` yalnız istifadəçi istəsə).
 `veil` = kadrın yuxarısında tam enli, çox yumşaq tünd qradiyent (kino başlıqlarındakı kimi, ləkə yox), hər kartsız yazının ALTINDA eyni vaxtda; preflight açılışdakı yazının fon kontrastını ölçür (WCAG <3:1 → veil avtomatik əlavə olunur). Serif başlıqlar: Lora (SIL OFL, Azərbaycan hərfləri tam).
 
 ## Kamera vizörü (hook üçün, `frame` dəstində)

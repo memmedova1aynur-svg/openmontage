@@ -133,10 +133,10 @@ def test_reference_learning_extracts_rhythm_not_media(tmp_path, monkeypatch):
 
 def test_global_user_decisions_block_disliked_kits_and_prefer_liked():
     g = memory.global_decisions()
-    assert {"colorblock", "kinetic", "handnote"} <= set(g["rejected"]), "istifadəçi bu üç dəsti bəyənməyib (2026-11-25)"
+    assert {"colorblock", "kinetic", "handnote", "intertitle"} <= set(g["rejected"]), "istifadəçi bu dəstləri bəyənməyib (2026-11-25)"
     assert "editorial" in g["liked"]
     sug = memory.suggest({}, 3)
-    assert not {"colorblock", "kinetic", "handnote"} & set(sug) and sug[0] == "editorial"
+    assert not {"colorblock", "kinetic", "handnote", "intertitle"} & set(sug) and sug[0] == "editorial"
     assert memory.check_plans({}, {"A": {"kit": "kinetic"}}), "variants rədd edilmiş dəsti dayandırır"
 
 
@@ -174,7 +174,7 @@ def test_frame_kit_is_framed_centered_serif_and_differs_from_editorial():
     d = difference.check({"A": kits.build("editorial", CONTENT), "B": b})
     assert d["ok"] and d["pairs"][0]["diff"] >= 4
     assert "frame" in memory.global_decisions()["liked"], "istifadəçi seçdi (2026-11-25)"
-    assert "frame" not in memory.blocked({}) and "intertitle" not in memory.blocked({})
+    assert "frame" not in memory.blocked({})
 
 
 def test_editorial_scales_long_hook_instead_of_overflowing():
