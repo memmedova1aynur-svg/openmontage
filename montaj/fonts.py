@@ -15,7 +15,8 @@ FAMILIES = {
     "Montserrat": {"slug": "montserrat", "weights": [400, 600, 700, 800]},
     "Caveat": {"slug": "caveat", "weights": [400, 700]},
 }
-EXTRA_TTF = {"Lora": {400: "lora/Lora-Regular.ttf", 700: "lora/Lora-Bold.ttf"}}  # SIL OFL; serif başlıqlar (Azərbaycan hərfləri tam)
+EXTRA_TTF = {"Lora": {400: "lora/Lora-Regular.ttf", 700: "lora/Lora-Bold.ttf"},
+             "Work Sans": {400: "worksans/WorkSans-Regular.ttf", 700: "worksans/WorkSans-Bold.ttf"}}  # SIL OFL; Apple-üslub şüşə dəstləri (Azərbaycan hərfləri tam)  # SIL OFL; serif başlıqlar (Azərbaycan hərfləri tam)
 EXTRA_ITALIC = {"Lora": {400: "lora/Lora-Italic.ttf", 700: "lora/Lora-BoldItalic.ttf"}}
 
 

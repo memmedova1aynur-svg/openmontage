@@ -1604,3 +1604,32 @@ def test_preflight_adds_veil_under_unreadable_text(tmp_path, monkeypatch):
     order = [c["type"] for c in q2["clips"] if c["track"] == "t1" and c.get("type") in ("veil", "type", "note")]
     assert order == ["veil", "type", "veil", "note"], "veil yazının altında (əvvəl) çəkilir"
     assert preflight.add_veils(q2)[1] == 0, "təkrar əlavə olunmur"
+
+
+def test_slate_covers_captions_and_hides_expert(tmp_path, monkeypatch):
+    """İntertitle kartı (slate) tam kadrdır: ekspertin də, altyazının da üstündən çəkilir; kartdan kənarda ekspert görünür."""
+    pid = _fixture(tmp_path, monkeypatch)
+    from PIL import Image
+
+    from montaj import render, session, store
+    from montaj import media as mediautil
+
+    _draft_and_analysis(pid)
+    assert session.main(["apply", pid]) == 0
+    slate = {"type": "slate", "bleed": True, "x": 0.5, "y": 0.5, "bg": "#F2E4D6", "accent": "#9E3D5E", "kicker": "NÜMUNƏ", "items": [{"text": "Bir", "at": 0.1}, {"text": "İki", "at": 0.5}],
+             "size": 0.06, "start": 1.0, "dur": 2.0, "anim": {"in": "none", "out": "none"}}
+    q = session.apply_plan(pid, store.load(pid), {"look": None, "graphics": [slate]})
+    q["width"], q["height"] = 202, 360
+    out = tmp_path / "s.mp4"
+    render.render(q, store.project_dir(pid), out, lambda x: None)
+    assert mediautil.probe(out)["duration"] > 3
+    def px(t):
+        f = tmp_path / f"f{t}.png"
+        import subprocess
+        subprocess.run(["ffmpeg", "-y", "-v", "error", "-ss", str(t), "-i", str(out), "-frames:v", "1", str(f)], check=True)
+        im = Image.open(f).convert("RGB")
+        return [im.getpixel((x, y)) for x, y in ((8, 8), (190, 8), (8, 350), (190, 350), (100, 20))]
+    inside = px(2.0)
+    assert all(abs(p[0] - 242) < 14 and abs(p[1] - 228) < 14 and abs(p[2] - 214) < 14 for p in inside[:4]), inside  # krem kartın künc pikselləri
+    outside = px(0.3)
+    assert not all(abs(p[0] - 242) < 14 and abs(p[1] - 228) < 14 for p in outside[:4]), "kartdan kənarda video görünür"

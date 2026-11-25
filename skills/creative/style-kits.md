@@ -6,14 +6,25 @@ hərəkət, kart olub-olmaması, musiqi/SFX). Kod: `montaj/kits.py`; yoxlama: `m
 | Dəst | Nə vaxt | Xüsusiyyət | Məhdudiyyət |
 |---|---|---|---|
 | classic | təhlükəsiz baza | brend rəngli kartlar, qutulu altyazı | ən tanış; fərqlənmək üçün yox |
+| milkglass ✅ | ana-körpə, ana südü, uşaq, premium | Apple 'widget': süd rəngli şüşə kart (arxası real bulanıq), süd damcısı ikonu (`gcard`) | arxa fon çox qarışıqdırsa şüşə daha çox tint tələb edir |
+| notification ✅ | hook-güclü, premium, sosial şəbəkə | iOS bildiriş bannerı (`gbanner`): ikon, `content.brand_name`, 'indi', mətn | adı hər videoda təkrarlayır |
+| glasscaps ✅ | siyahı/nümunələr, məsləhət | hər nümunə ayrı şüşə kapsul, əsas fikir böyük lövhədə (`gcaps`) | kapsullar bədənə yaxın düşməsin (preflight üz yoxlayır) |
+| pblur ✅ | premium, ekspert fikri, psixologiya | yuxarı yavaş bulanıqlaşır (`pblur`), iri qradiyentli Work Sans yazı | bulanıqlıq yalnız yuxarı 36–46% |
 | frame ✅ | premium, psixologiya, ekspert fikri | nazik çərçivə + künc nişanları, mərkəzləşmiş Lora başlıq, inline kursiv nümunələr (`frame` + `type` + `veil`) | çərçivə bütün video boyu görünür |
+| intertitle ❌ | siyahı/nümunələr, əsas fikir, sənədli, premium | fikir bitəndə 2–4 s tam kadr krem kart (`slate`): kicker, iri serif yazı/sətirlər; ekspert görünmür, səsi davam edir; altyazını örtür; hook və vurğu yuxarıda sakit yazı | ekspertin ekranda olma müddətini azaldır; kart ≥2 s, aralarında ekspert ≥2 s |
 | editorial ✅ | psixologiya, ekspert fikri, hekayə | kartsız serif yazı başın üstündə, sola düzlənmiş altyazı | çox yazı sığmır; sakit |
 | colorblock ❌ | reklam, təlim, siyahı/addım | yuxarıda tam enli rəng paneli (anda rəng dəyişir), altyazı zolağı | panel yuxarı ~30%-i örtür |
 | handnote 👍 | ana-körpə, uşaq, şəxsi məsləhət | əl yazısı (Caveat), altından xətt/dairə/ox/✓, mono altyazı | həddindən artıq olarsa dağınıq |
 | kinetic ❌ | reklam, motivasiya, qısa/sürətli | sinema zolaqları, aşağıda bir böyük söz, yuxarıda irəliləyiş xətti | zolaqlar yuxarı 5% və aşağı 24%-i örtür |
 
-**İstifadəçi qərarı (2026-11-25, `montaj/kit_decisions.json`):** editorial yaxşıdır (fon üzərində yazı oxunmurdu; tünd ləkə (scrim) bəyənilmədi, premium deyil → yumşaq üst qradiyent `veil` + Lora serif şrifti), handnote pis deyil; **colorblock və kinetic ümumiyyətlə bəyənilmədi** — təklif olunmur (`variants` onları dayandırır, `--force` yalnız istifadəçi istəsə).
+**İstifadəçi qərarı (2026-11-25, `montaj/kit_decisions.json`):** editorial yaxşıdır (fon üzərində yazı oxunmurdu; tünd ləkə (scrim) bəyənilmədi, premium deyil → yumşaq üst qradiyent `veil` + Lora serif şrifti), handnote pis deyil; **colorblock, kinetic və intertitle ümumiyyətlə bəyənilmədi (intertitle: qeyri-peşəkar, premium deyil)** — təklif olunmur (`variants` onları dayandırır, `--force` yalnız istifadəçi istəsə).
 `veil` = kadrın yuxarısında tam enli, çox yumşaq tünd qradiyent (kino başlıqlarındakı kimi, ləkə yox), hər kartsız yazının ALTINDA eyni vaxtda; preflight açılışdakı yazının fon kontrastını ölçür (WCAG <3:1 → veil avtomatik əlavə olunur). Serif başlıqlar: Lora (SIL OFL, Azərbaycan hərfləri tam).
+
+## Kamera vizörü (hook üçün, `frame` dəstində)
+Maraqlı hook olanda və ekspert sanki kamera arxasından danışırmış kimi görünməlidirsə: `content.hook.viewfinder = true` → yuxarı künclərdə ● REC (yanıb-sönür) və saniyə sayan taymkod, çərçivə künc nişanları ilə birlikdə. Yalnız yuxarı künclər tutulur, mərkəz və üz toxunulmazdır (test yoxlayır). Hər hook üçün yox, yalnız mövzuya uyğun olanda (arxa plan, "kamera arxası", etiraf, sirr); standart sual hook-u sadə qalır. Uydurma məlumat yoxdur (REC/taymkod dekorativ vizördür).
+
+## Şüşə (backdrop) necə işləyir
+JS paneli (tint, nazik kənar, kölgə, mətn) çəkir; render həmin elementin MASKASINI (eyni düzülüşdə ağ siluet) alıb kadrın həmin bölgəsini (yalnız elementin müddətində, yarım ölçüdə) bulanıqlaşdırır və panelin altına qoyur. Giriş/çıxış YALNIZ fade (pop/slide maskanı sürüşdürərdi). Şrift: Work Sans (OFL, Azərbaycan hərfləri tam).
 
 ## Seçim qaydası
 1. `storyboard` çıxışındakı təklif (son 2 videoda işlənmiş və rədd edilmiş dəstlər xaric) — bir-birindən ən uzaq 3 dəst.

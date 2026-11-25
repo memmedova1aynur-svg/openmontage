@@ -15,12 +15,15 @@ from typing import Any
 from montaj import fonts
 
 TYPES = {"caption", "title", "section", "emphasis", "list", "card", "offer", "cta", "badge", "lower", "choice",
-         "type", "note", "block", "bars", "veil", "frame"}  # son 6 — üslub dəstləri (kits.py)
+         "type", "note", "block", "bars", "veil", "frame", "slate", "viewfinder",
+         "gcard", "gbanner", "gcaps", "pblur"}  # son 12 — üslub dəstləri (kits.py)
 DEFAULT_XY = {"caption": (0.5, 0.74), "title": (0.5, 0.14), "section": (0.5, 0.22), "emphasis": (0.5, 0.62),
               "list": (0.5, 0.42), "card": (0.5, 0.42),
               "offer": (0.5, 0.58), "cta": (0.5, 0.585), "badge": (0.5, 0.215),
               "lower": (0.24, 0.82), "choice": (0.5, 0.45),
-              "type": (0.5, 0.17), "note": (0.5, 0.17), "block": (0.5, 0.15), "bars": (0.5, 0.5), "veil": (0.5, 0.2), "frame": (0.5, 0.5)}  # graphics.js-dəki DEFAULT_XY ilə eyni
+              "type": (0.5, 0.17), "note": (0.5, 0.17), "block": (0.5, 0.15), "bars": (0.5, 0.5), "veil": (0.5, 0.2), "frame": (0.5, 0.5), "slate": (0.5, 0.5), "viewfinder": (0.5, 0.5),
+              "gcard": (0.5, 0.17), "gbanner": (0.5, 0.12), "gcaps": (0.5, 0.15), "pblur": (0.5, 0.21)}
+GLASS_TYPES = {"gcard", "gbanner", "gcaps", "pblur"}  # arxası render-də bulanıqlaşdırılan (backdrop) növlər  # graphics.js-dəki DEFAULT_XY ilə eyni
 
 
 def pos(c: dict[str, Any]) -> tuple[float, float]:
@@ -39,9 +42,12 @@ def state_points(c: dict[str, Any]) -> list[float]:
         pts = [0.0]  # sadə altyazı: söz-söz dəyişmə yoxdur (bir PNG)
     elif c.get("type") == "caption":
         pts = [0.0] + [float(w["s"]) for w in c.get("words") or []]
+    elif c.get("type") == "viewfinder":  # yanıb-sönən REC və saniyə sayğacı: 0.5 s addımla
+        d = float(c["srcOut"]) - float(c["srcIn"])
+        pts = [i * 0.5 for i in range(int(d / 0.5) + 1) if i * 0.5 < d]
     elif c.get("type") == "bars" and c.get("seq"):
         pts = [0.0] + [float(w.get("s") or 0) for w in c["seq"]]
-    elif c.get("type") in ("list", "type", "note", "block") and c.get("items"):
+    elif c.get("type") in ("list", "type", "note", "block", "slate", "gcard", "gcaps") and c.get("items"):
         pts = [0.0] + [float(it.get("at") or 0) for it in c.get("items") or []]
     elif c.get("type") == "choice":
         pts = [0.0, float(c.get("at", 1.5))]
@@ -77,7 +83,7 @@ def rasterize(items: list[tuple[str, dict[str, Any], float]], W: int, H: int, th
     fl = [{"family": fam, "weight": w, "path": str(p), "range": fonts.RANGES[sub]}
           for fam, w, sub, p in fonts.editor_font_files()] + fonts.extra_font_faces()
     cfg = {"W": W, "H": H, "theme": theme or {}, "fonts": fl,
-           "jobs": [{"name": n, "clip": _inline_images(c), "tl": tl + 0.001} for n, c, tl in items]}
+           "jobs": [{"name": n, "clip": _inline_images({**c, "pad": 0.034} if c.get("type") in GLASS_TYPES else c), "tl": tl + 0.001} for n, c, tl in items]}
     jf = workdir / "raster_jobs.json"
     jf.write_text(json.dumps(cfg, ensure_ascii=False), encoding="utf-8")
     out = workdir / "raster"
@@ -165,3 +171,50 @@ def overlay_chain(c: dict[str, Any], k: int, n_states: int, a: float, b: float, 
     return (",".join(f) + f"[{lab}];"
             f"[{cur}][{lab}]overlay=x='{bx}+({tx})':y='{by}+({ty})':"
             f"eval=frame:enable='between(t,{a:.4f},{b:.4f})'[{out}]")
+
+
+def glass_prepare(c: dict[str, Any], elem: dict[str, Any], mask: dict[str, Any], W: int, H: int, workdir: Path, tag: str) -> dict[str, Any]:
+    """Şüşə (backdrop) üçün: elementin kadrdakı yeri (overlay ilə eyni formul), bulanıqlaşdırılacaq bölgə və bölgə ölçülü maska faylı."""
+    from PIL import Image
+
+    px, py = pos(c)
+    mx, my = (0.0, 0.0) if c.get("bleed") else (0.02 * W, 0.02 * H)
+    ow, oh = int(elem["w"]), int(elem["h"])
+    bx = int(round(max(mx, min(W - ow - mx, px * W - ow / 2))))
+    by = int(round(max(my, min(H - oh - my, py * H - oh / 2))))
+    sigma = max(2.0, 0.014 * W)
+    pad = int(sigma * 2.5)
+    rx, ry = max(0, bx - pad), max(0, by - pad)
+    rw, rh = min(W, bx + ow + pad) - rx, min(H, by + oh + pad) - ry
+    rw, rh = rw - rw % 2, rh - rh % 2
+    a = Image.open(mask["file"]).convert("RGBA").getchannel("A")
+    canvas = Image.new("L", (rw, rh), 0)
+    canvas.paste(a, (bx - rx, by - ry))
+    mf = workdir / f"gm_{tag}.png"
+    canvas.save(mf)
+    return {"rx": rx, "ry": ry, "rw": rw, "rh": rh, "mask": str(mf), "sigma": sigma}
+
+
+def glass_chain(c: dict[str, Any], k: int, n_states: int, a: float, b: float, g: dict[str, Any], fps_str: str, mask_idx: int, cur: str, out: str) -> str:
+    """Bir vəziyyət üçün backdrop: kadrın həmin bölgəsini (yalnız [a,b] müddətində) kiçildib bulanıqlaşdırır, maska ilə kəsir, fade ilə üstünə qoyur."""
+    an = c.get("anim") or {}
+    kind = an.get("in", "none") if k == 0 else "none"
+    d = max(0.05, float(an.get("d", 0.35)))
+    dout = max(0.05, float(an.get("dOut", 0.25)))
+    out_fade = (an.get("out", "fade") == "fade") and k == n_states - 1
+    rw, rh, rx, ry, s = g["rw"], g["rh"], g["rx"], g["ry"], g["sigma"]
+    n = mask_idx
+    chain = [f"[{cur}]split=2[ga{n}][gb{n}]",
+             f"[gb{n}]trim=start={a:.4f}:end={b + 0.05:.4f},setpts=PTS-STARTPTS,crop={rw}:{rh}:{rx}:{ry},scale=iw/2:ih/2:flags=fast_bilinear,"
+             f"gblur=sigma={s / 2:.2f}:steps=2,scale={rw}:{rh}:flags=bicubic,format=rgba[bl{n}]",
+             f"[{mask_idx}:v]format=gray,scale={rw}:{rh}[mk{n}]",
+             f"[bl{n}][mk{n}]alphamerge[gl{n}]"]
+    fl = [f"[gl{n}]format=rgba"]
+    if kind != "none":
+        fl.append(f"fade=t=in:st=0:d={d:.3f}:alpha=1")
+    if out_fade and (b - a) > dout:
+        fl.append(f"fade=t=out:st={b - a - dout:.3f}:d={dout:.3f}:alpha=1")
+    fl.append(f"setpts=PTS+{a:.4f}/TB[glt{n}]")
+    chain.append(",".join(fl))
+    chain.append(f"[ga{n}][glt{n}]overlay=x={rx}:y={ry}:eof_action=pass:enable='between(t,{a:.4f},{b:.4f})'[{out}]")
+    return ";".join(chain)

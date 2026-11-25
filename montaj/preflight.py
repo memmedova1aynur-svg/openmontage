@@ -87,7 +87,7 @@ def moments(project: dict[str, Any]) -> list[dict[str, Any]]:
     pl = render_plan(project)
     total = pl["main"]
     caps = [t for t in pl["text"] if t["clip"].get("autoSub") or str(t["clip"].get("id", "")).startswith("sub_")]
-    gfx = [t for t in pl["text"] if t["clip"].get("type") in ("title", "emphasis", "section", "badge", "list", "card", "offer", "cta", "lower", "choice", "type", "note", "block", "bars")]
+    gfx = [t for t in pl["text"] if t["clip"].get("type") in ("title", "emphasis", "section", "badge", "list", "card", "offer", "cta", "lower", "choice", "type", "note", "block", "bars", "slate")]
     out: list[dict[str, Any]] = []
     hook = next((g for g in sorted(gfx, key=lambda g: g["start"]) if g["start"] < 10), None)
     out.append({"label": "açılış", "t": round(hook["start"] + min(0.8, (hook["end"] - hook["start"]) / 2), 2) if hook else 0.8,
@@ -164,6 +164,9 @@ def check_segments(project: dict[str, Any]) -> list[str]:
     for o in pl["overlay"]:
         if o["clip"].get("mode") != "pip":
             spans.append((o["start"], o["start"] + o["dur"], "overlay"))
+    for t in pl["text"]:
+        if t["clip"].get("type") == "slate":  # intertitle kartı da tam kadr elementdir (ekspert görünmür)
+            spans.append((t["start"], t["end"], "slate"))
     for v in pl["video"]:
         if v["clip"].get("broll"):
             spans.append((v["start"], v["start"] + v["dur"], "insert"))

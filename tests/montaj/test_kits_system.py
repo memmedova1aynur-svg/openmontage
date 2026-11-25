@@ -26,7 +26,7 @@ def test_every_kit_builds_from_spoken_content_only():
         blob = json.dumps(p["graphics"], ensure_ascii=False).lower()
         for must in ("televizor", "oyuncaq"):
             assert must in blob, f"{k}: nümunə danışıqdan götürülməlidir"
-        assert all(g["type"] in {"title", "list", "emphasis", "type", "block", "note", "bars", "veil", "frame"} for g in p["graphics"])
+        assert all(g["type"] in {"title", "list", "emphasis", "type", "block", "note", "bars", "veil", "frame", "slate", "gcard", "gbanner", "gcaps", "pblur", "viewfinder"} for g in p["graphics"])
         assert all(z.get("scale", 1) <= 1.12 for z in p["zooms"]), "zoom hamar və ≤1.12"
 
 
@@ -43,9 +43,10 @@ def test_different_kits_pass_difference_check_same_kit_fails():
 
 
 def test_kit_axes_are_really_different_across_kits():
-    # hər cüt dəst (classic daxil) ən azı 4 oxda fərqlənməlidir — "rəngdən başqa hər şey"
+    # hər cüt dəst (classic daxil) ən azı 4 oxda fərqlənməlidir — "rəngdən başqa hər şey" (hook oxu build()-dən gəlir)
+    built = {k: kits.build(k, {**CONTENT, "brand_name": "Sura Malik"}) for k in kits.KITS}
     for a, b in itertools.combinations(kits.KITS, 2):
-        d = difference.check({"A": {"kit": a, "axes": kits.KITS[a]["axes"]}, "B": {"kit": b, "axes": kits.KITS[b]["axes"]}})
+        d = difference.check({"A": built[a], "B": built[b]})
         assert d["pairs"][0]["diff"] >= 4, (a, b, d["pairs"])
 
 
@@ -75,7 +76,7 @@ def test_new_graphic_types_rasterize_full_bleed(tmp_path):
     W, H = 360, 640
     theme = {"primary": "#C9577D", "primaryDeep": "#9E3D5E", "accentSoft": "#F2E4D6", "accent": "#C9577D", "text": "#FFFFFF"}
     items = []
-    for n, k in enumerate(("editorial", "frame", "colorblock", "handnote", "kinetic")):
+    for n, k in enumerate(("editorial", "frame", "intertitle", "colorblock", "handnote", "kinetic", "milkglass", "notification", "glasscaps", "pblur")):
         for j, g in enumerate(kits.build(k, CONTENT, theme)["graphics"]):
             c = dict(g, id=f"{k}{j}", srcIn=0, srcOut=float(g["dur"]))
             items.append((f"{k}_{j}", c, min(1.0, float(g["dur"]) - 0.1)))
@@ -87,6 +88,8 @@ def test_new_graphic_types_rasterize_full_bleed(tmp_path):
             assert info["w"] >= W - 4, "rəng bloku tam enlidir"
         if name.startswith("kinetic"):
             assert info["h"] >= H - 4, "sinema zolaqları tam kadrdır"
+        if name.startswith("intertitle") and "slate" in json.dumps(info) or (name.startswith("intertitle") and info["w"] >= W - 4 and info["h"] >= H - 4):
+            assert info["w"] >= W - 4 and info["h"] >= H - 4, "intertitle kartı tam kadrdır"
         if name.startswith("frame_0"):
             assert info["w"] >= W - 4 and info["h"] >= H - 4, "çərçivə tam kadrdır"
 
@@ -131,10 +134,10 @@ def test_reference_learning_extracts_rhythm_not_media(tmp_path, monkeypatch):
 
 def test_global_user_decisions_block_disliked_kits_and_prefer_liked():
     g = memory.global_decisions()
-    assert {"colorblock", "kinetic", "handnote"} <= set(g["rejected"]), "istifadəçi bu üç dəsti bəyənməyib (2026-11-25)"
+    assert {"colorblock", "kinetic", "handnote", "intertitle"} <= set(g["rejected"]), "istifadəçi bu dəstləri bəyənməyib (2026-11-25)"
     assert "editorial" in g["liked"]
     sug = memory.suggest({}, 3)
-    assert not {"colorblock", "kinetic", "handnote"} & set(sug) and sug[0] == "editorial"
+    assert not {"colorblock", "kinetic", "handnote", "intertitle"} & set(sug) and sug[0] == "editorial"
     assert memory.check_plans({}, {"A": {"kit": "kinetic"}}), "variants rədd edilmiş dəsti dayandırır"
 
 
@@ -156,7 +159,7 @@ def test_serif_font_has_all_azerbaijani_letters():
     from montaj import fonts
 
     faces = fonts.extra_font_faces()
-    assert faces and {f["family"] for f in faces} == {"Lora"}
+    assert {"Lora", "Work Sans"} <= {f["family"] for f in faces}
     for f in faces:
         cm = TTFont(f["path"]).getBestCmap()
         assert all(ord(c) in cm for c in "əƏğĞıİöÖüÜşŞçÇ"), f
@@ -172,7 +175,7 @@ def test_frame_kit_is_framed_centered_serif_and_differs_from_editorial():
     d = difference.check({"A": kits.build("editorial", CONTENT), "B": b})
     assert d["ok"] and d["pairs"][0]["diff"] >= 4
     assert "frame" in memory.global_decisions()["liked"], "istifadəçi seçdi (2026-11-25)"
-    assert memory.suggest({}, 3)[:2] == ["editorial", "frame"] or "frame" in memory.suggest({}, 3)
+    assert "frame" not in memory.blocked({})
 
 
 def test_editorial_scales_long_hook_instead_of_overflowing():
@@ -181,3 +184,127 @@ def test_editorial_scales_long_hook_instead_of_overflowing():
     s_long = [g for g in kits.build("editorial", long)["graphics"] if g["type"] == "type"][0]["size"]
     s_big = [g for g in kits.build("editorial", big)["graphics"] if g["type"] == "type"][0]["size"]
     assert s_long < s_big
+
+
+def test_intertitle_kit_full_frame_cards_only_at_idea_boundaries():
+    b = kits.build("intertitle", CONTENT, {"primary": "#C9577D", "primaryDeep": "#9E3D5E", "accentSoft": "#F2E4D6"})
+    slates = [g for g in b["graphics"] if g["type"] == "slate"]
+    assert len(slates) == 2 and all(g["bleed"] and g["dur"] >= 2.0 for g in slates), "kart ≥2 s və tam kadr (bleed)"
+    assert not b["zooms"], "ekspert görünmədiyi kartda zoom yoxdur"
+    assert slates[0]["items"] and slates[1]["big"] and slates[1]["bg"] == "#F2E4D6"
+    # hook-da ekspert görünür (kart yox): yuxarıda mərkəzləşmiş yazı
+    assert any(g["type"] == "type" and g["align"] == "center" for g in b["graphics"])
+    for other in ("editorial", "frame", "classic"):
+        d = difference.check({"A": b, "B": kits.build(other, CONTENT)})
+        assert d["ok"] and d["pairs"][0]["diff"] >= 4, other
+
+
+def test_viewfinder_hook_only_touches_top_corners_never_the_face(tmp_path):
+    """Kamera vizörü (REC + taymkod): yalnız yuxarı küncləri tutur; mərkəzə/üzə toxunmur; REC yanıb-sönür, taymkod sayır."""
+    if not (shutil.which("ffmpeg") and shutil.which("node")):
+        pytest.skip("node yoxdur")
+    import numpy as np
+    from PIL import Image
+
+    from montaj import graphics as G
+
+    c = {**CONTENT, "hook": {**CONTENT["hook"], "viewfinder": True}}
+    b = kits.build("frame", c)
+    vf = [g for g in b["graphics"] if g["type"] == "viewfinder"]
+    assert len(vf) == 1 and vf[0]["bleed"] and b["axes"]["hook"] == "viewfinder"
+    clip = dict(vf[0], id="vf", srcIn=0, srcOut=float(vf[0]["dur"]))
+    pts = G.state_points(clip)
+    assert pts[:3] == [0.0, 0.5, 1.0] and pts[-1] < clip["srcOut"]
+    W, H = 360, 640
+    rast = G.rasterize([("vf0", clip, 0.1), ("vf1", clip, 0.6), ("vf2", clip, 3.2)], W, H, {}, tmp_path)
+    boxes = []
+    for n in ("vf0", "vf1", "vf2"):
+        a = np.asarray(Image.open(rast[n]["file"]).convert("RGBA"))[..., 3]
+        ys, xs = np.where(a > 12)
+        assert len(ys), n
+        boxes.append((xs.min() / a.shape[1], ys.min() / a.shape[0], xs.max() / a.shape[1], ys.max() / a.shape[0]))
+        assert ys.max() / a.shape[0] < 0.14, f"{n}: yalnız yuxarı zolaq (üz/mərkəz toxunulmaz)"
+        mid = a[:, int(a.shape[1] * 0.3): int(a.shape[1] * 0.7)]
+        assert not (mid > 12).any(), f"{n}: orta hissə boşdur (üz üçün)"
+    assert Image.open(rast["vf0"]["file"]).tobytes() != Image.open(rast["vf1"]["file"]).tobytes(), "REC yanıb-sönür"
+    assert Image.open(rast["vf0"]["file"]).tobytes() != Image.open(rast["vf2"]["file"]).tobytes(), "taymkod sayır"
+
+
+@needs_node
+def test_glass_backdrop_blurs_only_inside_mask(tmp_path):
+    """Şüşə zənciri: maskanın içində kadr bulanıqlaşır (detal azalır), kənarda dəyişmir; yalnız [a,b] müddətində."""
+    import numpy as np
+    from PIL import Image, ImageDraw
+
+    from montaj import graphics as G
+
+    W, H = 270, 480
+    src = tmp_path / "src.mp4"
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-f", "lavfi", "-i", f"nullsrc=s={W}x{H}:r=30:d=2,geq=lum='random(1)*255':cb=128:cr=128", "-pix_fmt", "yuv420p", "-crf", "10", str(src)], check=True)
+    elem = {"w": 160, "h": 90}
+    mimg = Image.new("RGBA", (160, 90), (0, 0, 0, 0))
+    ImageDraw.Draw(mimg).rounded_rectangle((8, 8, 151, 81), radius=20, fill=(255, 255, 255, 255))
+    mfile = tmp_path / "mask_el.png"
+    mimg.save(mfile)
+    c = {"id": "g1", "type": "gcard", "x": 0.5, "y": 0.3, "anim": {"in": "none", "out": "none"}}
+    g = G.glass_prepare(c, elem, {"file": str(mfile)}, W, H, tmp_path, "t")
+    chain = G.glass_chain(c, 0, 1, 0.5, 1.5, g, "30", 1, "base", "vout")
+    out = tmp_path / "o.mp4"
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(src), "-loop", "1", "-framerate", "30", "-t", "2", "-i", g["mask"], "-filter_complex",
+                    f"[0:v]null[base];{chain}", "-map", "[vout]", "-t", "2", "-pix_fmt", "yuv420p", str(out)], check=True)
+
+    def frame(path, t):
+        f = tmp_path / f"{path.stem}_{t}.png"
+        subprocess.run(["ffmpeg", "-y", "-v", "error", "-ss", str(t), "-i", str(path), "-frames:v", "1", str(f)], check=True)
+        return np.asarray(Image.open(f).convert("L")).astype(float)
+    inner = (slice(int(H * 0.3) - 20, int(H * 0.3) + 20), slice(W // 2 - 50, W // 2 + 50))
+    a_in, o_in = frame(src, 1.0)[inner], frame(out, 1.0)[inner]
+    assert o_in.std() < 0.4 * a_in.std(), f"mask içində bulanıqlaşmalıdır ({o_in.std():.1f} vs {a_in.std():.1f})"
+    assert frame(out, 1.0)[:60].std() > 0.8 * frame(src, 1.0)[:60].std(), "mask kənarında kadr bulanıqlaşmır"
+    assert frame(out, 0.2)[inner].std() > 0.8 * frame(src, 0.2)[inner].std(), "[a,b] müddətindən kənarda effekt yoxdur"
+
+
+@needs_node
+def test_glass_kit_elements_rasterize_with_matching_masks(tmp_path):
+    from PIL import Image
+
+    from montaj import graphics as G
+
+    W, H = 360, 640
+    theme = {"primary": "#C9577D", "primaryDeep": "#9E3D5E"}
+    clips = [{"id": "c", "type": "gcard", "icon": "drop", "text": "Hər səhvə cəza\ndüzgündürmü?", "y": 0.17},
+             {"id": "n", "type": "gbanner", "title": "Sura Malik", "time": "indi", "text": "Bir fikir", "y": 0.12},
+             {"id": "p", "type": "gcaps", "items": [{"text": "Televizor", "at": 0}, {"text": "Oyuncaq", "at": 0.5}], "y": 0.15},
+             {"id": "b", "type": "pblur", "h": 0.4, "bleed": True, "y": 0.2}]
+    items = []
+    for c in clips:
+        c = dict(c, srcIn=0, srcOut=2.0)
+        items += [(f"{c['id']}", c, 1.0), (f"{c['id']}__m", {**c, "_mask": True}, 1.0)]
+    rast = G.rasterize(items, W, H, theme, tmp_path)
+    for c in clips:
+        e, m = rast[c["id"]], rast[c["id"] + "__m"]
+        assert (e["w"], e["h"]) == (m["w"], m["h"]), f"{c['id']}: maska və element eyni ölçüdə olmalıdır"
+        mk = Image.open(m["file"]).convert("RGBA").getchannel("A")
+        assert mk.getbbox() is not None and max(mk.getdata()) >= 250, f"{c['id']}: maska siluet verir"
+        el = Image.open(e["file"]).convert("RGBA")
+        assert el.getchannel("A").getbbox() is not None
+
+
+def test_viewfinder_is_available_in_every_kit_when_requested():
+    c = {**CONTENT, "hook": {**CONTENT["hook"], "viewfinder": True}, "brand_name": "Sura Malik"}
+    for k in kits.KITS:
+        b = kits.build(k, c)
+        vf = [g for g in b["graphics"] if g["type"] == "viewfinder"]
+        assert len(vf) == 1 and vf[0]["bleed"] and b["axes"]["hook"] == "viewfinder", k
+        assert b["graphics"][-1]["type"] == "viewfinder", f"{k}: REC/taymkod hər şeyin üstündə"
+        assert vf[0]["corners"] == (k != "frame"), "çərçivəsi olmayan dəstdə künc nişanları vizörün özündədir"
+    assert not [g for g in kits.build("milkglass", CONTENT)["graphics"] if g["type"] == "viewfinder"], "xahiş olmadan vizör yoxdur"
+
+
+def test_glass_kits_use_profile_name_and_do_not_invent_text():
+    b = kits.build("notification", {**CONTENT, "brand_name": "Sura Malik"})
+    ban = [g for g in b["graphics"] if g["type"] == "gbanner"]
+    assert ban and all(g["title"] == "Sura Malik" and g["time"] == "indi" for g in ban)
+    blob = json.dumps(ban, ensure_ascii=False).lower()
+    assert "televizor" in blob and "psixoloji" in blob
+    assert {"milkglass", "notification", "glasscaps", "pblur"} <= set(memory.global_decisions()["liked"])
