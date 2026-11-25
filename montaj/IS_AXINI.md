@@ -1,5 +1,7 @@
 # Əsas iş axını: Drive linki → yekun MP4 (davamlı təlimat)
 
+> **Qayda mənbəyi `MONTAJ_QAYDALARI.md`-dir.** Bu fayl yalnız əmr istinadıdır; ziddiyyətdə `MONTAJ_QAYDALARI.md` keçərlidir.
+
 Bu fayl istifadəçinin təsdiqlədiyi **əsas** iş axınıdır (sorğu → Drive linki → analiz → 3 storyboard → rəng/musiqi → MP4) və `SESSIYA_TELIMATI.md`-dən üstündür.
 İstifadəçi yalnız **Drive linkini** verir — montajın hamısı Claude-da edilir və bir dəfəyə təhvil verilir. Redaktor paneli
 istifadə olunmur: linkini göndərmə, təklif etmə (yalnız istifadəçi açıq istəyəndə — faylın sonundakı "Redaktor paneli").

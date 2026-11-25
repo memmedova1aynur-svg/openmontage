@@ -58,3 +58,16 @@ def test_caption_contrast_white_on_dark_ok():
 def test_caption_contrast_box_ok():
     r = preflight.caption_contrast(_frame((225, 205, 185)), {"color": "#9E3D5E", "activeColor": "#C9577D", "bg": "#F2E4D6@0.85"})
     assert r["mode"] == "box" and r["ok"]
+
+
+def test_single_rule_file_is_entry_point():
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    rules = (root / "montaj" / "MONTAJ_QAYDALARI.md").read_text(encoding="utf-8")
+    guide = (root / "AGENT_GUIDE.md").read_text(encoding="utf-8")
+    assert "montaj/MONTAJ_QAYDALARI.md" in guide
+    for must in ("framefix", "hook-design", "caption-typography", "broll-function", "look: auto", "--remember", '"auto"'):
+        assert must in rules
+    for stale in ("tighten", "hflip", "variants <pid>"):  # köhnə/ləğv edilmiş qaydalar bu faylda olmamalıdır
+        assert stale not in rules

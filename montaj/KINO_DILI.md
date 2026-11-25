@@ -1,5 +1,7 @@
 # Montaj dili — qərar prinsipləri (Claude üçün)
 
+> **Qayda mənbəyi `MONTAJ_QAYDALARI.md`-dir.** Bu fayl yalnız arxa plan izahıdır; ziddiyyətdə `MONTAJ_QAYDALARI.md` keçərlidir.
+
 İstifadəçinin verdiyi "Videoqrafiya: çəkiliş və montaj" bələdçisinin öz sözlərimizlə qısa xülasəsi və sistemdəki qarşılığı.
 Qaydalar mütləq deyil: kontekst, səhnənin məqsədi və nəticə həlledicidir. Hər montaj qərarında bu suallara qayıt.
 
