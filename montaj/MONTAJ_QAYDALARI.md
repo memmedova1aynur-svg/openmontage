@@ -11,13 +11,23 @@ ad/titul, lüğət və müştərinin istifadəçi tərəfindən təsdiqlənmiş 
    → transkripti oxu (`retakes` köməkçidir) → `music`.
 3. **Hər video üçün 3 storyboard variantı (məcburi; mövzu imkan verirsə 5-ə qədər).** Variantlar bir-birindən tamamilə fərqli montaj üslubu olmalıdır
    (montaj növü, animasiya ilə cümləyə bağlı və ya birbaşa kadr dəyişmə, hook üsulu, ritm, tipoqrafiya, musiqi) — yalnız rəng/mətn fərqi yox.
+   **Üslub dəstləri:** hər variant FƏRQLİ dəstdən qurulur (`python -m montaj.kits list`: classic, editorial, colorblock, handnote, kinetic).
+   `storyboard` çıxışı müştərinin son/rədd edilmiş dəstləri xaric 3 dəst təklif edir. Plan parçası:
+   `python -m montaj.kits build <dəst> content.json --theme theme.json` (məzmun YALNIZ danışıqdan; dəst qrafika, altyazı, SFX və hamar zoomu verir).
+   `variants` fərqi yoxlayır (`montaj/difference.py`: fərqli dəst + 7 oxdan ≥4-də fərq) və müştəri yaddaşına baxır (`montaj/memory.py`); uyğunsuzluqda
+   dayanır (`--force` yalnız istifadəçi bilərəkdən istəyəndə). Rəngdən başqa hər şey fərqli olmalıdır.
+   **Hero videolar (reklam, brend, vacib bir video):** variantlardan ən azı biri bəzək rejimində olur — həmin videoya xas, sıfırdan yazılmış səhnə
+   (`montaj/atelier.py`, `skills/creative/atelier-scenes.md`); hazır `scenes` şablonundan kopyalama yoxdur. Müddəti storyboardda yazılır.
+   **Referans:** istifadəçi nümunə video verəndə `python -m montaj.refstyle analyze <video> --name <ad> --sheet-dir <qovluq>` → kontakt şəklinə bax,
+   `decide` ilə qərarları yaz (hook, tipoqrafiya, keçid, B-roll, səs, retention). Qərarlar istifadəçi təsdiq edənə qədər (`approve`) fərziyyədir;
+   yalnız təsdiqlənənlər planlaşdırmada istifadə olunur. Referans kopyalanmır, video/kadr/transkript repoya yüklənmir (`skills/creative/reference-learning.md`).
    Variantı ən keyfiyyətli, ən maraqlı və izləyicini sona qədər saxlayan formada qur — **render vaxtına görə sadələşdirmə**. Hər variantın yanında:
    **təxmini montaj müddəti** və bu video üçün **niyə** seçilib (reklamda — hansı daha çox geri dönüş gətirər). Qərar istifadəçinindir.
    `variants <pid> A.json B.json C.json` → `storyboard_variantlari.jpg` (360p proksidən, saniyələr; video önizləmə üçün `--mp4`).
    **Hər təklif həm yazılı, həm şəkilli göndərilir** (heç vaxt yalnız mətn). `fx` (arxada yazı, sticker və s.) olan variantda onun şəkli ayrıca: `fx <pid> --preview --spec '{...}'` → `effektler.jpg` (~7 s); `variants` önizləməsi `fx`-i göstərmir.
    Göndər: storyboard şəkli + variant izahları + 2–3 musiqi nümunəsi + `kadraj.jpg` + material qeydləri. İstifadəçi ilə birlikdə seçilir.
 4. Seçimdən sonra: `choose <pid> <plan.json>` → `render <pid>` (preflight daxildir) → `verify <pid>` → yekun `_ig.mp4` + 2–4 sətir.
-5. İstifadəçi təsdiq edəndən sonra: `choose <pid> --remember` (profilin `history`-sinə yazır; təsdiqsiz heç nə yazılmır).
+5. İstifadəçi təsdiq edəndən sonra: `choose <pid> --remember [--rejected kit1,kit2]` (profilin `history`, `approved`, `rejected` sahələrinə yazır; təsdiqsiz və fərziyyə heç nə yazılmır). Son 2 videoda işlənmiş və rədd edilmiş dəst təklif olunmur.
 6. **Tam render bir dəfə.** Səhvlər renderdən əvvəl (variants, preflight) tutulur. `verify` yalnız yekun faylda, bir dəfə.
 
 ## 2. Hər videoda məcburi
@@ -63,8 +73,10 @@ Müştəri mediası, transkript və şəxsi məlumat GitHub-a yüklənmir.
 Güzgü çevirmə (`hflip`), arxa fonu bulanıqlaşdırma/dəyişmə, ödənişli xidmət və API, hazır rəng şablonu.
 
 ## 4. Hazırda sistemdə YOXDUR (əvəzi)
+- **Dəstlər çatmır:** istifadəçi `colorblock`, `kinetic`, `handnote`-u rədd edib (`montaj/kit_decisions.json`); `editorial` seçilib/təsdiqlənib. İcazə verilən dəstlər yalnız `editorial` və `classic`. 3 fərqli variant üçün çatışmayan variantlar YENİ üslub dəsti (fərqli dizayn dili, ≥4 oxda fərq) və ya bəzək rejimində (atelier) yazılmış variant kimi təklif olunur; rədd edilmiş dəst təklif olunmur. Yeni dəst təklifi əvvəl şəkil (eskiz) kimi göstərilir, istifadəçi bəyənəndən sonra qurulur.
 Bunlar qaydadan azad etmir: §2-dəki qaydalar məcburidir, kod isə ayrıca işdir. İcra olunana qədər aşağıdakı əvəzi tətbiq olunur və təhvildə bunun hələ tam hamar olmadığı açıq yazılır.
 - **Hiss edilməyən video keçidi (MƏCBURİ qayda, icra gözlənilir):** videoda dissolve/crossfade yoxdur → cümlə sərhədində, səsin ən sakit yerində kəsim + 12 ms səs keçidi + J/L-cut; yumşaq video keçidi hələ icra olunmayıb. (Hamar zoom artıq var.)
+- **Dəstlərin məhdudiyyəti:** `colorblock` paneli kadrın yuxarı ~30%-ni, `kinetic` zolaqları isə yuxarı 5% və aşağı 24%-i örtür (video miqyaslanmır, üz yoxlanmır, əllər zolağın altında qala bilər); `handnote`/`editorial` yazıları başın üstündə yer tutur. Kadrda baxıb yoxla; bədən örtülürsə yer/ölçünü dəyiş və ya kadrı böl.
 - **Bədən örtülməsi yoxlaması:** `verify`/preflight yalnız üzü yoxlayır → vizual kadrda özün yoxla, kart bədəni örtərsə kadrı böl.
 - **Element ≥2 s qaydası:** preflight xəbərdarlıq edir, avtomatik düzəltmir → planda vaxtları özün düzəlt.
 

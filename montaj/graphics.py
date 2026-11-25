@@ -14,11 +14,13 @@ from typing import Any
 
 from montaj import fonts
 
-TYPES = {"caption", "title", "section", "emphasis", "list", "card", "offer", "cta", "badge", "lower", "choice"}
+TYPES = {"caption", "title", "section", "emphasis", "list", "card", "offer", "cta", "badge", "lower", "choice",
+         "type", "note", "block", "bars", "veil"}  # son 5 — üslub dəstləri (kits.py)
 DEFAULT_XY = {"caption": (0.5, 0.74), "title": (0.5, 0.14), "section": (0.5, 0.22), "emphasis": (0.5, 0.62),
               "list": (0.5, 0.42), "card": (0.5, 0.42),
               "offer": (0.5, 0.58), "cta": (0.5, 0.585), "badge": (0.5, 0.215),
-              "lower": (0.24, 0.82), "choice": (0.5, 0.45)}  # graphics.js-dəki DEFAULT_XY ilə eyni
+              "lower": (0.24, 0.82), "choice": (0.5, 0.45),
+              "type": (0.5, 0.17), "note": (0.5, 0.17), "block": (0.5, 0.15), "bars": (0.5, 0.5), "veil": (0.5, 0.2)}  # graphics.js-dəki DEFAULT_XY ilə eyni
 
 
 def pos(c: dict[str, Any]) -> tuple[float, float]:
@@ -37,7 +39,9 @@ def state_points(c: dict[str, Any]) -> list[float]:
         pts = [0.0]  # sadə altyazı: söz-söz dəyişmə yoxdur (bir PNG)
     elif c.get("type") == "caption":
         pts = [0.0] + [float(w["s"]) for w in c.get("words") or []]
-    elif c.get("type") == "list":
+    elif c.get("type") == "bars" and c.get("seq"):
+        pts = [0.0] + [float(w.get("s") or 0) for w in c["seq"]]
+    elif c.get("type") in ("list", "type", "note", "block") and c.get("items"):
         pts = [0.0] + [float(it.get("at") or 0) for it in c.get("items") or []]
     elif c.get("type") == "choice":
         pts = [0.0, float(c.get("at", 1.5))]
@@ -71,7 +75,7 @@ def rasterize(items: list[tuple[str, dict[str, Any], float]], W: int, H: int, th
     if not items:
         return {}
     fl = [{"family": fam, "weight": w, "path": str(p), "range": fonts.RANGES[sub]}
-          for fam, w, sub, p in fonts.editor_font_files()]
+          for fam, w, sub, p in fonts.editor_font_files()] + fonts.extra_font_faces()
     cfg = {"W": W, "H": H, "theme": theme or {}, "fonts": fl,
            "jobs": [{"name": n, "clip": _inline_images(c), "tl": tl + 0.001} for n, c, tl in items]}
     jf = workdir / "raster_jobs.json"
@@ -155,7 +159,7 @@ def overlay_chain(c: dict[str, Any], k: int, n_states: int, a: float, b: float, 
     ty = f"{k3}*{0.04 * H:.2f}" if kind == "slide-up" else "0"
     px, py = pos(c)
     X, Y = px * W, py * H
-    mx, my = 0.02 * W, 0.02 * H  # element kadrdan çıxmasın (geniş kart kənara yaxın qoyulsa da)
+    mx, my = (0.0, 0.0) if c.get("bleed") else (0.02 * W, 0.02 * H)  # element kadrdan çıxmasın; bleed (tam enli panel/zolaq) — kənarsız
     bx = f"max({mx:.1f}\\,min(main_w-overlay_w-{mx:.1f}\\,{X:.2f}-overlay_w/2))"
     by = f"max({my:.1f}\\,min(main_h-overlay_h-{my:.1f}\\,{Y:.2f}-overlay_h/2))"
     return (",".join(f) + f"[{lab}];"

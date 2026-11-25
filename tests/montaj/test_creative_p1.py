@@ -70,7 +70,7 @@ def test_single_rule_file_is_entry_point():
     guide = (root / "AGENT_GUIDE.md").read_text(encoding="utf-8")
     assert "montaj/MONTAJ_QAYDALARI.md" in guide
     for must in ("framefix", "hook-design", "caption-typography", "broll-function", "look: auto", "--remember", '"auto"',
-                 "3 storyboard", "variants <pid>", "fikir bitəndən sonra"):
+                 "3 storyboard", "variants <pid>", "fikir bitəndən sonra", "montaj.kits", "montaj.refstyle", "atelier", "--rejected"):
         assert must in rules
     assert "tighten" not in rules and "standart 1 variant" not in rules
     # köhnə qayda faylları silinib, istinad qalmayıb
@@ -87,3 +87,10 @@ def test_segment_and_punchin_checks():
     from montaj import preflight
 
     assert preflight.MIN_SEG >= 2.0
+
+
+def test_white_text_on_orange_wall_is_flagged_for_scrim():
+    # Sura divarı (narıncı/çəhrayı) üzərində ağ serif yazı: kontrast <3 → preflight scrim əlavə edir
+    r = preflight.caption_contrast(_frame((232, 132, 90)), {"color": "#FFFFFF", "bg": "none"}, y=0.2)
+    assert not r["ok"] and r["ratio"] < 3.0
+    assert preflight.caption_contrast(_frame((30, 30, 40)), {"color": "#FFFFFF", "bg": "none"}, y=0.2)["ok"]
