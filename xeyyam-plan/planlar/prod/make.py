@@ -57,6 +57,7 @@ if C.get('long_pauses'):  # zoom ideya sərhədində dəyişir (məzmun); eyni i
     segs = [[round(a, 2), round(b, 2), z] for (a, b), z in zip(out, _z)]
 else:
     segs = [[round(a, 2), round(b, 2), Z[i % len(Z)]] for i, (a, b) in enumerate(out)]
+if C.get('no_zoom'): segs = [[a, b, 1.0] for a, b, _ in segs]  # süni yaxınlaşma yoxdur
 def fin(t):  # mənbə vaxtı → hazır videonun vaxtı
     off = 0.0
     for a, b, _ in segs:
@@ -99,6 +100,8 @@ if fx or brolls:
         cmd += ['-itsoffset', str(w['a']), '-framerate', '30', '-i', f'work/fx{n}/w{k}/%04d.png']
         en = f"gte(t,{w['a']})" if w.get('hold') else f"between(t,{w['a']},{w['b']})"
         fc.append(f"[{last}][{idx}:v]overlay=enable='{en}':eof_action={'repeat' if w.get('hold') else 'pass'}[v{k}]"); last = f'v{k}'; idx += 1
+    if C.get('subs_top'):  # altyazı ara kadrların/animasiyaların ÜSTÜNDƏN yandırılır (tam ekran ara kadrda da görünsün)
+        fc.append(f"[{last}]subtitles={base_mp4[:-4]}_work/sub.ass:fontsdir=/usr/share/fonts/opentype/inter,format=yuv420p[vs]"); last = 'vs'
     cmd += ['-filter_complex', ';'.join(fc), '-map', f'[{last}]', '-map', '0:a', '-c:a', 'copy', '-c:v', 'libx264', '-crf', '15', '-preset', 'medium',
             '-pix_fmt', 'yuv420p', '-r', '30', '-movflags', '+faststart', '-t', f'{T:.2f}', final]
     subprocess.run(cmd, check=True)

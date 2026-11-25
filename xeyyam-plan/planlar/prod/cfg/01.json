@@ -21,70 +21,298 @@
   "-öyrən": "öyrən»"
  },
  "plan": {
-  "sub_card": {
-   "x": 64,
-   "y": 1190,
-   "w": 896,
-   "h": 280,
-   "color": "#0F3B2E",
-   "alpha": "10"
-  },
   "word_color": "#FFFFFF",
   "accent": "#6CC57E",
-  "word_size": 96,
-  "word_mv": 540,
-  "word_outline": 0,
-  "word_shadow": 0,
-  "max_chars": 13,
+  "word_size": 62,
+  "word_mv": 455,
+  "word_outline": 3,
+  "word_shadow": 2,
+  "max_chars": 22,
   "q_bg": "#0F3B2E",
   "q_size": 58,
-  "q_mv": 285
- },
- "el": {
-  "questions": [
-   [
-    0.2,
-    3.6,
-    "Söz dilinin ucuna gəlir,\\Namma xatırlamırsan?"
-   ]
+  "q_mv": 285,
+  "no_subs": true,
+  "active": false,
+  "max_words": 3,
+  "accent2": "#6CC57E",
+  "keywords": [
+   "dilinin",
+   "ucuna",
+   "xatırlaya",
+   "xatırlamırsan",
+   "kitabxana",
+   "rəfdə",
+   "rəflərə",
+   "uzaq",
+   "yaxın",
+   "təkrarladığımız",
+   "öyrənməyi",
+   "öyrən",
+   "unutmaq"
   ]
  },
+ "el": {},
  "fx": [
   {
-   "theme": "marker",
-   "a": 23.1,
-   "b": 25.9,
+   "theme": "typo",
+   "a": 0.0,
+   "b": 4.0,
    "opts": {
-    "pre": "Beyin = ",
-    "word": "kitabxana",
-    "x": 540,
-    "y": 300
+    "lines": [
+     [
+      [
+       "Söz",
+       0
+      ],
+      [
+       "dilinin",
+       1
+      ],
+      [
+       "ucuna",
+       1
+      ]
+     ],
+     [
+      [
+       "gəlir,",
+       0
+      ],
+      [
+       "amma",
+       0
+      ]
+     ],
+     [
+      [
+       "xatırlamırsan?",
+       1
+      ]
+     ]
+    ],
+    "size": 76,
+    "y": 250,
+    "dur": 4.0,
+    "at": [
+     0.1,
+     0.35,
+     0.6,
+     0.85,
+     1.1,
+     2.6
+    ],
+    "ul": {
+     "line": 0,
+     "from": 1,
+     "to": 2,
+     "at": 1.3
+    }
    }
   },
   {
-   "theme": "tag",
+   "theme": "brainlib",
+   "a": 22.5,
+   "b": 25.45,
+   "opts": {
+    "mode": "build"
+   }
+  },
+  {
+   "theme": "brainlib",
+   "a": 25.0,
+   "b": 30.1,
+   "opts": {
+    "mode": "near"
+   }
+  },
+  {
+   "theme": "brainlib",
+   "a": 34.95,
+   "b": 39.2,
+   "opts": {
+    "mode": "far"
+   }
+  },
+  {
+   "theme": "typo",
+   "a": 22.7,
+   "b": 25.4,
+   "opts": {
+    "lines": [
+     [
+      [
+       "Beyin",
+       0
+      ],
+      [
+       "=",
+       0
+      ],
+      [
+       "kitabxana",
+       1
+      ]
+     ]
+    ],
+    "size": 80,
+    "y": 250,
+    "dur": 2.7,
+    "at": [
+     0.1,
+     0.45,
+     0.75
+    ]
+   }
+  },
+  {
+   "theme": "typo",
+   "a": 25.2,
+   "b": 30.0,
+   "opts": {
+    "lines": [
+     [
+      [
+       "Tez-tez",
+       0
+      ],
+      [
+       "təkrar",
+       0
+      ]
+     ],
+     [
+      [
+       "ən",
+       0
+      ],
+      [
+       "yaxın",
+       1
+      ],
+      [
+       "rəf",
+       1
+      ]
+     ]
+    ],
+    "size": 72,
+    "y": 250,
+    "dur": 4.8,
+    "at": [
+     0.2,
+     0.7,
+     1.8,
+     2.2,
+     2.5
+    ]
+   }
+  },
+  {
+   "theme": "typo",
+   "a": 35.1,
+   "b": 39.1,
+   "opts": {
+    "lines": [
+     [
+      [
+       "Təkrarsız",
+       0
+      ],
+      [
+       "bilgi",
+       0
+      ]
+     ],
+     [
+      [
+       "daha",
+       0
+      ],
+      [
+       "uzaq",
+       1
+      ],
+      [
+       "rəf",
+       1
+      ]
+     ]
+    ],
+    "size": 72,
+    "y": 250,
+    "dur": 4.0,
+    "at": [
+     0.1,
+     0.5,
+     1.1,
+     1.5,
+     1.8
+    ]
+   }
+  },
+  {
+   "theme": "typo",
    "a": 42.1,
-   "b": 43.5,
+   "b": 44.0,
    "opts": {
-    "text": "Bəs nə etməliyik?",
-    "kind": "card",
-    "x": 540,
+    "lines": [
+     [
+      [
+       "Bəs",
+       0
+      ],
+      [
+       "nə",
+       0
+      ],
+      [
+       "etməliyik?",
+       1
+      ]
+     ]
+    ],
+    "size": 66,
     "y": 300,
-    "size": 46
+    "dur": 1.9,
+    "at": [
+     0.1,
+     0.3,
+     0.55
+    ]
    }
   },
   {
-   "theme": "tag",
+   "theme": "typo",
    "a": 49.6,
    "b": 55.6,
    "hold": 1,
    "opts": {
-    "text": "ÖYRƏNMƏYİ ÖYRƏN",
-    "kind": "capsule",
-    "x": 540,
+    "lines": [
+     [
+      [
+       "ÖYRƏNMƏYİ",
+       0
+      ],
+      [
+       "ÖYRƏN",
+       1
+      ]
+     ]
+    ],
+    "size": 64,
     "y": 300,
-    "size": 50,
-    "hold": true
+    "dur": 6.0,
+    "at": [
+     0.1,
+     0.55
+    ],
+    "hold": true,
+    "ul": {
+     "line": 0,
+     "from": 0,
+     "to": 1,
+     "at": 1.0
+    }
    }
   }
  ],
@@ -101,26 +329,9 @@
   1.12
  ],
  "max_shot": 7.5,
- "broll": [
-  {
-   "id": "mk-v-8826",
-   "a": 23.0,
-   "b": 25.6,
-   "ss": 2.0
-  },
-  {
-   "id": "mk-v-2997",
-   "a": 25.7,
-   "b": 29.6,
-   "ss": 1.0
-  },
-  {
-   "id": "mk-v-8860",
-   "a": 35.2,
-   "b": 38.9,
-   "ss": 3.0
-  }
- ],
+ "broll": [],
  "pause_min": 0.9,
- "ver": "_v4"
+ "ver": "_v5",
+ "no_zoom": true,
+ "subs_top": true
 }

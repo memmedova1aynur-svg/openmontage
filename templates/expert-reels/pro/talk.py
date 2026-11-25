@@ -132,8 +132,8 @@ elif B["sub"] == "words":  # dinamik: iri, söz-söz, aktiv söz vurğu rəngind
             e = c[i + 1]["s"] if i + 1 < len(c) else endc
             U = (lambda x: x.replace("i", "İ").replace("ı", "I").upper() if B.get("upper") else x)
             KW = set(k.lower() for k in B.get("keywords", []))
-            parts = [(f"{{\\c{bgr(ACC)}\\t(0,90,\\fscx112\\fscy112)\\t(90,180,\\fscx100\\fscy100)}}{U(x['t'])}{{\\r}}" if x is w else
-                      (f"{{\\c{bgr(B.get('accent2', '#7CE0A3'))}}}{U(x['t'])}{{\\r}}" if re.sub(r"[^\\w]", "", x["t"].lower()) in KW else U(x["t"]))) for x in c]
+            parts = [(f"{{\\c{bgr(ACC)}\\t(0,90,\\fscx112\\fscy112)\\t(90,180,\\fscx100\\fscy100)}}{U(x['t'])}{{\\r}}" if (x is w and B.get("active", True)) else
+                      (f"{{\\c{bgr(B.get('accent2', '#7CE0A3'))}}}{U(x['t'])}{{\\r}}" if re.sub(r"[^\w]", "", x["t"].lower()) in KW else U(x["t"]))) for x in c]
             ev.append(f"Dialogue: 1,{ts(w['s'])},{ts(e)},D,,0,0,0,,{' '.join(parts).rstrip(',.;:')}")
 for t0, dur, txt in B.get("questions", []):  # müsahibə: sual kartı
     ev.append(f"Dialogue: 2,{ts(t0)},{ts(t0 + dur)},Q,,0,0,0,,{{\\fad(220,220)}}{txt}")
@@ -289,7 +289,7 @@ for j, (t0, t1, img, mode) in enumerate(B.get("inserts", [])):  # şəkil/ekran 
 if B.get("letterbox"):
     lb = B["letterbox"]; post.append(f"[{cur_v}]drawbox=x=0:y=0:w=iw:h={lb}:color=black:t=fill,drawbox=x=0:y=ih-{lb}:w=iw:h={lb}:color=black:t=fill[lbx]"); cur_v = "lbx"
 if B.get("grain"): post.append(f"[{cur_v}]noise=c0s={B['grain']}:c0f=t+u,vignette=PI/5[gr]"); cur_v = "gr"
-post.append(f"[{cur_v}]subtitles={ASS}:fontsdir=/usr/share/fonts/opentype/inter,format=yuv420p[v]")
+post.append(f"[{cur_v}]format=yuv420p[v]" if B.get("no_subs") else f"[{cur_v}]subtitles={ASS}:fontsdir=/usr/share/fonts/opentype/inter,format=yuv420p[v]")
 fc += post
 VID, RAW = WORK / "v.mp4", WORK / "speech_raw.wav"
 K.run(["ffmpeg", "-v", "error", "-y", *INP, "-filter_complex", ";".join(fc), "-map", "[v]", "-r", "30", "-c:v", "libx264", "-preset", "slow",

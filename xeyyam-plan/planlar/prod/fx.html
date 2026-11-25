@@ -384,6 +384,58 @@ THEMES.shelf=function(t,level,burst,o){
     g.shadowColor='rgba(0,0,0,0.5)';g.shadowBlur=18;g.fillStyle='#FFFFFF';g.fillText('?',x0+Wd/2+dx/2,y0-170*sc+Math.sin(t*2)*8);g.restore()}}
 };
 
+
+// ── Minimal tipoqrafiya (qutu/kart yoxdur): söz-söz yumşaq giriş, açar söz brend yaşılı, isteğe bağlı nazik alt xətt
+THEMES.typo=function(t,level,burst,o){ // o: lines [[ [mətn, vurğu?], … ], …], size, x, y (üst), dur (pəncərə san), t0, step, at[], ul {line,from,to,at}
+  const sz=o.size||76,font=`800 ${sz}px Montserrat, MontserratExt, Arial`,rel=level*(o.dur||4),step=o.step||0.26,t0=o.t0||0.1,lh=sz*1.22;
+  g.font=font;g.textAlign='left';const sp=g.measureText(' ').width;let idx=0;const geo=[];
+  o.lines.forEach((ln,li)=>{
+    const ws=ln.map(tk=>g.measureText(tk[0]).width),tot=ws.reduce((a,b)=>a+b,0)+sp*(ln.length-1);let x=(o.x??540)-tot/2;const y=(o.y??250)+li*lh+sz;const row=[];
+    ln.forEach((tk,i)=>{
+      const at=(o.at&&o.at[idx]!=null)?o.at[idx]:t0+idx*step,a=ease((rel-at)/0.38);idx++;row.push({x,w:ws[i],y});
+      if(a>0){g.save();g.globalAlpha*=a;g.shadowColor='rgba(0,0,0,0.6)';g.shadowBlur=18;g.shadowOffsetY=3;g.fillStyle=tk[1]?'#6CC57E':'#FFFFFF';g.fillText(tk[0],x,y+(1-a)*20);g.restore()}
+      x+=ws[i]+sp});geo.push(row)});
+  if(o.ul){const r=geo[o.ul.line],a=r[o.ul.from],b=r[o.ul.to],k=ease((rel-o.ul.at)/0.55);if(k>0){g.save();g.shadowColor='rgba(108,197,126,0.7)';g.shadowBlur=12;g.fillStyle='#6CC57E';
+    const x0=a.x,w=(b.x+b.w-a.x)*k;g.beginPath();g.roundRect(x0,a.y+14,w,5,3);g.fill();g.restore()}}
+};
+// ── "Beyin = kitabxana": beyin konturu çəkilir, içi rəflər və kitablarla dolur (mode: build | near | far)
+THEMES.brainlib=function(t,level,burst,o){
+  const mode=o.mode||'build',cx=540,cy=o.cy||1000,sx=420,sy=265,breathe=1+0.006*Math.sin(t*1.3);
+  const gr=g.createLinearGradient(0,0,0,1920);gr.addColorStop(0,'#0B2E23');gr.addColorStop(0.5,'#0F3B2E');gr.addColorStop(1,'#082219');g.fillStyle=gr;g.fillRect(0,0,1080,1920);
+  const gl=g.createRadialGradient(cx,cy,60,cx,cy,640);gl.addColorStop(0,'rgba(108,197,126,0.16)');gl.addColorStop(1,'rgba(108,197,126,0)');g.fillStyle=gl;g.fillRect(0,0,1080,1920);
+  const pts=[],N=160;for(let i=0;i<=N;i++){const a=-Math.PI/2+i/N*Math.PI*2,bump=1+0.035*Math.sin(a*7+0.6);let x=Math.cos(a)*sx*bump*breathe,y=Math.sin(a)*sy*bump*breathe;if(y>sy*0.5)y=sy*0.5+(y-sy*0.5)*0.3;pts.push([cx+x,cy+y])}
+  const build=mode==='build',po=build?ease(level/0.28):1;
+  const path=()=>{g.beginPath();pts.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]));g.closePath()};
+  g.save();g.strokeStyle='#6CC57E';g.lineWidth=7;g.fillStyle='#0B2E23';g.shadowColor='rgba(108,197,126,0.6)';g.shadowBlur=16;g.globalAlpha=po;
+  g.beginPath();g.roundRect(cx+70,cy+sy*0.42,62,95,22);g.fill();g.stroke();
+  g.beginPath();g.ellipse(cx+205,cy+sy*0.5-6,120,52,0,0,6.283);g.fill();g.stroke();g.restore();
+  // içəri: rəflər + kitablar (kontura kəsilir)
+  g.save();path();g.clip();g.fillStyle='rgba(8,34,25,0.55)';g.fillRect(0,0,1080,1920);
+  const COL=['#6CC57E','#FFFFFF','#B5E9CF','#3E9E57','#8FD9A5','#2F8F5B'],rows=5,r0=cy-sy*0.9;
+  const hl=mode==='near'?ease(level/0.25):0,dim=mode==='far'?ease(level/0.3):0,pull=mode==='near'?ease((level-0.35)/0.3):0;
+  for(let k=0;k<rows;k++){
+    const by=cy-270+k*100,rr=rng(40+k);let bx=cx-sx-10,j=0;const near=k===rows-1,far=k<=1;
+    let rowA=1;if(mode==='near')rowA=near?1:0.45;if(mode==='far')rowA=far?1-0.68*dim:1-0.3*dim*0;
+    while(bx<cx+sx+20){
+      const bw=22+rr()*14,bh=52+rr()*34,col=COL[Math.floor(rr()*COL.length)];
+      const ap=build?ease((level-0.26-(rows-1-k)*0.07-j*0.006)/0.1):1;j++;
+      if(ap>0){let lift=(1-ap)*-46,sc=1,X=bx,Y=by-bh+lift,al=ap*rowA;
+        const isPick=near&&mode==='near'&&j===9;if(isPick){Y-=pull*70;sc=1+pull*0.1}
+        g.save();g.globalAlpha*=al;if(near&&hl>0){g.shadowColor='rgba(181,233,207,0.9)';g.shadowBlur=16*hl}if(isPick&&pull>0){g.shadowColor='rgba(255,255,255,0.95)';g.shadowBlur=28*pull}
+        g.fillStyle=col;g.fillRect(X,Y,bw*sc,bh*sc);g.shadowBlur=0;g.fillStyle='rgba(8,34,25,0.5)';g.fillRect(X+bw*0.2,Y+bh*0.18,bw*0.6,3);g.fillRect(X+bw*0.2,Y+bh*0.18+9,bw*0.6,3);g.restore()}
+      bx+=bw+3}
+    g.fillStyle='rgba(181,233,207,0.55)';g.fillRect(cx-sx-20,by,2*sx+40,4);
+  }
+  if(mode==='far'&&dim>0){g.save();g.globalAlpha=dim;g.font='800 120px Montserrat, MontserratExt, Arial';g.textAlign='center';g.shadowColor='rgba(0,0,0,0.6)';g.shadowBlur=18;g.fillStyle='#FFFFFF';
+    g.fillText('?',cx,cy-120+Math.sin(t*2)*8);g.restore()}
+  g.strokeStyle='#0B2E23';g.lineWidth=9;g.lineCap='round';const GR=[[-300,20,-80,-70,60,70,260,-10],[-250,-150,-120,-215,40,-120,200,-195],[-210,135,-60,70,90,165,240,95]];
+  GR.forEach(q=>{g.beginPath();g.moveTo(cx+q[0],cy+q[1]);g.bezierCurveTo(cx+q[2],cy+q[3],cx+q[4],cy+q[5],cx+q[6],cy+q[7]);g.stroke()});
+  g.restore();
+  // kontur (çəkilmə + parıltı)
+  g.save();g.lineJoin='round';g.lineCap='round';g.shadowColor='rgba(108,197,126,0.8)';g.shadowBlur=22;g.strokeStyle='#6CC57E';g.lineWidth=7;
+  const m=Math.min(pts.length-1,Math.floor(pts.length*po));g.beginPath();for(let i=0;i<=m;i++){const p=pts[i];i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1])}g.stroke();g.restore();
+};
+
 function draw(theme,t,level,alpha,burst,opts){g.clearRect(0,0,1080,1920);if(alpha<=0)return;g.save();g.globalAlpha=alpha;const _o=opts||{};if(_o.sc){g.translate(_o.x||0,_o.y||0);g.scale(_o.sc,_o.sc);g.translate(-(_o.x||0),-(_o.y||0))}THEMES[theme](t,level,burst,_o);g.restore()}
 window.draw=draw;
 </script></body></html>
