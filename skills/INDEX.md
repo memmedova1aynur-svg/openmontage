@@ -333,3 +333,10 @@ Claude Code accesses them via symlinks in `.claude/skills/`.
 | **AI Video/Image/TTS/Avatar (Kling Official)** | `kling-official` - official direct API auth, Classic/Turbo/Omni task protocols, multi-reference Omni syntax, internal Elements/Account Usage helpers, callback notes, TTS voice parameters, avatar/lip-sync face selection, error handling, and cost governance for `kling_official_video` / `kling_official_image` / `kling_tts` / `kling_avatar` / `kling_lip_sync` | Local OpenMontage skill |
 | **AI Video (Premium)** | `seedance-2-0` — preferred premium default (cinematic, trailer, multi-shot, lip-sync, synced audio); accessed via `seedance_video` (fal.ai) or `heygen_video` Avatar Shots; `seedance-2-5` — 4–30 s clips, 50 multimodal references, prompt contract (section order, `Hard cut` breakdown, continuity locks, asset method) | Local OpenMontage skill |
 | **Infrastructure** | `acestep`, `ltx2`, `playwright-recording` | `digitalsamba/claude-code-video-toolkit` |
+
+## Creative Editing Intelligence (P1)
+- `skills/creative/creative-brief.md` — hər videodan əvvəl qərar kartı (məqsəd, ton, hook, B-roll, tipoqrafiya, CTA)
+- `skills/creative/hook-design.md` — 11 hook üsulu, seçim cədvəli və qərar alqoritmi
+- `skills/creative/caption-typography.md` — 4 tipoqrafik rol, Azərbaycan hərfləri, safe zone
+- `skills/creative/broll-function.md` — hər B-roll üçün məcburi funksiya və izah etdiyi fikir
+Yalnız lazım olan mərhələdə yüklə; hamısını eyni anda oxuma.
