@@ -5,12 +5,16 @@ Bilmədiyin xanaya "sən seç" yaz. Müştəri faylı ortaq qaydadan üstündür
 
 ## A. Məcburi (bunları mütləq doldur)
 1. Müştəri, peşə, hədəf auditoriya, brend tonu (3 söz): 
+   - Brend mövqeləndirməsi (necə təqdim olunur): 
+   - Video məqsədi (satış / etibar / tanınma / maarifləndirmə): 
+   - Yaradılacaq hiss: 
+   - Arzuolunmaz təəssürat / uzaq durulan estetika: 
 2. Video növləri və format (9:16 / 16:9 / 1:1): 
 3. Əsas rəng, vurğu, fon (HEX): 
 4. **Qadağan rənglər:** 
 5. Şrift (başlıq / altyazı): 
 6. Altyazı: yer, düzlənmə, ölçü, vurğu üsulu: 
-7. **3 imza element** (hərəkət, kart tərzi, rəng/yazı detalı və ya səs):
+7. **3 imza element** (hərəkət, kart tərzi, rəng/yazı detalı və ya səs; hər videoda hamısı məcburi deyil):
    1. 
    2. 
    3. 
@@ -19,6 +23,7 @@ Bilmədiyin xanaya "sən seç" yaz. Müştəri faylı ortaq qaydadan üstündür
 10. Pauzalar: təbii qalır / ≥ ___ s kəsilir: 
 11. Rəng korreksiyası: sabit look (hansı?) / məkana görə: 
 12. Digər **qadağalar**: 
+13. Yaradıcı sərbəstlik (Claude hansı qərarı müstəqil verə bilər, hansı üçün təsdiq lazımdır): 
 
 ## B. İstəyə görə (boş qala bilər)
 - Kart tərzi və müddəti: 

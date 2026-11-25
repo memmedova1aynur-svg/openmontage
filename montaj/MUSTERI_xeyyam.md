@@ -5,7 +5,11 @@ Ortaq qaydalar: `UMUMI_QAYDALAR.md`. Bu fayl ortaq qaydadan üstündür.
 ⚠ ilə işarələnənlər profildə ziddiyyətlidir və istifadəçi təsdiqi gözləyir (aşağıda "Açıq suallar").
 
 ## A. Məcburi
-1. **Müştəri:** Xəyyam Həsənov. Təhsil/öyrənmə mövzusu, ekspert. Auditoriya: öyrənmək, yadda saxlamaq istəyənlər. Ton: sakit, premium, ilhamverici.
+1. **Müştəri:** Xəyyam Həsənov. Təhsil/öyrənmə mövzusu. Auditoriya: öyrənmək, yadda saxlamaq istəyənlər. Ton: sakit, premium, ilhamverici.
+   - Brend mövqeləndirməsi: ⚠ "təhsil eksperti" yoxsa "təlim mentoru"? (təsdiq gözləyir)
+   - Video məqsədi: maarifləndirmə + təlim reklamı ⚠ dəqiqləşdir
+   - Yaradılacaq hiss: sakitlik, inam, öyrənmə həvəsi (profildən çıxarılıb) ⚠
+   - Arzuolunmaz təəssürat: oyuncaq/ucuz effekt, laym-fosforlu estetika, başqa ekspertlərə bənzəmə
 2. **Video növləri:** kameraya danışıq, reklam, qarışıq. Format 9:16.
 3. **Rəng (HEX):** fon/tam ekran kart tünd meşə yaşılı `#0F3B2E` (dərin `#082219`); vurğu yarpaq yaşılı `#6CC57E`; ağ fon/kart; yazı ağ `#FFFFFF`, vurğu üstündə yazı `#0B2A20`; kart şəffaflığı 0.95. Gradient: `#3E9E57 → #6CC57E → #B5E9CF`. Tipoqrafiya üçün açıq kağız fon ola bilər (təmiz ağ, krem yox, qaydaya bax).
 4. **Qadağan rənglər:** laym/fosforlu yaşıl (`#C5E01F` daxil, 2026-11-04 qərarı), sarı, narıncı, mavi, bənövşəyi. Krem fon yoxdur (təmiz ağ).
@@ -20,6 +24,7 @@ Ortaq qaydalar: `UMUMI_QAYDALAR.md`. Bu fayl ortaq qaydadan üstündür.
 10. **Pauzalar:** ≥ 0.45 s danışılmayan pauzalar kəsilir; söz kəsilmir; kəsimdən sonra söz təkrarı yoxlanır; son sözdən sonra 1 s. Təkrarın ən yaxşısı saxlanır, yarımçıq cümlə kəsilir.
 11. **Rəng korreksiyası:** neytral, təmiz işıqlı, sarı/isti ton yoxdur, yüngül kəskinlik. ⚠ look hərfi ziddiyyətlidir (aşağıya bax).
 12. **Digər qadağalar:** arxa fon bulanıqlaşdırılmır və qaraldılmır (orijinal qalır); güzgü çevirmə (hflip) yoxdur — lazım olsa əvvəl/sonra göstər, təsdiqdən sonra; B-roll başı örtmür; oyuncaq effektlər yoxdur; qiymət/tarix/CTA uydurulmur; təhvildən əvvəl yenidən transkripsiya ilə yoxla.
+13. **Yaradıcı sərbəstlik:** ⚠ təsdiq gözləyir (təklif: xırda kart/animasiya/ara kadr qərarları müstəqil; rəng, şrift, brend mövqeyi, musiqi janrı təsdiq tələb edir).
 
 ## B. İstəyə görə
 - **Kart tərzi/müddəti:** tam ekran kartlar 3–5 s, səs davam edir; danışan hissə 6 s-dən uzun olmasın.
@@ -39,15 +44,16 @@ Ortaq qaydalar: `UMUMI_QAYDALAR.md`. Bu fayl ortaq qaydadan üstündür.
 | 2026-11-03 | Təhsil brifi: tünd yaşıl fon, Montserrat qalın, 6 kadrlıq axın, sakit premium hərəkət | Xəyyam |
 | 2026-11-04 | Laym qadağan; vurğu `#6CC57E`, fon tünd yaşıl və ya təmiz ağ (krem yox) | Xəyyam |
 
-## D. Video tarixçəsi (özet; 43 qeyd, 2026-11-03/04)
+## D. Video tarixçəsi (özet; 43 qeyd = 8 video üzrə render/variantlar, 2026-11-03/04)
 | Variant | Say | Look | Altyazı | Animasiya |
 |---|---|---|---|---|
 | Sözlər yadınıza düşmür — premium | 13 | W | stroke/box | fade/pop |
-| Təxirəsalma (v3, PRO, sinematik) | 14 | W/H | box/stroke | pop/fade |
-| McCollough — PRO | 4 | W | — | — |
-| Öyrənməyi öyrən — REKLAM PRO | 3 | W | — | — |
+| Təxirəsalma (sürətli v3: 6, PRO: 5, sinematik: 3, öz storyboardu: 2 — H) | 16 | W (2-si H) | box/stroke | pop/fade |
+| McCollough (PRO: 4, effekti: 1) | 5 | W | — | — |
+| Öyrənməyi öyrən (REKLAM PRO: 3, adi: 1) | 4 | W | — | — |
+| Digər (Başlığı suala çevir 2, Oxu-xatırla-yoxla 1, Bu yaşda yadda saxlayım 1, Fasiləli təkrar 1) | 5 | W | — | — |
 
-Qeyd: 43 videonun 41-i look W, 2-si H; altyazı stroke 20, box 11; animasiya fade 20, pop 11. Eyni üslub təkrarlanma riski yüksəkdir — ortaq qaydanın 10-cu bəndinə (fərq testi) uyğun olaraq növbəti videolarda imza elementlərindən ən azı biri dəyişdirilməlidir.
+Qeyd: 43 qeyd yalnız **8 real videoya** (Xeyyam video 1–8) aiddir, qalanı eyni videonun yenidən render/variantlarıdır. 43 qeydin 41-i look W, 2-si H; altyazı stroke 20, box 11; animasiya fade 20, pop 11. Eyni üslub təkrarlanma riski yüksəkdir — ortaq qaydanın 10-cu bəndinə (fərq testi) uyğun olaraq növbəti videolarda imza elementlərindən ən azı biri dəyişdirilməlidir.
 
 ## Açıq suallar (istifadəçi cavab verməlidir)
 1. **Look hərfi:** profildə üç fərqli qayda var: "həmişə C" (11-01), "H" (11-03), tarixçədə isə faktiki "W" istifadə olunub. Hansı qüvvədədir?
