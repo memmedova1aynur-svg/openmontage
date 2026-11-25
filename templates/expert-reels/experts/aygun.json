@@ -1,182 +1,189 @@
 {
- "name": "Aygün",
- "status": "active",
- "activity": "Maarifləndirici danışıq videoları (ilk material: imtahan stresi və hazırlıq).",
- "palette": {
-  "family": "bordo, tozlu çəhrayı, krem"
- },
- "video_types": "kameraya danışıq, maarifləndirmə",
- "cautions": [
-  "Profil 2026-11-24 ilk materialdan yaradılıb: rəng ailəsi çəkiliş otağından (tozlu çəhrayı divar) və şaldan (krem + bordo naxış) götürülüb; müştərinin Instagram/brend rəngi verilsə dəyişdirilməlidir.",
-  "Ümumi istifadəçi qaydası (2026-11-01, bütün müştərilər): rəng looks C (təmiz-neytral); musiqi piano/yavaş YOX; arxa fon bulanıqlaşdırılmır; danışılmayan boş saniyələr kəsilir, söz kəsilmir; güzgü çevirmə yoxdur."
- ],
- "theme_source": "derived from the colour family (brand colour = colour family)",
- "theme": {
-  "primary": "#5C2434",
-  "primaryDeep": "#3A1420",
-  "accent": "#F1D3CE",
-  "accentSoft": "#C98B94",
-  "text": "#FFFFFF",
-  "onAccent": "#5C2434",
-  "cardAlpha": 0.94
- },
- "style": {},
- "history": [
-  {
-   "video": "Aygün 01",
-   "date": "2026-11-24",
-   "engine": "montaj",
-   "type": 1,
-   "approach": "M01+M02",
-   "variant": "B — Vurğulu",
-   "look": "C",
-   "captions": "box",
-   "tone": "#5C2434",
-   "anim": "pop"
+  "name": "Aygün",
+  "status": "active",
+  "activity": "Maarifləndirici danışıq videoları (ilk material: imtahan stresi və hazırlıq).",
+  "palette": {
+    "family": "krem və zeytun yaşılı (vurğu üçün) + ağ, qara, neytral tonlar (əsas)"
   },
-  {
-   "video": "Aygün — 20 dəqiqəlik üsul",
-   "date": "2026-11-24",
-   "engine": "montaj",
-   "type": 1,
-   "approach": "M01+M02",
-   "variant": "B — Vurğulu",
-   "look": "C",
-   "captions": "box",
-   "tone": "#5C2434",
-   "anim": "pop"
+  "video_types": "kameraya danışıq, maarifləndirmə",
+  "cautions": [
+    "Instagram səhifəsi yenidir, paylaşım yoxdur: əvvəlki 9 montajın üslubu (bordo, rəngli qutular) təsdiqlənmiş brend DEYİL (istifadəçi, 2026-11-25).",
+    "Görüntü: sabit filtr yox — look auto (adaptiv); dəridə qırmızılıq/narıncı/sarılıq/solğunluq yaratma; üzə emal yoxdur.",
+    "Altyazı: hər söz rəngli blokda olmasın; yalnız açar sözlər vurğulanır; üz və jestlər örtülmür; Reels təhlükəsiz zona.",
+    "Hook: sadəcə rəngli düzbucaqlıda sual hook deyil — tipoqrafiya, kompozisiya, hərəkət, vizual metafora.",
+    "B-roll yalnız fikri gücləndirəndə; uyğun yoxdursa əsas kadr qalır. Videolar bir-birinin kopyası olmasın."
+  ],
+  "theme_source": "istifadəçi təsdiqi 2026-11-25: krem + zeytun yaşılı vurğu, neytral əsas",
+  "theme": {
+    "primary": "#151514",
+    "primaryDeep": "#0A0A09",
+    "accent": "#EDE6D6",
+    "accentSoft": "#6E7448",
+    "text": "#FFFFFF",
+    "onAccent": "#151514",
+    "cardAlpha": 0.9,
+    "olive": "#6E7448",
+    "cream": "#EDE6D6"
   },
-  {
-   "video": "Aygün — Yaddaş və əlaqə",
-   "date": "2026-11-24",
-   "engine": "montaj",
-   "type": 1,
-   "approach": "M01+M02",
-   "variant": "B — Vurğulu",
-   "look": "C",
-   "captions": "box",
-   "tone": "#5C2434",
-   "anim": "pop"
-  },
-  {
-   "video": "Aygün — Yaddaş və əlaqə",
-   "date": "2026-11-24",
-   "engine": "montaj",
-   "type": 1,
-   "approach": "M01+M02",
-   "variant": "B — Vurğulu",
-   "look": "C",
-   "captions": "box",
-   "tone": "#5C2434",
-   "anim": "pop"
-  },
-  {
-   "video": "Aygün — Yaddaş və əlaqə",
-   "date": "2026-11-24",
-   "engine": "montaj",
-   "type": 1,
-   "approach": "M01+M02",
-   "variant": "B — Vurğulu",
-   "look": "C",
-   "captions": "box",
-   "tone": "#5C2434",
-   "anim": "pop"
-  },
-  {
-   "video": "Aygün — Yaddaş və əlaqə",
-   "date": "2026-11-24",
-   "engine": "montaj",
-   "type": 1,
-   "approach": "M01+M02",
-   "variant": "B — Vurğulu",
-   "look": "C",
-   "captions": "box",
-   "tone": "#5C2434",
-   "anim": "pop"
-  },
-  {
-   "video": "Aygün — Üç üsul",
-   "date": "2026-11-24",
-   "engine": "montaj",
-   "type": 1,
-   "approach": "M01+M02",
-   "variant": "B — Vurğulu",
-   "look": "C",
-   "captions": "box",
-   "tone": "#5C2434",
-   "anim": "pop"
-  },
-  {
-   "video": "Aygün 04",
-   "date": "2026-11-24",
-   "engine": "montaj",
-   "type": 1,
-   "approach": "M01+M02",
-   "variant": "B — Vurğulu",
-   "look": "C",
-   "captions": "box",
-   "tone": "#5C2434",
-   "anim": "pop"
-  },
-  {
-   "video": "Aygün 06",
-   "date": "2026-11-24",
-   "engine": "montaj",
-   "type": 1,
-   "approach": "M01+M02",
-   "variant": "B — Vurğulu",
-   "look": "C",
-   "captions": "box",
-   "tone": "#5C2434",
-   "anim": "pop"
-  },
-  {
-   "video": "Aygün 10",
-   "date": "2026-11-24",
-   "engine": "montaj",
-   "type": 1,
-   "approach": "M01+M02",
-   "variant": "B — Vurğulu",
-   "look": "C",
-   "captions": "box",
-   "tone": "#5C2434",
-   "anim": "pop"
-  },
-  {
-   "video": "Aygün 10",
-   "date": "2026-11-24",
-   "engine": "montaj",
-   "type": 1,
-   "approach": "M01+M02",
-   "variant": "B — Vurğulu",
-   "look": "C",
-   "captions": "box",
-   "tone": "#5C2434",
-   "anim": "pop"
-  },
-  {
-   "video": "Aygün — Vərdiş",
-   "date": "2026-11-24",
-   "engine": "montaj",
-   "type": 1,
-   "approach": "M01+M02",
-   "variant": "B — Vurğulu",
-   "look": "C",
-   "captions": "box",
-   "tone": "#5C2434",
-   "anim": "pop"
-  },
-  {
-   "video": "Aygün 16",
-   "date": "2026-11-24",
-   "engine": "montaj",
-   "type": 1,
-   "approach": "M01+M02",
-   "variant": "B — Vurğulu",
-   "look": "C",
-   "captions": "box",
-   "tone": "#5C2434",
-   "anim": "pop"
-  }
- ]
+  "style": {},
+  "history": [
+    {
+      "video": "Aygün 01",
+      "date": "2026-11-24",
+      "engine": "montaj",
+      "type": 1,
+      "approach": "M01+M02",
+      "variant": "B — Vurğulu",
+      "look": "C",
+      "captions": "box",
+      "tone": "#5C2434",
+      "anim": "pop"
+    },
+    {
+      "video": "Aygün — 20 dəqiqəlik üsul",
+      "date": "2026-11-24",
+      "engine": "montaj",
+      "type": 1,
+      "approach": "M01+M02",
+      "variant": "B — Vurğulu",
+      "look": "C",
+      "captions": "box",
+      "tone": "#5C2434",
+      "anim": "pop"
+    },
+    {
+      "video": "Aygün — Yaddaş və əlaqə",
+      "date": "2026-11-24",
+      "engine": "montaj",
+      "type": 1,
+      "approach": "M01+M02",
+      "variant": "B — Vurğulu",
+      "look": "C",
+      "captions": "box",
+      "tone": "#5C2434",
+      "anim": "pop"
+    },
+    {
+      "video": "Aygün — Yaddaş və əlaqə",
+      "date": "2026-11-24",
+      "engine": "montaj",
+      "type": 1,
+      "approach": "M01+M02",
+      "variant": "B — Vurğulu",
+      "look": "C",
+      "captions": "box",
+      "tone": "#5C2434",
+      "anim": "pop"
+    },
+    {
+      "video": "Aygün — Yaddaş və əlaqə",
+      "date": "2026-11-24",
+      "engine": "montaj",
+      "type": 1,
+      "approach": "M01+M02",
+      "variant": "B — Vurğulu",
+      "look": "C",
+      "captions": "box",
+      "tone": "#5C2434",
+      "anim": "pop"
+    },
+    {
+      "video": "Aygün — Yaddaş və əlaqə",
+      "date": "2026-11-24",
+      "engine": "montaj",
+      "type": 1,
+      "approach": "M01+M02",
+      "variant": "B — Vurğulu",
+      "look": "C",
+      "captions": "box",
+      "tone": "#5C2434",
+      "anim": "pop"
+    },
+    {
+      "video": "Aygün — Üç üsul",
+      "date": "2026-11-24",
+      "engine": "montaj",
+      "type": 1,
+      "approach": "M01+M02",
+      "variant": "B — Vurğulu",
+      "look": "C",
+      "captions": "box",
+      "tone": "#5C2434",
+      "anim": "pop"
+    },
+    {
+      "video": "Aygün 04",
+      "date": "2026-11-24",
+      "engine": "montaj",
+      "type": 1,
+      "approach": "M01+M02",
+      "variant": "B — Vurğulu",
+      "look": "C",
+      "captions": "box",
+      "tone": "#5C2434",
+      "anim": "pop"
+    },
+    {
+      "video": "Aygün 06",
+      "date": "2026-11-24",
+      "engine": "montaj",
+      "type": 1,
+      "approach": "M01+M02",
+      "variant": "B — Vurğulu",
+      "look": "C",
+      "captions": "box",
+      "tone": "#5C2434",
+      "anim": "pop"
+    },
+    {
+      "video": "Aygün 10",
+      "date": "2026-11-24",
+      "engine": "montaj",
+      "type": 1,
+      "approach": "M01+M02",
+      "variant": "B — Vurğulu",
+      "look": "C",
+      "captions": "box",
+      "tone": "#5C2434",
+      "anim": "pop"
+    },
+    {
+      "video": "Aygün 10",
+      "date": "2026-11-24",
+      "engine": "montaj",
+      "type": 1,
+      "approach": "M01+M02",
+      "variant": "B — Vurğulu",
+      "look": "C",
+      "captions": "box",
+      "tone": "#5C2434",
+      "anim": "pop"
+    },
+    {
+      "video": "Aygün — Vərdiş",
+      "date": "2026-11-24",
+      "engine": "montaj",
+      "type": 1,
+      "approach": "M01+M02",
+      "variant": "B — Vurğulu",
+      "look": "C",
+      "captions": "box",
+      "tone": "#5C2434",
+      "anim": "pop"
+    },
+    {
+      "video": "Aygün 16",
+      "date": "2026-11-24",
+      "engine": "montaj",
+      "type": 1,
+      "approach": "M01+M02",
+      "variant": "B — Vurğulu",
+      "look": "C",
+      "captions": "box",
+      "tone": "#5C2434",
+      "anim": "pop"
+    }
+  ],
+  "fullName": "Aygün İsmayılova",
+  "brand_direction": "Modern intellectual editorial: minimalist, premium, intellektual; müasir zərif tipoqrafiya; peşəkar ekspert imici; təbii balanslı görüntü. Brend rəngləri (krem, zeytun) yalnız məqsədli vurğularda; altyazı, hook və bloklar əsasən ağ/qara/neytral. Bordo, çəhrayı və əvvəlki vurğu rəngləri brend rəngi DEYİL. (istifadəçi, 2026-11-25)"
 }
