@@ -7,8 +7,8 @@ Ortaq qaydalar: `UMUMI_QAYDALAR.md`. Bu fayl ortaq qaydadan üstündür.
 ## A. Məcburi
 1. **Müştəri:** Xəyyam Həsənov. Təhsil/öyrənmə mövzusu. Auditoriya: öyrənmək, yadda saxlamaq istəyənlər. Ton: sakit, premium, ilhamverici.
    - Brend mövqeləndirməsi: ⚠ "təhsil eksperti" yoxsa "təlim mentoru"? (təsdiq gözləyir)
-   - Video məqsədi: maarifləndirmə + təlim reklamı ⚠ dəqiqləşdir
-   - Yaradılacaq hiss: sakitlik, inam, öyrənmə həvəsi (profildən çıxarılıb) ⚠
+   - Video məqsədi: ⚠ təsdiq gözləyir (Xəyyam sorğusu, sual 2)
+   - Yaradılacaq hiss: ⚠ təsdiq gözləyir (Xəyyam sorğusu, sual 3). Profildəki ton: sakit, premium, ilhamverici.
    - Arzuolunmaz təəssürat: oyuncaq/ucuz effekt, laym-fosforlu estetika, başqa ekspertlərə bənzəmə
 2. **Video növləri:** kameraya danışıq, reklam, qarışıq. Format 9:16.
 3. **Rəng (HEX):** fon/tam ekran kart tünd meşə yaşılı `#0F3B2E` (dərin `#082219`); vurğu yarpaq yaşılı `#6CC57E`; ağ fon/kart; yazı ağ `#FFFFFF`, vurğu üstündə yazı `#0B2A20`; kart şəffaflığı 0.95. Gradient: `#3E9E57 → #6CC57E → #B5E9CF`. Tipoqrafiya üçün açıq kağız fon ola bilər (təmiz ağ, krem yox, qaydaya bax).
@@ -21,7 +21,7 @@ Ortaq qaydalar: `UMUMI_QAYDALAR.md`. Bu fayl ortaq qaydadan üstündür.
    3. Tam ekran tipoqrafiya anı (mövzu sözü hərf-hərf itir/bulanır) və ya bölünmüş ekran (Xəyyam yuxarıda, göstərilən aşağıda)
 8. **Musiqi:** sözsüz, sakit, premium, ilhamverici; yalnız CC0 (OpenGameArt-da səhifəsində CC0 yazılan). **Qadağan:** piano, yavaş/dramatik, trend səs, lisenziyası CC0 olmayan. Musiqi ən sonda seçilir. Danışıqda −20…−24 dB, pauzada bir az qalxır.
 9. **Kadraj:** aşağı sərhəd oturduğu yerin başlanğıcı (ayaq və qarnın altı görünmür), başın üstündə boşluq, yanlardan kəsim s ≈ 0.85–0.91. **Yazı/kart qoyulmayan yerlər:** üz, ağız, baş, əllər.
-10. **Pauzalar:** ≥ 0.45 s danışılmayan pauzalar kəsilir; söz kəsilmir; kəsimdən sonra söz təkrarı yoxlanır; son sözdən sonra 1 s. Təkrarın ən yaxşısı saxlanır, yarımçıq cümlə kəsilir.
+10. **Pauzalar:** ≥ 0.45 s danışılmayan pauzalar kəsilir (müddətdən asılı olmayaraq mənalı və emosional fasilələr qorunur); söz kəsilmir; kəsimdən sonra söz təkrarı yoxlanır; son sözdən sonra 1 s. Təkrarın ən yaxşısı saxlanır, yarımçıq cümlə kəsilir.
 11. **Rəng korreksiyası:** neytral, təmiz işıqlı, sarı/isti ton yoxdur, yüngül kəskinlik. ⚠ look hərfi ziddiyyətlidir (aşağıya bax).
 12. **Digər qadağalar:** arxa fon bulanıqlaşdırılmır və qaraldılmır (orijinal qalır); güzgü çevirmə (hflip) yoxdur — lazım olsa əvvəl/sonra göstər, təsdiqdən sonra; B-roll başı örtmür; oyuncaq effektlər yoxdur; qiymət/tarix/CTA uydurulmur; təhvildən əvvəl yenidən transkripsiya ilə yoxla.
 13. **Yaradıcı sərbəstlik:** ⚠ təsdiq gözləyir (təklif: xırda kart/animasiya/ara kadr qərarları müstəqil; rəng, şrift, brend mövqeyi, musiqi janrı təsdiq tələb edir).
