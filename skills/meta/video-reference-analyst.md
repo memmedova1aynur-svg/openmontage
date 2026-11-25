@@ -417,13 +417,14 @@ Never silently skip analysis steps. If something fails, tell the user what happe
 and what the impact is on the analysis quality.
 
 
-## Link referansı (YouTube/Instagram): watch-skill (2026-11-25)
+## Link referansı (Instagram): watch-skill (2026-11-25)
 
-Referans video linkdirsə, əvvəl: `.venv-watch/bin/watch-skill watch "<link>" --no-whisper --no-index --out-dir <müvəqqəti qovluq>` (kadrlar `frames/` qovluğuna düşür — `Read` ilə bax;
-altyazı/transkript raporda gəlir). Nəticədən edit spesifikasiyasını çıxar: kəsim tempi, altyazı üslubu, ara kadr sıxlığı, kart/tipoqrafiya, hook.
+Əsas mənbə Instagram Reels-dir (YouTube lazım deyil, mühitdən çıxarılıb). Referans Reel linkidirsə: `.venv-watch/bin/watch-skill watch "<link>" --no-whisper --no-index --out-dir <müvəqqəti qovluq>`
+(kadrlar `frames/` qovluğunda — `Read` ilə bax; altyazı/transkript raporda). Nəticədən edit spesifikasiyası çıxar: kəsim tempi, altyazı üslubu, ara kadr sıxlığı, kart/tipoqrafiya, hook.
 
-- **Şəbəkə:** YouTube altyazısı/transkripti işləyir (mühitdə `www.youtube.com` və s. açıqdır). **Görüntü kadrları** üçün videonun baytları lazımdır — YouTube `*.googlevideo.com`,
-  Instagram `*.cdninstagram.com` / `*.fbcdn.net` dinamik alt-domenlərindədir; mühit ayarlarında (Settings → Network → Allowed domains) wildcard icazəsi verilməyibsə video endirilmir, yalnız altyazı/transkript olur. Bunu gizlətmə, istifadəçiyə de.
-- **Instagram:** anonim çıxarma tez-tez bloklanır (giriş tələb olunur); alınmasa cookie/giriş istifadə etmə — istifadəçidən videonu fayl/Drive linki kimi istə.
-- **Qayda:** yalnız şəxsi analiz; endirilən videonu montaja, repoya və ya Drive-a qoyma, kadrlarını təkrar istifadə etmə (müəllif hüququ, platforma şərtləri). Müvəqqəti qovluğu sonda sil.
+- **Şəbəkə:** Instagram səhifələri açıqdır (`www.instagram.com`, `i.instagram.com`), amma videonun baytları `*.cdninstagram.com` / `*.fbcdn.net` dinamik alt-domenlərindədir. Mühit ayarlarında
+  (Settings → Network → Allowed domains) bu wildcard-lara icazə verilməyibsə kadrlar alınmır — istifadəçiyə açıq de, uydurma analiz etmə.
+- **Anonim çıxarma tez-tez bloklanır (giriş tələb olunur):** cookie/giriş istifadə etmə; alınmasa istifadəçidən videonu fayl/Drive linki kimi istə.
+- **Alternativ (yalnız mətn məlumatı):** `ig-analiz` skill-i (Apify): caption, hashtag, baxış, müddət; video məzmunu üçün CDN icazəsi yenə lazımdır.
+- **Qayda:** yalnız şəxsi analiz; endirilən videonu montaja, repoya və ya Drive-a qoyma, kadrlarını təkrar istifadə etmə (müəllif hüququ, platforma şərtləri); müvəqqəti qovluğu sil.
 - OCR bu mühitdə işləmir (model `modelscope.cn`-dən endirilir, şəbəkədə bağlıdır) — mətn üçün kadrlara özün bax.
