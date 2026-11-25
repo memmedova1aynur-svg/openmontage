@@ -90,3 +90,20 @@ def test_doctor_runs_and_reports():
     from montaj import doctor
     need, tips = doctor.check()
     assert isinstance(need, list) and isinstance(tips, list)
+
+
+def test_library_get_drive_path_and_empty_sync(tmp_path, monkeypatch):
+    """Drive-dan endirmə: drive.download (yol, ad) qaytarır; boş qovluq sync xəta deyil."""
+    from montaj import drive, library
+    monkeypatch.setenv("MONTAJ_DATA_DIR", str(tmp_path))
+
+    def fake_download(link, dst_dir, **k):
+        f = dst_dir / ".drive_x.part"; f.write_bytes(b"x" * 20000); return f, "a.mp4"
+    monkeypatch.setattr(drive, "download", fake_download)
+    p = library.get("dr-t", {"items": [{"id": "dr-t", "kind": "broll", "drive_id": "ABC", "tags": []}]})
+    assert p.exists() and p.stat().st_size == 20000
+
+    class E(Exception): pass
+    monkeypatch.setattr(drive, "list_folder", lambda link: (_ for _ in ()).throw(E("Qovluqda fayl tapılmadı.")))
+    monkeypatch.setattr(library, "CATALOG", tmp_path / "cat.json")
+    assert library.sync() == {"music": 0, "broll": 0, "sfx": 0}

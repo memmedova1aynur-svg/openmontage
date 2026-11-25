@@ -82,8 +82,8 @@ def get(item_id: str, cat: dict[str, Any] | None = None) -> Path:
     if it.get("drive_id"):
         from montaj import drive
         try:
-            f = drive.download(f"https://drive.google.com/file/d/{it['drive_id']}/view", _cache_dir())
-            Path(f).rename(dst); return dst
+            tmp, _name = drive.download(f"https://drive.google.com/file/d/{it['drive_id']}/view", _cache_dir())  # (müvəqqəti yol, fayl adı)
+            Path(tmp).replace(dst); return dst
         except Exception as e:  # noqa: BLE001
             if not it.get("url"): raise RuntimeError(f"Drive-dan alınmadı ({e}); qovluq 'Linki olan hər kəs — Baxan' olmalıdır") from e
     req = urllib.request.Request(it["url"], headers={"User-Agent": "Mozilla/5.0"})
@@ -123,7 +123,12 @@ def sync() -> dict[str, int]:
     from montaj import drive
     cat = load(); have = {x.get("drive_id") for x in cat["items"] if x.get("drive_id")}; added = {k: 0 for k in DRIVE_SUB}
     for kind, fid in DRIVE_SUB.items():
-        for f in drive.list_folder(f"https://drive.google.com/drive/folders/{fid}"):
+        try:
+            files = drive.list_folder(f"https://drive.google.com/drive/folders/{fid}")
+        except Exception as e:  # noqa: BLE001
+            if "fayl tapılmadı" in str(e): continue  # boş qovluq — normal haldır
+            raise
+        for f in files:
             if f["id"] in have: continue
             stem = Path(f["name"]).stem; parts = [p.lower() for p in re.split(r"[_\-\s]+", stem) if p]
             cat["items"].append({"id": f"dr-{f['id'][:10]}", "kind": kind, "name": stem, "tags": sorted(set(parts)), "source": "drive", "drive_id": f["id"],
