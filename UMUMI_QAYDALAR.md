@@ -86,4 +86,4 @@ Məhdudiyyət: Drive bağlantısı (MCP) bir fayl üçün **10 MB**-a qədər y�
 (açar istifadəçi tərəfindən mühitə verilir). **Pinterest — istifadə olunmur:** məzmun üçüncü tərəfin müəllif hüququ altındadır, lisenziya göstərilmir, avtomatik yükləmə şərtlərə ziddir; mühitin şəbəkəsində də bağlıdır.
 
 **Referans video linki (Instagram):** `watch-skill` (üçüncü tərəf, MIT; `third_party/watch-skill`, ayrıca `.venv-watch`) — qaydalar `skills/meta/video-reference-analyst.md`-dədir.
-Məhdudiyyət: video baytları üçün dinamik CDN alt-domenlərinə (wildcard) mühit icazəsi lazımdır; yoxdursa yalnız altyazı/transkript.
+Mühit ayarı dəyişmir: video Apify vasitəsilə alınır (`python -m montaj.reference`, xərc tavanı 0.10 $/Reel); alınmasa istifadəçidən fayl/Drive linki istənir.

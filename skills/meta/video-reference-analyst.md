@@ -417,14 +417,14 @@ Never silently skip analysis steps. If something fails, tell the user what happe
 and what the impact is on the analysis quality.
 
 
-## Link referansı (Instagram): watch-skill (2026-11-25)
+## Link referansı (Instagram): Apify + watch-skill (2026-11-25)
 
-Əsas mənbə Instagram Reels-dir (YouTube lazım deyil, mühitdən çıxarılıb). Referans Reel linkidirsə: `.venv-watch/bin/watch-skill watch "<link>" --no-whisper --no-index --out-dir <müvəqqəti qovluq>`
-(kadrlar `frames/` qovluğunda — `Read` ilə bax; altyazı/transkript raporda). Nəticədən edit spesifikasiyası çıxar: kəsim tempi, altyazı üslubu, ara kadr sıxlığı, kart/tipoqrafiya, hook.
+Mühit ayarına toxunmadan, hər yeni sessiyada: Reel linki → `python -m montaj.reference "<reel linki>" --out <müvəqqəti qovluq>` (Apify actor videonu öz yaddaşına re-host edir, `api.apify.com` mühitdə
+artıq icazəlidir; xərc tavanı 0.10 $, açıq Reel/post; giriş/cookie yox) → yerli `reference.mp4`. Sonra `.venv-watch/bin/watch-skill watch <mp4> --no-whisper --no-index --out-dir <qovluq>`:
+səhnə kadrları `frames/` qovluğunda — `Read` ilə bax. Nəticədən edit spesifikasiyası çıxar: kəsim tempi, altyazı üslubu, ara kadr sıxlığı, kart/tipoqrafiya, hook.
 
-- **Şəbəkə:** Instagram səhifələri açıqdır (`www.instagram.com`, `i.instagram.com`), amma videonun baytları `*.cdninstagram.com` / `*.fbcdn.net` dinamik alt-domenlərindədir. Mühit ayarlarında
-  (Settings → Network → Allowed domains) bu wildcard-lara icazə verilməyibsə kadrlar alınmır — istifadəçiyə açıq de, uydurma analiz etmə.
-- **Anonim çıxarma tez-tez bloklanır (giriş tələb olunur):** cookie/giriş istifadə etmə; alınmasa istifadəçidən videonu fayl/Drive linki kimi istə.
-- **Alternativ (yalnız mətn məlumatı):** `ig-analiz` skill-i (Apify): caption, hashtag, baxış, müddət; video məzmunu üçün CDN icazəsi yenə lazımdır.
-- **Qayda:** yalnız şəxsi analiz; endirilən videonu montaja, repoya və ya Drive-a qoyma, kadrlarını təkrar istifadə etmə (müəllif hüququ, platforma şərtləri); müvəqqəti qovluğu sil.
+- **Alına bilməyəndə** (post şəxsi/silinib, actor nəticə vermir, re-host host-u bağlıdır): istifadəçidən videonu fayl/Drive linki kimi istə; uydurma analiz etmə. Yalnız mətn məlumatı üçün `ig-analiz` skill-i (caption, hashtag, baxış).
+- **Xərc:** hər Reel üçün bir neçə sent (pay-per-event); tavan aşılmır. Çoxlu video üçün əvvəl istifadəçiyə say/xərc de.
+- **Qayda:** yalnız şəxsi analiz; videonu montaja, repoya və ya Drive-a qoyma, kadrlarını təkrar istifadə etmə (müəllif hüququ, platforma şərtləri); işdən sonra müvəqqəti qovluğu sil.
 - OCR bu mühitdə işləmir (model `modelscope.cn`-dən endirilir, şəbəkədə bağlıdır) — mətn üçün kadrlara özün bax.
+- Şəbəkə: `*.cdninstagram.com`/`*.fbcdn.net` mühitdə bağlı olaraq qalır (birbaşa yükləmə işləmir); Apify yolu bunu tələb etmir.

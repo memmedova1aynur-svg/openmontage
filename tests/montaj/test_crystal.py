@@ -107,3 +107,19 @@ def test_library_get_drive_path_and_empty_sync(tmp_path, monkeypatch):
     monkeypatch.setattr(drive, "list_folder", lambda link: (_ for _ in ()).throw(E("Qovluqda fayl tapılmadı.")))
     monkeypatch.setattr(library, "CATALOG", tmp_path / "cat.json")
     assert library.sync() == {"music": 0, "broll": 0, "sfx": 0}
+
+
+def test_reference_fetch_mocked(tmp_path, monkeypatch):
+    """Instagram referansı: Apify nəticəsindən re-host MP4 tapılır və endirilir; yanlış link rədd edilir (şəbəkəsiz)."""
+    import io
+    import pytest
+    from montaj import reference
+    monkeypatch.setattr(reference, "_post", lambda actor, body, usd, **k: [{"x": {"videoUrl": "https://api.apify.com/v2/key-value-stores/K/records/a.mp4", "thumb": "https://x/y.jpg"}}])
+
+    class R(io.BytesIO):
+        def __enter__(self): return self
+        def __exit__(self, *a): return False
+    monkeypatch.setattr(reference.urllib.request, "urlopen", lambda req, timeout=0: R(b"x" * 80_000))
+    p = reference.fetch_video("https://www.instagram.com/reel/ABC123/", tmp_path)
+    assert p.exists() and p.stat().st_size == 80_000
+    with pytest.raises(SystemExit): reference.fetch_video("https://example.com/x", tmp_path)
