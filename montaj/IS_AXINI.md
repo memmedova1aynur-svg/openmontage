@@ -10,6 +10,7 @@ nümunələri birlikdə göndərilir, istifadəçi bir cavabla seçir (məs. “
 Ara düzəliş raundları təklif etmə.
 
 Montaj qərarlarının prinsipləri (niyə kəsirik, plan ölçüsü, uyğunluq, ritm, J/L-cut, etika): [`KINO_DILI.md`](KINO_DILI.md).
+Tək variant (qənaət rejimi) üçün qısa yol — storyboard/variants ötülür, preflight və nisbi səs balansı: [`SURETLI_YOL.md`](SURETLI_YOL.md).
 
 ## Addımlar
 

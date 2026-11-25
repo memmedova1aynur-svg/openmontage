@@ -564,7 +564,8 @@ def layout_check(project: dict[str, Any], project_dir: Path, workdir: Path) -> l
         area = max(1e-6, (box[2] - box[0]) * (box[3] - box[1]))
         for zname, z in SAFE_ZONES.items():
             if _inter(box, z) / area > 0.04:
-                out.append({"t": round(t_abs, 2), "what": f"{label} Instagram interfeysi zonasına düşür: {zname}"})
+                out.append({"t": round(t_abs, 2), "what": f"{label} Instagram interfeysi zonasına düşür: {zname}",
+                            "id": c.get("id"), "zone": zname.split(" ")[0], "box": [round(v, 3) for v in box]})
         if any(a <= t_abs < b for a, b in covers):
             continue  # B-roll üzü onsuz da örtür
         v = next((it for it in plan["video"] if it["start"] <= t_abs < it["start"] + it["dur"]), None)

@@ -220,8 +220,10 @@ def _type_hints(project: dict[str, Any]) -> list[str]:
     return out
 
 
-def _remember_choice(pid: str, plan: dict[str, Any], plan_name: str) -> None:
-    """Seçilən variant: layihənin növ qeydinə yanaşma, müştəri profilinin tarixçəsinə qısa qeyd."""
+def _remember_choice(pid: str, plan: dict[str, Any], plan_name: str, remember: bool = True) -> None:
+    """Seçilən variant: layihənin növ qeydinə yanaşma, müştəri profilinin tarixçəsinə qısa qeyd.
+    remember=False (sınaq/təsdiqsiz seçim): profil FAYLINA YAZILMIR — qeyd layihədə `pendingHistory` kimi qalır;
+    istifadəçi təsdiq edəndən sonra `choose <pid> --remember` onu profilə yazır."""
     import datetime
 
     p = store.load(pid)
@@ -240,8 +242,30 @@ def _remember_choice(pid: str, plan: dict[str, Any], plan_name: str) -> None:
              "look": plan.get("look"), "captions": (plan.get("variation") or {}).get("captions")
              or ((plan.get("captions") or {}).get("style") or {}).get("type"),
              "tone": (plan.get("variation") or {}).get("primary"), "anim": (plan.get("variation") or {}).get("anim")}
-    prof.setdefault("history", []).append({k: v for k, v in entry.items() if v})
+    entry = {k: v for k, v in entry.items() if v}
+    if not remember:
+        p = store.load(pid)
+        p["pendingHistory"] = entry
+        store.save(pid, p, p["revision"])
+        print(f"tarixçəyə yazılmadı (təsdiq gözlənilir): qeyd layihədə saxlandı; təsdiqdən sonra `choose {pid} --remember`")
+        return
+    prof.setdefault("history", []).append(entry)
     f.write_text(json.dumps(prof, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    print(f"müştəri tarixçəsinə yazıldı: {f.name} → history")
+
+
+def _commit_pending_history(pid: str) -> None:
+    """Təsdiqlənmiş seçim: layihədəki `pendingHistory` müştəri profilinin tarixçəsinə yazılır."""
+    p = store.load(pid)
+    entry = p.get("pendingHistory")
+    f = profile_path((p.get("brand") or {}).get("name") or "")
+    if not entry or not f:
+        raise UserError("Yazılacaq gözləyən seçim yoxdur.", "Əvvəl `choose <pid> <plan>`.")
+    prof = json.loads(f.read_text(encoding="utf-8"))
+    prof.setdefault("history", []).append(entry)
+    f.write_text(json.dumps(prof, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    p["pendingHistory"] = None
+    store.save(pid, p, p["revision"])
     print(f"müştəri tarixçəsinə yazıldı: {f.name} → history")
 
 
@@ -341,9 +365,12 @@ def cmd_storyboard(a: argparse.Namespace) -> None:
     project = store.load(a.pid)
     sb = server.build_storyboard(a.pid, project.get("options") or {})
     o = out_dir(a.pid)
-    print(contact_sheet(a.pid, sb, o / "storyboard.jpg"))
-    (o / "storyboard.md").write_text(summary(a.pid, sb), encoding="utf-8")
-    print(o / "storyboard.md")
+    if getattr(a, "quick", False):  # tək variant (qənaət rejimi): kontakt şəkli və md yoxdur — yalnız qaralama + material yoxlaması
+        print(f"storyboard qaralaması hazırdır ({len(sb['cards'])} hissə); kontakt şəkli buraxıldı (--quick)")
+    else:
+        print(contact_sheet(a.pid, sb, o / "storyboard.jpg"))
+        (o / "storyboard.md").write_text(summary(a.pid, sb), encoding="utf-8")
+        print(o / "storyboard.md")
     for mid in sb.get("candidates", {}):
         an = analysis.analysis_path(store.project_dir(a.pid), mid)
         if an.is_file():
@@ -414,6 +441,12 @@ def cmd_render(a: argparse.Namespace) -> None:
                 print(f"{m['name']}: arxa fon yenidən hazırlanır…")
                 background.process(store.project_dir(a.pid) / m["file"], store.project_dir(a.pid) / b["file"], b["spec"],
                                    _bg_scene_file(a.pid, p, b["spec"]))
+    if not getattr(a, "no_preflight", False):  # 3–4 kadr proksi yoxlaması: kontrast, interfeys zonası, örtülmə (≈10–25 s)
+        from montaj import preflight
+
+        for line in preflight.describe(preflight.run(a.pid)):
+            print(line)
+        p = store.load(a.pid)  # düzəlişlər layihəyə yazılıb
     out = out_dir(a.pid) / f"{a.pid}_r{p['revision']}.mp4"
     render(p, store.project_dir(a.pid), out, lambda x: None, logo_path=_project_logo(p, a.pid))
     info = mediautil.probe(out)
@@ -1132,6 +1165,13 @@ def apply_plan(pid: str, p: dict[str, Any], plan: dict[str, Any], plan_name: str
     mus_recs = [_music_media(pid, Path(m["file"])) for m in mus_list]  # bir və ya bir neçə hissə (kurs: açılış + sonluq)
     mus_rec = mus_recs[0] if mus_recs else None
     q = node_tl("migrate", p)
+    from montaj import premix  # musiqi/SFX səviyyəsi danışığın ölçülmüş səviyyəsinə görə (volume/vol "auto" və ya boş)
+
+    _pm = premix.resolve(q, store.project_dir(pid), mus_list, list(plan.get("sfx") or []),
+                         {s["kind"]: store.originals_dir(pid) / f"sfx_{s['kind']}.wav" for s in plan.get("sfx") or []})
+    mus_list, plan = _pm["music"], {**plan, "sfx": _pm["sfx"]}
+    if _pm["report"]["speech"]:
+        print(premix.describe(_pm["report"]))
     was_manual = {c["id"] for c in q["clips"] if c.get("manual")}
     q["clips"] = [c for c in q["clips"] if not (c.get("origin") == "plan" and not c.get("manual"))]
     if plan.get("captions") and q.get("subtitles"):
@@ -1238,7 +1278,7 @@ def apply_plan(pid: str, p: dict[str, Any], plan: dict[str, Any], plan_name: str
             new = q["clips"][-1]
             src_in = float(mus.get("from", 0))
             new.update(srcIn=round(src_in, 3), srcOut=round(min(float(mus_rec["duration"]), src_in + span), 3),
-                       volume=float(mus.get("volume", 0.12)), fadeIn=float(mus.get("fadeIn", 1.2)),
+                       volume=float(mus.get("volume") if not premix._is_auto(mus.get("volume")) else 0.05), fadeIn=float(mus.get("fadeIn", 1.2)),
                        fadeOut=float(mus.get("fadeOut", 2.0)), origin="plan")
         q.setdefault("mix", {})["duck"] = bool(mus_list[0].get("duck", True))
     live = plan.get("liveSound")
@@ -1290,7 +1330,8 @@ def _tc(t: float | None) -> str:
 
 
 def _latest_render(pid: str) -> Path:
-    mp4s = sorted(out_dir(pid).glob(f"{pid}_r*.mp4"), key=lambda x: int(x.stem.rsplit("_r", 1)[1]))
+    rx = re.compile(rf"^{re.escape(pid)}_r(\d+)\.mp4$")  # `_ig.mp4` (telefon nüsxəsi) və digər törəmələr sayılmır
+    mp4s = sorted((x for x in out_dir(pid).glob(f"{pid}_r*.mp4") if rx.match(x.name)), key=lambda x: int(rx.match(x.name).group(1)))
     if not mp4s:
         raise UserError("Render tapılmadı.", f"Əvvəlcə `render {pid}`.")
     return mp4s[-1]
@@ -2741,12 +2782,16 @@ def cmd_variants(a: argparse.Namespace) -> None:
 
 def cmd_choose(a: argparse.Namespace) -> None:
     """İstifadəçinin seçdiyi storyboard variantını tətbiq edir: qaralama düzəlişləri → apply → plan."""
+    if not a.plan:  # `choose <pid> --remember`: əvvəl təsdiqsiz seçilmiş variantı profilə yaz
+        if not a.remember:
+            raise UserError("Plan faylı verilməyib.", "`choose <pid> <plan.json>` və ya təsdiqdən sonra `choose <pid> --remember`.")
+        return _commit_pending_history(a.pid)
     plan = json.loads(Path(a.plan).read_text(encoding="utf-8"))
     sb = _sb_override(_load_draft(a.pid), plan.get("storyboard") or {})
     _save_draft(a.pid, sb)
     cmd_apply(argparse.Namespace(pid=a.pid))
     cmd_plan(argparse.Namespace(pid=a.pid, plan=a.plan))
-    _remember_choice(a.pid, plan, Path(a.plan).stem)
+    _remember_choice(a.pid, plan, Path(a.plan).stem, remember=bool(a.remember))
 
 
 def cmd_music(a: argparse.Namespace) -> None:
@@ -2778,8 +2823,12 @@ def cmd_music(a: argparse.Namespace) -> None:
     print(f"sorğu: “{query}” (Freesound CC0 + Mixkit; qaçınılan: {', '.join(avoid[:4])}…)")
     for d in done:
         prev = out_dir(a.pid) / f"musiqi_{d['n']}.m4a"
-        if speech:
-            quality.music_preview(speech, Path(d["file"]), prev, 20, 0.12)
+        if speech:  # nümunə də danışığa görə nisbi səviyyədə (mütləq 0.12 yavaş çəkilişdə musiqini danışıqdan yüksək edirdi)
+            from montaj import premix
+
+            sp, ml = premix.measure(speech, 0, 20), premix.measure(Path(d["file"]))
+            quality.music_preview(speech, Path(d["file"]), prev, 20,
+                                  premix.gain(sp["lufs"] - premix.MUSIC_UNDER_LU, ml["lufs"]) if sp and ml else 0.05)
         print(f"{d['n']}: {d['name']} ({d['source']}) — {float(d['duration'] or 0):.0f} s, {d['license']} → dinləmə {prev if speech else '—'}")
     tpl = music.placement(vt, total)
     print("plan üçün (seçilən faylı qoy):", json.dumps([{**t, "file": done[0]["file"]} for t in tpl], ensure_ascii=False))
@@ -2829,7 +2878,12 @@ def main(argv: list[str] | None = None) -> int:
     for k in ("format", "goal", "style", "extras"):
         n.add_argument(f"--{k}", action="append")
     for name in ("storyboard", "apply", "render", "export"):
-        sub.add_parser(name).add_argument("pid")
+        sp_ = sub.add_parser(name)
+        sp_.add_argument("pid")
+        if name == "storyboard":
+            sp_.add_argument("--quick", action="store_true", help="tək variant: kontakt şəkli və storyboard.md yaradılmır")
+        if name == "render":
+            sp_.add_argument("--no-preflight", action="store_true", help="render-dən əvvəl 3–4 kadr yoxlamasını (preflight) ötür")
     lk = sub.add_parser("looks", help="rəng variantları (orijinal + A/B/C) bir neçə kadrda")
     lk.add_argument("pid")
     lk.add_argument("--frames", type=int, default=3)
@@ -2998,7 +3052,9 @@ def main(argv: list[str] | None = None) -> int:
     vr.add_argument("plans", nargs="+")
     ch = sub.add_parser("choose", help="seçilmiş variantı tətbiq et (qaralama → apply → plan)")
     ch.add_argument("pid")
-    ch.add_argument("plan")
+    ch.add_argument("plan", nargs="?")
+    ch.add_argument("--remember", action="store_true",
+                    help="seçimi müştəri profilinin tarixçəsinə yaz (YALNIZ istifadəçi təsdiq edəndən sonra; planla birlikdə və ya təkbaşına)")
     mp = sub.add_parser("music-preview", help="musiqi dinləmə nümunələri")
     mp.add_argument("pid")
     mp.add_argument("files", nargs="+")
