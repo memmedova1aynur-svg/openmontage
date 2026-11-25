@@ -29,7 +29,10 @@ segs = []
 for a0, b0 in C['keep']:
     cur = a0
     for x, y in sil:
-        if x > cur + 0.3 and y < b0 and x > a0: segs.append([cur, x + 0.18]); cur = y - 0.14
+        if x > cur + 0.3 and y < b0 and x > a0:
+            tl_, ld_ = (0.38, 0.22) if any(abs(x - t) < 0.45 for t in C.get('long_pauses', [])) else (0.18, 0.14)  # mənalı pauza (sual sonrası, ideya keçidi) qorunur
+            if (y - ld_) - (x + tl_) <= 0.02: continue  # pauza qısadır — kəsilmir (üst-üstə düşmə/səs təkrarı olmasın)
+            segs.append([cur, x + tl_]); cur = y - ld_
     segs.append([cur, b0])
 segs = [s for s in segs if any(w['start'] >= s[0] - 0.02 and w['end'] <= s[1] + 0.02 for w in W)]
 # uzun seqmentləri cümlə/vergül sərhədində böl (punch-in)
@@ -45,7 +48,15 @@ for a, b in segs:
         pts.append(round((w['end'] + nx['start']) / 2 if nx else w['end'], 2))
     pts.append(b); out += [[x, y] for x, y in zip(pts, pts[1:])]
 if C.get('end_at'): out[-1][1] = C['end_at']  # son sakit söz üçün əl ilə uzatma
-Z = C.get('zooms', [1.0, 1.16]); segs = [[round(a, 2), round(b, 2), Z[i % len(Z)]] for i, (a, b) in enumerate(out)]
+Z = C.get('zooms', [1.0, 1.16])
+if C.get('long_pauses'):  # zoom ideya sərhədində dəyişir (məzmun); eyni ideya daxilində yalnız 3% mikro fərq (kəsim sıçrayışı hiss olunmasın)
+    LP = sorted(C['long_pauses']); cnt: dict[int, int] = {}; _z = []
+    for a_, b_ in out:
+        k_ = sum(1 for t in LP if t < a_ + 0.45); j_ = cnt.get(k_, 0); cnt[k_] = j_ + 1
+        _z.append(round(Z[k_ % len(Z)] * (1.0 + 0.03 * (j_ % 2)), 3))
+    segs = [[round(a, 2), round(b, 2), z] for (a, b), z in zip(out, _z)]
+else:
+    segs = [[round(a, 2), round(b, 2), Z[i % len(Z)]] for i, (a, b) in enumerate(out)]
 def fin(t):  # mənbə vaxtı → hazır videonun vaxtı
     off = 0.0
     for a, b, _ in segs:
@@ -90,6 +101,9 @@ d = float(subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=dur
 sel = '+'.join(f'eq(n,{int(d * 30 * k / 8) + 12})' for k in range(8))
 subprocess.run(['ffmpeg', '-nostdin', '-y', '-loglevel', 'error', '-i', final, '-vf', f"select='{sel}',scale=250:444,tile=8x1", '-frames:v', '1', '-vsync', '0', f'work/qc{n}.png'])
 sys.path.insert(0, '/home/user/openmontage'); os.chdir('/home/user/openmontage')
+from montaj import crystal as _cr
+_skip = [(w['a'], w['b']) for w in (wins if fx else [])] + [(fin(c[0]), fin(c[1])) for c in el.get('cards', [])]
+print('HİZALI YOXLAMA:', json.dumps(_cr.aligned_check(SRC, final, segs, cy=0.45, base=C.get('base'), exclude=[tuple(x) for x in C.get('qc_exclude', [(0, 0, 1, 0.27), (0, 0.60, 1, 0.78)])], skip=_skip), ensure_ascii=False))
 from tools.analysis.delivery_qc import DeliveryQC
 q = DeliveryQC().execute({"input_path": final, "loudness_profile": "social", "format": "short_form", "expected": {"width": 1080, "height": 1920, "fps": 30}}); q = getattr(q, 'data', q)
 print('QC:', q.get('verdict'), q.get('loudness', {}).get('integrated_lufs'), 'LUFS, pik', q.get('loudness', {}).get('true_peak_dbtp'), [f['level'] + ':' + f['check'] for f in q.get('findings', [])])

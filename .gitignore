@@ -122,3 +122,11 @@ instagram-clients/*
 
 # earshot CLI (installed by .claude/skills/earshot/scripts/install.sh)
 .venv-earshot/
+
+# Müştəri üzünün göründüyü referans/nümunə görüntülər repoya yazılmır
+montaj/references/**/*_FACE.*
+montaj/references/**/reference_original.jpg
+montaj/references/**/reference_v3.jpg
+xeyyam-plan/hazir/
+xeyyam-plan/variantlar/
+xeyyam-plan/storyboard_*.jpg

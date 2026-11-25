@@ -1,6 +1,8 @@
 # Əsas iş axını: Drive linki → yekun MP4 (davamlı təlimat)
 
 Bu fayl istifadəçinin təsdiqlədiyi **əsas** iş axınıdır (sorğu → Drive linki → analiz → 3 storyboard → musiqi → MP4; rəng — avtomatik adaptiv, təsdiq tələb olunmur) və `SESSIYA_TELIMATI.md`-dən üstündür.
+> **Xəyyam Həsənov istisnası (2026-11-25):** profildə storyboard və əvvəlcədən təsdiq məcburi deyil; standart axın — qısa analiz → konsept → adaptiv görüntü → montaj → yoxlama → təqdim (`templates/expert-reels/experts/xeyyam-huseynov.json` → `workflow`).
+
 İstifadəçi yalnız **Drive linkini** verir — montajın hamısı Claude-da edilir və bir dəfəyə təhvil verilir. Redaktor paneli
 istifadə olunmur: linkini göndərmə, təklif etmə (yalnız istifadəçi açıq istəyəndə — faylın sonundakı "Redaktor paneli").
 

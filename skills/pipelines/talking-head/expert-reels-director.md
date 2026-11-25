@@ -90,6 +90,8 @@ Adi montaj seçimlərini istifadəçiyə həvalə etmə.
 
 ### 3. Storyboard təsdiqi (məcburi qapı)
 
+> **İstisna:** Müştəri profilində `workflow.storyboard` "məcburi deyil" yazılıbsa (Xəyyam Həsənov, 2026-11-25) — storyboard və əvvəlcədən təsdiq tələb olunmur, yalnız: yeni əsaslı konsept, xüsusi reklam kampaniyası, əsaslı brend dəyişikliyi, istifadəçinin ayrıca istəyi.
+
 - **Başlamazdan əvvəl.** "Təsdiq", "başla" və ya eyni mənalı cavab gəlməyincə
   yekun montaja və renderə başlama. Bu müddətdə təhlil, fayl hazırlığı, kəsim
   və nümunə kadrlar olar.
@@ -110,7 +112,7 @@ Adi montaj seçimlərini istifadəçiyə həvalə etmə.
 - Transkripsiyanı, təhlili və işləyən komponentləri səbəbsiz yenidən yaratma.
 - Yeni ödəniş, hesab bağlantısı və ya əlavə giriş avtomatik edilmir.
 - Planın əsas yaradıcı qərarı dəyişməli olsa, qısa bildir və təsdiq al.
-- **Pauzalar.** Danışıqda qalan pauzalar ~0.25 s-ə qədər qısaldılır: `denoise.sh`-dan sonra `tighten.py projects/<id>` (spec və söz vaxtlarını özü yeni kəsimə köçürür), sonra `cut_takes.py`, `setup_workspace.sh`, `build_edit.py`, `render.sh`, `denoise.sh`. Sondakı 1 s saxlama toxunulmur.
+- **Pauzalar.** (Profil pauza qaydasını ləğv edibsə — Xəyyam: lazımsız fasilələr kəsilir, mənalı pauzalar qorunur — aşağıdakı həd tətbiq olunmur.) Danışıqda qalan pauzalar ~0.25 s-ə qədər qısaldılır: `denoise.sh`-dan sonra `tighten.py projects/<id>` (spec və söz vaxtlarını özü yeni kəsimə köçürür), sonra `cut_takes.py`, `setup_workspace.sh`, `build_edit.py`, `render.sh`, `denoise.sh`. Sondakı 1 s saxlama toxunulmur.
 
 ### Mənbə keyfiyyəti və ixrac
 

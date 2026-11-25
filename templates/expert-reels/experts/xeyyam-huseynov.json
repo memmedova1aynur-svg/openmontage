@@ -2,18 +2,17 @@
   "name": "Xəyyam Həsənov",
   "status": "active",
   "palette": {
-    "family": "tünd meşə yaşılı, yarpaq yaşılı vurğu (#6CC57E, laym YOX), ağ fon/kartlar, yaşıl gradient vurğu"
+    "family": "#0F3B2E, #082219, #6CC57E, #FFFFFF (laym/fosforlu yaşıl, krem, sarı, narıncı, mavi, bənövşəyi YOX)"
   },
   "video_types": "kameraya danışıq, reklam, qarışıq",
   "cautions": [
-    "RƏNG (istifadəçi, 2026-11-04): laym/fosforlu yaşıl QADAĞANDIR (başqa ekspertlərdə var). Vurğu yarpaq yaşılı #6CC57E, gradient #3E9E57→#6CC57E→#B5E9CF; fon tünd yaşıl və ya təmiz ağ (krem yox). Sarı/narıncı/mavi/bənövşəyi yox.",
-    "Vizual istinad (istifadəçi, 2026-11-03): Instagram səhifəsi tünd yaşıl fon + laym vurğu; ağ yuvarlaq künclü kartlar/qutular, laym 'pill' düymələr, laym vurğulu söz (marker effekti), qalın sans-serif başlıq, bəzən italik serif vurğu sözü. Altyazı, kart, qutu bu üsluba uyğun.",
-    "Ümumi istifadəçi qaydası (2026-11-01, bütün müştərilər, soruşmadan): Musiqi: piano/yavaş YOX (yalnız CC0). B-roll başı örtmür: bölünmüş ekran — danışan yuxarıda, B-roll sinədən aşağı (pip y≈0.70, tam en), həmin anda altyazı başın üstündə (y≈0.17). Arxa fon bulanıqlaşdırılmır və qaraldılmır — fon orijinal qalır. Danışılmayan boş saniyələr (pauzalar ≥0.45 s) kəsilir, söz kəsilmir; kəsimdən sonra söz təkrarı olmadığını yoxla. Güzgü çevirmə (hflip) yoxdur.",
-    "İş qaydası: videolar bir-bir render edilir və göndərilir; hər birindən əvvəl storyboard.",
-    "İstifadəçi seçimi (2026-11-03): Kadraj: aşağı sərhəd oturduğu yerin başlanğıcı (ayaq, qarnın altı görünmür), yuxarıdan başın üstündə boşluq; yanlardan kəsilir (s≈0.85–0.91). Kartlar/yazılar YALNIZ başın üstündəki boşluqda (y≈0.19) və ya boğazdan aşağı (altyazı x 0.5, y 0.74) — üzə, ağıza, başa, əllərə heç vaxt. Musiqi ən sonda seçilir. Ssenaridə 'ekranda bu şeyə baxın' anları: bölünmüş ekran (Xəyyam yuxarı, göstərilən aşağı) və ya mərkəzdə kart/tam kadr.",
-    "İstifadəçi brifi (2026-11-03, təhsil/öyrənmə Reels, bütün videolar): RƏNG tünd yaşıl ~#0F3B2C fon/tam ekran kartlar, laym ~#C5E01F vurğu, ağ yazı; tipoqrafiyada açıq krem kağız (kitab səhifəsi, bulanıq) fon ola bilər; başqa parlaq rəng yox. Şrift Montserrat qalın. YAZI/ALTYAZI: iri, qalın, ağ, SOLA düzlənmiş, kadrın aşağı hissəsində, altında qısa laym xətt, arxasında yumşaq tünd gradient; üz/baş/əllər örtülmür; hər videoda yazının yeri və animasiyası bir az dəyişir. AXIN: 01 hook sual (Xəyyam + iri sual yazısı) → 02 tam ekran tipoqrafiya (mövzu sözü hərf-hərf itir/bulanır) → 03 açar anlayış krem kitab səhifəsində iri tünd yaşıl yazı → 04 ziddiyyət: tünd yaşılda sual, arxada eyni sözün solğun təkrarı → 05 həll: Xəyyam + qısa aydın cümlə → 06 CTA: Xəyyamın öz çağırışı iri, sonda laym nöqtə. Tam ekran kartlar 3–5 s (səs davam edir); danışan hissə 6 s-dən uzun olmasın. HƏRƏKƏT sakit, premium: fade/blur keçidlər, yazı sözlə sinxron, kamera yavaş yaxınlaşır; oyuncaq effektlər yox. SƏS: yüngül sakit premium ilhamverici sözsüz musiqi, danışıqda -20…-24 dB, pauzalarda bir az qalxır; tipoqrafiyada çox yüngül whoosh/tick; səsə artıq emal yox. KƏSİM: təkrarın ən yaxşısı, yarımçıq cümlə və uzun pauzalar kəsilir, söz kəsilmir, son sözdən sonra 1 s; təhvildən əvvəl yenidən transkripsiya ilə yoxla. Güzgü ehtimalı: əvvəl/sonra göstər, təsdiqdən sonra çevir. Fonu bulanıqlaşdırma. Qiymət/tarix/CTA uydurma. İŞ AXINI: 6 kadrlıq storyboard → təsdiq → render. Musiqi: OpenGameArt CC0 (yalnız səhifəsində CC0 göstərilən)."
+    "RƏNG: laym/fosforlu yaşıl QADAĞANDIR (başqa ekspertlərdə var). Fon tünd yaşıl və ya təmiz ağ (krem yox). Sarı/narıncı/mavi/bənövşəyi yox; yeni rəng əlavəsi istifadəçi təsdiqi tələb edir.",
+    "İş qaydası: videolar bir-bir hazırlanır və göndərilir (storyboard məcburi deyil — workflow).",
+    "Ümumi qayda (bütün müştərilər, soruşmadan): musiqi — piano/yavaş YOX, yalnız CC0 (səhifəsində CC0 göstərilən). B-roll başı örtmür: bölünmüş ekran — danışan yuxarıda, B-roll sinədən aşağı (pip y≈0.70, tam en). Arxa fon bulanıqlaşdırılmır və qaraldılmır — fon orijinal qalır. Söz kəsilmir; kəsimdən sonra söz təkrarı olmadığını yoxla. Güzgü çevirmə (hflip) yoxdur; güzgü ehtimalı varsa əvvəl/sonra göstər, təsdiqdən sonra çevir.",
+    "Kadraj: aşağı sərhəd oturduğu yerin başlanğıcı (ayaq, qarnın altı görünmür), yuxarıdan başın üstündə boşluq; yanlardan kəsilir (s≈0.85–0.91). Yazı və kartlar üzü, ağzı, başı və vacib jestləri örtmür (yer kadra görə seçilir). Musiqi ən sonda seçilir. 'Ekranda bu şeyə baxın' anlarında bölünmüş ekran (Xəyyam yuxarı, göstərilən aşağı) və ya mərkəzdə kart/tam kadr mümkündür.",
+    "Hərəkət sakit, premium: fade/blur keçidlər, yazı sözlə sinxron, kamera yavaş yaxınlaşa bilər; oyuncaq effektlər yox. Səs: musiqi danışıqda aşağı, pauzalarda bir az qalxa bilər; tipoqrafiyada çox yüngül whoosh/tick; səsə artıq emal yox. Kəsimdə təkrarın ən yaxşısı saxlanılır, yarımçıq cümlə və lazımsız fasilələr çıxır; təhvildən əvvəl yenidən transkripsiya ilə yoxla. Qiymət/tarix/CTA uydurma."
   ],
-  "color_grade": "Adaptive Crystal Clear Natural Look — ortaq standart (UMUMI_QAYDALAR.md). C/H/W məcburi filtr seçimləri 2026-11-25-də ləğv edildi; Xəyyam üçün ayrıca rəng qaydası yoxdur. Qalan vizual qaydalar (palitra, kadraj, kartların yeri) qüvvədədir.",
+  "color_grade": "Adaptive Crystal Clear Natural Look — ortaq standart, UMUMI_QAYDALAR.md (burada təkrarlanmır). C/H/W məcburi seçimləri ləğv edilib; kinematik presetlər onu özbaşına əvəz etmir; korreksiya altyazı/kart/qrafikdən əvvəl tətbiq olunur.",
   "theme_source": "istifadəçi seçimi 2026-11-04: laym çıxarıldı, yarpaq yaşılı + ağ",
   "theme": {
     "primary": "#0F3B2E",
@@ -25,199 +24,147 @@
     "cardAlpha": 0.95
   },
   "style": {},
+  "identity": {
+    "professional": "Təhsil mentoru",
+    "positioning": "Effektiv öyrənmə bacarıqlarını elmi və praktik yanaşmalarla öyrədən mütəxəssis",
+    "topics": [
+      "öyrənmə",
+      "yaddaş",
+      "diqqət",
+      "düşünmə",
+      "planlama"
+    ],
+    "brand_tone": "sakit, premium, ilhamverici",
+    "brand_character": "intellektual, müasir, düşündürücü",
+    "expert_image": "mürəkkəb məlumatları sadə və anlaşılan şəkildə izah edən mütəxəssis",
+    "avoid_image": [
+      "klassik müəllim",
+      "monoton mühazirəçi",
+      "şablon motivasiya spikeri"
+    ],
+    "aesthetic": "müasir elmi-populyar, intellektual, informativ, yaradıcı"
+  },
+  "goals": {
+    "core": [
+      "maarifləndirmə",
+      "peşəkar etibar",
+      "şəxsi brendin tanınması",
+      "təlim və proqramların satışına dəstək"
+    ],
+    "rule": "Hər videonun məqsədini müəyyən et, montaj yanaşmasını ona uyğun seç; bütün videolar eyni struktur və üslubda olmasın.",
+    "by_goal": {
+      "maarifləndirmə": "izahedici vizuallar",
+      "etibar": "ekspert ön planda",
+      "tanınma": "yaradıcı hook və vizual həllər",
+      "satış": "dinamik ritm, strateji vurğular"
+    }
+  },
+  "viewer_feeling": {
+    "feelings": [
+      "maraq",
+      "kəşf",
+      "etibar",
+      "aydınlıq",
+      "ilham",
+      "intellektual zövq"
+    ],
+    "rule": "İzləyici yeni bir şey öyrəndiyini və vaxtın dəyərli olduğunu hiss etməlidir. Süni dramatizm, ucuz motivasiya estetikası və məzmunsuz effektlərdən uzaq dur."
+  },
+  "creative_freedom": {
+    "decide_independently": [
+      "montaj konsepti",
+      "animasiya və keçidlər",
+      "kartların dizaynı və kompozisiyası",
+      "izahedici qrafiklər",
+      "vizual metaforalar",
+      "ara kadrlar",
+      "musiqi seçimi",
+      "montaj ritmi",
+      "imza elementlərinin tətbiqi",
+      "palitra daxilində rəng kombinasiyaları",
+      "yeni yaradıcı həllər"
+    ],
+    "needs_user_approval": [
+      "brend rəngləri",
+      "əsas şrift",
+      "mövqeləndirmə",
+      "daimi qaydalar",
+      "təsdiqlənmiş məhdudiyyətlər"
+    ],
+    "never": "Danışılan məzmunun mənasını dəyişmə; elmi məlumat, statistika, araşdırma nəticəsi uydurma.",
+    "principle": "Brend kimliyi sabit, yaradıcı icra sərbəstdir."
+  },
+  "visual": {
+    "palette": {
+      "primary": "#0F3B2E",
+      "deep": "#082219",
+      "accent": "#6CC57E",
+      "white": "#FFFFFF"
+    },
+    "font": "Montserrat Bold",
+    "captions": [
+      "əsasən ağ; açar sözlər ehtiyac olduqda brend yaşılı (#6CC57E)",
+      "ölçü, yer və kompozisiya kadra görə müəyyən edilir (başın üstü və boğazdan aşağı yalnız mümkün variantlardır)",
+      "üzü, ağzı və vacib jestləri örtmə; Instagram təhlükəsiz sahələrini nəzərə al (UMUMI_QAYDALAR.md)",
+      "yaşıl xətt, gradient, animasiya məcburi deyil",
+      "oxunaqlılıq, orfoqrafiya, danışıqla sinxronluq yoxlanılır"
+    ]
+  },
+  "signature_elements": {
+    "marker": "açar anlayışın yaşıl marker animasiyası ilə vurğulanması",
+    "info_cards": "ağ yumru künclü kartlar və yaşıl kapsul etiketlər",
+    "kinetic_typography": "əsas anlayışların yaradıcı animasiyalı yazılarla təqdimatı",
+    "rules": [
+      "heç biri hər videoda məcburi deyil, minimum say yoxdur",
+      "eyni animasiya ardıcıllığını təkrarlama; tətbiq formasını mövzuya görə dəyişdir",
+      "fikri gücləndirmək üçün, bəzək üçün yox",
+      "bölünmüş ekran ehtiyac olduqda texnikadır, imza deyil"
+    ]
+  },
+  "rhythm_audio": {
+    "pauses": "məcburi pauza həddi (0.45 s) və danışan kadr üçün 6 s maksimum ləğv edilib; lazımsız fasilələr kəsilir, mənalı/emosional/düşündürücü pauzalar qorunur",
+    "rules": [
+      "danışıq sürətini süni artırma",
+      "sözün başlanğıcını və son hecalarını kəsmə",
+      "keçidlər fikir, intonasiya və məzmuna görə",
+      "ara kadrlar yalnız məzmunu gücləndirəndə",
+      "reklamda dinamik, maarifləndirici videoda balanslı ritm, emosional videoda təbii mimika və fasilələr"
+    ],
+    "music": "instrumental, sakit, premium, ilhamverici; lisenziya tələbləri qorunur (yalnız CC0, səhifəsində CC0 göstərilən); danışığı örtmür",
+    "voice": "aydın və balanslı"
+  },
+  "workflow": {
+    "storyboard": "məcburi deyil. Yalnız: ilk dəfə tətbiq edilən əsaslı yeni konsept, xüsusi reklam kampaniyası, əsaslı brend dəyişikliyi, istifadəçi ayrıca istəyəndə",
+    "steps": [
+      "mənbəni qəbul et",
+      "qısa məzmun analizi",
+      "mövzuya uyğun konsept",
+      "adaptiv görüntü optimallaşdırması",
+      "montaj",
+      "texniki və vizual yoxlama",
+      "təqdim et",
+      "növbəti videoya keç"
+    ],
+    "no_by_default": [
+      "uzun analiz",
+      "storyboard",
+      "hesabat",
+      "alternativ variantlar"
+    ],
+    "fixes": "düzəlişdə yalnız problemli hissə dəyişir, əvvəlki iş təkrarlanmır"
+  },
+  "structures": {
+    "_note": "məcburi şablon deyil, mümkün istiqamətlər; tam ekran kart/animasiya/CTA məcburi deyil; seriyada vizual bağlılıq, kopya yox",
+    "maarifləndirici": "sual → izah → nümunə → nəticə",
+    "elmi araşdırma": "fakt → araşdırma → izah → nəticə",
+    "mif və həqiqət": "inanc → ziddiyyət → elmi izah",
+    "praktik": "problem → metod → tətbiq",
+    "storytelling": "hadisə → inkişaf → dönüş → nəticə",
+    "reklam": "hook → ehtiyac → həll → təklif → CTA",
+    "düşündürücü": "sual → fərqli perspektiv → açıq final",
+    "sual-cavab": "sual → cavab → əsaslandırma"
+  },
   "history": [
-    {
-      "video": "Xeyyam video 8",
-      "date": "2026-11-03",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "Təxirəsalma — istifadəçinin storyboardu",
-      "look": "H",
-      "captions": "box",
-      "tone": "#103D30",
-      "anim": "pop"
-    },
-    {
-      "video": "Xeyyam video 8",
-      "date": "2026-11-03",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "Təxirəsalma — istifadəçinin storyboardu",
-      "look": "H",
-      "captions": "box",
-      "tone": "#103D30",
-      "anim": "pop"
-    },
-    {
-      "video": "Xeyyam video 8",
-      "date": "2026-11-03",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "Təxirəsalma — sinematik (brif 2)",
-      "look": "W",
-      "captions": "box",
-      "tone": "#0E3A2C",
-      "anim": "pop"
-    },
-    {
-      "video": "Xeyyam video 8",
-      "date": "2026-11-03",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "Təxirəsalma — sinematik (brif 2)",
-      "look": "W",
-      "captions": "box",
-      "tone": "#0E3A2C",
-      "anim": "pop"
-    },
-    {
-      "video": "Xeyyam video 8",
-      "date": "2026-11-03",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "Təxirəsalma — sinematik (brif 2)",
-      "look": "W",
-      "captions": "box",
-      "tone": "#0E3A2C",
-      "anim": "pop"
-    },
-    {
-      "video": "Xeyyam video 8",
-      "date": "2026-11-03",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "Təxirəsalma — sürətli (v3)",
-      "look": "W",
-      "captions": "box",
-      "tone": "#0E3A2C",
-      "anim": "pop"
-    },
-    {
-      "video": "Xeyyam video 8",
-      "date": "2026-11-03",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "Təxirəsalma — sürətli (v3)",
-      "look": "W",
-      "captions": "box",
-      "tone": "#0E3A2C",
-      "anim": "pop"
-    },
-    {
-      "video": "Xeyyam video 8",
-      "date": "2026-11-03",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "Təxirəsalma — sürətli (v3)",
-      "look": "W",
-      "captions": "box",
-      "tone": "#0E3A2C",
-      "anim": "pop"
-    },
-    {
-      "video": "Xeyyam video 5",
-      "date": "2026-11-03",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "Sözlər yadınıza düşmür — premium",
-      "look": "W",
-      "captions": "stroke",
-      "tone": "#0F3B2C",
-      "anim": "fade"
-    },
-    {
-      "video": "Xeyyam video 5",
-      "date": "2026-11-03",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "Sözlər yadınıza düşmür — premium",
-      "look": "W",
-      "captions": "stroke",
-      "tone": "#0F3B2C",
-      "anim": "fade"
-    },
-    {
-      "video": "Xeyyam video 5",
-      "date": "2026-11-03",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "Sözlər yadınıza düşmür — premium",
-      "look": "W",
-      "captions": "stroke",
-      "tone": "#0F3B2C",
-      "anim": "fade"
-    },
-    {
-      "video": "Xeyyam video 5",
-      "date": "2026-11-03",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "Sözlər yadınıza düşmür — premium",
-      "look": "W",
-      "captions": "stroke",
-      "tone": "#0F3B2C",
-      "anim": "fade"
-    },
-    {
-      "video": "Xeyyam video 5",
-      "date": "2026-11-03",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "Sözlər yadınıza düşmür — premium",
-      "look": "W",
-      "captions": "stroke",
-      "tone": "#0F3B2C",
-      "anim": "fade"
-    },
-    {
-      "video": "Xeyyam video 5",
-      "date": "2026-11-03",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "Sözlər yadınıza düşmür — premium",
-      "look": "W",
-      "captions": "stroke",
-      "tone": "#0F3B2C",
-      "anim": "fade"
-    },
-    {
-      "video": "Xeyyam video 5",
-      "date": "2026-11-03",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "Sözlər yadınıza düşmür — premium",
-      "look": "W",
-      "captions": "stroke",
-      "tone": "#0F3B2C",
-      "anim": "fade"
-    },
-    {
-      "video": "Xeyyam video 5",
-      "date": "2026-11-04",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "Sözlər yadınıza düşmür — premium",
-      "look": "W",
-      "captions": "stroke",
-      "tone": "#0F3B2C",
-      "anim": "fade"
-    },
     {
       "video": "Xeyyam video 1",
       "date": "2026-11-04",
@@ -225,42 +172,6 @@
       "type": 1,
       "approach": "M01+M02+M03",
       "variant": "Oxu, xatırla, yoxla",
-      "look": "W",
-      "captions": "stroke",
-      "tone": "#0F3B2C",
-      "anim": "fade"
-    },
-    {
-      "video": "Xeyyam video 5",
-      "date": "2026-11-04",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "Sözlər yadınıza düşmür — premium",
-      "look": "W",
-      "captions": "stroke",
-      "tone": "#0F3B2C",
-      "anim": "fade"
-    },
-    {
-      "video": "Xeyyam video 2",
-      "date": "2026-11-04",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "McCollough effekti",
-      "look": "W",
-      "captions": "stroke",
-      "tone": "#0F3B2C",
-      "anim": "fade"
-    },
-    {
-      "video": "Xeyyam video 5",
-      "date": "2026-11-04",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "Sözlər yadınıza düşmür — premium",
       "look": "W",
       "captions": "stroke",
       "tone": "#0F3B2C",
@@ -291,18 +202,6 @@
       "anim": "fade"
     },
     {
-      "video": "Xeyyam video 6",
-      "date": "2026-11-04",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "Başlığı suala çevir",
-      "look": "W",
-      "captions": "stroke",
-      "tone": "#0F3B2C",
-      "anim": "fade"
-    },
-    {
       "video": "Xeyyam video 7",
       "date": "2026-11-04",
       "engine": "montaj",
@@ -315,18 +214,6 @@
       "anim": "fade"
     },
     {
-      "video": "Xeyyam video 3",
-      "date": "2026-11-04",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "Öyrənməyi öyrən",
-      "look": "W",
-      "captions": "stroke",
-      "tone": "#0F3B2C",
-      "anim": "fade"
-    },
-    {
       "video": "Xeyyam video 5",
       "date": "2026-11-04",
       "engine": "montaj",
@@ -337,147 +224,6 @@
       "captions": "stroke",
       "tone": "#0F3B2C",
       "anim": "fade"
-    },
-    {
-      "video": "Xeyyam video 5",
-      "date": "2026-11-04",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "Sözlər yadınıza düşmür — premium",
-      "look": "W",
-      "captions": "stroke",
-      "tone": "#0F3B2C",
-      "anim": "fade"
-    },
-    {
-      "video": "Xeyyam video 5",
-      "date": "2026-11-04",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "Sözlər yadınıza düşmür — premium",
-      "look": "W",
-      "captions": "stroke",
-      "tone": "#0F3B2C",
-      "anim": "fade"
-    },
-    {
-      "video": "Xeyyam video 8",
-      "date": "2026-11-04",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "Təxirəsalma — sürətli (v3)",
-      "look": "W",
-      "captions": "box",
-      "tone": "#0E3A2C",
-      "anim": "pop"
-    },
-    {
-      "video": "Xeyyam video 8",
-      "date": "2026-11-04",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "Təxirəsalma — sürətli (v3)",
-      "look": "W",
-      "captions": "box",
-      "tone": "#0E3A2C",
-      "anim": "pop"
-    },
-    {
-      "video": "Xeyyam video 8",
-      "date": "2026-11-04",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "Təxirəsalma — sürətli (v3)",
-      "look": "W",
-      "captions": "box",
-      "tone": "#0E3A2C",
-      "anim": "pop"
-    },
-    {
-      "video": "Xeyyam video 8",
-      "date": "2026-11-04",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "01 Təxirəsalma — PRO",
-      "look": "W"
-    },
-    {
-      "video": "Xeyyam video 2",
-      "date": "2026-11-04",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "02 McCollough — PRO",
-      "look": "W"
-    },
-    {
-      "video": "Xeyyam video 3",
-      "date": "2026-11-04",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "03 Öyrənməyi öyrən — REKLAM PRO",
-      "look": "W"
-    },
-    {
-      "video": "Xeyyam video 8",
-      "date": "2026-11-04",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "01 Təxirəsalma — PRO",
-      "look": "W"
-    },
-    {
-      "video": "Xeyyam video 8",
-      "date": "2026-11-04",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "01 Təxirəsalma — PRO",
-      "look": "W"
-    },
-    {
-      "video": "Xeyyam video 2",
-      "date": "2026-11-04",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "02 McCollough — PRO",
-      "look": "W"
-    },
-    {
-      "video": "Xeyyam video 8",
-      "date": "2026-11-04",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "01 Təxirəsalma — PRO",
-      "look": "W"
-    },
-    {
-      "video": "Xeyyam video 2",
-      "date": "2026-11-04",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "02 McCollough — PRO",
-      "look": "W"
-    },
-    {
-      "video": "Xeyyam video 3",
-      "date": "2026-11-04",
-      "engine": "montaj",
-      "type": 1,
-      "approach": "M01+M02+M03",
-      "variant": "03 Öyrənməyi öyrən — REKLAM PRO",
-      "look": "W"
     },
     {
       "video": "Xeyyam video 8",

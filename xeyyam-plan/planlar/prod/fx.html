@@ -85,6 +85,27 @@ function neurons(t,level,burst){
 }
 const THEMES={neurons};
 /*THEMES*/
+// İmza elementləri: info kartı (ağ, yumru), yaşıl kapsul etiket, marker effekti
+function _tw(txt,font){g.font=font;return Math.max(...txt.split('\n').map(l=>g.measureText(l).width))}
+THEMES.tag=function(t,level,burst,o){ // o: text, kind 'card'|'capsule', x (mərkəz), y (üst), size, hold
+  const a=ease(level/0.12),out=o.hold?1:1-ease((level-0.9)/0.1),k=a*out;if(k<=0)return;
+  const sz=o.size||44,font=`800 ${sz}px Montserrat, MontserratExt, Arial`,lines=o.text.split('\n'),tw=_tw(o.text,font),padx=o.kind==='capsule'?44:48,pady=o.kind==='capsule'?20:26;
+  const w=tw+2*padx,h=lines.length*sz*1.25+2*pady,cx=o.x??540,y=(o.y??300)+(1-a)*-24;
+  g.save();g.translate(cx,y+h/2);g.scale(0.88+0.12*a,0.88+0.12*a);g.globalAlpha*=k;g.translate(-w/2,-h/2);
+  g.shadowColor='rgba(0,0,0,0.30)';g.shadowBlur=22;g.shadowOffsetY=8;
+  g.fillStyle=o.kind==='capsule'?'#6CC57E':'#FFFFFF';g.beginPath();g.roundRect(0,0,w,h,o.kind==='capsule'?h/2:34);g.fill();g.shadowColor='transparent';
+  g.fillStyle=o.kind==='capsule'?'#082219':'#0F3B2E';g.font=font;g.textAlign='center';lines.forEach((l,i)=>g.fillText(l,w/2,pady+sz*(1.0+1.25*i)));g.restore();
+};
+THEMES.marker=function(t,level,burst,o){ // tünd yaşıl kart; açar söz yaşıl marker ilə vurğulanır (soldan sağa süpürülür)
+  const a=ease(level/0.10),out=1-ease((level-0.9)/0.1),k=a*out;if(k<=0)return;
+  const sz=o.size||56,font=`800 ${sz}px Montserrat, MontserratExt, Arial`;g.font=font;const w1=g.measureText(o.pre).width,w2=g.measureText(o.word).width,padx=46,pady=26;
+  const w=w1+w2+2*padx,h=sz*1.25+2*pady,cx=o.x??540,y=(o.y??300)+(1-a)*-24;
+  g.save();g.translate(cx,y+h/2);g.scale(0.9+0.1*a,0.9+0.1*a);g.globalAlpha*=k;g.translate(-w/2,-h/2);
+  g.shadowColor='rgba(0,0,0,0.35)';g.shadowBlur=22;g.shadowOffsetY=8;g.fillStyle='#0F3B2E';g.beginPath();g.roundRect(0,0,w,h,34);g.fill();g.shadowColor='transparent';
+  const m=ease((level-0.16)/0.18),mx=padx+w1-10,my=pady+sz*0.12,mh=sz*1.02;g.fillStyle='#6CC57E';g.beginPath();g.roundRect(mx,my,(w2+20)*m,mh,10);g.fill();
+  g.textAlign='left';g.fillStyle='#FFFFFF';g.fillText(o.pre,padx,pady+sz);g.fillStyle=m>0.6?'#082219':'#FFFFFF';g.fillText(o.word,padx+w1,pady+sz);g.restore();
+};
+
 // Səhifə: mətn sətirləri, marker ilə altından xətt çəkilir
 THEMES.page=function(t,level,burst,o){
   const x=o.x??770,y=(o.y??360)+Math.sin(t*1.2)*6,W_=270,H_=350,a=ease(level/0.08);g.save();g.globalAlpha*=a;g.translate(x+W_/2,y+H_/2);g.rotate(0.06);g.translate(-W_/2,-H_/2);

@@ -278,7 +278,13 @@ def _cache_put(sig: list[float], P: dict[str, float]) -> None:
 
 def chain_for(src: Path | str, override: str | None = None) -> str:
     """Montaj skriptləri üçün: verilmiş əl ilə `color` zənciri varsa onu, yoxsa adaptiv Crystal Clear zəncirini qaytarır."""
-    return override if override else chain(prepare(src)["params"])
+    if override:
+        return override
+    r = prepare(src)
+    warn = [n for n in r["notes"] if n.startswith("!")] + (["! KORREKSİYA YOXDUR (" + "; ".join(r["notes"]) + ")"] if r["mode"] == "skip" else [])
+    for w in warn + r["fixes"]:
+        print("XƏBƏRDARLIQ [crystal]:", w, file=sys.stderr)
+    return chain(r["params"])
 
 
 # ── hərəkətdə / yekun yoxlama ─────────────────────────────────────────────────────────────────────────────────────────────
@@ -311,6 +317,59 @@ def temporal_check(src: Path | str, out: Path | str, ss: float = 0.0, t: float |
     if res["rəng_dalğalanma"] > 1.5: bad.append("rəng dalğalanması")
     if abs(res["işıq_sürüşməsi_orta"]) > LIMITS["luma_shift"]: bad.append("işıq çox dəyişib")
     if res.get("dəri_R/G_dəyişmə_%") is not None and abs(res["dəri_R/G_dəyişmə_%"]) > LIMITS["skin_rg"] * 100: bad.append("dəri tonu dəyişib")
+    if res["kəskinlik_nisbəti"] > LIMITS["sharp_ratio"]: bad.append("həddindən artıq kəskinlik")
+    res["nəticə"] = "KEÇDİ" if not bad else "PROBLEM: " + ", ".join(bad)
+    return res
+
+
+def _grab_exact(src: Path | str, t: float, vf: str, w: int = 540, h: int = 960) -> np.ndarray:
+    raw = _run(["ffmpeg", "-v", "error", "-ss", f"{t:.3f}", "-i", str(src), "-frames:v", "1", "-vf", f"{vf}scale={w}:{h}:flags=lanczos", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"]).stdout
+    return np.frombuffer(raw, np.uint8).reshape(h, w, 3)
+
+
+def aligned_check(src: Path | str, out: Path | str, segs: list[list[float]], cy: float = 0.45, base: dict[str, float] | None = None, hflip: bool = False,
+                  exclude: list[tuple[float, float, float, float]] | None = None, skip: list[tuple[float, float]] | None = None, n: int = 14) -> dict[str, Any]:
+    """Montajlı videonun yekun yoxlaması: hər nümunə kadr üçün MƏNBƏDƏ uyğun an tapılır (kəsimlər), eyni zoom/kadraj tətbiq olunur (korreksiyasız "gözlənən" kadr),
+    nəticə kadrla yalnız TƏMİZ sahədə müqayisə olunur: altyazı kartı, kartlar və qrafik elementləri (`exclude` — kadrın hissələri, `skip` — tam ekran kart/qrafik vaxtları) çıxarılır.
+    segs = [[mənbə_başla, mənbə_son, zoom], ...] (talk.py ilə eyni). Nəticə: orta sürüşmə (korreksiyanın təsiri) + kadrlar arası dalğalanma (sıçrayış)."""
+    pre = ("hflip," if hflip else "") + (f"crop=iw*{base['s']}:ih*{base['s']}:iw*{base['cx'] - base['s'] / 2:.4f}:ih*{base['cy'] - base['s'] / 2:.4f},scale=1080:1920:flags=lanczos," if base else "")
+    cand: list[tuple[float, float, float]] = []; off = 0.0
+    for a, b, z in segs:
+        for fr in (0.3, 0.75):
+            to = off + (b - a) * fr
+            if not any(s0 <= to <= s1 for s0, s1 in (skip or [])): cand.append((to, a + (b - a) * fr, z))
+        off += b - a
+    step = max(1, len(cand) // n); cand = cand[::step][:n]
+    H, W = 960, 540; roi = np.ones((H, W), bool)
+    for x0, y0, x1, y1 in (exclude or []): roi[int(y0 * H):int(y1 * H), int(x0 * W):int(x1 * W)] = False
+    rows = []
+    for to, ts, z in cand:
+        e = _grab_exact(src, ts, f"{pre}scale=iw*{z}:ih*{z}:flags=lanczos,crop=1080:1920:(iw-1080)/2:(ih-1920)*{cy},")
+        o = _grab_exact(out, to, "")
+        skin, neut = _masks(e); skin &= roi; neut &= roi
+        def stats(fr: np.ndarray) -> dict[str, float]:
+            a = fr.astype(np.float32); y = _luma(a); g = np.abs(np.diff(y, axis=1))[:-1] + np.abs(np.diff(y, axis=0))[:, :-1]; rg = roi[:-1, :-1]
+            mx, mn = a.max(-1), a.min(-1); sat = np.where(mx > 0, (mx - mn) / np.maximum(mx, 1), 0)
+            d: dict[str, float] = {"luma": float(y[roi].mean()), "r": float(a[..., 0][roi].mean()), "g": float(a[..., 1][roi].mean()), "b": float(a[..., 2][roi].mean()),
+                                   "sat": float(sat[roi].mean()), "sharp": float(np.percentile(g[rg], 99) / max(np.percentile(g[rg], 75), 0.5))}
+            if skin.sum() > 200: d["skin"] = float(a[..., 0][skin].mean() / max(a[..., 1][skin].mean(), 1))
+            if neut.sum() > 200: d["cast"] = float(a[..., 2][neut].mean() / max(a[..., 1][neut].mean(), 1))
+            return d
+        rows.append((stats(e), stats(o)))
+    dl = np.array([o["luma"] - e["luma"] for e, o in rows]); dr = np.array([[o[k] - e[k] for k in "rgb"] for e, o in rows])
+    sk = [o["skin"] / e["skin"] - 1 for e, o in rows if "skin" in e and "skin" in o]; ca = [o["cast"] - e["cast"] for e, o in rows if "cast" in e and "cast" in o]
+    res: dict[str, Any] = {"nümunə_kadr": len(rows), "işıq_sürüşməsi_orta": round(float(dl.mean()), 2), "işıq_dalğalanma": round(float(dl.std()), 2),
+                           "rəng_sürüşməsi_RGB": [round(float(x), 2) for x in dr.mean(0)], "rəng_dalğalanma": round(float(dr.std(0).max()), 2),
+                           "doyma_nisbəti": round(float(np.mean([o["sat"] / max(e["sat"], 1e-6) for e, o in rows])), 3),
+                           "kəskinlik_nisbəti": round(float(np.mean([o["sharp"] / max(e["sharp"], 1e-6) for e, o in rows])), 2)}
+    if sk: res["dəri_R/G_dəyişmə_%"] = round(float(np.mean(sk)) * 100, 2)
+    if ca: res["ağ_balans_B/G_sürüşməsi"] = round(float(np.mean(ca)), 3)
+    bad = []
+    if abs(res["işıq_sürüşməsi_orta"]) > LIMITS["luma_shift"]: bad.append("işıq çox dəyişib")
+    if res["işıq_dalğalanma"] > 1.5 or res["rəng_dalğalanma"] > 1.5: bad.append("kadrlar arası işıq/rəng sıçrayışı")
+    if abs(res.get("dəri_R/G_dəyişmə_%", 0)) > LIMITS["skin_rg"] * 100: bad.append("dəri tonu dəyişib")
+    if abs(res.get("ağ_balans_B/G_sürüşməsi", 0)) > LIMITS["neutral_cast"]: bad.append("ağ balans sürüşüb")
+    if abs(res["doyma_nisbəti"] - 1) > LIMITS["sat_rel"]: bad.append("doyma dəyişib")
     if res["kəskinlik_nisbəti"] > LIMITS["sharp_ratio"]: bad.append("həddindən artıq kəskinlik")
     res["nəticə"] = "KEÇDİ" if not bad else "PROBLEM: " + ", ".join(bad)
     return res

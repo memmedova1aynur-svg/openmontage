@@ -30,14 +30,20 @@
   "sharp": 6.583,
   "noise": 0.628,
   "chroma_noise": 0.53,
-  "sat": 0.107
+  "sat": 0.107,
+  "skin_rg": 1.337
  },
  "reference_images": [
-  "reference_original.jpg",
-  "reference_v3.jpg"
+  "reference_scene_original.jpg",
+  "reference_scene_v3.jpg"
  ],
  "rejected": {
   "V1": "qırmızılıq (R/G 1.629, sarı-isti sürüşmə, güclü kəskinlik)",
   "V2": "solğunluq (R/G 1.44, yerli üz maskası, selectivecolor)"
+ },
+ "reference_images_note": "Üzsüz kəsik (arxa fon, rəf, kitablar, saat, bitki): divar teksturası, ağların və yaşılın təmizliyi, detal. Dəri tonu üçün rəqəmsal barmaq izi: reference_metrics + skin_rg.",
+ "reference_storage": {
+  "face_images": "REPOYA YAZILMIR (gitignore). Davamlı saxlama: istifadəçinin şəxsi/qapalı yaddaşı (məs. şəxsi Drive qovluğu); yerli surət instagram-clients/<müştəri>/ (gitignored, mühit sıfırlananda itir).",
+  "location": "TƏYİN OLUNMAYIB — istifadəçi təsdiqi ilə yüklənəcək"
  }
 }

@@ -10,7 +10,7 @@ Qaydalar:
 - Ödənişli xidmət (API, VPS, hosting) işə salma. `ANTHROPIC_API_KEY` tələb etmə.
 - Bu yolu “daimi/avtomatik AI bağlantısı” kimi təqdim etmə; konteyner müvəqqətidir.
 - Müştəri mediasını, transkriptini və layihə faylını repoya commit etmə.
-- Storyboard istifadəçi təsdiq etmədən `apply`/`render` etmə.
+- Storyboard istifadəçi təsdiq etmədən `apply`/`render` etmə (profildə `workflow.storyboard` "məcburi deyil" olan müştəri — Xəyyam — istisnadır).
 - Real material ilə yoxlanılmayan keyfiyyəti (söz sərhədi, kadraj) zəmanət kimi yazma.
 
 Addımlar:

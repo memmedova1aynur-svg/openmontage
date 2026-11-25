@@ -13,7 +13,7 @@ Azərbaycan dilində danışıq videoları (Reels/Shorts, 9:16) üçün telefond
 Pullu VPS/API/hosting yoxdur: emal Claude Code bulud sessiyasında, redaktə isə claude.ai **şəxsi artifact** redaktorunda.
 
 1. İstifadəçi videonu verir (Drive linki / fayl) → sessiya `session new` ilə layihə yaradır, transkripsiya (yerli faster-whisper) və analiz edir.
-2. Sessiya müştəri profilinə görə **storyboard** təklif edir (şəkil) → **istifadəçi təsdiqləyənə qədər montaj qərarı tətbiq edilmir.**
+2. Sessiya müştəri profilinə görə **storyboard** təklif edir (şəkil) → **istifadəçi təsdiqləyənə qədər montaj qərarı tətbiq edilmir.** (İstisna: profildə `workflow.storyboard` "məcburi deyil" — Xəyyam Həsənov.)
 3. Təsdiqdən sonra `plan.json` yazılır və `session plan` ilə tətbiq olunur (altyazı üslubu, başlıq/bölmə/vurğu/siyahı/kart, zoom, SFX).
 4. `session editor --assets` redaktoru qurur → artifact kimi dərc edilir → istifadəçi iPhone-da hər elementi əl ilə düzəldir.
 5. Düzəlişlər artifact bazasına (`edits/<layihə-id>`) avtomatik saxlanır (və ya "Düzəlişi kopyala" ilə söhbətə yapışdırılır).
@@ -88,7 +88,7 @@ Məhdudiyyətlər:
 
 ## 6. Qaydalar
 
-- **Storyboard təsdiqi:** təsdiqsiz montaj qərarı tətbiq edilmir. Konkret düzəliş istəyində yalnız həmin element dəyişir.
+- **Storyboard təsdiqi:** təsdiqsiz montaj qərarı tətbiq edilmir (profil ləğv edibsə — Xəyyam — tələb olunmur). Konkret düzəliş istəyində yalnız həmin element dəyişir.
 - **Keyfiyyət:** yekun MP4 həmişə orijinal mediadan; şrift, Azərbaycan hərfləri, yer, rəng, animasiya vaxtı önizləmə ilə eyni.
   Effektləri yükləmə; üzü, jesti, məhsulu örtmə; bir müştərinin rəngini başqasına köçürmə; mənanı dəyişmə, fakt uydurma.
 - **Token qənaəti:** redaktor kodunu yenidən yaratma (şablon + `session editor`); yalnız seçilmiş müştəri profilini oxu;

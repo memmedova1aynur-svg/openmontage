@@ -1,5 +1,9 @@
 # Ümumi qaydalar (bütün müştərilər)
 
+> **Vacib qeyd (2026-11-25):** istifadəçinin təsdiqlədiyi **13 bölməli** `UMUMI_QAYDALAR.md` və `MUSTERI_SABLONU.md` bu repoda və görünən heç bir branch-də **yoxdur**.
+> Bu fayl yalnız Adaptive Crystal Clear (və ona bağlı yoxlama/saxlama/təhlükəsiz sahə) bölmələrini ehtiva edir və həmin sənədin bölməsi kimi hazırlanıb.
+> Orijinal 13 bölməli sənəd təqdim edilərsə, bu bölmələr ona **əlavə** olunacaq (əvəz etməyəcək); mövcud əvvəlki qaydalara toxunulmayıb.
+
 Bu fayl **bütün müştərilər** üçün ortaq standartlardır. Müştəri profillərində (`templates/expert-reels/experts/`, `instagram-clients/`) təkrarlanmır;
 müştəriyə məxsus istisna varsa yalnız profildə, bu fayla istinadla yazılır.
 
@@ -28,3 +32,29 @@ rəng temperaturuna səbəbsiz müdaxilə · süni detal, upscaling, ağır AI e
 Üslub presetlərinin öz `color` zənciri (məs. `kinematik`) varsa, o ayrıca yaradıcı qərardır və bu standartı əvəz edir.
 
 **Ləğv edilənlər:** Xəyyam Həsənov üçün C/H/W məcburi filtr seçimləri; "rəng həmişə looks C" qaydası; `looks` əmri ilə variant seçimi (əl ilə müqayisə üçün qalır, standart deyil).
+
+## Adaptive Crystal Clear — əlavə qaydalar (2026-11-25)
+
+**Tətbiq sırası:** görüntü korreksiyası altyazı, kart və qrafikdən **əvvəl** tətbiq olunur (brend rəngləri dəyişməsin). Kinematik və s. üslub presetləri bu standartı özbaşına əvəz etmir;
+preset öz rəng zəncirini yalnız istifadəçi açıq şəkildə seçibsə tətbiq edir.
+
+**Yekun keyfiyyət yoxlaması (montajlı video):** `montaj.crystal.aligned_check` — hər nümunə kadr üçün mənbədə uyğun an tapılır (kəsimlər), eyni zoom/kadraj tətbiq olunur,
+nəticə yalnız təmiz sahədə müqayisə olunur (altyazı kartı, kartlar, qrafik elementləri və tam ekran vaxtları çıxarılır). Yoxlanır: işıq/rəng sürüşməsi və kadrlar arası dalğalanma,
+dəri R/G, ağ balans, doyma, kəskinlik. Orijinalla eyni saniyədə sadə müqayisə (`check`) yalnız kəsimsiz nümunədə mənalıdır.
+
+**Avtomatik həll olunmayan hallar** (korreksiya edilmir, görüntü korlanmır, xəbərdarlıq verilir — `XƏBƏRDARLIQ [crystal]`):
+HDR mənbə (əvvəl tone-map lazımdır) · çəkilişdə pozulmuş ağ balans (neytral sahənin R/G və B/G 6%-dən çox sapması) · qarışıq işıq mənbələri · çox yüksək səs-küylü mənbə (təmizləmə həddi 4.0-dır) ·
+mənbədə olmayan detalın bərpası (upscaling/AI yoxdur) · yoxlama keçməyəndə — korreksiya söndürülür.
+
+**Yeni müştəri — ilk video üzərində qısa kalibrasiya:** (1) `python -m montaj.crystal analyze <video>` — rejim və qərarlar; (2) `python -m montaj.crystal sample <video> --start S --dur 5 --out x.mp4` —
+5 saniyəlik hərəkətli nümunə + hərəkət yoxlaması; (3) nəticə yoxlanılandan sonra müştəri üçün keş (`crystal_cache.json`) təkrar istifadə olunur; hədlər yeni mühitdə problem göstərsə yalnız həmin müştərinin parametri düzəldilir,
+ümumi hədlər dəyişdirilmir. Kalibrləmə nəticəsi 3–5 sətirlə qeyd olunur.
+
+**Referansın saxlanması:** müştərinin **üzünün göründüyü şəkillər repoya yazılmır** (`.gitignore`: `*_FACE.*`, `reference_original.jpg`, `reference_v3.jpg`). Repoda yalnız üzsüz kəsik (arxa fon/rəf) və rəqəmsal
+barmaq izi (`params.json`: parlaqlıq, kəskinlik, səs-küy, doyma, dəri R/G) saxlanır. Üz referansı istifadəçinin şəxsi, qapalı yaddaşında (məs. şəxsi Drive qovluğu) saxlanmalıdır; yerli surət
+`instagram-clients/<müştəri>/` (gitignored, mühit sıfırlananda itir). Müştəri nümunələri/render faylları da repoya yazılmır.
+
+**Instagram təhlükəsiz sahə (1080×1920, təxmini — platforma interfeysi dəyişə bilər):** yuxarı ~250 px, aşağı 1500 px-dən sonrası və sağ ~960 px-dən sonrası interfeys elementləri üçündür;
+altyazı, kart və başlıq bu sahələrə girməməlidir. Üzü, ağzı və vacib jestləri örtmə.
+
+**Müştəri tarixçəsi:** profilin `history` hissəsində yalnız real videoların **yekun** versiyası saxlanır; render variantları və aralıq versiyalar `templates/expert-reels/experts/_arxiv/` altında arxivləşdirilir.

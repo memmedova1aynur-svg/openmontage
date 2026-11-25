@@ -60,3 +60,17 @@ def test_measure_and_apply_on_synthetic_frame():
     assert 100 < m["mean_luma"] < 140 and m["noise"] > 0
     g = crystal._apply(f, crystal.V3_PARAMS)
     assert g.shape == f.shape and abs(crystal.measure(g, like=f)["mean_luma"] - m["mean_luma"]) < 4
+
+
+def test_aligned_check_identity_and_flags_shift(tmp_path):
+    """Hizalı yekun yoxlama: mənbə = nəticə → sürüşmə yoxdur; nəticə parlaqlaşdırılsa → problem tapılır (kəsim/zoom xəritəsi ilə)."""
+    import subprocess
+    src, same, bright = tmp_path / "s.mp4", tmp_path / "same.mp4", tmp_path / "b.mp4"
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-f", "lavfi", "-i", "testsrc2=s=1080x1920:r=30:d=3", "-pix_fmt", "yuv420p", str(src)], check=True)
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(src), "-c:v", "libx264", "-crf", "12", str(same)], check=True)
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(src), "-vf", "eq=brightness=0.12", "-c:v", "libx264", "-crf", "12", str(bright)], check=True)
+    segs = [[0.0, 3.0, 1.0]]
+    ok = crystal.aligned_check(src, same, segs, n=4)
+    assert ok["nəticə"] == "KEÇDİ" and abs(ok["işıq_sürüşməsi_orta"]) < 1.5
+    bad = crystal.aligned_check(src, bright, segs, n=4)
+    assert bad["nəticə"].startswith("PROBLEM") and bad["işıq_sürüşməsi_orta"] > 6
