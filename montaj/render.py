@@ -706,9 +706,13 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
         filters.append(f"[{ecur}]fade=t=in:st=0:d=0.4[ecf]")
         filters.append(f"[{cur}][ecf]concat=n=2:v=1:a=0[vfinal]")
         cur = "vfinal"
-    filters.append(f"[{cur}]null[vout]")
-
     total = plan["total"]
+    ef = float((project.get("endFade") or {}).get("dur") or 0)  # sonda ekran qaralıb sönür (video qaralma + səs azalması)
+    if ef > 0:
+        ef = min(ef, total / 2)
+        filters.append(f"[{cur}]fade=t=out:st={total - ef:.4f}:d={ef:.4f}:color=black[vout]")
+    else:
+        filters.append(f"[{cur}]null[vout]")
     buses: dict[str, list[str]] = {}
     clean = project.get("voiceClean") or {}
     for i, a in enumerate(plan["audio"]):
@@ -742,11 +746,12 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
         labels = [("bk_main" if b == key else "bus_music_d" if b == "music" else f"bus_{b}") for b in bus_out]
     else:
         labels = [f"bus_{b}" for b in bus_out]
+    aend = f"afade=t=out:st={total - ef:.4f}:d={ef:.4f}" if ef > 0 else "anull"
     if labels:
         filters.append(f"{''.join(f'[{l}]' for l in labels)}amix=inputs={len(labels)}:normalize=0:duration=longest,"
-                       f"atrim=0:{total:.4f}[aout]" if len(labels) > 1 else f"[{labels[0]}]anull[aout]")
+                       f"atrim=0:{total:.4f},{aend}[aout]" if len(labels) > 1 else f"[{labels[0]}]{aend}[aout]")
     else:
-        filters.append(f"anullsrc=r=48000:cl=stereo,atrim=0:{total:.4f}[aout]")
+        filters.append(f"anullsrc=r=48000:cl=stereo,atrim=0:{total:.4f},{aend}[aout]")
 
     fg = workdir / "filter.txt"
     fg.write_text(";\n".join(filters), encoding="utf-8")

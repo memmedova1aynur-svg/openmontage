@@ -272,6 +272,13 @@
       wrap.append(top, bot);
       return wrap;
     }
+    if (type === 'plate') {  // şüşəsiz düz lövhə (altyazı altlığı): tünd rəng, yuxarıda nazik brend qradiyent xətti; mətn yoxdur (altyazı üstə düşür)
+      const w = VW * (clip.w ?? 0.54), h = H * (clip.h ?? 0.15), r = H * (clip.r ?? 0.016), ac = H * 0.0055;
+      const p = node(doc, 'div', { width: `${w}px`, height: `${h}px`, boxSizing: 'border-box', borderRadius: `${r}px`, overflow: 'hidden', position: 'relative',
+        background: clip.bg || '#0F3B2E', boxShadow: `0 ${H * 0.005}px ${H * 0.018}px rgba(0,0,0,0.30)` });
+      p.append(node(doc, 'div', { position: 'absolute', left: '0', top: '0', width: '100%', height: `${ac}px`, background: 'linear-gradient(90deg,#3E9E57,#6CC57E,#B5E9CF)' }));
+      return p;
+    }
     if (type === 'caption') {
       const wrap = node(doc, 'div', { ...base, maxWidth: `${H * (clip.maxW ?? 0.52)}px`, padding: `${fs * 0.15}px ${fs * 0.3}px`,
         borderRadius: `${fs * (clip.radius ?? 0.3)}px`, background: rgba(clip.bg, 'transparent'), textAlign: clip.align === 'left' ? 'left' : 'center' });
@@ -422,7 +429,7 @@
   // Standart yer (x, y mərkəz, 0..1) — render (graphics.py DEFAULT_XY) ilə eyni
   const DEFAULT_XY = { caption: [0.5, 0.74], title: [0.5, 0.14], section: [0.5, 0.22], emphasis: [0.5, 0.62], list: [0.5, 0.42], card: [0.5, 0.42],
     offer: [0.5, 0.58], cta: [0.5, 0.585], badge: [0.5, 0.215], lower: [0.24, 0.82], choice: [0.5, 0.45],
-    type: [0.5, 0.17], note: [0.5, 0.17], block: [0.5, 0.15], bars: [0.5, 0.5], veil: [0.5, 0.2], frame: [0.5, 0.5], slate: [0.5, 0.5], viewfinder: [0.5, 0.5], gcard: [0.5, 0.17], gbanner: [0.5, 0.12], gcaps: [0.5, 0.15], pblur: [0.5, 0.21] };  // reklam kartları üzün altında
+    type: [0.5, 0.17], note: [0.5, 0.17], block: [0.5, 0.15], bars: [0.5, 0.5], veil: [0.5, 0.2], frame: [0.5, 0.5], slate: [0.5, 0.5], viewfinder: [0.5, 0.5], gcard: [0.5, 0.17], gbanner: [0.5, 0.12], gcaps: [0.5, 0.15], pblur: [0.5, 0.21], plate: [0.5, 0.835] };  // reklam kartları üzün altında
   function pos(clip) { const d = DEFAULT_XY[clip.type] || [0.5, 0.5]; return [clip.x ?? d[0], clip.y ?? d[1]]; }
 
   root.MG = { ANIMS, animState, build, defaults, statePoints, rgba, pos, DEFAULT_XY };
