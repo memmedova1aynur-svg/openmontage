@@ -565,7 +565,8 @@ def build_command(project: dict[str, Any], media_root: Path, out: Path, workdir:
         dcfg = project.get("dissolve") or {}
         if c.get("mode") == "cover" and dcfg.get("auto") in ("broll", "all"):  # üstə qoyulan tam kadr B-roll: giriş/çıxışda yumşaq solma (crossfade), sərt kəsim yox
             fd = min(float(dcfg.get("dur") or DISSOLVE_DEFAULT), o["dur"] / 3)
-            chain += f",format=yuva420p,fade=t=in:st=0:d={fd:.3f}:alpha=1,fade=t=out:st={o['dur'] - fd:.3f}:d={fd:.3f}:alpha=1"
+            fdo = min(float(c.get("fadeOut") or fd), o["dur"] / 2)  # klipdə fadeOut varsa çıxış solması daha uzun (hamar keçid)
+            chain += f",format=yuva420p,fade=t=in:st=0:d={fd:.3f}:alpha=1,fade=t=out:st={o['dur'] - fdo:.3f}:d={fdo:.3f}:alpha=1"
         filters.append(f"[{k}:v]{chain},setpts=PTS+{o['start']:.4f}/TB[ov{i}]")
         a_t, b_t = o["start"], o["start"] + o["dur"] - 0.5 / fps
         filters.append(f"[{cur}][ov{i}]overlay=x={x}:y={y}:eof_action=pass:ts_sync_mode=nearest:enable='between(t,{a_t:.4f},{b_t:.4f})'[vo{i}]")
