@@ -242,6 +242,34 @@
     "studio skins: navy / paper / grid / split"
    ],
    "notes": "6285 story (profile, numbers, balance), 6211 certificates (certs, forget, checks), 6212 focus (juggle, questions, shorten list), 6214 sales consultation ad (checks, funnel, SATIŞ call card). All flipped (mic side = earlier mirrored batch). User feedback: scenes were static until the trigger word -> living stage + camera push; all four looked alike -> per-video skins; repeats/clipped syllables -> unclip.py + full re-transcription check; no voice cleanup for lavalier sound."
+  },
+  {
+   "video": "Reklam v6: Öyrənməyi Öyrən (yumşaq keçidlər)",
+   "date": "2026-11-26",
+   "engine": "montaj",
+   "type": 3,
+   "approach": "M04",
+   "variant": "C · Dinamik (yekun v5): yumşaq keçidlər, yaxın kadraj",
+   "look": "auto",
+   "captions": "box",
+   "tone": "#13213F",
+   "anim": "pop",
+   "kit": "classic",
+   "hook": "typography-card"
+  }
+ ],
+ "approved": [
+  {
+   "kit": "classic",
+   "video": "Reklam v6: Öyrənməyi Öyrən (yumşaq keçidlər)",
+   "date": "2026-11-26"
+  }
+ ],
+ "rejected": [
+  {
+   "kit": "glasscaps",
+   "video": "Reklam v6: Öyrənməyi Öyrən (yumşaq keçidlər)",
+   "date": "2026-11-26"
   }
  ]
 }
