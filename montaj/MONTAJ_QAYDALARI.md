@@ -96,3 +96,7 @@ Bunlar qaydadan azad etmir: §2-dəki qaydalar məcburidir, kod isə ayrıca iş
 ```
 `variation` `storyboard` çıxışındakı təklifdən götürülür. Qrafika `y`-ləri preflight-da interfeys zonasına görə avtomatik düzəlir.
 Azərbaycan dili: `ə ğ ı İ ö ü ş ç` şriftdə olmalıdır; `i→İ`, `ı→I` (`lib/az_text`); rəqəmlər `1 200`, `4,5`.
+
+## Sonluq effekti: «Qaralma» (Fade to black)
+- Müştərinin bəyəndiyi effekt: video bitəndə ekran yumşaq qaralıb yox olur (səs də eyni vaxtda sönür). Adı: **Qaralma / Fade to black**.
+- Planda: layihə səviyyəsində `"endFade": {"dur": 0.45}` (render.py: son `dur` saniyədə `fade=out` + `afade`). Hər videoya avtomatik qoyulmur — istifadəçi «qaralma qoy» deyəndə və ya lazım olanda işlədilir.
