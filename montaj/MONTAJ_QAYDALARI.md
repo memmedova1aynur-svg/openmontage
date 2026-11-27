@@ -100,3 +100,26 @@ Azərbaycan dili: `ə ğ ı İ ö ü ş ç` şriftdə olmalıdır; `i→İ`, `ı
 ## Sonluq effekti: «Qaralma» (Fade to black)
 - Müştərinin bəyəndiyi effekt: video bitəndə ekran yumşaq qaralıb yox olur (səs də eyni vaxtda sönür). Adı: **Qaralma / Fade to black**.
 - Planda: layihə səviyyəsində `"endFade": {"dur": 0.45}` (render.py: son `dur` saniyədə `fade=out` + `afade`). Hər videoya avtomatik qoyulmur — istifadəçi «qaralma qoy» deyəndə və ya lazım olanda işlədilir.
+
+
+## Üç səviyyəli üslub sistemi və təhvildən əvvəl yoxlama siyahısı (2026-11, təcrübədən)
+
+**Üç səviyyə (hər müştəri üçün):**
+- **Reklam:** animasiyalı, dinamik. Arxada yazı, fokus/qaralma, tam ekran kodla yazılmış animasiya səhnələri (kitabxana, taymer, batareya və s.), SFX hər animasiyaya bağlı, musiqi. Şüşə (glass) effekti və kölgə kimi bulanıq zolaq QADAĞANDIR. Hər reklamın animasiya dili və rəng ailəsi fərqli olmalıdır (başqa ekspertin editinə oxşamasın; mavi/bənövşəyi yox).
+- **Maarifləndirici:** reklam ilə söhbət arasında. Sadə, səmimi, «məsləhət verirəm» hissi. Yuxarı solda 2-3 açar söz yazısı + videoya bir kiçik animasiya (hər video üçün öz mövzusuna uyğun, öz rəngi). SFX yoxdur, B-roll yoxdur.
+- **Söhbət / sual-cavab / podcast:** yalnız sadə ağ altyazı. Animasiya, B-roll, ikon, rol, banner, musiqi yoxdur. Hook = ən maraqlı cümlə əvvələ çıxarılır (sonra sual-cavab bütöv).
+
+**Hər videoda mütləq:** güzgü çevirmə, üzü ortalama (kadraj), əyriliyin ölçülməsi və düzəldilməsi, rəng korreksiyasının ÖLÇÜLƏREK yoxlanması (avtomatik korreksiya çox zaman yalnız kəskinlik 0.14 qoyur: kontrast/dərinlik/kölgə açma/parlaq nəzarət/canlılıq/kəskinlik əl ilə gücləndirilir, orijinalla parlaqlıq-kontrast-doyma müqayisə olunur).
+
+**Təhvildən əvvəl yoxlama (istifadəçi hər videonu 50 dəfə gözləməsin; bir dəfəyə hazır göndər):**
+1. Altyazı: hər cümlə öz bloklarında bitir, yeni cümlə yeni blokda; blokda ≤3 söz; tire sözləri ("bol-bol", "söz-bə-söz", "5–10") bir blokda; yazılış və durğu işarələri (transkriptdəki səhvlər audioya baxılıb düzəldilir, əmin olmadıqlar istifadəçiyə deyilir); cümlə əvvəlində böyük hərf; hook cümləsi təkrarlanmasın.
+2. Hook: ilk kadrın səsi ölçülür (söz yarımçıq başlamasın), sonluğun tam olması yoxlanır.
+3. Qaralma (focus dim): gücü ~35% (reklamda 20% də ola bilər), `fadeIn: 0, fadeOut: 0`, müddət video + 0.4 s (başdan sona), aşağı hissə (hər əl/stol) orijinaldan geniş yumşaq keçidlə qarışdırılır (`(Y/H-0.5)/0.35`); divar parlaqlığı ilk və son kadrda ölçülür. Güclü qaralma «süni» görünür.
+4. Keçidlər: animasiyaya giriş 0.8 s, çıxış 1.0-1.5 s; animasiya özü çıxışdan əvvəl öz fonuna yox olur; mənbə kəsimi (jump cut) olan yerdə kadr-kadr üst-üstə solma.
+5. Animasiya səhnələrində altyazı yoxdur (gizlədilir). Altyazı yeri: mikrofon/yaxa mikrofonu görünən kadrda altyazı mikrofon səviyyəsinə (~62-67%) qaldırılır, arxasına `#1B1B1F@0.85` kart.
+6. Animasiya mətnləri bir-birinə/xəttə düşməməlidir (kadrları gözlə yoxla). Başlıq yazısı ekranın 84%-ni keçməsin.
+7. Musiqi: hər videoya fərqli (digər videolarla eyni olmasın).
+8. İş sırası: əvvəl 540p önizləmə (50-90 s), təsdiqdən sonra 1080p. Render zamanı paralel iş yaddaşı aşır.
+9. Təsdiqlənmiş videolara DƏYMƏ. İstifadəçi «yalnız bunu et» deyəndə başqa heç nəyi dəyişmə.
+
+**Karusel:** səhifənin çərçivəsi eyni (etiket, ikon, monoşrift mövzu etiketi, qalın başlıq + yaşıl vurğu qutusu + italik serif, «Sənin növbən» qutusu, «Sürüşdür →», sayğac, xətt), amma hər karuselin fonu (tünd / orta yaşıl / ağ) və interfeys metaforası (qəbz, uçuş bileti, işıqfor, batareya...) fərqli olmalıdır; iki karusel eyni şablonun kopyası olmamalıdır. Cümlələr məntiqli olmalıdır (məs. işıqforda qırmızı = dayan), uydurma rəqəm və statistika yoxdur.
