@@ -16,7 +16,8 @@ FAMILIES = {
     "Caveat": {"slug": "caveat", "weights": [400, 700]},
 }
 EXTRA_TTF = {"Lora": {400: "lora/Lora-Regular.ttf", 700: "lora/Lora-Bold.ttf"},
-             "Work Sans": {400: "worksans/WorkSans-Regular.ttf", 700: "worksans/WorkSans-Bold.ttf"}}  # SIL OFL; Apple-üslub şüşə dəstləri (Azərbaycan hərfləri tam)  # SIL OFL; serif başlıqlar (Azərbaycan hərfləri tam)
+             "Work Sans": {400: "worksans/WorkSans-Regular.ttf", 700: "worksans/WorkSans-Bold.ttf"},
+             "Unbounded": {500: "unbounded/Unbounded.ttf", 700: "unbounded/Unbounded.ttf", 800: "unbounded/Unbounded.ttf"}}  # SIL OFL, dəyişən çəki oxu; Azərbaycan hərfləri tam  # SIL OFL; Apple-üslub şüşə dəstləri (Azərbaycan hərfləri tam)  # SIL OFL; serif başlıqlar (Azərbaycan hərfləri tam)
 EXTRA_ITALIC = {"Lora": {400: "lora/Lora-Italic.ttf", 700: "lora/Lora-BoldItalic.ttf"}}
 
 
