@@ -7,6 +7,12 @@ description: Work with the Open-Generative-AI repo (Anil-matcha/Open-Generative-
 
 Open-source (MIT) generative media studio. Next.js app with 14 studios (Image, Video, Audio, AI Clipping, Vibe Motion, Lip Sync, Cinema, Marketing, Workflows, Agents, Design Agent, Apps, MCP & CLI). Models run through the hosted **muapi.ai** API; the user's muapi API key is required for real generations.
 
+## Cost reality (read first)
+- Cloud generation through muapi.ai **spends paid credits**. The app is free; the models it calls are not.
+- Truly free paths: (a) desktop app **Local Models** (sd.cpp for SD/SDXL/Z-Image, Wan2GP for Wan/LTX/Hunyuan video) which needs a local GPU and is desktop-only; (b) OpenMontage's own free tools (Remotion/HyperFrames/ffmpeg, Piper TTS, faster-whisper, free stock via Pexels/Pixabay keys, `earshot` SFX).
+- The cloud sandbox has no GPU (4 CPU, 15 GB), so local video models cannot run there. Use it for editing/composition, not generation.
+- Run `scripts/zero_budget_setup.sh` in OpenMontage to install the free local tools.
+
 ## Location
 - Cloned at `/home/user/anil-matcha/open-generative-ai` (read-only shallow clone via git proxy).
 - If missing: `GIT_LFS_SKIP_SMUDGE=1 git clone --depth 1 https://github.com/Anil-matcha/open-generative-ai /home/user/anil-matcha/open-generative-ai`
