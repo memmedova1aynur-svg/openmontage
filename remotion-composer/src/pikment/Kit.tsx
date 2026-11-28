@@ -24,7 +24,7 @@ export const MaskWord: React.FC<{ children: React.ReactNode; at: number; dur?: n
   const p = prog(f, at, at + dur, easeOut);
   return (
     <span style={{ display: "inline-block", overflow: "hidden", verticalAlign: "top", paddingBottom: size * 0.16, marginBottom: -size * 0.16, marginRight: gap * size }}>
-      <span style={{ display: "inline-block", fontFamily: DISPLAY, fontWeight: weight, fontSize: size, letterSpacing: -size * 0.03, lineHeight: 1.08, color, transform: `translateY(${(1 - p) * 110}%)`, opacity: p > 0 ? 1 : 0, ...(grad ? gradText : {}) }}>{children}</span>
+      <span style={{ display: "inline-block", fontFamily: DISPLAY, fontWeight: weight, fontSize: size, letterSpacing: -size * 0.03, lineHeight: 1.08, color, transform: `translateY(${(1 - p) * 110}%)`, filter: p < 1 ? `blur(${(1 - p) * 7}px)` : undefined, opacity: p > 0 ? 1 : 0, ...(grad ? gradText : {}) }}>{children}</span>
     </span>
   );
 };

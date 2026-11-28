@@ -21,6 +21,7 @@ import { PikmentSchoolAd, PikmentSchoolAdProps } from "./PikmentSchoolAd";
 import { PikmentChooseAd, PikmentChooseAdProps } from "./PikmentChooseAd";
 import { PikmentServicesAd, PikmentServicesAdProps } from "./PikmentServicesAd";
 import { Pikment001Launch, Pikment001Props } from "./productions/Pikment001Launch";
+import { Pikment001V2, Pikment001V2Props } from "./productions/Pikment001V2";
 
 // ---------------------------------------------------------------------------
 // Theme System — prevents every video from looking like dark fintech
@@ -415,6 +416,15 @@ export const Root: React.FC = () => {
         width={1080}
         height={1920}
         defaultProps={{ audioSrc: "pikment_launch/audio_001.wav" } as Pikment001Props}
+      />
+      <Composition
+        id="Pikment001V2"
+        component={Pikment001V2}
+        durationInFrames={780}
+        fps={30}
+        width={1080}
+        height={1920}
+        defaultProps={{ audioSrc: "pikment_launch/audio_v2.wav" } as Pikment001V2Props}
       />
     </>
   );
