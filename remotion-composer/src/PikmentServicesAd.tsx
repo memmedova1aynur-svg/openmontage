@@ -1,6 +1,7 @@
 import React from "react";
 import {
   AbsoluteFill,
+  Easing,
   Audio,
   Img,
   Sequence,
@@ -10,7 +11,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import { Bg, C, FONT, GRAD, Subtitle, Swatches, clamp, fr } from "./PikmentSchoolAd";
+import { Bg, C, FONT, GRAD, Subtitle, clamp, fr } from "./PikmentSchoolAd";
 import { Areas, End } from "./PikmentChooseAd";
 import timing from "./pikmentServicesTiming.json";
 
@@ -226,6 +227,62 @@ const Burst: React.FC<{ at: number; y: number }> = ({ at, y }) => {
   );
 };
 
+
+/** Realistic phone showing a real capture of pikment.az, scrolling like a thumb scroll. */
+const PW = 447;
+const PH = 950;
+const BZ = 14;
+const SCR_W = PW - BZ * 2;
+const SITE_SCALE = SCR_W / 390;
+
+const PhoneSite: React.FC<{ src: string }> = ({ src }) => {
+  const f = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const enter = Math.max(spring({ frame: f, fps, config: { damping: 15, stiffness: 70 } }), 0);
+  const scrollCss = interpolate(f, [fps * 0.9, fps * 3.7], [0, 1480], { ...clamp, easing: Easing.inOut(Easing.cubic) });
+  const scroll = scrollCss * SITE_SCALE;
+  const bob = Math.sin(f / 22) * 7;
+  const ry = interpolate(enter, [0, 1], [-28, -7]) + Math.sin(f / 40) * 1.5;
+  const rx = interpolate(enter, [0, 1], [14, 4]);
+  const dark = scrollCss < 560;
+  const glare = interpolate(f, [0, fps * 4], [-30, 120], clamp);
+  const ink = dark ? "#fff" : "#14122B";
+  return (
+    <div style={{ position: "absolute", left: 540 - PW / 2, top: 430 + (1 - enter) * 900 + bob, width: PW, height: PH, perspective: 1800 }}>
+      <div style={{ width: "100%", height: "100%", position: "relative", transform: `rotateY(${ry}deg) rotateX(${rx}deg)`, transformStyle: "preserve-3d" }}>
+        <div style={{ position: "absolute", left: -5, top: 170, width: 6, height: 70, borderRadius: 3, background: "#3a3a48" }} />
+        <div style={{ position: "absolute", left: -5, top: 260, width: 6, height: 110, borderRadius: 3, background: "#3a3a48" }} />
+        <div style={{ position: "absolute", right: -5, top: 230, width: 6, height: 150, borderRadius: 3, background: "#3a3a48" }} />
+        <div style={{ position: "absolute", inset: 0, borderRadius: 76, background: "linear-gradient(145deg,#8a8a99 0%,#23232e 28%,#4a4a58 55%,#14141c 100%)", boxShadow: "0 60px 120px rgba(0,0,0,0.6), 0 0 120px rgba(79,70,229,0.35)" }} />
+        <div style={{ position: "absolute", inset: 5, borderRadius: 71, background: "#05050a" }} />
+        <div style={{ position: "absolute", left: BZ, top: BZ, width: SCR_W, height: PH - BZ * 2, borderRadius: 62, overflow: "hidden", background: "#14132B" }}>
+          <Img src={staticFile(src)} style={{ width: SCR_W, display: "block", marginTop: 88, transform: `translateY(${-scroll}px)` }} />
+          <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 78, background: dark ? "linear-gradient(180deg, rgba(20,19,43,0.9), rgba(20,19,43,0))" : "rgba(246,245,255,0.9)", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 38px 0 44px", boxSizing: "border-box" }}>
+            <div style={{ fontFamily: FONT, fontWeight: 700, fontSize: 21, color: ink }}>9:41</div>
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <div style={{ display: "flex", gap: 2, alignItems: "flex-end" }}>
+                {[8, 12, 16, 20].map((h) => (
+                  <div key={h} style={{ width: 4, height: h, borderRadius: 1.5, background: ink }} />
+                ))}
+              </div>
+              <div style={{ width: 36, height: 17, borderRadius: 5, border: `2px solid ${ink}`, padding: 1.5, boxSizing: "border-box" }}>
+                <div style={{ width: "78%", height: "100%", borderRadius: 2.5, background: ink }} />
+              </div>
+            </div>
+          </div>
+          <div style={{ position: "absolute", top: 14, left: "50%", marginLeft: -58, width: 116, height: 34, borderRadius: 17, background: "#000" }} />
+          <div style={{ position: "absolute", left: 24, right: 24, bottom: 34, height: 58, borderRadius: 29, background: "rgba(246,245,255,0.94)", boxShadow: "0 6px 24px rgba(0,0,0,0.25)", display: "flex", alignItems: "center", justifyContent: "center", gap: 10, fontFamily: FONT, fontWeight: 600, fontSize: 22, color: "#14122B" }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#6B6A85"><rect x="4" y="10" width="16" height="11" rx="3" /><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="#6B6A85" strokeWidth="2.4" /></svg>
+            pikment.az
+          </div>
+          <div style={{ position: "absolute", bottom: 9, left: "50%", marginLeft: -62, width: 124, height: 5, borderRadius: 3, background: dark ? "rgba(255,255,255,0.85)" : "rgba(20,18,43,0.8)" }} />
+          <div style={{ position: "absolute", inset: 0, background: `linear-gradient(115deg, transparent ${glare - 18}%, rgba(255,255,255,0.10) ${glare}%, transparent ${glare + 18}%)`, pointerEvents: "none" }} />
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const LINES = [
   "Uşaq inkişafı sahəsində daha peşəkar olmaq istəyirsən?",
   "Pikment-də məqsədlərinə uyğun təlim proqramları var.",
@@ -263,8 +320,8 @@ export const PikmentServicesAd: React.FC<PikmentServicesAdProps> = ({ voiceSrc, 
 
       <Sequence from={seq(0).from} durationInFrames={seq(0).dur}>
         <Cam dur={len(0)}>
-          <KTitle parts={[{ t: "Uşaq inkişafı sahəsində daha" }, { t: "peşəkar", hl: true }, { t: "olmaq istəyirsən?" }]} top={200} size={86} />
-          <Swatches />
+          <KTitle parts={[{ t: "Uşaq inkişafı sahəsində daha" }, { t: "peşəkar", hl: true }, { t: "olmaq istəyirsən?" }]} top={140} size={76} />
+          <PhoneSite src="pikment_site/scroll.png" />
         </Cam>
         <Subtitle text={LINES[0]} {...sub(0)} />
       </Sequence>
