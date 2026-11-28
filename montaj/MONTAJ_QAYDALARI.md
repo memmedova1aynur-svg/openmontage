@@ -70,13 +70,47 @@ Müştəri mediası, transkript və şəxsi məlumat GitHub-a yüklənmir.
 
 **Davamlılıq.** Müştərinin rəng ailəsi sabit; hook, altyazı üslubu və kart ardıcıllığı son 3 videodan (`history`) fərqli (`variation`).
 
+## 2a. İstifadəçi düzəlişlərindən öyrənilmiş qaydalar (MƏCBURİ — hər videoda ilk render-dən ƏVVƏL yoxla)
+Bunlar real videolarda istifadəçinin dəfələrlə düzəltdiyi səhvlərdir; yeni videoda təkrar olunmamalıdır. Agent qulaqla dinləyə bilmir — ona görə
+aşağıdakı yoxlamalar ölçü ilədir və şübhəli yerlər istifadəçiyə saniyə ilə bildirilir ("səs qulaqla yoxlanmayıb").
+
+**Kəsim seçimi.**
+1. Hər cümlə üçün SON təkrar götürülür (istifadəçi sonuncunu ən yaxşı sayır). Yalnız sonuncuda büdrəmə/yarımçıq varsa əvvəlki tam çəkiliş götürülür və bu təhvildə açıq yazılır.
+2. Vahid = tam cümlə (və ya tam fikir). Cümlənin ortasından başlamaq/bitmək, birinci cəhdin qalığı, "əh", "yox, nəsə…" olmaz.
+3. Whisper söz vaxtlarına GÜVƏNMƏ (0.5 s-ə qədər sürüşür, uzun sözləri uzadır). Sərhədi ölçülmüş enerjiyə görə qoy: başlanğıc sözün başlamasından ~0.1–0.15 s əvvəl, sakitlikdə (<−48 dB); son səs sönəndən sonra, sakitlikdə. Sözün sonu (məs. "-dir", "-ır") kəsilməməli: son hecanın enerji quyruğu bitənə qədər saxla.
+4. Hər kəsimin başında/sonunda 0.3 s-dən qısa təcrid olunmuş səs parçası (arxasında ≥0.25 s sakitlik) kənar səs və ya yarımçıq başlanğıcdır ("Da", "Əm", nəfəs, düşünmə səsi) — sərhədi onun o tayına çək. Preflight `kəsim səsi` yoxlaması (checks.cut_audio_scan) bunu avtomatik tapır; xəbərdarlıq qalırsa render etmə.
+5. Cümlənin içindəki pauza təbii nitqin hissəsidir, kəsmə. Yalnız cümlələr ARASINDAKI uzun sakitlik qısaldıla bilər — və ancaq sakitlikdə kəsim + yumşaq keçidlə.
+6. Müddət: reklam ≤60 s (istifadəçi başqa demirsə). Sığmırsa tam cümləni çıxar, yarım cümlə saxlama.
+
+**Keçidlər.** Hər real kəsimdə (başqa mənbə yeri) hamar keçid məcburidir: planda `"dissolve": {"auto": "all", "dur": 0.3}` və həmin kəsimlərə bağlı danışıq səsi klipinə
+`fadeIn`/`fadeOut` ≈ 0.08 s (12 ms klik qorumasıdır, keçid deyil). Kəsimin özü sakitlikdə olmalıdır. İstifadəçi sərt/ani keçidləri qəbul etmir.
+
+**Kadr.** Sabit kamera: `frames` bir açar (cx, cy), hərəkət/izləmə/zoom sıçrayışı yox. Əyrilik: fonda şaquli xətlər (pərdə, divar küncü) varsa `checks.measure_tilt(video, times)` ilə ölç və
+`rotate`-i (saat əqrəbi +) həmin qədər qoy; yekun videoda yenidən ölç (≈0° olmalıdır). Fonda xətt yoxdursa istifadəçiyə "əyrilik ölçülmədi" yaz, təxmini çevirmə. Üz kadrın hündürlüyündən ~41–45%-də;
+yuxarı kartlar üçün baş üstü boşluq lazımdır: kartın alt kənarı ilə başın ən yüksək nöqtəsi arası ≥3% (yoxsa kadrı aşağı sal, kartı kiçilt, 3 sətirdən çox yazma).
+
+**Üst yazı/kartlar.** Montserrat. Yazı başa/üzə/bədənin böyük hissəsinə düşmür; kart vaxtı altyazı qoyulmur (kart aşağıdadırsa) və ya kart yuxarıda qalır. Elementlər üst-üstə düşmür (bitmə ilə növbəti başlama arası ≥0.1 s) və hər biri ≥1.3 s görünür.
+Ayırıcı nöqtə (•/·) HEÇ VAXT sətrin sonunda qalmır — həmişə növbəti elementin əvvəlində ("Montessori\n• oyun əsaslı məşğələlər"; `type` inline siyahısında kod bunu avtomatik edir). Mətn danışıqla uyğundur (qrafikanın vaxtı sözün deyilmə anına görə, mənbə vaxtından çevrilir).
+Altyazı sözləri `candidates` sözlərindən qurulur — ASR səhvləri (məs. "baxçıb əlum") həm `analysis`, həm `candidates`-də düzəldilməlidir, yoxsa altyazıda səhv çıxır.
+
+**Fon.** Standart olaraq təbii. Fon bulanıqlaşdırma/qaraltma (`fx focus`) YALNIZ istifadəçi istəyəndə; bulanıqlıq əl/qol ətrafında maska kənarı verir və "peşəkar görünmür" sayılır. Qaraltma (`dim`) kənarı daha az göstərir.
+
+**Rəng.** `look: auto` + yalnız `sharpen 0.65` (+ avtomatik ton). Əlavə gamma/kontrast/denoise/şablon yoxdur (istifadəçi bunu rədd edib; saf auto təsdiqlənib).
+
+**Musiqi.** Standart VAR. Seçərkən trekin ilk 8 s-nin səviyyəsinə bax (`ebur128`): başlanğıcı sakit olan trek ilk saniyələrdə eşidilmir. Planda `"under": 12` (danışıqdan 12 LU aşağı; standart 16 çox sakit sayılır), `fadeIn ≤0.5`, `fadeOut ≈2.5`. Eyni müştərinin ardıcıl videolarında fərqli trek.
+
+**Yekun fayl (finalize).** İki keçidli `loudnorm=I=-14.5:TP=-2.2:LRA=11`, `-c:v copy -c:a aac -b:a 192k -ar 48000 -t <VİDEO müddəti>`. Danışıq səsinə `afade`/söndürmə QOYMA (sonuncu sözləri öldürür; yalnız musiqi sönür).
+Audio və video müddəti eyni olmalı (`verify` fərqi göstərir; `-t` ilə video müddətinə kəs).
+
+**Təhvil yoxlaması (hər videoda).** (1) tam səsi ASR et — təkrar/yarımçıq cümlə yoxdur; (2) preflight-da `kəsim səsi` və `kəsim sərhədləri` təmizdir; (3) yekun videoda əyrilik ölçüsü ≈0; (4) 8–10 kadr kontakt şəkli: kartlar başı örtmür, altyazı/kart toqquşmur, nöqtələr sətir əvvəlindədir; (5) müddət ≤60 s; (6) təhvil mətnində qulaqla yoxlanmadığı, çıxarılan hissələr, seçilən musiqi və qalan xəbərdarlıqlar yazılır.
+
 ## 3. YALNIZ istifadəçi deyəndə
 Güzgü çevirmə (`hflip`), arxa fonu bulanıqlaşdırma/dəyişmə, ödənişli xidmət və API, hazır rəng şablonu.
 
 ## 4. Hazırda sistemdə YOXDUR (əvəzi)
 - **Dəstlər çatmır:** istifadəçi `colorblock`, `kinetic`, `handnote`, `intertitle`-i rədd edib (`montaj/kit_decisions.json`); `editorial`, `frame` seçilib/təsdiqlənib. İcazə verilən dəstlər: `editorial`, `frame` (Çərçivə) və Apple üslublu şüşə dəstləri `milkglass` (süd şüşəsi kartı), `notification` (iOS bildiriş bannerı), `glasscaps` (şüşə kapsullar), `pblur` (mütərəqqi bulanıqlıq + keynote yazı) — hamısını istifadəçi seçdi — və təhlükəsiz baza `classic`. **Kamera vizörü** (`hook.viewfinder=true`: ● REC + taymkod, yalnız yuxarı künclər) HƏR dəstdə mümkündür; mövzuya uyğundursa (kamera arxası, etiraf, sirr) agent seçir, hər videoda deyil. Şüşə dəstləri üçün `content.brand_name` (profil adı) verilir. `intertitle` də rədd edildi (qeyri-peşəkar, premium deyil). 3 fərqli variant üçün çatışmayan variantlar YENİ üslub dəsti (fərqli dizayn dili, ≥4 oxda fərq) və ya bəzək rejimində (atelier) yazılmış variant kimi təklif olunur; rədd edilmiş dəst təklif olunmur. Yeni dəst təklifi əvvəl şəkil (eskiz) kimi göstərilir, istifadəçi bəyənəndən sonra qurulur.
 Bunlar qaydadan azad etmir: §2-dəki qaydalar məcburidir, kod isə ayrıca işdir. İcra olunana qədər aşağıdakı əvəzi tətbiq olunur və təhvildə bunun hələ tam hamar olmadığı açıq yazılır.
-- **Hiss edilməyən video keçidi (MƏCBURİ qayda, icra olunub):** danışıq kəsimində dissolve yoxdur → cümlə sərhədində, səsin ən sakit yerində kəsim + 12 ms səs keçidi + J/L-cut; yumşaq video keçidi (dissolve) İCRA OLUNUB: planda `"dissolve": {"auto": "broll", "dur": 0.2}` (B-roll giriş/çıxışı) və ya `"at": {"<növbəti klip id>": 0.3}` (konkret sərhəd). Ümumi müddət və səs dəyişmir; mənbədə ehtiyat yoxdursa və ya klip 4×yarım-keçiddən qısadırsa kəsim qalır. Danışıq kəsimlərində (eyni plan daxilində) dissolve işlətmə — onlar hiss edilməməlidir. (Hamar zoom da var.)
+- **Hiss edilməyən video keçidi (MƏCBURİ qayda, icra olunub):** danışıq kəsimində dissolve yoxdur → cümlə sərhədində, səsin ən sakit yerində kəsim + 12 ms səs keçidi + J/L-cut; yumşaq video keçidi (dissolve) İCRA OLUNUB: planda `"dissolve": {"auto": "broll", "dur": 0.2}` (B-roll giriş/çıxışı) və ya `"at": {"<növbəti klip id>": 0.3}` (konkret sərhəd). Ümumi müddət və səs dəyişmir; mənbədə ehtiyat yoxdursa və ya klip 4×yarım-keçiddən qısadırsa kəsim qalır. Danışıq kəsimləri də (başqa mənbə yeri) §2a-ya görə `"dissolve": {"auto": "all", "dur": 0.3}` ilə yumşaldılır (istifadəçi təsdiqləyib: sərt kəsim 'ani' sayıldı). Eyni mənbədə davamlı sərhədlərdə keçid qoyulmur. (Hamar zoom da var.)
 - **Dəstlərin məhdudiyyəti:** `colorblock` paneli kadrın yuxarı ~30%-ni, `kinetic` zolaqları isə yuxarı 5% və aşağı 24%-i örtür (video miqyaslanmır, üz yoxlanmır, əllər zolağın altında qala bilər); `handnote`/`editorial` yazıları başın üstündə yer tutur. Kadrda baxıb yoxla; bədən örtülürsə yer/ölçünü dəyiş və ya kadrı böl.
 - **Bədən örtülməsi yoxlaması:** `verify`/preflight yalnız üzü yoxlayır → vizual kadrda özün yoxla, kart bədəni örtərsə kadrı böl.
 - **Element ≥2 s qaydası:** preflight xəbərdarlıq edir, avtomatik düzəltmir → planda vaxtları özün düzəlt.

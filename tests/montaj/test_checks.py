@@ -81,3 +81,35 @@ def test_recenter_shifts_keys():
     q = checks.recenter(p, -0.1)
     assert q["clips"][0]["frame"]["keys"][0]["cx"] == 0.45
     assert p["clips"][0]["frame"]["keys"][0]["cx"] == 0.5
+
+
+def _burst_signal(spec, total, sr=16000):
+    """spec: [(başla, bitir)] saniyə — bu aralıqlarda səs-küy, qalanı sakitlik."""
+    rng = np.random.default_rng(1)
+    x = np.zeros(int(total * sr), dtype=np.float32)
+    for a, b in spec:
+        i0, i1 = int(round(a * sr)), int(round(b * sr))
+        x[i0:i1] = 0.2 * rng.standard_normal(i1 - i0)
+    return x
+
+
+def test_scan_edge_flags_stray_burst_at_start():
+    x = _burst_signal([(0.4, 0.58), (1.05, 1.9)], 2.2)  # 0.18 s kənar səs, 0.47 s sakitlik, sonra real söz
+    assert any("təcrid" in p for p in checks.scan_edge(x, 0.3, "in"))
+
+
+def test_scan_edge_clean_start_and_end():
+    x = _burst_signal([(0.5, 1.4)], 2.0)
+    assert checks.scan_edge(x, 0.3, "in") == []
+    assert checks.scan_edge(x, 1.7, "out") == []
+
+
+def test_scan_edge_flags_cut_inside_speech():
+    x = _burst_signal([(0.2, 1.8)], 2.2)
+    assert any("içindədir" in p for p in checks.scan_edge(x, 1.0, "out"))
+    assert any("içindədir" in p for p in checks.scan_edge(x, 1.0, "in"))
+
+
+def test_scan_edge_flags_stray_tail():
+    x = _burst_signal([(0.2, 1.0), (1.5, 1.68)], 2.2)  # söz bitir, 0.5 s sakitlik, qısa kənar səs
+    assert any("təcrid" in p for p in checks.scan_edge(x, 2.0, "out"))

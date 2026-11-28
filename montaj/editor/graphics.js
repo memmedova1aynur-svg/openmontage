@@ -197,8 +197,10 @@
         const n = shown(clip.items);
         const line = node(doc, 'div', { display: 'flex', justifyContent: clip.align === 'center' ? 'center' : 'flex-start', flexWrap: 'wrap', gap: `0 ${fs * 0.5}px` });
         clip.items.forEach((it, i) => {
-          if (i > 0) line.append(node(doc, 'span', { opacity: i < n ? '0.7' : '0' }, '·'));
-          line.append(node(doc, 'span', { opacity: i < n ? '1' : '0' }, it.text || ''));
+          const item = node(doc, 'span', { opacity: i < n ? '1' : '0', whiteSpace: 'nowrap' });  // nöqtə növbəti sözün əvvəlinə bağlıdır — sətir sonunda qalmır
+          if (i > 0) item.append(node(doc, 'span', { opacity: '0.7', marginRight: `${fs * 0.5}px` }, '·'));
+          item.append(doc.createTextNode(it.text || ''));
+          line.append(item);
         });
         w.append(line);
       } else if (clip.items && clip.items.length) {

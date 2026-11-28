@@ -273,6 +273,10 @@ def run(pid: str) -> dict[str, Any]:
         except Exception as e:  # yoxlama montajı dayandırmasın
             rep["checks"].append({"name": "kəsim sərhədləri", "status": "skip", "msg": f"yoxlanmadı: {e}", "items": []})
         try:
+            _chk(checks.cut_audio_scan(q, root))
+        except Exception as e:
+            rep["checks"].append({"name": "kəsim səsi", "status": "skip", "msg": f"yoxlanmadı: {e}", "items": []})
+        try:
             r, q = checks.voice_integrity(q, root)
             _chk(r)
         except Exception as e:

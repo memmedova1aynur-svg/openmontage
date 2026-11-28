@@ -78,6 +78,144 @@ def cut_boundaries(project: dict[str, Any], analyses: dict[str, dict[str, Any]])
     return _res("kəsim sərhədləri", "ok", f"{cuts} kəsim, heç bir söz yarımçıq deyil")
 
 
+# ---------- 1b. kəsim yerlərində real səs enerjisi: kənar/yarımçıq səs, sözün sonu ----------
+SCAN_FRAME = 0.02            # enerji kadrı (s)
+SCAN_ACTIVE_DB = -42.0       # bundan yüksək = səs var
+SCAN_QUIET_DB = -48.0        # bundan aşağı = sakitlik
+STRAY_MAX = 0.30             # bundan qısa təcrid olunmuş səs parçası = kənar səs / yarımçıq başlanğıc şübhəsi
+STRAY_GAP = 0.25             # parçadan sonrakı/əvvəlki sakitlik ≥ bu qədərdirsə təcrid olunmuş sayılır
+STRAY_WINDOW = 1.2           # kəsimdən bu qədər içəridə axtarılır
+
+
+def _bursts(db: np.ndarray, join: float = 0.12) -> list[tuple[float, float]]:
+    """Enerji kadrlarından səs parçaları (başla, bitir) saniyə ilə; <join sakitlik parçanı bölmür."""
+    act = db > SCAN_ACTIVE_DB
+    out: list[list[float]] = []
+    for i, a in enumerate(act):
+        if not a:
+            continue
+        t = i * SCAN_FRAME
+        if out and t - out[-1][1] <= join + SCAN_FRAME:
+            out[-1][1] = t + SCAN_FRAME
+        else:
+            out.append([t, t + SCAN_FRAME])
+    return [(a, b) for a, b in out if b - a >= 0.06]  # <60 ms — tıqqıltı/küy, səs parçası sayılmır
+
+
+def _frame_db(x: np.ndarray, sr: int = 16000) -> np.ndarray:
+    n = int(sr * SCAN_FRAME)
+    k = len(x) // n
+    if k == 0:
+        return np.array([])
+    f = x[: k * n].reshape(k, n)
+    return 20 * np.log10(np.sqrt((f ** 2).mean(axis=1)) + 1e-6)
+
+
+def scan_edge(x: np.ndarray, edge: float, side: str, sr: int = 16000) -> list[str]:
+    """x — pəncərə səsi (başlanğıcı `0` saniyə), edge — kəsim anı (pəncərədə, s). side: "in" (klipin başı) və ya "out" (sonu).
+    Qayıdır problem mətnləri: kəsim səsin içindədir, kənar/yarımçıq səs parçası, sonu sakitlikdə bitmir."""
+    db = _frame_db(x, sr)
+    if len(db) == 0:
+        return []
+    i = min(len(db) - 1, max(0, int(edge / SCAN_FRAME)))
+    probs: list[str] = []
+    bursts = _bursts(db)
+    if side == "in":
+        if db[i:i + 2].mean() > SCAN_ACTIVE_DB:
+            probs.append("kəsim səsin içindədir (başlanğıc sakitlikdə deyil)")
+        inner = [b for b in bursts if b[1] > edge and b[0] < edge + STRAY_WINDOW]
+        if len(inner) >= 2:
+            a, b = inner[0]
+            nxt = inner[1][0]
+            if (min(b, edge + STRAY_WINDOW) - max(a, edge)) < STRAY_MAX and nxt - b >= STRAY_GAP:
+                probs.append(f"başlanğıcda {max(a, edge) - edge + 0:.2f}–{b - edge:.2f} s-də təcrid olunmuş qısa səs ({b - max(a, edge):.2f} s), ardınca {nxt - b:.2f} s sakitlik — kənar səs/yarımçıq başlanğıc ola bilər")
+    else:
+        if db[max(0, i - 2):i].mean() > SCAN_ACTIVE_DB:
+            probs.append("kəsim səsin içindədir (sonuncu söz/heca kəsilir və ya yekun səs sönmür)")
+        inner = [b for b in bursts if b[0] < edge and b[1] > edge - STRAY_WINDOW]
+        if len(inner) >= 2:
+            a, b = inner[-1]
+            prv = inner[-2][1]
+            if (min(b, edge) - max(a, edge - STRAY_WINDOW)) < STRAY_MAX and a - prv >= STRAY_GAP:
+                probs.append(f"sonda {edge - min(b, edge):.2f}–{edge - a:.2f} s əvvəl təcrid olunmuş qısa səs ({b - a:.2f} s), əvvəlində {a - prv:.2f} s sakitlik — yarımçıq söz ola bilər")
+    return probs
+
+
+def cut_audio_scan(project: dict[str, Any], root: Path) -> dict[str, Any]:
+    """Hər real kəsim yerində (və videonun əvvəlində/sonunda) orijinal səsin enerjisinə baxır: kənar/yarımçıq səs, sözün sonu kəsilməsi.
+    Transkript vaxtlarına güvənmir (Whisper söz vaxtları 0.5 s-ə qədər sürüşə bilir) — yalnız ölçülmüş enerji."""
+    from montaj.render import _continuous, render_plan
+
+    pl = render_plan(project)
+    vids = [v for v in pl["video"] if not v["clip"].get("broll")]
+    media = {m["id"]: m for m in project.get("media", [])}
+    items: list[str] = []
+
+    def probe(clip: dict[str, Any], t_tl: float, side: str) -> None:
+        m = media.get(clip.get("media")) or {}
+        path = root / m["file"] if m.get("file") else None
+        if not path or not path.is_file():
+            return
+        e = float(clip["srcIn"] if side == "in" else clip["srcOut"])
+        ss = max(0.0, e - (0.3 if side == "in" else STRAY_WINDOW + 0.3))
+        win = (STRAY_WINDOW + 0.6) if side == "in" else (STRAY_WINDOW + 0.6)
+        try:
+            x = _read(path, ss, win)
+        except Exception:
+            return
+        for p in scan_edge(x, e - ss, side):
+            items.append(f"{t_tl:.2f} s ({'giriş' if side == 'in' else 'çıxış'}, mənbə {e:.2f} s): {p}")
+
+    if not vids:
+        return _res("kəsim səsi", "skip", "video klip yoxdur")
+    probe(vids[0]["clip"], 0.0, "in")
+    n = 0
+    for a, b in zip(vids, vids[1:]):
+        if _continuous(a["clip"], b["clip"]):
+            continue
+        n += 1
+        t_tl = a["start"] + a["dur"]
+        probe(a["clip"], t_tl, "out")
+        probe(b["clip"], t_tl, "in")
+    probe(vids[-1]["clip"], vids[-1]["start"] + vids[-1]["dur"], "out")
+    if items:
+        return _res("kəsim səsi", "warn", f"{len(items)} kəsim yerində kənar/yarımçıq səs və ya kəsilmiş son söz şübhəsi ({n} kəsim yoxlandı) — mənbə vaxtında sərhədi sakitlik yerinə çək", items)
+    return _res("kəsim səsi", "ok", f"{n} kəsim: başlanğıc/son sakitlikdədir, kənar səs yoxdur")
+
+
+def measure_tilt(video: Path, times: list[float], region: tuple[float, float, float, float] = (0.0, 0.0, 0.42, 0.55)) -> dict[str, Any]:
+    """Fondakı şaquli xətlərin (pərdə qatları, divar küncü, qapı çərçivəsi) şaquldan sapması (dərəcə), Hough ilə.
+    + = xətt yuxarıdan solda, aşağıdan sağdadır ("\\"); düzəltmək üçün kadrı saat əqrəbi istiqamətində (rotate=+bu qədər) çevir.
+    region (x0, y0, x1, y1) kadr payı. Qayıdır {deg, n, ok}. Xətt azdırsa ok=False (ölçüyə inanma)."""
+    import cv2
+
+    cap = cv2.VideoCapture(str(video))
+    angs: list[tuple[float, float]] = []
+    for t in times:
+        cap.set(cv2.CAP_PROP_POS_MSEC, t * 1000)
+        ok, f = cap.read()
+        if not ok:
+            continue
+        g = cv2.cvtColor(f, cv2.COLOR_BGR2GRAY)
+        H, W = g.shape
+        x0, y0, x1, y1 = region
+        roi = g[int(y0 * H):int(y1 * H), int(x0 * W):int(x1 * W)]
+        e = cv2.Canny(cv2.GaussianBlur(roi, (5, 5), 0), 40, 110)
+        L = cv2.HoughLinesP(e, 1, np.pi / 720, 60, minLineLength=int(0.08 * H), maxLineGap=12)
+        if L is None:
+            continue
+        for x_a, y_a, x_b, y_b in L.reshape(-1, 4):
+            a = float(np.degrees(np.arctan2(x_b - x_a, y_b - y_a)))
+            a = a - 180 if a > 90 else a + 180 if a < -90 else a
+            if abs(a) < 12:
+                angs.append((a, float(np.hypot(x_b - x_a, y_b - y_a))))
+    cap.release()
+    if len(angs) < 40:
+        return {"deg": 0.0, "n": len(angs), "ok": False}
+    arr = np.array(angs)
+    return {"deg": round(float(np.median(arr[:, 0])), 2), "n": len(angs), "ok": True}
+
+
 # ---------- 2. səs boğuqluğu (voice-clean) ----------
 def _read(path: Path, ss: float, t: float, sr: int = 16000) -> np.ndarray:
     out = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{ss:.3f}", "-t", f"{t:.3f}", "-i", str(path), "-map", "0:a:0", "-ac", "1", "-ar", str(sr), "-f", "f32le", "-"],
