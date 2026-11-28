@@ -20,6 +20,7 @@ import { PikmentReel, PikmentReelProps } from "./PikmentReel";
 import { PikmentSchoolAd, PikmentSchoolAdProps } from "./PikmentSchoolAd";
 import { PikmentChooseAd, PikmentChooseAdProps } from "./PikmentChooseAd";
 import { PikmentServicesAd, PikmentServicesAdProps } from "./PikmentServicesAd";
+import { Pikment001Launch, Pikment001Props } from "./productions/Pikment001Launch";
 
 // ---------------------------------------------------------------------------
 // Theme System — prevents every video from looking like dark fintech
@@ -405,6 +406,15 @@ export const Root: React.FC = () => {
           whatsapp: "+994 51 999 88 70",
           site: "pikment.az",
         } as PikmentServicesAdProps}
+      />
+      <Composition
+        id="Pikment001Launch"
+        component={Pikment001Launch}
+        durationInFrames={810}
+        fps={30}
+        width={1080}
+        height={1920}
+        defaultProps={{ audioSrc: "pikment_launch/audio_001.wav" } as Pikment001Props}
       />
     </>
   );

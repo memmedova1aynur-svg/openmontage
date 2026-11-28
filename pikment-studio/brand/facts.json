@@ -1,0 +1,274 @@
+{
+  "source": "https://pikment.az/",
+  "contact": {
+    "whatsapp": "+994 51 999 88 70",
+    "wa_link": "https://wa.me/994519998870",
+    "site": "pikment.az",
+    "instagram": "pikment.az"
+  },
+  "team_numbers": {
+    "years": 6,
+    "participants": "4300+",
+    "trainers": 20,
+    "note": "Rəqəmlər Pikment adı ilə keçirilən təlimlərə aiddir (noyabr 2026). Tətbiqin istifadəçi sayı deyil."
+  },
+  "stats_label": "200+ təlim xidməti",
+  "courses": [
+    {
+      "category": "Məktəbəqədər",
+      "name": "Bağça işi üzrə təlim və təcrübə proqramı",
+      "for": "Bağçada işləmək istəyənlər və yeni başlayan pedaqoqlar",
+      "trainers": "Nilufər Mehdiyeva, Rəhimə Niyazlı, Xalidə Baycan",
+      "duration": "3 ay: 2 ay təlim (16 nəzəri dərs), 1 ay praktika",
+      "format": "onlayn / əyani"
+    },
+    {
+      "category": "Məktəbəqədər",
+      "name": "Montessori metodu",
+      "for": "Pedaqoqlar, metodistlər, Montessori yanaşması ilə işləmək istəyənlər",
+      "trainers": "Nilufər Mehdiyeva, Rəhimə Niyazlı, Xalidə Baycan",
+      "duration": "6 dərs · 1 ay",
+      "format": "onlayn / əyani"
+    },
+    {
+      "category": "Məktəbəqədər",
+      "name": "Metodist hazırlığı",
+      "for": "Metodist olmaq istəyən təcrübəli pedaqoqlar",
+      "trainers": "Nilufər Mehdiyeva, Rəhimə Niyazlı, Aynur Həkimova",
+      "duration": "12 dərs · 1 ay",
+      "format": "onlayn / əyani"
+    },
+    {
+      "category": "Məktəbəqədər",
+      "name": "Bağça rəhbərləri üçün idarəçilik",
+      "for": "Bağça rəhbərləri və bağça açmaq istəyənlər",
+      "trainers": "Nilufər Mehdiyeva, Rəhimə Niyazlı, Aynur Həkimova",
+      "duration": "12 dərs · 1 ay",
+      "format": "onlayn / əyani"
+    },
+    {
+      "category": "Məktəbəqədər",
+      "name": "Uşaq İnkişafı Mütəxəssisliyi Məktəbi",
+      "for": "Uşaq inkişafı mütəxəssisi olmaq istəyənlər",
+      "trainers": "Nilufər Mehdiyeva",
+      "duration": "9 ay: 6 ay təlim, 3 ay təcrübə",
+      "format": "onlayn / əyani"
+    },
+    {
+      "category": "Məktəbəqədər",
+      "name": "Məktəbəqədər hazırlıq qruplarında işin təşkili metodikası",
+      "for": "Hazırlıq qruplarında işləyən pedaqoqlar",
+      "trainers": "Nilufər Mehdiyeva",
+      "duration": "8 dərs · 1 ay",
+      "format": "onlayn / əyani"
+    },
+    {
+      "category": "Məktəbəqədər",
+      "name": "Uşaq rəsmlərinin analizi",
+      "for": "Pedaqoqlar, metodistlər, uşaq inkişafı mütəxəssisləri",
+      "trainers": "Nilufər Mehdiyeva",
+      "duration": "8 dərs · 1 ay",
+      "format": "onlayn / əyani"
+    },
+    {
+      "category": "Məktəbəqədər",
+      "name": "Uşaqlar üçün fəlsəfə (P4C)",
+      "for": "Pedaqoqlar və müəllimlər",
+      "trainers": "Nilufər Mehdiyeva",
+      "duration": "10 dərs · 1 ay",
+      "format": "onlayn / əyani"
+    },
+    {
+      "category": "Oyun və terapiya",
+      "name": "Pedaqoqlar üçün oyun məktəbi",
+      "for": "Pedaqoqlar",
+      "trainers": "Xalidə Baycan",
+      "duration": "10 dərs · 1 ay",
+      "format": "onlayn / əyani"
+    },
+    {
+      "category": "Oyun və terapiya",
+      "name": "Oyun terapiyası",
+      "for": "Pedaqoqlar, psixoloqlar, uşaq inkişafı mütəxəssisləri",
+      "trainers": "Xalidə Baycan",
+      "duration": "10 dərs · 1 ay",
+      "format": "onlayn / əyani"
+    },
+    {
+      "category": "Oyun və terapiya",
+      "name": "Nağıl terapiyası",
+      "for": "Pedaqoqlar, metodistlər, psixoloqlar",
+      "trainers": "Nilufər Mehdiyeva, Rəhimə Niyazlı",
+      "duration": "5 dərs · 1 ay",
+      "format": "onlayn / əyani"
+    },
+    {
+      "category": "İnklüziv",
+      "name": "İnklüziv təhsil",
+      "for": "Pedaqoqlar, metodistlər, bağça rəhbərləri",
+      "trainers": "Sevinc Məhsimova, Nilufər Mehdiyeva",
+      "duration": "24 dərs · 1 ay",
+      "format": "onlayn / əyani"
+    },
+    {
+      "category": "İnklüziv",
+      "name": "Autizm spektr pozuntusu",
+      "for": "Uşaqlarla işləyən mütəxəssislər",
+      "trainers": "Sevinc Məhsimova",
+      "duration": "12 dərs · 1 ay",
+      "format": "onlayn / əyani"
+    },
+    {
+      "category": "İnklüziv",
+      "name": "Disleksiya",
+      "for": "Pedaqoqlar və müəllimlər",
+      "trainers": "Sevinc Məhsimova",
+      "duration": "10 dərs · 1 ay",
+      "format": "onlayn / əyani"
+    },
+    {
+      "category": "İnklüziv",
+      "name": "Xüsusi qayğıya ehtiyacı olan uşaqlarla iş",
+      "for": "Pedaqoqlar, köməkçi müəllimlər",
+      "trainers": "Sevinc Məhsimova",
+      "duration": "24 dərs · 3 ay",
+      "format": "onlayn / əyani"
+    },
+    {
+      "category": "İnklüziv",
+      "name": "DƏHP",
+      "for": "Pedaqoqlar və müəllimlər",
+      "trainers": "Sevinc Məhsimova",
+      "duration": "10 dərs · 1 ay",
+      "format": "onlayn / əyani"
+    },
+    {
+      "category": "Ana və uşaq",
+      "name": "Analar məktəbi",
+      "for": "Gələcək və indiki analar",
+      "trainers": "Sura Malik",
+      "duration": "16 dərs · 2 ay",
+      "format": "onlayn / əyani"
+    },
+    {
+      "category": "Ana və uşaq",
+      "name": "Dayəlik məktəbi",
+      "for": "Dayə olmaq istəyənlər",
+      "trainers": "Sura Malik",
+      "duration": "16 dərs · 2 ay",
+      "format": "onlayn / əyani"
+    },
+    {
+      "category": "Ana və uşaq",
+      "name": "Laktasiya məsləhətçisi",
+      "for": "Laktasiya məsləhətçisi olmaq istəyənlər",
+      "trainers": "Sura Malik",
+      "duration": "16 dərs · 2 ay",
+      "format": "onlayn / əyani"
+    },
+    {
+      "category": "Təhsil biznesi",
+      "name": "Təhsil biznesində idarəetmə",
+      "for": "Təhsil mərkəzi və bağça sahibləri, rəhbərlər",
+      "trainers": "Murad Elxan, Kənan Zərbiyev",
+      "duration": "10 dərs · 1 ay",
+      "format": "onlayn / əyani"
+    },
+    {
+      "category": "Təhsil biznesi",
+      "name": "Təhsil biznesində marketinq",
+      "for": "Təhsil mərkəzi və bağça sahibləri",
+      "trainers": "Murad Elxan, Kənan Zərbiyev",
+      "duration": "10 dərs · 1 ay",
+      "format": "onlayn / əyani"
+    },
+    {
+      "category": "Təhsil biznesi",
+      "name": "Təhsildə satış (satış texnikaları)",
+      "for": "Təhsil mərkəzlərinin rəhbərləri və satış əməkdaşları",
+      "trainers": "Kənan Zərbiyev, Aytən Cəlilova",
+      "duration": "10 dərs · 1 ay",
+      "format": "onlayn / əyani"
+    },
+    {
+      "category": "Şəxsi inkişaf",
+      "name": "Öyrənmə metodikası",
+      "for": "Tələbələr, abituriyentlər, öyrənməni gücləndirmək istəyənlər",
+      "trainers": "Aytən Cəlilova",
+      "duration": "8 dərs · 1 ay",
+      "format": "onlayn / əyani"
+    },
+    {
+      "category": "Şəxsi inkişaf",
+      "name": "Yumşaq bacarıqlar",
+      "for": "Komandada işləyən mütəxəssislər",
+      "trainers": "Murad Elxan",
+      "duration": "8 dərs · 1 ay",
+      "format": "onlayn / əyani"
+    },
+    {
+      "category": "Şəxsi inkişaf",
+      "name": "Rəqəmsal bacarıqlar",
+      "for": "Rəqəmsal alətləri işdə istifadə etmək istəyənlər",
+      "trainers": "Murad Elxan",
+      "duration": "8 dərs · 1 ay",
+      "format": "onlayn / əyani"
+    }
+  ],
+  "app": {
+    "title": "Gündəlik iş bir tətbiqdə",
+    "features": [
+      {
+        "n": "1",
+        "name": "Gündəlik plan",
+        "text": "İllik plana bağlı plan hər gün hazır olur."
+      },
+      {
+        "n": "2",
+        "name": "Alətlər",
+        "text": "Taymer, müşahidə qeydləri və qrupla iş üçün alətlər."
+      },
+      {
+        "n": "3",
+        "name": "Kitabxana",
+        "text": "Plandakı hər material tətbiqin içindədir."
+      }
+    ],
+    "status": "Tezliklə Google Play-də",
+    "cta": "Mənə xəbər ver",
+    "phone_mock": {
+      "title": "Bu gün",
+      "topic": "Həftənin mövzusu: Payız",
+      "group": "Orta qrup · 4–5 yaş",
+      "items": [
+        [
+          "Səhər görüşü",
+          "10 dəq"
+        ],
+        [
+          "Rəsm: yarpaq izləri",
+          "25 dəq · material hazırdır"
+        ],
+        [
+          "Hərəkətli oyun",
+          "15 dəq"
+        ],
+        [
+          "Nağıl vaxtı",
+          "15 dəq"
+        ]
+      ]
+    }
+  },
+  "app_sections": [
+    "Bu gün",
+    "Fəaliyyətlər",
+    "Pik",
+    "Akademiya",
+    "Profil"
+  ],
+  "app_status": "Pilot mərhələ. Google Play-də hələ yoxdur: yalnız 'tezliklə'.",
+  "certificate": "Təlimi bitirənlərə Pikment sertifikatı verilir; dövlət nümunəli sənəd deyil.",
+  "mentorship": "Mentorluğa başlamazdan əvvəl mentorla pulsuz konsultasiya, heç bir öhdəlik yoxdur.",
+  "tagline": "Hər kəsin öz rəngi var"
+}
