@@ -400,7 +400,7 @@ export const Root: React.FC = () => {
         width={1080}
         height={1920}
         defaultProps={{
-          voiceSrc: "pikment/vo_services_el.wav",
+          voiceSrc: "pikment/audio_services_final.wav",
           logoSrc: "pikment/logo.png",
           whatsapp: "+994 51 999 88 70",
           site: "pikment.az",
