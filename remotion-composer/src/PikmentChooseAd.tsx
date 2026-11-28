@@ -48,7 +48,7 @@ const COURSES = [
   { cat: "Məktəbəqədər", ad: "Uşaq İnkişafı Mütəxəssisliyi Məktəbi", m: "9 ay" },
 ];
 
-const Areas: React.FC = () => {
+export const Areas: React.FC = () => {
   const f = useCurrentFrame();
   const { fps } = useVideoConfig();
   return (
@@ -127,7 +127,7 @@ const Cards: React.FC<{ selectAt: number }> = ({ selectAt }) => {
   );
 };
 
-const End: React.FC<{ logoSrc: string; whatsapp: string; site: string }> = ({ logoSrc, whatsapp, site }) => {
+export const End: React.FC<{ logoSrc: string; whatsapp: string; site: string }> = ({ logoSrc, whatsapp, site }) => {
   const f = useCurrentFrame();
   const { fps } = useVideoConfig();
   const a = spring({ frame: f, fps, config: { damping: 15, stiffness: 100 } });
