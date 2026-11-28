@@ -23,8 +23,8 @@ export const MaskWord: React.FC<{ children: React.ReactNode; at: number; dur?: n
   const f = useCurrentFrame();
   const p = prog(f, at, at + dur, easeOut);
   return (
-    <span style={{ display: "inline-block", overflow: "hidden", verticalAlign: "top", paddingBottom: size * 0.16, marginBottom: -size * 0.16, marginRight: gap * size }}>
-      <span style={{ display: "inline-block", fontFamily: DISPLAY, fontWeight: weight, fontSize: size, letterSpacing: -size * 0.03, lineHeight: 1.08, color, transform: `translateY(${(1 - p) * 110}%)`, filter: p < 1 ? `blur(${(1 - p) * 7}px)` : undefined, opacity: p > 0 ? 1 : 0, ...(grad ? gradText : {}) }}>{children}</span>
+    <span style={{ display: "inline-block", overflow: "hidden", verticalAlign: "top", paddingBottom: size * 0.3, marginBottom: -size * 0.3, paddingTop: size * 0.1, marginTop: -size * 0.1, marginRight: gap * size }}>
+      <span style={{ display: "inline-block", fontFamily: DISPLAY, fontWeight: weight, fontSize: size, letterSpacing: -size * 0.03, lineHeight: 1.08, color, transform: `translateY(${(1 - p) * 110}%)`, filter: p < 1 ? `blur(${(1 - p) * 7}px)` : undefined, opacity: p > 0 ? 1 : 0, ...(grad ? { ...gradText, paddingBottom: size * 0.24, marginBottom: -size * 0.24 } : {}) }}>{children}</span>
     </span>
   );
 };
@@ -85,6 +85,13 @@ export const Sweep: React.FC<{ p: number }> = ({ p }) => {
 /** Subtle film grain + soft vignette for a finished, non-template look. */
 export const Finish: React.FC = () => (
   <AbsoluteFill style={{ pointerEvents: "none", background: "radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 60%, rgba(23,20,40,0.10) 100%)" }} />
+);
+
+/** Soft diagonal light band that glides across the frame (lens-like highlight). p: 0..1 */
+export const LightSweep: React.FC<{ p: number; strength?: number }> = ({ p, strength = 0.5 }) => (
+  <AbsoluteFill style={{ pointerEvents: "none", overflow: "hidden", opacity: p > 0 && p < 1 ? 1 : 0 }}>
+    <div style={{ position: "absolute", top: -300, bottom: -300, width: 260, left: lerp(-400, 1300, p), transform: "skewX(-16deg)", background: `linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,${strength}), rgba(255,255,255,0))`, filter: "blur(18px)" }} />
+  </AbsoluteFill>
 );
 
 export { interpolate, easeInOut, clampOpts, BODY };

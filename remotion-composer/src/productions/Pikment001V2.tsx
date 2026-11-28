@@ -3,7 +3,7 @@ import { AbsoluteFill, Audio, Img, staticFile, useCurrentFrame } from "remotion"
 import { BRAND, DISPLAY, BODY, GRADIENT } from "../pikment/brand";
 import { loadPikmentFonts } from "../pikment/fonts";
 import { easeOut, easeInOut, easeBack, prog, lerp } from "../pikment/motion";
-import { LightBg, MaskWord, gradText } from "../pikment/Kit";
+import { LightBg, LightSweep, MaskWord, gradText } from "../pikment/Kit";
 import { LaptopPro, PhonePro } from "../pikment/Devices";
 import { PikmentLogo } from "../pikment/Logo";
 import T from "./pikment001v2.timeline.json";
@@ -61,7 +61,7 @@ const Stage: React.FC<{ f: number; t: number }> = ({ f, t }) => {
   const scroll = lerp(0, 300, prog(f, T.morph[1], T.shrink[1] + 1.5, easeInOut));
   const showL = t >= T.morph[1] - 0.1;
   return (
-    <div style={{ position: "absolute", inset: 0, opacity: 1 - push, transform: `scale(${lerp(1, 1.9, push)})`, transformOrigin: "50% 45%", ...blur(push * 18) }}>
+    <div style={{ position: "absolute", inset: 0, opacity: 1 - push, transform: `scale(${(1 + 0.05 * prog(f, T.shrink[0], T.push[0], (x) => x)) * lerp(1, 1.9, push)})`, transformOrigin: "50% 45%", ...blur(push * 18) }}>
       {lap < 1 && <div style={{ position: "absolute", left: 540 - bw / 2, top: cy - bh / 2, width: bw, height: bh, borderRadius: lerp(7, 9, m), background: GRADIENT, opacity: 1 - lap }} />}
       {showL && (
         <div style={{ position: "absolute", left: 35, top: wy - (15 + SH / 2), width: SW + 150, opacity: lap, transform: `scale(${lerp(1, 0.52, shrink)})`, transformOrigin: `50% ${15 + SH / 2}px` }}>
@@ -116,7 +116,7 @@ const Domain: React.FC<{ f: number }> = ({ f }) => {
   const u = prog(f, x1 + 0.1, x1 + 0.7, easeOut);
   const S = 196;
   return (
-    <div style={{ position: "absolute", left: 0, right: 0, top: 790, textAlign: "center", opacity: 1 - out, transform: `translateY(${-out * 120}px) scale(${lerp(1, 0.96, out)})`, ...blur(out * 10) }}>
+    <div style={{ position: "absolute", left: 0, right: 0, top: 790, textAlign: "center", opacity: 1 - out, transform: `translateY(${-out * 120}px) scale(${lerp(1.06, 1, prog(f, x0, x0 + 1.6, easeOut)) * lerp(1, 0.96, out)})`, ...blur(out * 10) }}>
       <div><MaskWord at={x0 - 0.03} size={S} gap={0} weight={800}>pikment</MaskWord><MaskWord at={x1 - 0.03} size={S} gap={0} grad weight={800}>.az</MaskWord></div>
       <div style={{ margin: "30px auto 0", width: 780 * u, height: 14, borderRadius: 14, background: GRADIENT }} />
     </div>
@@ -158,19 +158,21 @@ const Devices: React.FC<{ f: number; t: number }> = ({ f, t }) => {
   const lapIn = prog(f, T.together[0], T.together[1] + 0.1, easeOut);
   const soonT = Wd(27);
   const hit = f / FPS >= soonT ? Math.exp(-(f / FPS - soonT) * 5) * Math.sin((f / FPS - soonT) * 22) * 0.05 : 0;
-  const iris = prog(f, T.iris[0], T.iris[1], easeInOut);
-  const rotY = lerp(-14, 5, prog(f, T.phoneIn[0], T.together[0], easeInOut));
+  const iris = prog(f, T.band[0], T.band[0] + 0.55, easeInOut);
+  const rotY = lerp(-14, 5, prog(f, T.phoneIn[0], T.together[0], easeInOut)) + Math.sin(t * 0.9) * 1.6;
+  const bp = t >= T.together[1] ? 0.014 * Math.exp(-((t * 2) % 1) * 6) : 0;
+  const fl = t >= T.phoneIn[1] ? Math.sin(t * 1.5) * 7 : 0;
   const px = lerp(540, 330, tog), py = lerp(1115 + (1 - rise) * 1000, 1165, tog);
-  const sc = lerp(0.9, 0.74, tog) * (1 + hit);
+  const sc = lerp(0.9, 0.74, tog) * (1 + hit + bp);
   const scroll = 40 + (t - T.together[0]) * 10;
   return (
     <div style={{ position: "absolute", inset: 0, opacity: 1 - iris * 0.6, ...blur(iris * 6) }}>
       {t >= T.together[0] - 0.05 && (
-        <div style={{ position: "absolute", left: 350, top: 852, width: 1010, opacity: lapIn, transform: `translateX(${(1 - lapIn) * 220}px) scale(${0.7 * (1 + hit)})`, transformOrigin: "0 0" }}>
+        <div style={{ position: "absolute", left: 350, top: 852 - fl * 0.6, width: 1010, opacity: lapIn, transform: `translateX(${(1 - lapIn) * 220}px) scale(${0.7 * (1 + hit + bp)})`, transformOrigin: "0 0" }}>
           <LaptopPro sw={SW} src={L + "site_scroll.png"} scrollCss={scroll} rotY={-11} rotX={4} glare={0.35} />
         </div>
       )}
-      <div style={{ position: "absolute", left: px - (PW + 36) / 2, top: py - (Math.round(PW * 1194 / 643) + 36) / 2, transform: `scale(${sc})`, transformOrigin: "50% 50%" }}>
+      <div style={{ position: "absolute", left: px - (PW + 36) / 2, top: py + fl - (Math.round(PW * 1194 / 643) + 36) / 2, transform: `scale(${sc})`, transformOrigin: "50% 50%" }}>
         <PhonePro sw={PW} rotY={rotY} rotX={lerp(6, 2, rise)} glare={0.4}>
           <AppScreen f={f} />
         </PhonePro>
@@ -196,7 +198,7 @@ const Headline: React.FC<{ f: number }> = ({ f }) => {
 const Soon: React.FC<{ f: number }> = ({ f }) => {
   const t = f / FPS;
   const st = Wd(27);
-  const iris = prog(f, T.iris[0], T.iris[1], easeInOut);
+  const iris = prog(f, T.band[0], T.band[0] + 0.55, easeInOut);
   const lab = clampN(prog(f, st - 0.15, st + 0.6, easeInOut), 0, 1);
   const p = prog(f, st, st + 0.55, easeBack);
   const ring = prog(f, st, st + 1.0, easeOut);
@@ -204,13 +206,18 @@ const Soon: React.FC<{ f: number }> = ({ f }) => {
   const shake = t >= st ? Math.exp(-(t - st) * 9) * Math.sin((t - st) * 70) * 5 : 0;
   return (
     <>
-      <div style={{ position: "absolute", left: 0, right: 0, top: lerp(262, 236, lab), textAlign: "center", transform: `scale(${lerp(1, 0.56, lab)})`, transformOrigin: "50% 0", opacity: 1 - iris, ...blur(iris * 8) }}>
+      <div style={{ position: "absolute", left: 0, right: 0, top: lerp(262, 232, lab), textAlign: "center", transform: `scale(${lerp(1, 0.5, lab)})`, transformOrigin: "50% 0", opacity: 1 - iris, ...blur(iris * 8) }}>
         <div><MaskWord at={Wd(24)} size={104} gap={0}>Pikment</MaskWord></div>
         <div><MaskWord at={Wd(25)} size={104} grad>mobil</MaskWord><MaskWord at={Wd(26)} size={104} grad gap={0}>tətbiqi</MaskWord></div>
       </div>
       <div style={{ position: "absolute", left: 540 - 300, top: 1120 - 300, width: 600, height: 600, borderRadius: 600, border: `4px solid ${BRAND.violet3}`, opacity: t >= st ? 0.5 * (1 - ring) : 0, transform: `scale(${lerp(0.3, 3.2, ring)})` }} />
-      <div style={{ position: "absolute", left: 0, right: 0, top: 420, textAlign: "center", opacity: p * (1 - iris), transform: `translateY(${shake}px) scale(${lerp(1.4, 1, p)})`, ...blur((1 - p) * 10 + iris * 8) }}>
-        <div style={{ fontFamily: DISPLAY, fontWeight: 800, fontSize: 176, letterSpacing: -7, lineHeight: 1, ...gradText }}>TEZLİKLƏ</div>
+      <div style={{ position: "absolute", left: 0, right: 0, top: 540, textAlign: "center", opacity: 1 - iris, transform: `translateY(${shake}px)`, ...blur(iris * 8) }}>
+        <div style={{ display: "inline-block", fontFamily: DISPLAY, fontWeight: 800, fontSize: 176, letterSpacing: -7, lineHeight: 1.05, whiteSpace: "nowrap" }}>
+          {"TEZLİKLƏ".split("").map((ch, i) => {
+            const q = prog(f, st + i * 0.035, st + 0.5 + i * 0.035, easeBack);
+            return <span key={i} style={{ display: "inline-block", opacity: Math.min(q * 2, 1), transform: `translateY(${(1 - q) * 70}px) scale(${lerp(1.5, 1, q)})`, ...gradText, ...blur((1 - q) * 8) }}>{ch}</span>;
+          })}
+        </div>
       </div>
       <div style={{ position: "absolute", inset: 0, background: "#fff", opacity: flash * 0.45, pointerEvents: "none" }} />
     </>
@@ -221,9 +228,9 @@ const Soon: React.FC<{ f: number }> = ({ f }) => {
 const FAN = ["#A78BFA", "#6d4aff", "#4553d8", "#2b6bff", "#21A0FF"];
 const Ending: React.FC<{ f: number; t: number }> = ({ f, t }) => {
   const l0 = Wd(28);
-  const reveal = prog(f, l0 - 0.05, l0 + 0.8, easeInOut);
-  const lp = prog(f, l0 - 0.1, l0 + 0.8, easeOut);
-  const shift = Math.max(t - l0, 0) * 0.1;
+  const reveal = prog(f, l0 - 0.2, l0 + 0.7, easeInOut);
+  const lp = prog(f, l0 - 0.25, l0 + 0.7, easeOut);
+  const shift = Math.max(t - l0, 0) * 0.14;
   const fan = prog(f, T.fan, T.fan + 0.9, easeBack);
   const dm = prog(f, T.fan + 0.5, T.fan + 1.1, easeOut);
   const br = Math.sin((t - T.fan) * 1.4);
@@ -237,10 +244,12 @@ const Ending: React.FC<{ f: number; t: number }> = ({ f, t }) => {
           <MaskWord key={wi} at={Wd(wi) - 0.04} size={90} weight={700} grad={wi === 32} gap={i === 4 ? 0 : 0.24}>{(WORDS as { w: string }[])[wi].w + (wi === 33 ? "." : "")}</MaskWord>
         ))}
       </div>
-      <div style={{ position: "absolute", left: 540, top: 1400, transform: "scale(1.2)" }}>
+      <div style={{ position: "absolute", left: 540 - 450, top: 1250 - 450, width: 900, height: 900, borderRadius: 900, background: `radial-gradient(circle, ${BRAND.violet3}33, ${BRAND.blue}00 65%)`, opacity: t >= T.fan ? 1 - prog(f, T.fan, T.fan + 1.6, easeOut) : 0, transform: `scale(${lerp(0.2, 2.2, prog(f, T.fan, T.fan + 1.6, easeOut))})` }} />
+      <div style={{ position: "absolute", left: 540, top: 1420, transform: "scale(1.3)" }}>
         {FAN.map((c, i) => {
-          const a = (i - 2) * (11 + br * 1.2) * fan;
-          return <div key={i} style={{ position: "absolute", left: -72, top: -134, width: 144, height: 258, borderRadius: 28, background: c, transformOrigin: "50% 100%", transform: `translateY(${(1 - fan) * 140}px) rotate(${a}deg)`, opacity: fan > 0 ? 1 : 0, boxShadow: "0 24px 46px rgba(23,20,40,0.22)", border: "4px solid rgba(255,255,255,0.88)" }} />;
+          const fi = prog(f, T.fan + i * 0.07, T.fan + 0.9 + i * 0.07, easeBack);
+          const a = (i - 2) * (12 + br * 1.4) * fi;
+          return <div key={i} style={{ position: "absolute", left: -72, top: -134, width: 144, height: 258, borderRadius: 28, background: c, transformOrigin: "50% 100%", transform: `translateY(${(1 - fi) * 160 + Math.sin(t * 1.7 + i) * 3}px) rotate(${a}deg)`, opacity: fi > 0 ? 1 : 0, boxShadow: "0 24px 46px rgba(23,20,40,0.22)", border: "4px solid rgba(255,255,255,0.88)" }} />;
         })}
       </div>
       <div style={{ position: "absolute", left: 0, right: 0, top: 1090, textAlign: "center", fontFamily: DISPLAY, fontWeight: 700, fontSize: 48, letterSpacing: -0.5, color: BRAND.inkSoft, opacity: dm, transform: `translateY(${(1 - dm) * 16}px)` }}>pikment.az</div>
@@ -248,21 +257,19 @@ const Ending: React.FC<{ f: number; t: number }> = ({ f, t }) => {
   );
 };
 
-/* iris + curtain transition (brand gradient) */
+/* brand-gradient band sweeping bottom -> top; the scene swaps while it fully covers the frame */
 const Transition: React.FC<{ f: number }> = ({ f }) => {
-  const iris = prog(f, T.iris[0], T.iris[1], easeInOut);
-  const cur = prog(f, T.curtain[0], T.curtain[1], easeInOut);
   const t = f / FPS;
-  if (t < T.iris[0] || t > T.curtain[1] + 0.05) return null;
-  const covered = t >= T.iris[1];
+  if (t < T.band[0] || t > T.band[1]) return null;
+  const e = prog(f, T.band[0], T.band[1], easeInOut);
   return (
     <AbsoluteFill style={{ pointerEvents: "none", overflow: "hidden" }}>
-      {!covered && <div style={{ position: "absolute", left: 540 - 100, top: 560 - 100, width: 200, height: 200, borderRadius: 200, background: GRADIENT, transform: `scale(${lerp(0.2, 16, iris)})` }} />}
-      {covered && <div style={{ position: "absolute", left: 0, right: 0, top: -2200 * cur, height: 1920 + 260, background: GRADIENT, borderRadius: "0 0 50% 50% / 0 0 130px 130px" }} />}
+      <div style={{ position: "absolute", left: -60, right: -60, top: lerp(1920, -3000, e), height: 3000, background: GRADIENT, borderRadius: "50% 50% 50% 50% / 140px 140px 140px 140px" }} />
     </AbsoluteFill>
   );
 };
 
+const BAND_MID = (T.band[0] + T.band[1]) / 2;
 const Grain: React.FC<{ f: number }> = ({ f }) => (
   <AbsoluteFill style={{ pointerEvents: "none", opacity: 0.07, mixBlendMode: "multiply", backgroundImage: `url(${staticFile("pikment_site/grain.png")})`, backgroundPosition: `${(f * 137) % 400}px ${(f * 71) % 400}px` }} />
 );
@@ -278,10 +285,13 @@ export const Pikment001V2: React.FC<Pikment001V2Props> = ({ audioSrc }) => {
       <AbsoluteFill style={{ transform: `scale(${cz})` }}>
         {t < T.push[1] && (<><Hook f={f} /><Stage f={f} t={t} /></>)}
         {t >= T.push[1] - 0.2 && t < T.phoneIn[0] + 0.6 && <Domain f={f} />}
-        {t >= T.phoneIn[0] - 0.1 && t < T.curtain[0] + 0.2 && (<><Headline f={f} /><Devices f={f} t={t} /><Soon f={f} /></>)}
-        {t >= T.curtain[0] && <Ending f={f} t={t} />}
+        {t >= T.phoneIn[0] - 0.1 && t < BAND_MID && (<><Headline f={f} /><Devices f={f} t={t} /><Soon f={f} /></>)}
+        {t >= BAND_MID && <Ending f={f} t={t} />}
       </AbsoluteFill>
       <Transition f={f} />
+      <LightSweep p={prog(f, Wd(27), Wd(27) + 0.9, (x) => x)} strength={0.55} />
+      <LightSweep p={prog(f, Wd(28) + 0.05, Wd(28) + 1.0, (x) => x)} strength={0.4} />
+      <LightSweep p={prog(f, T.fan + 0.4, T.fan + 1.6, (x) => x)} strength={0.35} />
       <Grain f={f} />
       <AbsoluteFill style={{ pointerEvents: "none", background: "radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 62%, rgba(23,20,40,0.09) 100%)" }} />
       <Audio src={staticFile(audioSrc)} />

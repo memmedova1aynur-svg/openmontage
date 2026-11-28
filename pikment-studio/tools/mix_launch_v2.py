@@ -93,9 +93,10 @@ def main():
     put(1490, TL["together"][0] - 0.05, 0.18, True)
     put(1490, W[27] - 0.05, 0.24, True, rev=True)     # riser into the impact
     put(2903, W[27] + 0.02, 0.42, True)               # TEZLİKLƏ impact
-    put(1490, TL["iris"][0] + 0.1, 0.24, True)
-    put(1492, TL["curtain"][0] + 0.15, 0.20, True)
-    put(951, W[32], 0.20)
+    put(1490, TL["band"][0] + 0.25, 0.26, True)
+    put(1492, TL["band"][0] + 0.6, 0.18, True)
+    put(951, W[28] + 0.1, 0.16); put(951, W[32], 0.20); put(2573, TL["fan"], 0.18)
+    for k in range(1, 4): put(2357, W[27] + 0.5 * k + 0.5, 0.05)  # soft beat ticks while the devices breathe
     pk = np.max(np.abs(track))
     if pk > 0.95: track /= pk / 0.95
     wavfile.write(WORK + "sfx_v2.wav", SR, track)
