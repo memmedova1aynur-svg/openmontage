@@ -18,6 +18,7 @@ import { CollageBurst, CollageBurstProps } from "./CollageBurst";
 import { LyricOverlay, LyricOverlayProps } from "./LyricOverlay";
 import { PikmentReel, PikmentReelProps } from "./PikmentReel";
 import { PikmentSchoolAd, PikmentSchoolAdProps } from "./PikmentSchoolAd";
+import { PikmentChooseAd, PikmentChooseAdProps } from "./PikmentChooseAd";
 
 // ---------------------------------------------------------------------------
 // Theme System — prevents every video from looking like dark fintech
@@ -375,6 +376,20 @@ export const Root: React.FC = () => {
           whatsapp: "+994 51 999 88 70",
           site: "pikment.az",
         } as PikmentSchoolAdProps}
+      />
+      <Composition
+        id="PikmentChooseAd"
+        component={PikmentChooseAd}
+        durationInFrames={555}
+        fps={30}
+        width={1080}
+        height={1920}
+        defaultProps={{
+          voiceSrc: "pikment/vo_choose_el.wav",
+          logoSrc: "pikment/logo.png",
+          whatsapp: "+994 51 999 88 70",
+          site: "pikment.az",
+        } as PikmentChooseAdProps}
       />
     </>
   );

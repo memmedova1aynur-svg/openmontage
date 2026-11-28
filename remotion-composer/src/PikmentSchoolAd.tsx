@@ -27,7 +27,7 @@ export interface PikmentSchoolAdProps {
   site: string;
 }
 
-const C = {
+export const C = {
   navy: "#14132B",
   navy2: "#1E1C3F",
   white: "#F6F5FF",
@@ -38,8 +38,8 @@ const C = {
   mute: "#B9B6D8",
   green: "#177A45",
 };
-const FONT = "Inter, 'DejaVu Sans', sans-serif";
-const GRAD = "linear-gradient(90deg, #8B6CFF, #3B6BFF 60%, #21A0FF)";
+export const FONT = "Inter, 'DejaVu Sans', sans-serif";
+export const GRAD = "linear-gradient(90deg, #8B6CFF, #3B6BFF 60%, #21A0FF)";
 
 const T = {
   s1: [0, 3.4],
@@ -50,10 +50,10 @@ const T = {
   s6: [17.4, 24],
 } as const;
 
-const fr = (s: number, fps: number) => Math.round(s * fps);
-const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
+export const fr = (s: number, fps: number) => Math.round(s * fps);
+export const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 
-const Bg: React.FC = () => {
+export const Bg: React.FC = () => {
   const f = useCurrentFrame();
   const blob = (x: number, y: number, r: number, color: string, ph: number) => (
     <div
@@ -78,7 +78,7 @@ const Bg: React.FC = () => {
   );
 };
 
-const Title: React.FC<{ children: React.ReactNode; top?: number; size?: number }> = ({ children, top = 170, size = 88 }) => {
+export const Title: React.FC<{ children: React.ReactNode; top?: number; size?: number }> = ({ children, top = 170, size = 88 }) => {
   const f = useCurrentFrame();
   const { fps } = useVideoConfig();
   const p = spring({ frame: f, fps, config: { damping: 20, stiffness: 110 } });
@@ -105,11 +105,11 @@ const Title: React.FC<{ children: React.ReactNode; top?: number; size?: number }
   );
 };
 
-const Grad: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+export const Grad: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <span style={{ background: GRAD, WebkitBackgroundClip: "text", color: "transparent" }}>{children}</span>
 );
 
-const Subtitle: React.FC<{ text: string; start: number; end: number }> = ({ text, start, end }) => {
+export const Subtitle: React.FC<{ text: string; start: number; end: number }> = ({ text, start, end }) => {
   const f = useCurrentFrame();
   const { fps } = useVideoConfig();
   const a = fr(start, fps);
@@ -145,7 +145,7 @@ const SWATCHES = [
   { c: "#2F6BFF", n: "Səma" },
   { c: "#1FA2FF", n: "Dəniz" },
 ];
-const Swatches: React.FC = () => {
+export const Swatches: React.FC = () => {
   const f = useCurrentFrame();
   const { fps } = useVideoConfig();
   return (
