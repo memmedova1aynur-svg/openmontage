@@ -91,6 +91,11 @@ yuxarı kartlar üçün baş üstü boşluq lazımdır: kartın alt kənarı il�
 
 **Üst yazı/kartlar.** Montserrat. Yazı başa/üzə/bədənin böyük hissəsinə düşmür; kart vaxtı altyazı qoyulmur (kart aşağıdadırsa) və ya kart yuxarıda qalır. Elementlər üst-üstə düşmür (bitmə ilə növbəti başlama arası ≥0.1 s) və hər biri ≥1.3 s görünür.
 Ayırıcı nöqtə (•/·) HEÇ VAXT sətrin sonunda qalmır — həmişə növbəti elementin əvvəlində ("Montessori\n• oyun əsaslı məşğələlər"; `type` inline siyahısında kod bunu avtomatik edir). Mətn danışıqla uyğundur (qrafikanın vaxtı sözün deyilmə anına görə, mənbə vaxtından çevrilir).
+**Altyazı mətninin düzgünlüyü (ASR səhvləri).** Səbəblər: müştəri profilində `glossary` boş idi (Whisper-ə terminlər verilmirdi), uzun kontekstli tanıma səhv sözü təkrar edirdi, ə/e, ğ/x/q kimi hərflər qarışırdı.
+Qayda: (1) hər yeni müştəridə İLK videodan əvvəl profilin `glossary.terms` (işlədilən terminlər, düzgün yazılışla) və `glossary.fixes` (tez-tez rast gəlinən ASR səhvi → düzgün) doldurulur; `new --client` terminləri hotwords kimi Whisper-ə verir.
+(2) Tanıma `beam_size=5`, `condition_on_previous_text=False`, VAD ilə işləyir; ə/e, ğ/x/q fərqli yazılışlar lüğətə `transcribe.snap_glossary` ilə avtomatik düzəlir. (3) Təhvildən əvvəl `python -m montaj.captionqa <pid> <yekun.mp4>`: yekun səs iki modellə (turbo + large-v3) oxunur, hər iki model başqa eşitdiyi altyazı sözləri
+siyahı ilə təhvildə istifadəçiyə yazılır ("bu sözləri təsdiq edin"). (4) Şübhəli sözü (ASR "dəst", mənaca "dərs" kimi) təxmin edib yazmaq olar, amma təxmin edildiyi açıq deyilir; mənanı dəyişən təxmin yoxdur.
+Sınaq nəticəsi (Rəhimə, 4 video): söz xəta dərəcəsi lüğətsiz/əvvəlki ayarla ≈0.47 (small) və ≈0.15 (turbo) → turbo + lüğət + yeni ayarla ≈0.10; large-v3 yalnız ≈0.09 (3× yavaş) — turbo saxlanılır.
 Altyazı sözləri `candidates` sözlərindən qurulur — ASR səhvləri (məs. "baxçıb əlum") həm `analysis`, həm `candidates`-də düzəldilməlidir, yoxsa altyazıda səhv çıxır.
 
 **Fon.** Standart olaraq təbii. Fon bulanıqlaşdırma/qaraltma (`fx focus`) YALNIZ istifadəçi istəyəndə; bulanıqlıq əl/qol ətrafında maska kənarı verir və "peşəkar görünmür" sayılır. Qaraltma (`dim`) kənarı daha az göstərir.

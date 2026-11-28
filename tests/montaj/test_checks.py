@@ -119,3 +119,20 @@ def test_tail_after_last_word():
     x = _burst_signal([(0.2, 1.4)], 2.0)
     assert abs(checks.tail_after_last_word(x, 1.9) - 0.5) < 0.1
     assert checks.tail_after_last_word(x, 1.5) < 0.2
+
+
+def test_captionqa_flags_word_not_heard():
+    from montaj import captionqa
+    from montaj.transcribe import fold
+
+    cues = [(0.0, 2.0, "Bağça müəllimi dərs keçir")]
+    heard = {"a": [(fold("baxça"), 0.0, 0.5), (fold("müəllimi"), 0.5, 1.0), (fold("dəst"), 1.0, 1.4), (fold("keçir"), 1.5, 2.0)]}
+    bad = captionqa.compare(cues, heard)
+    assert [x["caption"] for x in bad] == ["dərs"]  # "baxça"≡"bağça" hərf qarışıqlığıdır — problem deyil
+
+
+def test_snap_glossary_exact_fold_only():
+    from montaj import transcribe
+
+    w, ch = transcribe.snap_glossary([{"w": "baxça"}, {"w": "oyunlar"}, {"w": "Baxçada."}], ["bağça", "bağçada", "oyunları"])
+    assert [x["w"] for x in w] == ["bağça", "oyunlar", "Bağçada."]

@@ -176,5 +176,106 @@
    "tone": "#F7E6D0",
    "anim": "pop"
   }
- ]
+ ],
+ "glossary": {
+  "terms": [
+   "bağça",
+   "bağçada",
+   "bağçanın",
+   "bağçalar",
+   "bağçaya",
+   "müəllim",
+   "müəllimi",
+   "müəllimlər",
+   "məşğələ",
+   "məşğələləri",
+   "məşğələlərin",
+   "Montessori",
+   "inklüziv",
+   "təhsil",
+   "nağıl terapiyası",
+   "uşaq inkişafı",
+   "təlim",
+   "təliminizdə",
+   "dərs",
+   "dərslik",
+   "dərslərini",
+   "peşəkar",
+   "proqram",
+   "interyer",
+   "avadanlıq",
+   "idarəçilik",
+   "ünsiyyət",
+   "Müasir",
+   "tərbiyəçi",
+   "kollektiv",
+   "açıq dərslər",
+   "bədii təfəkkür",
+   "ətraf aləm",
+   "oyunlar",
+   "oyunları"
+  ],
+  "fixes": [
+   {
+    "from": "baxçı müəllimi",
+    "to": "bağça müəllimi"
+   },
+   {
+    "from": "baxçıb əlum",
+    "to": "bağça müəllim"
+   },
+   {
+    "from": "Muhasir",
+    "to": "Müasir"
+   },
+   {
+    "from": "Mahasir",
+    "to": "Müasir"
+   },
+   {
+    "from": "Muhasil",
+    "to": "Müasir"
+   },
+   {
+    "from": "mantasori",
+    "to": "Montessori"
+   },
+   {
+    "from": "Mantasori",
+    "to": "Montessori"
+   },
+   {
+    "from": "mantasyori",
+    "to": "Montessori"
+   },
+   {
+    "from": "inkuliziv",
+    "to": "inklüziv"
+   },
+   {
+    "from": "inkulizif",
+    "to": "inklüziv"
+   },
+   {
+    "from": "peşəkər",
+    "to": "peşəkar"
+   },
+   {
+    "from": "məşqalə",
+    "to": "məşğələ"
+   },
+   {
+    "from": "məşxalə",
+    "to": "məşğələ"
+   },
+   {
+    "from": "məşqələ",
+    "to": "məşğələ"
+   },
+   {
+    "from": "məşxələ",
+    "to": "məşğələ"
+   }
+  ]
+ }
 }

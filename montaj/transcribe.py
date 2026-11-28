@@ -34,8 +34,11 @@ def transcribe(src: Path, start: float, end: float, language: str | None = "az",
     # PyAV versiya fərqlərindən asılı olmamaq üçün səsi ffmpeg ilə oxuyuruq
     audio = read_mono(src, 16000)
     a, b = int(max(0, start) * 16000), int(end * 16000)
+    # Sınaq (Rəhimə, 4 video): condition_on_previous_text=False + beam 5 + müştəri lüğəti (hotwords) söz xətasını ~0.47 → ~0.10-a endirdi.
+    # Uzun kontekstə bağlı tanıma (standart) əvvəlki səhv sözü təkrar edir ("baxçıb əlum"), danışıqsız yerdə uydurur.
     segments, info = model.transcribe(
-        audio[a:b], language=language or None, word_timestamps=True, vad_filter=False,
+        audio[a:b], language=language or None, word_timestamps=True, beam_size=5, condition_on_previous_text=False,
+        vad_filter=True, vad_parameters={"threshold": 0.35, "min_silence_duration_ms": 600, "speech_pad_ms": 200},
         hotwords=hotwords or None,  # müştərinin terminləri/adları (lüğətdən) — düzgün tanınma ehtimalı artır
     )
     words: list[dict[str, Any]] = []
@@ -56,6 +59,54 @@ def transcribe(src: Path, start: float, end: float, language: str | None = "az",
         "text": " ".join(text_parts),
         "words": words,
     }
+
+
+_FOLD = str.maketrans({"ə": "e", "ı": "i", "İ": "i", "ö": "o", "ü": "u", "ş": "s", "ç": "c", "ğ": "g", "x": "g", "q": "g", "w": "v"})
+
+
+def fold(w: str) -> str:
+    """Azərbaycan hərflərini ASR-in qarışdırdığı qruplara endirir (ə→e, ğ/x/q→g, ş→s ...): "baxça" ≡ "bağça", "məşqalə" ≡ "məşğələ"."""
+    return "".join(ch for ch in w.lower().replace("i̇", "i") if ch.isalpha()).translate(_FOLD)
+
+
+def snap_glossary(words: list[dict[str, Any]], terms: list[str], min_ratio: float = 1.0) -> tuple[list[dict[str, Any]], list[tuple[str, str]]]:
+    """Müştəri lüğətindəki sözlərə yaxın ASR sözlərini düzgün yazılışa çevirir (yalnız bütöv söz, ayrı-ayrılıqda).
+    Tam eyni yazılış toxunulmur. Qayıdır (yeni sözlər, [(köhnə, yeni)]). Böyük hərf/durğu qorunur."""
+    import difflib
+
+    index: dict[str, str] = {}
+    for t in terms:
+        for tok in str(t).split():
+            if len(fold(tok)) >= 4:
+                index.setdefault(fold(tok), tok)
+    out, changed = [], []
+    for w in words:
+        raw = w["w"]
+        core = raw.strip(".,!?;:\"'«»()—-")
+        lead = raw[: len(raw) - len(raw.lstrip(".,!?;:\"'«»()—-"))]
+        tail = raw[len(lead) + len(core):]
+        f = fold(core)
+        new = None
+        if len(f) >= 4 and core not in terms:
+            if f in index and index[f] != core:
+                new = index[f]
+            else:
+                best = difflib.get_close_matches(f, list(index), n=1, cutoff=min_ratio)
+                if best and index[best[0]] != core:
+                    new = index[best[0]]
+        if new:
+            if core[:1].isupper() and not new[:1].isupper():
+                new = new[:1].upper() + new[1:]
+            changed.append((raw, lead + new + tail))
+            out.append({**w, "w": lead + new + tail})
+        else:
+            out.append(w)
+    return out, changed
+
+
+def uncertain(words: list[dict[str, Any]], below: float = 0.55) -> list[dict[str, Any]]:
+    """Əminlik ehtimalı aşağı olan sözlər — təhvildə istifadəçiyə "bu sözlər düzgündürmü" siyahısı kimi göstərilir."""
+    return [w for w in words if w.get("p") is not None and float(w["p"]) < below]
 
 
 def norm_word(w: str) -> str:

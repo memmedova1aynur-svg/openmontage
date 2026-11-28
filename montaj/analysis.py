@@ -51,6 +51,8 @@ def analyze_media(project_dir: Path, m: dict[str, Any], language: str = "az",
         if transcribe.available()["installed"]:
             try:
                 t = transcribe.transcribe(src, 0.0, float(m["duration"]), language, hotwords)
+                if hotwords:  # ə/e, ğ/x/q kimi ASR qarışıqlıqları: müştəri lüğətindəki yazılışa (yalnız hərf-qarışıqlığı fərqi)
+                    t["words"], _snapped = transcribe.snap_glossary(t["words"], hotwords.split())
                 res.update(words=t["words"], transcribed=True, language=t["language"],
                            languageProbability=t["languageProbability"], text=t["text"], model=t["model"])
             except Exception as e:  # noqa: BLE001
