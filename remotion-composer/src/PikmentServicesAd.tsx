@@ -11,7 +11,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import { Bg, C, FONT, GRAD, Subtitle, clamp, fr } from "./PikmentSchoolAd";
+import { Bg, C, FONT, GRAD, clamp, fr } from "./PikmentSchoolAd";
 import { Areas, End } from "./PikmentChooseAd";
 import timing from "./pikmentServicesTiming.json";
 
@@ -99,9 +99,11 @@ const Cam: React.FC<{ dur: number; children: React.ReactNode }> = ({ dur, childr
 const Wipe: React.FC = () => {
   const f = useCurrentFrame();
   const p = interpolate(f, [0, 14], [0, 1], clamp);
+  const flash = interpolate(f, [4, 7, 11], [0, 0.35, 0], clamp);
   const left = interpolate(p, [0, 1], [-140, 110]);
   return (
     <AbsoluteFill style={{ pointerEvents: "none", overflow: "hidden" }}>
+      <AbsoluteFill style={{ background: "#fff", opacity: flash }} />
       <div style={{ position: "absolute", top: -300, bottom: -300, width: "140%", left: `${left}%`, transform: "skewX(-14deg)", background: "linear-gradient(90deg, #3B6BFF, #8B6CFF 55%, #21A0FF)", boxShadow: "0 0 120px rgba(139,108,255,0.8)" }} />
     </AbsoluteFill>
   );
@@ -283,6 +285,59 @@ const PhoneSite: React.FC<{ src: string }> = ({ src }) => {
   );
 };
 
+
+/** Karaoke-style caption: the word being spoken is highlighted. */
+const KCaption: React.FC<{ text: string; start: number; end: number }> = ({ text, start, end }) => {
+  const f = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const a = fr(start, fps);
+  const b = fr(end, fps);
+  const op = interpolate(f, [a, a + 7, b - 7, b], [0, 1, 1, 0], clamp);
+  const words = text.split(" ");
+  const weights = words.map((w) => w.length + 2);
+  const tot = weights.reduce((x, y) => x + y, 0);
+  const speechFrames = Math.max(b - a - 20, 10);
+  const pos = ((f - a - 6) / speechFrames) * tot;
+  let acc = 0;
+  let active = -1;
+  weights.forEach((w, i) => {
+    if (pos >= acc) active = i;
+    acc += w;
+  });
+  return (
+    <div style={{ position: "absolute", left: 56, right: 56, bottom: 330, display: "flex", justifyContent: "center", opacity: op, transform: `translateY(${(1 - op) * 18}px)` }}>
+      <div style={{ background: "rgba(14,13,36,0.74)", border: "1.5px solid rgba(255,255,255,0.14)", borderRadius: 30, padding: "20px 34px", textAlign: "center", fontFamily: FONT, fontWeight: 700, fontSize: 44, lineHeight: 1.28, boxShadow: "0 16px 50px rgba(0,0,0,0.45)", backdropFilter: "blur(10px)" }}>
+        {words.map((w, i) => (
+          <span
+            key={i}
+            style={{
+              display: "inline-block",
+              marginRight: "0.28em",
+              color: i === active ? "#8FB8FF" : i < active ? "#FFFFFF" : "rgba(255,255,255,0.5)",
+              textShadow: i === active ? "0 0 22px rgba(143,184,255,0.65)" : "none",
+            }}
+          >
+            {w}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/** Film grain + vignette for a finished, graded look. */
+const Finish: React.FC = () => {
+  const f = useCurrentFrame();
+  const ox = (f * 53) % 512;
+  const oy = (f * 97) % 512;
+  return (
+    <AbsoluteFill style={{ pointerEvents: "none" }}>
+      <AbsoluteFill style={{ backgroundImage: `url(${staticFile("pikment_site/grain.png")})`, backgroundSize: "512px 512px", backgroundPosition: `${ox}px ${oy}px`, mixBlendMode: "overlay", opacity: 0.16 }} />
+      <AbsoluteFill style={{ background: "radial-gradient(ellipse at 50% 48%, rgba(0,0,0,0) 55%, rgba(5,4,18,0.55) 100%)" }} />
+    </AbsoluteFill>
+  );
+};
+
 const LINES = [
   "Uşaq inkişafı sahəsində daha peşəkar olmaq istəyirsən?",
   "Pikment-də məqsədlərinə uyğun təlim proqramları var.",
@@ -323,7 +378,7 @@ export const PikmentServicesAd: React.FC<PikmentServicesAdProps> = ({ voiceSrc, 
           <KTitle parts={[{ t: "Uşaq inkişafı sahəsində daha" }, { t: "peşəkar", hl: true }, { t: "olmaq istəyirsən?" }]} top={140} size={76} />
           <PhoneSite src="pikment_site/scroll.png" />
         </Cam>
-        <Subtitle text={LINES[0]} {...sub(0)} />
+        <KCaption text={LINES[0]} {...sub(0)} />
       </Sequence>
 
       <Sequence from={seq(1).from} durationInFrames={seq(1).dur}>
@@ -335,7 +390,7 @@ export const PikmentServicesAd: React.FC<PikmentServicesAdProps> = ({ voiceSrc, 
             <CountUp to={6} label="sahə" delay={1.6} />
           </div>
         </Cam>
-        <Subtitle text={LINES[1]} {...sub(1)} />
+        <KCaption text={LINES[1]} {...sub(1)} />
       </Sequence>
 
       {gi.map((b, k) => (
@@ -344,7 +399,7 @@ export const PikmentServicesAd: React.FC<PikmentServicesAdProps> = ({ voiceSrc, 
             <KTitle parts={GROUPS[k].title} top={150} size={66} />
             <ItemList items={GROUPS[k].items} dur={len(b)} />
           </Cam>
-          <Subtitle text={LINES[b]} {...sub(b)} />
+          <KCaption text={LINES[b]} {...sub(b)} />
         </Sequence>
       ))}
 
@@ -353,13 +408,13 @@ export const PikmentServicesAd: React.FC<PikmentServicesAdProps> = ({ voiceSrc, 
           <KTitle parts={[{ t: "Mentorluq", hl: true }]} top={150} size={74} />
           <Mentor />
         </Cam>
-        <Subtitle text={LINES[6]} {...sub(6)} />
+        <KCaption text={LINES[6]} {...sub(6)} />
       </Sequence>
 
       <Sequence from={seq(7).from} durationInFrames={seq(7).dur}>
         <End logoSrc={logoSrc} whatsapp={whatsapp} site={site} />
         <Burst at={1.3} y={1010} />
-        <Subtitle text={LINES[7]} {...sub(7)} />
+        <KCaption text={LINES[7]} {...sub(7)} />
       </Sequence>
 
       {/* Logo badge on the middle scenes only (hook and end card already carry the brand). */}
@@ -374,6 +429,7 @@ export const PikmentServicesAd: React.FC<PikmentServicesAdProps> = ({ voiceSrc, 
         </Sequence>
       ))}
 
+      <Finish />
       <Progress total={total} />
     </AbsoluteFill>
   );
