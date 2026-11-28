@@ -16,6 +16,7 @@ import { ProductReveal, ProductRevealProps } from "./components/ProductReveal";
 import { CaptionOverlay, WordCaption } from "./components/CaptionOverlay";
 import { CollageBurst, CollageBurstProps } from "./CollageBurst";
 import { LyricOverlay, LyricOverlayProps } from "./LyricOverlay";
+import { PikmentReel, PikmentReelProps } from "./PikmentReel";
 
 // ---------------------------------------------------------------------------
 // Theme System — prevents every video from looking like dark fintech
@@ -329,6 +330,34 @@ export const Root: React.FC = () => {
           fadeOutSeconds: 1.5,
           overlay: true,
         } as EndTagProps}
+      />
+      <Composition
+        id="PikmentReel"
+        component={PikmentReel}
+        durationInFrames={810}
+        fps={30}
+        width={1080}
+        height={1920}
+        defaultProps={{
+          showPrivacyBeat: false,
+          voiceSrc: "pikment/vo_noprivacy.wav",
+          logoSrc: "pikment/logo.png",
+          whatsapp: "+994 51 999 88 70",
+        } as PikmentReelProps}
+      />
+      <Composition
+        id="PikmentReelPrivacy"
+        component={PikmentReel}
+        durationInFrames={900}
+        fps={30}
+        width={1080}
+        height={1920}
+        defaultProps={{
+          showPrivacyBeat: true,
+          voiceSrc: "pikment/vo_privacy.wav",
+          logoSrc: "pikment/logo.png",
+          whatsapp: "+994 51 999 88 70",
+        } as PikmentReelProps}
       />
     </>
   );
