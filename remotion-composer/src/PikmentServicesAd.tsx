@@ -239,7 +239,7 @@ const PhoneSite: React.FC<{ src: string }> = ({ src }) => {
   const f = useCurrentFrame();
   const { fps } = useVideoConfig();
   const enter = Math.max(spring({ frame: f, fps, config: { damping: 15, stiffness: 70 } }), 0);
-  const scrollCss = interpolate(f, [fps * 0.9, fps * 3.7], [0, 1480], { ...clamp, easing: Easing.inOut(Easing.cubic) });
+  const scrollCss = interpolate(f, [fps * 0.7, fps * 3.1], [0, 1480], { ...clamp, easing: Easing.inOut(Easing.cubic) });
   const scroll = scrollCss * SITE_SCALE;
   const bob = Math.sin(f / 22) * 7;
   const ry = interpolate(enter, [0, 1], [-28, -7]) + Math.sin(f / 40) * 1.5;

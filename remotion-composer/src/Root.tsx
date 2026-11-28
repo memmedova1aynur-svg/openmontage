@@ -395,12 +395,12 @@ export const Root: React.FC = () => {
       <Composition
         id="PikmentServicesAd"
         component={PikmentServicesAd}
-        durationInFrames={1569}
+        durationInFrames={1300}
         fps={30}
         width={1080}
         height={1920}
         defaultProps={{
-          voiceSrc: "pikment/audio_services_final.wav",
+          voiceSrc: "pikment/audio_services_v3.wav",
           logoSrc: "pikment/logo.png",
           whatsapp: "+994 51 999 88 70",
           site: "pikment.az",
