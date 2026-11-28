@@ -113,3 +113,9 @@ def test_scan_edge_flags_cut_inside_speech():
 def test_scan_edge_flags_stray_tail():
     x = _burst_signal([(0.2, 1.0), (1.5, 1.68)], 2.2)  # söz bitir, 0.5 s sakitlik, qısa kənar səs
     assert any("təcrid" in p for p in checks.scan_edge(x, 2.0, "out"))
+
+
+def test_tail_after_last_word():
+    x = _burst_signal([(0.2, 1.4)], 2.0)
+    assert abs(checks.tail_after_last_word(x, 1.9) - 0.5) < 0.1
+    assert checks.tail_after_last_word(x, 1.5) < 0.2

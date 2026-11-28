@@ -141,6 +141,16 @@ def scan_edge(x: np.ndarray, edge: float, side: str, sr: int = 16000) -> list[st
     return probs
 
 
+def tail_after_last_word(x: np.ndarray, edge: float, sr: int = 16000) -> float:
+    """Videonun sonunda son sözdən (səs parçası) sonra qalan sakit müddət (s). x — pəncərə, edge — son kadr anı (pəncərədə).
+    Instagram/pleyerlər sonuncu 0.1–0.2 s-ni yeyə bilir: <0.35 s qalırsa sonuncu söz "eşidilmir" kimi qəbul olunur."""
+    db = _frame_db(x, sr)
+    bursts = [b for b in _bursts(db) if b[0] < edge]
+    if not bursts:
+        return edge
+    return max(0.0, edge - bursts[-1][1])
+
+
 def cut_audio_scan(project: dict[str, Any], root: Path) -> dict[str, Any]:
     """Hər real kəsim yerində (və videonun əvvəlində/sonunda) orijinal səsin enerjisinə baxır: kənar/yarımçıq səs, sözün sonu kəsilməsi.
     Transkript vaxtlarına güvənmir (Whisper söz vaxtları 0.5 s-ə qədər sürüşə bilir) — yalnız ölçülmüş enerji."""
@@ -178,6 +188,17 @@ def cut_audio_scan(project: dict[str, Any], root: Path) -> dict[str, Any]:
         probe(a["clip"], t_tl, "out")
         probe(b["clip"], t_tl, "in")
     probe(vids[-1]["clip"], vids[-1]["start"] + vids[-1]["dur"], "out")
+    try:  # sonuncu sözdən sonra ≥0.35 s sakitlik (pleyer sonu yeməsin)
+        lc = vids[-1]["clip"]
+        m = media.get(lc.get("media")) or {}
+        if m.get("file") and (root / m["file"]).is_file():
+            e = float(lc["srcOut"])
+            ss = max(0.0, e - 3.0)
+            tail = tail_after_last_word(_read(root / m["file"], ss, 3.2), e - ss)
+            if tail < 0.35:
+                items.append(f"{vids[-1]['start'] + vids[-1]['dur']:.2f} s (video sonu): sonuncu sözdən sonra cəmi {tail:.2f} s qalır — ≥0.4 s sakit quyruq əlavə et (pleyer sonu yeyir, son söz eşidilmir)")
+    except Exception:
+        pass
     if items:
         return _res("kəsim səsi", "warn", f"{len(items)} kəsim yerində kənar/yarımçıq səs və ya kəsilmiş son söz şübhəsi ({n} kəsim yoxlandı) — mənbə vaxtında sərhədi sakitlik yerinə çək", items)
     return _res("kəsim səsi", "ok", f"{n} kəsim: başlanğıc/son sakitlikdədir, kənar səs yoxdur")
