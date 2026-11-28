@@ -363,12 +363,12 @@ export const Root: React.FC = () => {
       <Composition
         id="PikmentSchoolAd"
         component={PikmentSchoolAd}
-        durationInFrames={840}
+        durationInFrames={720}
         fps={30}
         width={1080}
         height={1920}
         defaultProps={{
-          voiceSrc: "pikment/vo_school.wav",
+          voiceSrc: "pikment/vo_school_el.wav",
           logoSrc: "pikment/logo.png",
           cardSrc: "pikment_site/card.png",
           statsSrc: "pikment_site/stats.png",

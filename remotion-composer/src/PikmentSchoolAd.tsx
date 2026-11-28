@@ -42,12 +42,12 @@ const FONT = "Inter, 'DejaVu Sans', sans-serif";
 const GRAD = "linear-gradient(90deg, #8B6CFF, #3B6BFF 60%, #21A0FF)";
 
 const T = {
-  s1: [0, 3.5],
-  s2: [3.5, 7.8],
-  s3: [7.8, 11.7],
-  s4: [11.7, 15.8],
-  s5: [15.8, 19.3],
-  s6: [19.3, 28],
+  s1: [0, 3.4],
+  s2: [3.4, 6.9],
+  s3: [6.9, 10.8],
+  s4: [10.8, 14.1],
+  s5: [14.1, 17.4],
+  s6: [17.4, 24],
 } as const;
 
 const fr = (s: number, fps: number) => Math.round(s * fps);
@@ -415,10 +415,10 @@ export const PikmentSchoolAd: React.FC<PikmentSchoolAdProps> = ({ voiceSrc, logo
 
       <Sequence from={s.s2.from} durationInFrames={s.s2.dur}>
         <Title top={150} size={76}>
-          Pikment-də yeni <Grad>məktəb</Grad>
+          Pikment-də <Grad>məktəb</Grad>
         </Title>
         <Card src={cardSrc} />
-        <Subtitle text="Pikment-də Uşaq İnkişafı Mütəxəssisliyi Məktəbi var." start={0.2} end={3.9} />
+        <Subtitle text="Pikment-də Uşaq İnkişafı Mütəxəssisliyi Məktəbi var." start={0.1} end={3.3} />
       </Sequence>
 
       <Sequence from={s.s3.from} durationInFrames={s.s3.dur}>
@@ -427,7 +427,7 @@ export const PikmentSchoolAd: React.FC<PikmentSchoolAdProps> = ({ voiceSrc, logo
         </Title>
         <Card src={cardSrc} focus={1} ring={{ y0: 0.578, y1: 0.658 }} />
         <Chips items={["6 ay təlim", "3 ay təcrübə"]} top={1350} />
-        <Subtitle text="Doqquz ay: altı ay təlim, üç ay təcrübə." start={0.2} end={3.5} />
+        <Subtitle text="Doqquz ay: altı ay təlim, üç ay təcrübə." start={0.1} end={3.7} />
       </Sequence>
 
       <Sequence from={s.s4.from} durationInFrames={s.s4.dur}>
@@ -435,7 +435,7 @@ export const PikmentSchoolAd: React.FC<PikmentSchoolAdProps> = ({ voiceSrc, logo
           Altı ildir <Grad>təlimlər</Grad> keçiririk
         </Title>
         <Stats src={statsSrc} />
-        <Subtitle text="Altı ildir Pikment adı ilə təlimlər keçiririk." start={0.2} end={3.8} />
+        <Subtitle text="Altı ildir Pikment adı ilə təlimlər keçiririk." start={0.1} end={3.2} />
       </Sequence>
 
       <Sequence from={s.s5.from} durationInFrames={s.s5.dur}>
@@ -443,12 +443,12 @@ export const PikmentSchoolAd: React.FC<PikmentSchoolAdProps> = ({ voiceSrc, logo
           Təlimdən sonra
         </Title>
         <Cert />
-        <Subtitle text="Təlimi bitirənlərə Pikment sertifikatı verilir." start={0.2} end={3.1} />
+        <Subtitle text="Təlimi bitirənlərə Pikment sertifikatı verilir." start={0.1} end={3.2} />
       </Sequence>
 
       <Sequence from={s.s6.from} durationInFrames={s.s6.dur}>
         <End logoSrc={logoSrc} whatsapp={whatsapp} site={site} />
-        <Subtitle text="Qiymət və şərtlər üçün WhatsApp-a yaz." start={0.2} end={3.0} />
+        <Subtitle text="Qiymət və şərtlər üçün WhatsApp-a yaz." start={0.1} end={2.9} />
       </Sequence>
     </AbsoluteFill>
   );
